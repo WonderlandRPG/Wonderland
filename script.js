@@ -1,15 +1,11 @@
-const button = document.getElementById("enter");
+const enterButton = document.getElementById("enter");
 
-button.onclick = () => {
+if (enterButton) {
+    enterButton.addEventListener("click", () => {
+        document.body.classList.add("leaving");
 
-    document.body.style.transition = "1s";
-
-    document.body.style.opacity = "0";
-
-    setTimeout(()=>{
-
-        window.location.href = "pages/menu.html";
-
-    },1000);
-
+        setTimeout(() => {
+            window.location.href = "menu.html";
+        }, 900);
+    });
 }

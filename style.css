@@ -926,3 +926,38 @@ body.leaving {
         align-items: flex-start;
     }
 }
+/* Correção das páginas internas */
+
+body.internal-page {
+    display: block;
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.internal-page .site-header {
+    width: 100%;
+}
+
+.internal-page .header-logo {
+    width: 48px !important;
+    height: 48px !important;
+    max-width: 48px !important;
+    object-fit: contain;
+}
+
+.internal-page .page-content {
+    display: block;
+}
+
+.internal-page a {
+    text-decoration: none;
+}
+
+.internal-page #particles {
+    position: fixed;
+    inset: 0;
+}

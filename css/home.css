@@ -1,0 +1,239 @@
+/*==================================================
+                HOME.CSS
+==================================================*/
+
+/*==========================
+        HOME
+==========================*/
+
+.home-page{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    min-height:100vh;
+
+    overflow:hidden;
+
+}
+
+/*==========================
+      CONTAINER
+==========================*/
+
+.home-container{
+
+    width:min(900px,90%);
+
+    text-align:center;
+
+    animation:fadeUp 1.2s ease;
+
+}
+
+/*==========================
+        LOGO
+==========================*/
+
+.home-logo{
+
+    width:280px;
+
+    margin:0 auto 35px;
+
+    animation:
+        logoFloat 5s ease-in-out infinite,
+        logoGlow 4s ease-in-out infinite;
+
+}
+
+/*==========================
+        TÍTULO
+==========================*/
+
+.home-title{
+
+    font-family:'Cinzel',serif;
+
+    font-size:clamp(56px,7vw,92px);
+
+    letter-spacing:10px;
+
+    color:var(--gold);
+
+    text-transform:uppercase;
+
+    text-shadow:
+        0 0 15px rgba(255,216,77,.30),
+        0 0 35px rgba(255,216,77,.15);
+
+}
+
+/*==========================
+      SUBTÍTULO
+==========================*/
+
+.home-subtitle{
+
+    margin-top:18px;
+
+    color:var(--text-soft);
+
+    font-size:28px;
+
+    line-height:1.6;
+
+}
+
+/*==========================
+        BOTÃO
+==========================*/
+
+.enter-button{
+
+    margin-top:55px;
+
+    padding:18px 60px;
+
+    border:none;
+
+    border-radius:60px;
+
+    background:
+    linear-gradient(
+        180deg,
+        var(--gold),
+        var(--gold-dark)
+    );
+
+    color:#111;
+
+    font-family:'Cinzel',serif;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    letter-spacing:3px;
+
+    transition:var(--transition);
+
+    box-shadow:
+        0 0 25px rgba(255,216,77,.25);
+
+}
+
+.enter-button:hover{
+
+    transform:
+        translateY(-4px)
+        scale(1.03);
+
+    box-shadow:
+        0 0 35px rgba(255,216,77,.55),
+        0 0 60px rgba(79,174,131,.18);
+
+}
+
+.enter-button:active{
+
+    transform:scale(.97);
+
+}
+
+/*==========================
+      ANIMAÇÕES
+==========================*/
+
+@keyframes logoFloat{
+
+    0%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(-12px);
+
+    }
+
+    100%{
+
+        transform:translateY(0);
+
+    }
+
+}
+
+@keyframes logoGlow{
+
+    0%{
+
+        filter:
+        drop-shadow(0 0 12px rgba(79,174,131,.40));
+
+    }
+
+    50%{
+
+        filter:
+        drop-shadow(0 0 30px rgba(79,174,131,.90))
+        drop-shadow(0 0 70px rgba(79,174,131,.35));
+
+    }
+
+    100%{
+
+        filter:
+        drop-shadow(0 0 12px rgba(79,174,131,.40));
+
+    }
+
+}
+
+/*==========================
+      RESPONSIVO
+==========================*/
+
+@media(max-width:700px){
+
+    .home-logo{
+
+        width:180px;
+
+    }
+
+    .home-subtitle{
+
+        font-size:22px;
+
+    }
+
+    .enter-button{
+
+        width:100%;
+
+    }
+
+}
+/*==========================
+      TRANSIÇÃO
+==========================*/
+
+body{
+
+    transition:
+        opacity .8s ease;
+
+}
+
+body.fade-out{
+
+    opacity:0;
+
+}

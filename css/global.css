@@ -1,0 +1,261 @@
+/*==================================================
+                WONDERLAND RPG
+                  GLOBAL.CSS
+==================================================*/
+
+/*==========================
+        RESET
+==========================*/
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/*==========================
+      VARIÁVEIS
+==========================*/
+
+:root{
+
+    --gold:#FFD84D;
+    --gold-dark:#D4A91C;
+
+    --green:#4FAE83;
+    --green-dark:#2E7354;
+
+    --bg:#05080C;
+    --bg-light:#0D1117;
+
+    --text:#F4F4F4;
+    --text-soft:#CFCFCF;
+
+    --transition:.35s;
+
+}
+
+/*==========================
+        HTML
+==========================*/
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+/*==========================
+        BODY
+==========================*/
+
+body{
+
+    min-height:100vh;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+    font-family:'Cormorant Garamond',serif;
+
+    overflow-x:hidden;
+
+    position:relative;
+
+}
+
+/*==========================
+        LINKS
+==========================*/
+
+a{
+
+    text-decoration:none;
+
+    color:inherit;
+
+}
+
+/*==========================
+        IMAGENS
+==========================*/
+
+img{
+
+    display:block;
+
+    user-select:none;
+
+    -webkit-user-drag:none;
+
+}
+
+/*==========================
+        BOTÕES
+==========================*/
+
+button{
+
+    font-family:'Cinzel',serif;
+
+    cursor:pointer;
+
+}
+
+/*==========================
+      PARTÍCULAS
+==========================*/
+
+#particles{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:-2;
+
+    opacity:.18;
+
+    background-image:
+    radial-gradient(var(--gold) 1px, transparent 1px);
+
+    background-size:70px 70px;
+
+    animation:particlesMove 40s linear infinite;
+
+}
+
+/*==========================
+        FUNDO
+==========================*/
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:-3;
+
+    background:
+
+    radial-gradient(
+        circle at center,
+        rgba(79,174,131,.12),
+        transparent 55%
+    ),
+
+    linear-gradient(
+        180deg,
+        #071015,
+        #030608
+    );
+
+}
+
+/*==========================
+        SCROLLBAR
+==========================*/
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#081015;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:var(--green);
+
+    border-radius:20px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:var(--gold);
+
+}
+
+/*==========================
+        SELEÇÃO
+==========================*/
+
+::selection{
+
+    background:var(--gold);
+
+    color:black;
+
+}
+
+/*==========================
+      ANIMAÇÕES
+==========================*/
+
+@keyframes particlesMove{
+
+    from{
+
+        transform:translateY(0);
+
+    }
+
+    to{
+
+        transform:translateY(-500px);
+
+    }
+
+}
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(25px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+@keyframes pulse{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:scale(1.03);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}

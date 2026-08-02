@@ -37,8 +37,8 @@
     >
 
     <!-- Estilos -->
-    <link rel="stylesheet" href="css/global.css?v=4">
-    <link rel="stylesheet" href="css/home.css?v=4">
+    <link rel="stylesheet" href="css/global.css?v=5">
+    <link rel="stylesheet" href="css/home.css?v=5">
 </head>
 
 <body class="home-page">
@@ -71,8 +71,6 @@
             src="assets/audio/wonderland.mp3"
             type="audio/mpeg"
         >
-
-        Seu navegador não suporta reprodução de áudio.
     </audio>
 
     <!-- Conteúdo principal -->
@@ -102,42 +100,42 @@
 
     </main>
 
-    <!-- Controle da tela inicial -->
     <script>
         const enterButton = document.getElementById("enterButton");
         const backgroundMusic = document.getElementById("bgMusic");
 
-        enterButton.addEventListener("click", async () => {
+        function irParaMenu() {
+            window.location.href = "./menu.html";
+        }
+
+        enterButton.addEventListener("click", () => {
             enterButton.disabled = true;
             enterButton.textContent = "ENTRANDO...";
 
+            localStorage.setItem(
+                "wonderlandMusicEnabled",
+                "true"
+            );
+
             if (backgroundMusic) {
-                try {
-                    backgroundMusic.volume = 0.25;
-                    await backgroundMusic.play();
+                backgroundMusic.volume = 0.25;
 
-                    localStorage.setItem(
-                        "wonderlandMusicEnabled",
-                        "true"
-                    );
-
-                    localStorage.setItem(
-                        "wonderlandMusicTime",
-                        String(backgroundMusic.currentTime)
-                    );
-                } catch (error) {
-                    console.error(
-                        "Não foi possível iniciar a música:",
-                        error
-                    );
-                }
+                backgroundMusic
+                    .play()
+                    .then(() => {
+                        console.log("Música iniciada.");
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "O arquivo de música não pôde ser reproduzido:",
+                            error
+                        );
+                    });
             }
 
             document.body.classList.add("fade-out");
 
-            window.setTimeout(() => {
-                window.location.href = "menu.html";
-            }, 800);
+            window.setTimeout(irParaMenu, 900);
         });
     </script>
 

@@ -20,17 +20,44 @@
 
     position:relative;
 
+}
+
+/*==========================
+      BACKGROUND
+==========================*/
+
+.home-background{
+
+    position:absolute;
+
+    inset:0;
+
     background:
-    radial-gradient(circle at center,
-    rgba(79,174,131,.18) 0%,
-    rgba(15,24,22,.95) 40%,
-    #050608 100%);
+
+    linear-gradient(
+        rgba(5,8,12,.60),
+        rgba(5,8,12,.82)
+    ),
+
+    url("../assets/images/background.png");
+
+    background-size:cover;
+
+    background-position:center;
+
+    background-repeat:no-repeat;
+
+    transform:scale(1.03);
+
+    animation:backgroundMove 30s ease-in-out infinite alternate;
 
 }
 
-/* Névoa */
+/*==========================
+      NÉVOA
+==========================*/
 
-.home-page::before{
+.home-background::before{
 
     content:"";
 
@@ -41,20 +68,18 @@
     background:
 
     radial-gradient(circle at center,
-    rgba(79,174,131,.20),
-    transparent 55%),
 
-    radial-gradient(circle at top,
-    rgba(255,216,77,.05),
-    transparent 50%);
+    rgba(79,174,131,.18),
+
+    transparent 65%);
 
     animation:mist 10s ease-in-out infinite;
 
-    pointer-events:none;
-
 }
 
-/* Vinheta */
+/*==========================
+      VINHETA
+==========================*/
 
 .home-page::after{
 
@@ -67,8 +92,10 @@
     background:
 
     radial-gradient(circle,
-    transparent 40%,
-    rgba(0,0,0,.35) 100%);
+
+    transparent 45%,
+
+    rgba(0,0,0,.45) 100%);
 
     pointer-events:none;
 
@@ -102,13 +129,51 @@
 
     margin:0 auto 40px;
 
+    position:relative;
+
+    z-index:2;
+
     animation:
 
-        logoFloat 6s ease-in-out infinite,
+    logoFloat 6s ease-in-out infinite,
 
-        logoRotate 10s ease-in-out infinite,
+    logoRotate 12s ease-in-out infinite,
 
-        logoGlow 4s ease-in-out infinite;
+    logoGlow 4s ease-in-out infinite;
+
+}
+
+/* Halo */
+
+.home-logo::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:280px;
+
+    height:280px;
+
+    left:50%;
+
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    background:
+
+    radial-gradient(circle,
+
+    rgba(79,174,131,.35),
+
+    transparent 70%);
+
+    filter:blur(45px);
+
+    z-index:-1;
+
+    animation:halo 6s ease-in-out infinite;
 
 }
 
@@ -120,7 +185,7 @@
 
     font-family:'Cinzel',serif;
 
-    font-size:clamp(72px,8vw,120px);
+    font-size:clamp(80px,8vw,125px);
 
     letter-spacing:14px;
 
@@ -130,11 +195,11 @@
 
     text-shadow:
 
-        0 0 12px rgba(255,216,77,.55),
+    0 0 12px rgba(255,216,77,.60),
 
-        0 0 30px rgba(255,216,77,.35),
+    0 0 40px rgba(255,216,77,.35),
 
-        0 0 80px rgba(79,174,131,.18);
+    0 0 90px rgba(79,174,131,.15);
 
 }
 
@@ -144,17 +209,15 @@
 
 .home-subtitle{
 
-    margin-top:24px;
+    margin-top:25px;
 
-    color:var(--text-soft);
+    color:#ECECEC;
 
-    font-size:30px;
-
-    line-height:1.7;
+    font-size:28px;
 
     text-shadow:
 
-        0 0 15px rgba(255,255,255,.08);
+    0 0 12px rgba(0,0,0,.8);
 
 }
 
@@ -168,9 +231,9 @@
 
     overflow:hidden;
 
-    margin-top:60px;
+    margin-top:55px;
 
-    padding:20px 70px;
+    padding:20px 75px;
 
     border:none;
 
@@ -181,18 +244,20 @@
     background:
 
     linear-gradient(
-        180deg,
-        var(--gold),
-        var(--gold-dark)
+
+    180deg,
+
+    var(--gold),
+
+    var(--gold-dark)
+
     );
 
     color:#111;
 
     font-family:'Cinzel',serif;
 
-    font-size:21px;
-
-    font-weight:bold;
+    font-size:20px;
 
     letter-spacing:4px;
 
@@ -200,11 +265,9 @@
 
     box-shadow:
 
-        0 0 25px rgba(255,216,77,.30);
+    0 0 25px rgba(255,216,77,.35);
 
 }
-
-/* brilho passando */
 
 .enter-button::before{
 
@@ -216,7 +279,7 @@
 
     left:-120%;
 
-    width:60%;
+    width:45%;
 
     height:100%;
 
@@ -224,25 +287,23 @@
 
     linear-gradient(
 
-        90deg,
+    90deg,
 
-        transparent,
+    transparent,
 
-        rgba(255,255,255,.65),
+    rgba(255,255,255,.75),
 
-        transparent
-
-    );
+    transparent);
 
     transform:skewX(-25deg);
 
-    transition:.7s;
+    transition:.8s;
 
 }
 
 .enter-button:hover::before{
 
-    left:160%;
+    left:180%;
 
 }
 
@@ -250,21 +311,15 @@
 
     transform:
 
-        translateY(-5px)
+    translateY(-4px)
 
-        scale(1.05);
+    scale(1.04);
 
     box-shadow:
 
-        0 0 35px rgba(255,216,77,.70),
+    0 0 40px rgba(255,216,77,.75),
 
-        0 0 70px rgba(79,174,131,.22);
-
-}
-
-.enter-button:active{
-
-    transform:scale(.97);
+    0 0 80px rgba(79,174,131,.20);
 
 }
 
@@ -272,9 +327,25 @@
       ANIMAÇÕES
 ==========================*/
 
+@keyframes backgroundMove{
+
+    from{
+
+        transform:scale(1.03);
+
+    }
+
+    to{
+
+        transform:scale(1.08);
+
+    }
+
+}
+
 @keyframes logoFloat{
 
-    0%{
+    0%,100%{
 
         transform:translateY(0);
 
@@ -286,17 +357,11 @@
 
     }
 
-    100%{
-
-        transform:translateY(0);
-
-    }
-
 }
 
 @keyframes logoRotate{
 
-    0%{
+    0%,100%{
 
         rotate:-1deg;
 
@@ -308,17 +373,11 @@
 
     }
 
-    100%{
-
-        rotate:-1deg;
-
-    }
-
 }
 
 @keyframes logoGlow{
 
-    0%{
+    0%,100%{
 
         filter:
 
@@ -336,11 +395,23 @@
 
     }
 
-    100%{
+}
 
-        filter:
+@keyframes halo{
 
-        drop-shadow(0 0 15px rgba(79,174,131,.45));
+    0%,100%{
+
+        transform:translate(-50%,-50%) scale(.9);
+
+        opacity:.5;
+
+    }
+
+    50%{
+
+        transform:translate(-50%,-50%) scale(1.15);
+
+        opacity:1;
 
     }
 
@@ -348,27 +419,15 @@
 
 @keyframes mist{
 
-    0%{
+    0%,100%{
 
-        opacity:.8;
-
-        transform:scale(1);
+        opacity:.7;
 
     }
 
     50%{
 
         opacity:1;
-
-        transform:scale(1.08);
-
-    }
-
-    100%{
-
-        opacity:.8;
-
-        transform:scale(1);
 
     }
 
@@ -387,6 +446,8 @@
     }
 
     .home-title{
+
+        font-size:60px;
 
         letter-spacing:6px;
 

@@ -1,73 +1,96 @@
+//==============================
+// TELA INICIAL
+//==============================
+
 const enterButton = document.getElementById("enter");
 
-enterButton.addEventListener("click", () => {
+if (enterButton) {
 
-    document.body.classList.add("opening");
+    enterButton.addEventListener("click", () => {
 
-    setTimeout(() => {
+        document.body.classList.add("opening");
 
-        window.location.href = "menu.html";
+        setTimeout(() => {
 
-    },1200);
+            window.location.href = "menu.html";
 
-});
+        }, 1200);
+
+    });
+
+}
+
+//==============================
+// MENU MOBILE
+//==============================
+
 const mobileMenuButton = document.getElementById("mobile-menu-button");
 const headerMenu = document.getElementById("header-menu");
 
 if (mobileMenuButton && headerMenu) {
+
     mobileMenuButton.addEventListener("click", () => {
+
         headerMenu.classList.toggle("open");
+
     });
+
 }
-/*==================================
-        HISTÓRIA DINÂMICA
-==================================*/
+
+//==============================
+// HISTÓRIA
+//==============================
 
 const eras = document.querySelectorAll(".era");
 const bookContent = document.getElementById("bookContent");
 
-async function carregarHistoria(arquivo){
+if (eras.length > 0 && bookContent) {
 
-    if(!bookContent) return;
+    async function carregarHistoria(arquivo) {
 
-    try{
+        try {
 
-        const resposta = await fetch("Historia/" + arquivo);
+            const resposta = await fetch("Historia/" + arquivo);
 
-        const html = await resposta.text();
+            if (!resposta.ok) {
 
-        bookContent.classList.remove("show");
+                throw new Error("Arquivo não encontrado");
 
-        setTimeout(()=>{
+            }
+
+            const html = await resposta.text();
 
             bookContent.innerHTML = html;
 
-            bookContent.classList.add("show");
+        }
 
-        },150);
+        catch (erro) {
+
+            console.error(erro);
+
+            bookContent.innerHTML = `
+                <h2>Erro</h2>
+                <p>Não foi possível carregar esta era.</p>
+            `;
+
+        }
 
     }
 
-    catch{
+    eras.forEach(botao => {
 
-        bookContent.innerHTML="<h2>Erro</h2><p>Não foi possível carregar esta era.</p>";
+        botao.addEventListener("click", () => {
 
-    }
+            eras.forEach(e => e.classList.remove("active"));
 
-}
+            botao.classList.add("active");
 
-eras.forEach(botao=>{
+            carregarHistoria(botao.dataset.file);
 
-    botao.addEventListener("click",()=>{
-
-        eras.forEach(e=>e.classList.remove("active"));
-
-        botao.classList.add("active");
-
-        carregarHistoria(botao.dataset.file);
+        });
 
     });
 
-});
+    carregarHistoria("primeiro-sonho.html");
 
-carregarHistoria("primeiro-sonho.html");
+}

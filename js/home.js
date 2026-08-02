@@ -1,26 +1,43 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
     const enterButton = document.getElementById("enterButton");
-    const music = document.getElementById("bgMusic");
+    const backgroundMusic = document.getElementById("bgMusic");
 
-    if (!enterButton) return;
+    if (!enterButton) {
+        console.error("O botão #enterButton não foi encontrado.");
+        return;
+    }
 
     enterButton.addEventListener("click", async () => {
-        if (music) {
+        enterButton.disabled = true;
+
+        if (backgroundMusic) {
             try {
-                await music.play();
+                backgroundMusic.volume = 0.25;
+
+                await backgroundMusic.play();
 
                 localStorage.setItem(
                     "wonderlandMusicEnabled",
                     "true"
                 );
+
+                localStorage.setItem(
+                    "wonderlandMusicTime",
+                    String(backgroundMusic.currentTime)
+                );
             } catch (error) {
-                console.warn("A música não pôde ser iniciada.", error);
+                console.error(
+                    "Não foi possível reproduzir a música:",
+                    error
+                );
             }
         }
 
         document.body.classList.add("fade-out");
 
-        setTimeout(() => {
+        window.setTimeout(() => {
             window.location.href = "menu.html";
         }, 800);
     });

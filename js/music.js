@@ -1,32 +1,51 @@
-const music = document.getElementById("bgMusic");
+"use strict";
 
-if (music) {
-    const savedTime = Number(localStorage.getItem("wonderlandMusicTime")) || 0;
-    const musicEnabled = localStorage.getItem("wonderlandMusicEnabled");
+document.addEventListener("DOMContentLoaded", () => {
+    const backgroundMusic = document.getElementById("bgMusic");
 
-    music.volume = 0.25;
-
-    if (savedTime > 0) {
-        music.currentTime = savedTime;
+    if (!backgroundMusic) {
+        return;
     }
 
-    if (musicEnabled === "true") {
-        music.play().catch(() => {
-            // O navegador pode bloquear até o usuário interagir.
+    backgroundMusic.volume = 0.25;
+
+    const savedTime = Number(
+        localStorage.getItem("wonderlandMusicTime")
+    );
+
+    const musicEnabled =
+        localStorage.getItem("wonderlandMusicEnabled") === "true";
+
+    backgroundMusic.addEventListener("loadedmetadata", () => {
+        if (
+            Number.isFinite(savedTime) &&
+            savedTime > 0 &&
+            savedTime < backgroundMusic.duration
+        ) {
+            backgroundMusic.currentTime = savedTime;
+        }
+    });
+
+    if (musicEnabled) {
+        backgroundMusic.play().catch(() => {
+            /*
+             * Alguns navegadores bloqueiam o áudio até o
+             * usuário clicar na página.
+             */
         });
     }
 
-    music.addEventListener("timeupdate", () => {
+    backgroundMusic.addEventListener("timeupdate", () => {
         localStorage.setItem(
             "wonderlandMusicTime",
-            String(music.currentTime)
+            String(backgroundMusic.currentTime)
         );
     });
 
     window.addEventListener("beforeunload", () => {
         localStorage.setItem(
             "wonderlandMusicTime",
-            String(music.currentTime)
+            String(backgroundMusic.currentTime)
         );
     });
-}
+});

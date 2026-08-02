@@ -9,3 +9,11 @@ if (enterButton) {
         }, 900);
     });
 }
+const mobileMenuButton = document.getElementById("mobile-menu-button");
+const headerMenu = document.getElementById("header-menu");
+
+if (mobileMenuButton && headerMenu) {
+    mobileMenuButton.addEventListener("click", () => {
+        headerMenu.classList.toggle("open");
+    });
+}

@@ -423,4 +423,506 @@ body.leaving {
     .main-menu a {
         font-size: 16px;
     }
+}/* =========================================
+   PÁGINAS INTERNAS
+========================================= */
+
+.internal-page {
+    min-height: 100vh;
+    overflow-x: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 10%,
+            rgba(79, 174, 131, 0.17),
+            transparent 38%
+        ),
+        linear-gradient(
+            180deg,
+            #0d1418 0%,
+            #080c10 55%,
+            #050709 100%
+        );
+
+    color: #f3f3f3;
+}
+
+.internal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.35),
+            transparent 20%,
+            transparent 80%,
+            rgba(0, 0, 0, 0.35)
+        );
+}
+
+/* Cabeçalho */
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+
+    min-height: 76px;
+    padding: 12px 6%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+
+    background: rgba(5, 9, 12, 0.88);
+    border-bottom: 1px solid rgba(255, 210, 46, 0.18);
+
+    backdrop-filter: blur(14px);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    color: #ffd22e;
+
+    font-family: "Cinzel", serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.header-logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 0 8px rgba(79, 174, 131, 0.8));
+}
+
+.header-menu {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.header-menu a {
+    position: relative;
+
+    padding: 10px 0;
+
+    color: #cdd1d5;
+
+    font-family: "Cinzel", serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    transition:
+        color 0.25s ease,
+        text-shadow 0.25s ease;
+}
+
+.header-menu a::after {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+
+    width: 0;
+    height: 1px;
+
+    background: #ffd22e;
+
+    transform: translateX(-50%);
+
+    transition: width 0.25s ease;
+}
+
+.header-menu a:hover,
+.header-menu a.active {
+    color: #ffd22e;
+
+    text-shadow:
+        0 0 10px rgba(255, 210, 46, 0.35);
+}
+
+.header-menu a:hover::after,
+.header-menu a.active::after {
+    width: 100%;
+}
+
+.mobile-menu-button {
+    display: none;
+
+    color: #ffd22e;
+    background: transparent;
+    border: none;
+
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Conteúdo */
+
+.page-content {
+    position: relative;
+    z-index: 5;
+
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 80px 0 60px;
+}
+
+.page-hero {
+    max-width: 780px;
+    margin: 0 auto 55px;
+
+    text-align: center;
+
+    animation: pageEntrance 1s ease both;
+}
+
+.section-symbol {
+    display: block;
+    margin-bottom: 12px;
+
+    color: #4fae83;
+
+    font-size: 22px;
+
+    text-shadow:
+        0 0 14px rgba(79, 174, 131, 0.85);
+}
+
+.page-label {
+    color: #ffd22e;
+
+    font-family: "Cinzel", serif;
+    font-size: 13px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+
+.page-hero h1 {
+    margin-top: 10px;
+
+    color: #f7f7f7;
+
+    font-family: "Cinzel", serif;
+    font-size: clamp(48px, 9vw, 88px);
+    letter-spacing: 8px;
+    text-transform: uppercase;
+
+    text-shadow:
+        0 0 25px rgba(79, 174, 131, 0.22);
+}
+
+.page-description {
+    max-width: 680px;
+    margin: 18px auto 0;
+
+    color: #c8cdd0;
+
+    font-family: "Cormorant Garamond", serif;
+    font-size: 23px;
+    line-height: 1.6;
+}
+
+/* Painel estilo grimório */
+
+.grimoire-panel {
+    position: relative;
+
+    padding: 55px clamp(24px, 6vw, 75px);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18, 28, 31, 0.96),
+            rgba(7, 11, 14, 0.97)
+        );
+
+    border: 1px solid rgba(255, 210, 46, 0.24);
+    border-radius: 4px;
+
+    box-shadow:
+        0 24px 65px rgba(0, 0, 0, 0.45),
+        inset 0 0 45px rgba(79, 174, 131, 0.025);
+
+    animation: pageEntrance 1s 0.15s ease both;
+}
+
+.grimoire-panel::before,
+.grimoire-panel::after {
+    content: "";
+
+    position: absolute;
+
+    width: 55px;
+    height: 55px;
+
+    border-color: rgba(255, 210, 46, 0.65);
+}
+
+.grimoire-panel::before {
+    top: 12px;
+    left: 12px;
+
+    border-top: 2px solid;
+    border-left: 2px solid;
+}
+
+.grimoire-panel::after {
+    right: 12px;
+    bottom: 12px;
+
+    border-right: 2px solid;
+    border-bottom: 2px solid;
+}
+
+.grimoire-panel h2 {
+    margin-bottom: 24px;
+
+    color: #ffd22e;
+
+    font-family: "Cinzel", serif;
+    font-size: clamp(28px, 5vw, 45px);
+    letter-spacing: 4px;
+    text-align: center;
+}
+
+.grimoire-panel > p {
+    max-width: 800px;
+    margin: 0 auto 16px;
+
+    color: #d4d7d9;
+
+    font-family: "Cormorant Garamond", serif;
+    font-size: 21px;
+    line-height: 1.7;
+    text-align: center;
+}
+
+.panel-decoration {
+    color: rgba(79, 174, 131, 0.78);
+
+    font-size: 15px;
+    letter-spacing: 8px;
+    text-align: center;
+}
+
+.panel-decoration-top {
+    margin-bottom: 28px;
+}
+
+.panel-decoration-bottom {
+    margin-top: 35px;
+}
+
+/* Cards das eras */
+
+.era-grid {
+    margin-top: 42px;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.era-card {
+    min-height: 145px;
+    padding: 24px;
+
+    display: flex;
+    align-items: center;
+    gap: 22px;
+
+    color: #f1f1f1;
+    text-decoration: none;
+
+    background:
+        linear-gradient(
+            110deg,
+            rgba(255, 255, 255, 0.025),
+            rgba(79, 174, 131, 0.025)
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    transition:
+        transform 0.3s ease,
+        border-color 0.3s ease,
+        background 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.era-card:hover {
+    transform: translateY(-5px);
+
+    border-color: rgba(255, 210, 46, 0.48);
+
+    background:
+        linear-gradient(
+            110deg,
+            rgba(255, 210, 46, 0.055),
+            rgba(79, 174, 131, 0.075)
+        );
+
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.28);
+}
+
+.era-number {
+    min-width: 54px;
+    min-height: 54px;
+
+    display: grid;
+    place-items: center;
+
+    color: #ffd22e;
+
+    font-family: "Cinzel", serif;
+    font-size: 25px;
+
+    border: 1px solid rgba(255, 210, 46, 0.4);
+
+    transform: rotate(45deg);
+}
+
+.era-number::first-line {
+    transform: rotate(-45deg);
+}
+
+.era-card div {
+    text-align: left;
+}
+
+.era-card h3 {
+    margin-bottom: 7px;
+
+    color: #ffd22e;
+
+    font-family: "Cinzel", serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+.era-card p {
+    color: #bfc4c7;
+
+    font-family: "Cormorant Garamond", serif;
+    font-size: 18px;
+    line-height: 1.4;
+}
+
+.return-link {
+    width: fit-content;
+    margin: 38px auto 0;
+
+    display: block;
+
+    color: #aeb5b9;
+
+    font-family: "Cinzel", serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-decoration: none;
+    text-transform: uppercase;
+
+    transition:
+        color 0.25s ease,
+        text-shadow 0.25s ease;
+}
+
+.return-link:hover {
+    color: #ffd22e;
+
+    text-shadow:
+        0 0 10px rgba(255, 210, 46, 0.3);
+}
+
+@keyframes pageEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Celular */
+
+@media (max-width: 800px) {
+    .site-header {
+        padding: 12px 20px;
+    }
+
+    .mobile-menu-button {
+        display: block;
+    }
+
+    .header-menu {
+        position: absolute;
+        top: 76px;
+        left: 0;
+
+        width: 100%;
+        padding: 20px;
+
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+
+        background: rgba(5, 9, 12, 0.97);
+        border-bottom: 1px solid rgba(255, 210, 46, 0.2);
+    }
+
+    .header-menu.open {
+        display: flex;
+    }
+
+    .page-content {
+        padding-top: 55px;
+    }
+
+    .era-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .brand span {
+        display: none;
+    }
+
+    .page-hero h1 {
+        letter-spacing: 4px;
+    }
+
+    .page-description {
+        font-size: 20px;
+    }
+
+    .grimoire-panel {
+        padding: 45px 22px;
+    }
+
+    .era-card {
+        align-items: flex-start;
+    }
 }

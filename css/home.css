@@ -3,10 +3,12 @@
 ==================================================*/
 
 /*==========================
-        HOME
+            HOME
 ==========================*/
 
 .home-page{
+
+    position:relative;
 
     display:flex;
 
@@ -14,16 +16,16 @@
 
     align-items:center;
 
+    width:100%;
+
     min-height:100vh;
 
     overflow:hidden;
 
-    position:relative;
-
 }
 
 /*==========================
-      BACKGROUND
+         BACKGROUND
 ==========================*/
 
 .home-background{
@@ -34,14 +36,14 @@
 
     z-index:0;
 
-    background:
+    background-image:
 
-    linear-gradient(
-        rgba(5,8,12,.45),
-        rgba(5,8,12,.70)
-    ),
+        linear-gradient(
+            rgba(5,8,12,.45),
+            rgba(5,8,12,.70)
+        ),
 
-    url("../assets/images/background.png");
+        url("../assets/images/background.png");
 
     background-size:cover;
 
@@ -49,13 +51,17 @@
 
     background-repeat:no-repeat;
 
+    animation:backgroundMove 40s ease-in-out infinite alternate;
+
+    transform:scale(1.05);
+
 }
 
 /*==========================
-      NÉVOA
+           NÉVOA
 ==========================*/
 
-.home-background::before{
+.home-background::after{
 
     content:"";
 
@@ -65,123 +71,92 @@
 
     background:
 
-    radial-gradient(circle at center,
+        radial-gradient(circle at center,
+        rgba(79,174,131,.18),
+        transparent 60%);
 
-    rgba(79,174,131,.18),
-
-    transparent 65%);
+    filter:blur(45px);
 
     animation:mist 10s ease-in-out infinite;
 
 }
 
 /*==========================
-      VINHETA
+         VINHETA
 ==========================*/
 
 .home-page::after{
 
     content:"";
 
-    position:absolute;
+    position:fixed;
 
     inset:0;
 
-    background:
-
-    radial-gradient(circle,
-
-    transparent 45%,
-
-    rgba(0,0,0,.45) 100%);
+    z-index:2;
 
     pointer-events:none;
+
+    background:
+
+        radial-gradient(circle,
+        transparent 45%,
+        rgba(0,0,0,.55) 100%);
 
 }
 
 /*==========================
-      CONTAINER
+        CONTAINER
 ==========================*/
 
 .home-container{
 
-    position: relative;
-    z-index: 5;
+    position:relative;
 
-    width: min(1100px, 90%);
-    margin: 0 auto;
+    z-index:10;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    width:100%;
 
-    text-align: center;
+    max-width:1200px;
 
-    animation: fadeUp 1.4s ease;
+    margin:auto;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+
+    padding:0 40px;
+
+    animation:fadeUp 1.2s ease;
 
 }
 
 /*==========================
-        LOGO
+            LOGO
 ==========================*/
 
 .home-logo{
 
-    width:240px;
+    width:220px;
 
-    margin:0 auto 40px;
-
-    position:relative;
-
-    z-index:2;
+    margin-bottom:35px;
 
     animation:
 
-    logoFloat 6s ease-in-out infinite,
+        logoFloat 6s ease-in-out infinite,
 
-    logoRotate 12s ease-in-out infinite,
-
-    logoGlow 4s ease-in-out infinite;
-
-}
-
-/* Halo */
-
-.home-logo::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:280px;
-
-    height:280px;
-
-    left:50%;
-
-    top:50%;
-
-    transform:translate(-50%,-50%);
-
-    background:
-
-    radial-gradient(circle,
-
-    rgba(79,174,131,.35),
-
-    transparent 70%);
-
-    filter:blur(45px);
-
-    z-index:-1;
-
-    animation:halo 6s ease-in-out infinite;
+        logoGlow 4s ease-in-out infinite;
 
 }
 
 /*==========================
-        TÍTULO
+            TÍTULO
 ==========================*/
 
 .home-title{
@@ -190,25 +165,28 @@
 
     text-align:center;
 
+    margin:0 auto;
+
     font-family:'Cinzel',serif;
 
-    font-size:clamp(80px,8vw,125px);
+    font-size:clamp(72px,8vw,118px);
 
-    letter-spacing:14px;
+    letter-spacing:10px;
 
     color:var(--gold);
 
-    text-transform:uppercase;
-
     text-shadow:
-        0 0 12px rgba(255,216,77,.60),
-        0 0 40px rgba(255,216,77,.35),
-        0 0 90px rgba(79,174,131,.15);
+
+        0 0 15px rgba(255,216,77,.55),
+
+        0 0 35px rgba(255,216,77,.30),
+
+        0 0 70px rgba(79,174,131,.18);
 
 }
 
 /*==========================
-      SUBTÍTULO
+          SUBTÍTULO
 ==========================*/
 
 .home-subtitle{
@@ -221,17 +199,18 @@
 
     color:#ECECEC;
 
-    font-size:28px;
+    font-size:30px;
 
     line-height:1.5;
 
     text-shadow:
-        0 0 12px rgba(0,0,0,.8);
+
+        0 2px 12px rgba(0,0,0,.8);
 
 }
 
 /*==========================
-        BOTÃO
+            BOTÃO
 ==========================*/
 
 .enter-button{
@@ -242,39 +221,37 @@
 
     margin-top:55px;
 
-    padding:20px 75px;
+    padding:20px 80px;
 
     border:none;
 
-    border-radius:60px;
-
-    cursor:pointer;
+    border-radius:999px;
 
     background:
 
-    linear-gradient(
-
-    180deg,
-
-    var(--gold),
-
-    var(--gold-dark)
-
-    );
+        linear-gradient(
+            180deg,
+            var(--gold),
+            var(--gold-dark)
+        );
 
     color:#111;
 
     font-family:'Cinzel',serif;
 
-    font-size:20px;
+    font-size:21px;
+
+    font-weight:bold;
 
     letter-spacing:4px;
+
+    cursor:pointer;
 
     transition:.35s;
 
     box-shadow:
 
-    0 0 25px rgba(255,216,77,.35);
+        0 0 25px rgba(255,216,77,.35);
 
 }
 
@@ -288,21 +265,18 @@
 
     left:-120%;
 
-    width:45%;
+    width:60%;
 
     height:100%;
 
     background:
 
-    linear-gradient(
-
-    90deg,
-
-    transparent,
-
-    rgba(255,255,255,.75),
-
-    transparent);
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.75),
+            transparent
+        );
 
     transform:skewX(-25deg);
 
@@ -312,7 +286,7 @@
 
 .enter-button:hover::before{
 
-    left:180%;
+    left:170%;
 
 }
 
@@ -320,33 +294,49 @@
 
     transform:
 
-    translateY(-4px)
+        translateY(-4px)
 
-    scale(1.04);
+        scale(1.04);
 
     box-shadow:
 
-    0 0 40px rgba(255,216,77,.75),
+        0 0 40px rgba(255,216,77,.8),
 
-    0 0 80px rgba(79,174,131,.20);
+        0 0 70px rgba(79,174,131,.25);
 
 }
 
 /*==========================
-      ANIMAÇÕES
+          ANIMAÇÕES
 ==========================*/
 
 @keyframes backgroundMove{
 
     from{
 
-        transform:scale(1.03);
+        transform:scale(1.05);
 
     }
 
     to{
 
-        transform:scale(1.08);
+        transform:scale(1.12);
+
+    }
+
+}
+
+@keyframes mist{
+
+    0%,100%{
+
+        opacity:.6;
+
+    }
+
+    50%{
+
+        opacity:1;
 
     }
 
@@ -368,29 +358,13 @@
 
 }
 
-@keyframes logoRotate{
-
-    0%,100%{
-
-        rotate:-1deg;
-
-    }
-
-    50%{
-
-        rotate:1deg;
-
-    }
-
-}
-
 @keyframes logoGlow{
 
     0%,100%{
 
         filter:
 
-        drop-shadow(0 0 15px rgba(79,174,131,.45));
+            drop-shadow(0 0 15px rgba(79,174,131,.45));
 
     }
 
@@ -398,65 +372,29 @@
 
         filter:
 
-        drop-shadow(0 0 35px rgba(79,174,131,.95))
+            drop-shadow(0 0 35px rgba(79,174,131,.9))
 
-        drop-shadow(0 0 90px rgba(79,174,131,.35));
-
-    }
-
-}
-
-@keyframes halo{
-
-    0%,100%{
-
-        transform:translate(-50%,-50%) scale(.9);
-
-        opacity:.5;
-
-    }
-
-    50%{
-
-        transform:translate(-50%,-50%) scale(1.15);
-
-        opacity:1;
-
-    }
-
-}
-
-@keyframes mist{
-
-    0%,100%{
-
-        opacity:.7;
-
-    }
-
-    50%{
-
-        opacity:1;
+            drop-shadow(0 0 80px rgba(79,174,131,.35));
 
     }
 
 }
 
 /*==========================
-      RESPONSIVO
+         RESPONSIVO
 ==========================*/
 
-@media(max-width:700px){
+@media(max-width:768px){
 
     .home-logo{
 
-        width:180px;
+        width:170px;
 
     }
 
     .home-title{
 
-        font-size:60px;
+        font-size:56px;
 
         letter-spacing:6px;
 
@@ -471,6 +409,8 @@
     .enter-button{
 
         width:100%;
+
+        max-width:350px;
 
     }
 

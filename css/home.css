@@ -6,412 +6,367 @@
             HOME
 ==========================*/
 
-.home-page{
+.home-page {
+    position: relative;
 
-    position:relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-    display:flex;
+    width: 100%;
+    min-height: 100vh;
 
-    justify-content:center;
-
-    align-items:center;
-
-    width:100%;
-
-    min-height:100vh;
-
-    overflow:hidden;
-
+    overflow: hidden;
 }
 
 /*==========================
          BACKGROUND
 ==========================*/
 
-.home-background{
+.home-background {
+    position: fixed;
+    inset: 0;
 
-    position:fixed;
+    z-index: 0;
 
-    inset:0;
-
-    z-index:0;
-
-    background-image:
-
+    background:
         linear-gradient(
-            rgba(5,8,12,.45),
-            rgba(5,8,12,.70)
+            rgba(5, 8, 12, 0.42),
+            rgba(5, 8, 12, 0.68)
         ),
-
         url("../assets/images/background.png");
 
-    background-size:cover;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 
-    background-position:center;
+    transform: scale(1.05);
 
-    background-repeat:no-repeat;
-
-    animation:backgroundMove 40s ease-in-out infinite alternate;
-
-    transform:scale(1.05);
-
+    animation:
+        backgroundMove 40s ease-in-out infinite alternate;
 }
 
 /*==========================
            NÉVOA
 ==========================*/
 
-.home-background::after{
+.home-background::after {
+    content: "";
 
-    content:"";
-
-    position:absolute;
-
-    inset:0;
+    position: absolute;
+    inset: 0;
 
     background:
+        radial-gradient(
+            circle at center,
+            rgba(79, 174, 131, 0.2),
+            transparent 60%
+        );
 
-        radial-gradient(circle at center,
-        rgba(79,174,131,.18),
-        transparent 60%);
+    filter: blur(45px);
 
-    filter:blur(45px);
-
-    animation:mist 10s ease-in-out infinite;
-
+    animation:
+        mist 10s ease-in-out infinite;
 }
 
 /*==========================
          VINHETA
 ==========================*/
 
-.home-page::after{
+.home-page::after {
+    content: "";
 
-    content:"";
+    position: fixed;
+    inset: 0;
 
-    position:fixed;
+    z-index: 4;
 
-    inset:0;
-
-    z-index:2;
-
-    pointer-events:none;
+    pointer-events: none;
 
     background:
-
-        radial-gradient(circle,
-        transparent 45%,
-        rgba(0,0,0,.55) 100%);
-
+        radial-gradient(
+            circle at center,
+            transparent 42%,
+            rgba(0, 0, 0, 0.58) 100%
+        );
 }
 
 /*==========================
         CONTAINER
 ==========================*/
 
-.home-container{
+.home-container {
+    position: relative;
 
-    position:relative;
+    z-index: 10;
 
-    z-index:10;
+    width: min(1200px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 20px;
 
-    width:100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    max-width:1200px;
+    text-align: center;
 
-    margin:auto;
+    transform: translateY(-28px);
 
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    text-align:center;
-
-    padding:0 40px;
-
-    animation:fadeUp 1.2s ease;
-
+    animation:
+        fadeUp 1.2s ease;
 }
 
 /*==========================
             LOGO
 ==========================*/
 
-.home-logo{
+.home-logo {
+    width: 270px;
+    height: auto;
 
-    width:220px;
-
-    margin-bottom:35px;
+    margin: 0 auto 28px;
 
     animation:
-
         logoFloat 6s ease-in-out infinite,
-
         logoGlow 4s ease-in-out infinite;
-
 }
 
 /*==========================
             TÍTULO
 ==========================*/
 
-.home-title{
+.home-title {
+    width: 100%;
+    margin: 0 auto;
 
-    width:100%;
+    text-align: center;
 
-    text-align:center;
+    font-family: var(--font-title);
+    font-size: clamp(68px, 7vw, 102px);
+    line-height: 1.05;
+    letter-spacing: 8px;
 
-    margin:0 auto;
+    color: var(--gold);
 
-    font-family:'Cinzel',serif;
-
-    font-size:clamp(72px,8vw,118px);
-
-    letter-spacing:10px;
-
-    color:var(--gold);
+    text-transform: uppercase;
 
     text-shadow:
-
-        0 0 15px rgba(255,216,77,.55),
-
-        0 0 35px rgba(255,216,77,.30),
-
-        0 0 70px rgba(79,174,131,.18);
-
+        0 0 15px rgba(255, 216, 77, 0.58),
+        0 0 35px rgba(255, 216, 77, 0.32),
+        0 0 70px rgba(79, 174, 131, 0.18);
 }
 
 /*==========================
           SUBTÍTULO
 ==========================*/
 
-.home-subtitle{
+.home-subtitle {
+    width: 100%;
+    margin: 24px auto 0;
 
-    width:100%;
+    text-align: center;
 
-    text-align:center;
+    color: #f4f4f4;
 
-    margin-top:25px;
-
-    color:#ECECEC;
-
-    font-size:30px;
-
-    line-height:1.5;
+    font-size: 30px;
+    line-height: 1.5;
 
     text-shadow:
-
-        0 2px 12px rgba(0,0,0,.8);
-
+        0 2px 12px rgba(0, 0, 0, 0.85);
 }
 
 /*==========================
             BOTÃO
 ==========================*/
 
-.enter-button{
+.enter-button {
+    position: relative;
 
-    position:relative;
+    overflow: hidden;
 
-    overflow:hidden;
+    margin-top: 48px;
+    padding: 22px 90px;
 
-    margin-top:55px;
+    border: 1px solid rgba(255, 239, 164, 0.45);
+    border-radius: 999px;
 
-    padding:20px 80px;
-
-    border:none;
-
-    border-radius:999px;
+    color: #111;
 
     background:
-
         linear-gradient(
             180deg,
+            var(--gold-light),
             var(--gold),
             var(--gold-dark)
         );
 
-    color:#111;
+    font-family: var(--font-title);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 4px;
 
-    font-family:'Cinzel',serif;
-
-    font-size:21px;
-
-    font-weight:bold;
-
-    letter-spacing:4px;
-
-    cursor:pointer;
-
-    transition:.35s;
+    cursor: pointer;
 
     box-shadow:
+        0 0 26px rgba(255, 216, 77, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.5);
 
-        0 0 25px rgba(255,216,77,.35);
-
+    transition:
+        transform 0.35s ease,
+        box-shadow 0.35s ease;
 }
 
-.enter-button::before{
+.enter-button::before {
+    content: "";
 
-    content:"";
+    position: absolute;
+    top: 0;
+    left: -120%;
 
-    position:absolute;
-
-    top:0;
-
-    left:-120%;
-
-    width:60%;
-
-    height:100%;
+    width: 55%;
+    height: 100%;
 
     background:
-
         linear-gradient(
             90deg,
             transparent,
-            rgba(255,255,255,.75),
+            rgba(255, 255, 255, 0.78),
             transparent
         );
 
-    transform:skewX(-25deg);
+    transform: skewX(-25deg);
 
-    transition:.8s;
-
+    transition:
+        left 0.8s ease;
 }
 
-.enter-button:hover::before{
-
-    left:170%;
-
+.enter-button:hover::before {
+    left: 170%;
 }
 
-.enter-button:hover{
-
+.enter-button:hover {
     transform:
-
         translateY(-4px)
-
         scale(1.04);
 
     box-shadow:
+        0 0 42px rgba(255, 216, 77, 0.82),
+        0 0 72px rgba(79, 174, 131, 0.25);
+}
 
-        0 0 40px rgba(255,216,77,.8),
-
-        0 0 70px rgba(79,174,131,.25);
-
+.enter-button:active {
+    transform: scale(0.98);
 }
 
 /*==========================
           ANIMAÇÕES
 ==========================*/
 
-@keyframes backgroundMove{
-
-    from{
-
-        transform:scale(1.05);
-
+@keyframes backgroundMove {
+    from {
+        transform: scale(1.05);
     }
 
-    to{
-
-        transform:scale(1.12);
-
+    to {
+        transform: scale(1.12);
     }
-
 }
 
-@keyframes mist{
-
-    0%,100%{
-
-        opacity:.6;
-
+@keyframes mist {
+    0%,
+    100% {
+        opacity: 0.6;
     }
 
-    50%{
-
-        opacity:1;
-
+    50% {
+        opacity: 1;
     }
-
 }
 
-@keyframes logoFloat{
-
-    0%,100%{
-
-        transform:translateY(0);
-
+@keyframes logoFloat {
+    0%,
+    100% {
+        transform: translateY(0);
     }
 
-    50%{
-
-        transform:translateY(-12px);
-
+    50% {
+        transform: translateY(-12px);
     }
-
 }
 
-@keyframes logoGlow{
-
-    0%,100%{
-
+@keyframes logoGlow {
+    0%,
+    100% {
         filter:
-
-            drop-shadow(0 0 15px rgba(79,174,131,.45));
-
+            drop-shadow(0 0 15px rgba(79, 174, 131, 0.45));
     }
 
-    50%{
-
+    50% {
         filter:
-
-            drop-shadow(0 0 35px rgba(79,174,131,.9))
-
-            drop-shadow(0 0 80px rgba(79,174,131,.35));
-
+            drop-shadow(0 0 35px rgba(79, 174, 131, 0.92))
+            drop-shadow(0 0 80px rgba(79, 174, 131, 0.35));
     }
-
 }
 
 /*==========================
          RESPONSIVO
 ==========================*/
 
-@media(max-width:768px){
-
-    .home-logo{
-
-        width:170px;
-
+@media (max-width: 900px) {
+    .home-container {
+        transform: translateY(-18px);
     }
 
-    .home-title{
-
-        font-size:56px;
-
-        letter-spacing:6px;
-
+    .home-logo {
+        width: 220px;
     }
 
-    .home-subtitle{
-
-        font-size:22px;
-
+    .home-title {
+        font-size: clamp(56px, 9vw, 82px);
+        letter-spacing: 6px;
     }
 
-    .enter-button{
-
-        width:100%;
-
-        max-width:350px;
-
+    .home-subtitle {
+        font-size: 25px;
     }
 
+    .enter-button {
+        padding: 20px 70px;
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-container {
+        width: calc(100% - 24px);
+        padding: 16px 12px;
+
+        transform: translateY(-8px);
+    }
+
+    .home-logo {
+        width: 165px;
+        margin-bottom: 24px;
+    }
+
+    .home-title {
+        font-size: clamp(40px, 13vw, 58px);
+        letter-spacing: 4px;
+    }
+
+    .home-subtitle {
+        margin-top: 18px;
+
+        font-size: 21px;
+    }
+
+    .enter-button {
+        width: min(100%, 340px);
+
+        margin-top: 38px;
+        padding: 18px 30px;
+
+        font-size: 18px;
+    }
 }

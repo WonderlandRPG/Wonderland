@@ -105,15 +105,20 @@
 
 .home-container{
 
-    position:relative;
+    position: relative;
+    z-index: 5;
 
-    z-index:10;
+    width: min(1100px, 90%);
+    margin: 0 auto;
 
-    width:min(900px,90%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
-    text-align:center;
+    text-align: center;
 
-    animation:fadeUp 1.4s ease;
+    animation: fadeUp 1.4s ease;
 
 }
 
@@ -181,6 +186,10 @@
 
 .home-title{
 
+    width:100%;
+
+    text-align:center;
+
     font-family:'Cinzel',serif;
 
     font-size:clamp(80px,8vw,125px);
@@ -192,12 +201,9 @@
     text-transform:uppercase;
 
     text-shadow:
-
-    0 0 12px rgba(255,216,77,.60),
-
-    0 0 40px rgba(255,216,77,.35),
-
-    0 0 90px rgba(79,174,131,.15);
+        0 0 12px rgba(255,216,77,.60),
+        0 0 40px rgba(255,216,77,.35),
+        0 0 90px rgba(79,174,131,.15);
 
 }
 
@@ -207,15 +213,20 @@
 
 .home-subtitle{
 
+    width:100%;
+
+    text-align:center;
+
     margin-top:25px;
 
     color:#ECECEC;
 
     font-size:28px;
 
-    text-shadow:
+    line-height:1.5;
 
-    0 0 12px rgba(0,0,0,.8);
+    text-shadow:
+        0 0 12px rgba(0,0,0,.8);
 
 }
 

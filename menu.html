@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Menu | Wonderland RPG</title>
+
+    <meta
+        name="description"
+        content="Explore o universo do RPG Wonderland."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/images/logo.png"
+    >
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/global.css?v=6">
+    <link rel="stylesheet" href="css/menu.css?v=1">
+</head>
+
+<body class="menu-page">
+
+    <!-- Cenário -->
+    <div
+        class="menu-background"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Partículas -->
+    <div
+        id="particles"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Névoa -->
+    <div
+        class="mist-layer"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Música -->
+    <audio
+        id="bgMusic"
+        loop
+        preload="auto"
+    >
+        <source
+            src="assets/audio/wonderland.mp3"
+            type="audio/mpeg"
+        >
+    </audio>
+
+    <!-- Controle da música -->
+    <button
+        id="musicButton"
+        class="music-button"
+        type="button"
+        aria-label="Pausar música"
+        title="Pausar música"
+    >
+        <span id="musicIcon">♫</span>
+    </button>
+
+    <!-- Conteúdo -->
+    <main class="menu-container">
+
+        <img
+            src="assets/images/logo.png"
+            alt="Símbolo do RPG Wonderland"
+            class="menu-logo"
+        >
+
+        <div class="menu-heading">
+
+            <span class="menu-label">
+                Bem-vindo a
+            </span>
+
+            <h1>
+                Wonderland
+            </h1>
+
+            <p>
+                Escolha um caminho e descubra os segredos do Primeiro Sonho.
+            </p>
+
+        </div>
+
+        <nav
+            class="main-menu"
+            aria-label="Menu principal"
+        >
+
+            <a
+                href="historia.html"
+                class="menu-link"
+            >
+                <span class="menu-symbol">◆</span>
+
+                <span class="menu-link-text">
+                    História
+                </span>
+            </a>
+
+            <a
+                href="#"
+                class="menu-link unavailable"
+                aria-disabled="true"
+            >
+                <span class="menu-symbol">◆</span>
+
+                <span class="menu-link-text">
+                    Mundo
+                </span>
+
+                <small>Em breve</small>
+            </a>
+
+            <a
+                href="#"
+                class="menu-link unavailable"
+                aria-disabled="true"
+            >
+                <span class="menu-symbol">◆</span>
+
+                <span class="menu-link-text">
+                    Raças
+                </span>
+
+                <small>Em breve</small>
+            </a>
+
+            <a
+                href="#"
+                class="menu-link unavailable"
+                aria-disabled="true"
+            >
+                <span class="menu-symbol">◆</span>
+
+                <span class="menu-link-text">
+                    Classes
+                </span>
+
+                <small>Em breve</small>
+            </a>
+
+            <a
+                href="#"
+                class="menu-link unavailable"
+                aria-disabled="true"
+            >
+                <span class="menu-symbol">◆</span>
+
+                <span class="menu-link-text">
+                    Atributos
+                </span>
+
+                <small>Em breve</small>
+            </a>
+
+            <a
+                href="#"
+                class="menu-link unavailable"
+                aria-disabled="true"
+            >
+                <span class="menu-symbol">◆</span>
+
+                <span class="menu-link-text">
+                    Grimório
+                </span>
+
+                <small>Em breve</small>
+            </a>
+
+            <a
+                href="#"
+                class="menu-link unavailable"
+                aria-disabled="true"
+            >
+                <span class="menu-symbol">◆</span>
+
+                <span class="menu-link-text">
+                    Minigames
+                </span>
+
+                <small>Em breve</small>
+            </a>
+
+        </nav>
+
+        <a
+            href="index.html"
+            class="return-link"
+        >
+            ← Voltar à tela inicial
+        </a>
+
+    </main>
+
+    <script src="js/menu.js?v=1"></script>
+
+</body>
+
+</html>

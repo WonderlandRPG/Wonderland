@@ -26,15 +26,22 @@
       BACKGROUND
 ==========================*/
 
-..home-background{
+.home-background{
 
     position:fixed;
 
     inset:0;
 
-    z-index:-10;
+    z-index:0;
 
-    background:url("../assets/images/background.png");
+    background:
+
+    linear-gradient(
+        rgba(5,8,12,.45),
+        rgba(5,8,12,.70)
+    ),
+
+    url("../assets/images/background.png");
 
     background-size:cover;
 
@@ -98,13 +105,13 @@
 
 .home-container{
 
+    position:relative;
+
+    z-index:10;
+
     width:min(900px,90%);
 
     text-align:center;
-
-    position:relative;
-
-    z-index:5;
 
     animation:fadeUp 1.4s ease;
 

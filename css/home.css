@@ -26,30 +26,21 @@
       BACKGROUND
 ==========================*/
 
-.home-background{
+..home-background{
 
-    position:absolute;
+    position:fixed;
 
     inset:0;
 
-    background:
+    z-index:-10;
 
-    linear-gradient(
-        rgba(5,8,12,.60),
-        rgba(5,8,12,.82)
-    ),
-
-    url("../assets/images/background.png");
+    background:url("../assets/images/background.png");
 
     background-size:cover;
 
     background-position:center;
 
     background-repeat:no-repeat;
-
-    transform:scale(1.03);
-
-    animation:backgroundMove 30s ease-in-out infinite alternate;
 
 }
 

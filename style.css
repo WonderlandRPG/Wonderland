@@ -58,18 +58,17 @@ z-index:10;
 
 animation:fade 2s;
 }
-
 .logo{
 
-width:260px;
+    width:280px;
 
-animation:
-float 4s ease-in-out infinite;
+    margin-bottom:25px;
 
-filter:
+    animation:logoFloat 4s ease-in-out infinite,
+              logoGlow 3s ease-in-out infinite;
 
-drop-shadow(0 0 10px #4FAE83)
-drop-shadow(0 0 30px #4FAE83);
+    filter:
+        drop-shadow(0 0 15px rgba(79,174,131,.55));
 
 }
 
@@ -960,4 +959,554 @@ body.internal-page {
 .internal-page #particles {
     position: fixed;
     inset: 0;
+}
+/* ==========================
+   BOTÃO WONDERLAND
+========================== */
+
+.gold-button{
+
+    background:linear-gradient(180deg,#FFD84D,#E5B91F);
+
+    color:#111;
+
+    font-family:'Cinzel',serif;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    letter-spacing:2px;
+
+    border:none;
+
+    border-radius:50px;
+
+    padding:16px 55px;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+    box-shadow:
+        0 0 18px rgba(255,215,70,.35);
+
+}
+
+.gold-button:hover{
+
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 0 30px rgba(255,215,70,.7),
+        0 0 60px rgba(70,255,180,.25);
+
+}
+
+.gold-button:active{
+
+    transform:scale(.96);
+
+}
+/*=============================
+      ANIMAÇÕES DA LOGO
+==============================*/
+
+@keyframes logoFloat{
+
+    0%{
+        transform:translateY(0px);
+    }
+
+    50%{
+        transform:translateY(-12px);
+    }
+
+    100%{
+        transform:translateY(0px);
+    }
+
+}
+
+@keyframes logoGlow{
+
+    0%{
+
+        filter:
+        drop-shadow(0 0 12px rgba(79,174,131,.35));
+
+    }
+
+    50%{
+
+        filter:
+        drop-shadow(0 0 25px rgba(79,174,131,.95))
+        drop-shadow(0 0 60px rgba(79,174,131,.45));
+
+    }
+
+    100%{
+
+        filter:
+        drop-shadow(0 0 12px rgba(79,174,131,.35));
+
+    }
+
+}
+/*======================================
+      ABERTURA DO WONDERLAND
+=======================================*/
+
+body.opening{
+
+    overflow:hidden;
+
+}
+
+body.opening .logo{
+
+    animation:openLogo 1.2s forwards;
+
+}
+
+body.opening .container{
+
+    animation:fadeScreen 1.2s forwards;
+
+}
+
+@keyframes openLogo{
+
+    0%{
+
+        transform:scale(1);
+
+        filter:
+        drop-shadow(0 0 15px rgba(79,174,131,.5));
+
+    }
+
+    40%{
+
+        transform:scale(1.15);
+
+    }
+
+    100%{
+
+        transform:scale(8);
+
+        opacity:0;
+
+        filter:
+
+        drop-shadow(0 0 60px rgba(79,174,131,1))
+
+        drop-shadow(0 0 150px rgba(79,174,131,.8));
+
+    }
+
+}
+
+@keyframes fadeScreen{
+
+    0%{
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        opacity:0;
+
+    }
+
+}
+/*==========================
+        MENU V2
+===========================*/
+
+.menu-page{
+
+display:flex;
+
+justify-content:center;
+
+align-items:center;
+
+height:100vh;
+
+overflow:hidden;
+
+background:
+radial-gradient(circle at center,
+rgba(79,174,131,.12),
+transparent 40%),
+
+linear-gradient(#071015,#030608);
+
+}
+
+.menu-overlay{
+
+position:absolute;
+
+inset:0;
+
+background:
+
+linear-gradient(
+
+90deg,
+
+rgba(0,0,0,.45),
+
+transparent 20%,
+
+transparent 80%,
+
+rgba(0,0,0,.45)
+
+);
+
+pointer-events:none;
+
+}
+
+.menu-container{
+
+position:relative;
+
+z-index:2;
+
+text-align:center;
+
+animation:menuFade 1s;
+
+}
+
+.menu-logo{
+
+width:170px;
+
+margin-bottom:20px;
+
+animation:
+
+logoFloat 5s ease-in-out infinite,
+
+logoGlow 4s ease-in-out infinite;
+
+}
+
+.menu-container h1{
+
+font-family:'Cinzel',serif;
+
+font-size:70px;
+
+letter-spacing:8px;
+
+color:white;
+
+margin-bottom:45px;
+
+}
+
+.menu-container nav{
+
+display:flex;
+
+flex-direction:column;
+
+gap:18px;
+
+}
+
+.menu-container nav a{
+
+font-family:'Cinzel',serif;
+
+font-size:24px;
+
+letter-spacing:3px;
+
+text-decoration:none;
+
+color:white;
+
+transition:.35s;
+
+}
+
+.menu-container nav a:hover{
+
+color:#FFD84D;
+
+transform:translateX(10px);
+
+text-shadow:
+
+0 0 15px rgba(255,215,80,.7);
+
+}
+
+@keyframes menuFade{
+
+from{
+
+opacity:0;
+
+transform:translateY(40px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+/*=================================
+        HISTÓRIA V2
+==================================*/
+
+.history-page{
+
+    background:
+    radial-gradient(circle at center,
+    rgba(79,174,131,.08),
+    transparent 45%),
+
+    linear-gradient(#071015,#030608);
+
+    min-height:100vh;
+
+    color:white;
+
+}
+
+.history-header{
+
+    padding:40px;
+
+    text-align:center;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+}
+
+.historyLogo{
+
+    width:90px;
+
+    margin-bottom:15px;
+
+    animation:
+    logoFloat 5s ease-in-out infinite,
+    logoGlow 4s ease-in-out infinite;
+
+}
+
+.history-header h1{
+
+    font-family:'Cinzel',serif;
+
+    font-size:52px;
+
+    letter-spacing:5px;
+
+}
+
+.backButton{
+
+    position:absolute;
+
+    left:40px;
+
+    top:40px;
+
+    color:#FFD84D;
+
+    text-decoration:none;
+
+    font-family:'Cinzel',serif;
+
+}
+
+.historyContainer{
+
+    width:95%;
+
+    max-width:1450px;
+
+    margin:auto;
+
+    padding:50px 0;
+
+    display:grid;
+
+    grid-template-columns:260px 1fr;
+
+    gap:40px;
+
+}
+
+.timeline{
+
+    background:rgba(255,255,255,.03);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:15px;
+
+    padding:20px;
+
+}
+
+.era{
+
+    width:100%;
+
+    background:none;
+
+    border:none;
+
+    color:white;
+
+    text-align:left;
+
+    padding:15px;
+
+    margin-bottom:8px;
+
+    cursor:pointer;
+
+    border-radius:10px;
+
+    transition:.3s;
+
+    font-family:'Cinzel',serif;
+
+}
+
+.era:hover{
+
+    background:rgba(79,174,131,.15);
+
+    transform:translateX(6px);
+
+}
+
+.era.active{
+
+    background:rgba(255,212,70,.15);
+
+    color:#FFD84D;
+
+}
+
+.book{
+
+    background:rgba(255,255,255,.04);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:20px;
+
+    padding:60px;
+
+    min-height:650px;
+
+    box-shadow:
+
+    0 0 35px rgba(0,0,0,.35);
+
+}
+
+.book h2{
+
+    font-family:'Cinzel',serif;
+
+    font-size:42px;
+
+    margin-bottom:25px;
+
+    color:#FFD84D;
+
+}
+
+.book p{
+
+    font-size:24px;
+
+    line-height:1.8;
+
+    color:#DDD;
+
+}
+/*=============================
+    ANIMAÇÃO DO LIVRO
+==============================*/
+
+#bookContent{
+
+    opacity:0;
+
+    transform:translateY(20px);
+
+    transition:.35s;
+
+}
+
+#bookContent.show{
+
+    opacity:1;
+
+    transform:translateY(0);
+
+}
+
+#bookContent blockquote{
+
+    font-family:'Cormorant Garamond',serif;
+
+    font-size:28px;
+
+    color:#FFD84D;
+
+    font-style:italic;
+
+    margin-bottom:30px;
+
+    border-left:4px solid #FFD84D;
+
+    padding-left:20px;
+
+}
+
+#bookContent p{
+
+    margin-bottom:18px;
+
+    line-height:1.9;
+
+    color:#DDD;
+
+}
+
+#bookContent h2{
+
+    font-size:46px;
+
+    margin-bottom:20px;
+
+    color:#FFD84D;
+
+    font-family:'Cinzel',serif;
+
 }

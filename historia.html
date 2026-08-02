@@ -1,147 +1,86 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>História — Wonderland</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css?v=4">
+<title>História | Wonderland</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="style.css">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap"
-        rel="stylesheet"
-    >
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap" rel="stylesheet">
+
 </head>
 
-<body class="internal-page">
+<body class="history-page">
 
-    <div id="particles"></div>
-    <div class="internal-overlay"></div>
+<header class="history-header">
 
-    <header class="site-header">
+<a href="menu.html" class="backButton">
+← Menu
+</a>
 
-        <a href="menu.html" class="brand">
-            <img
-                src="assets/logo.png"
-                alt="Logo do Wonderland"
-                class="header-logo"
-            >
+<img src="assets/logo.png" class="historyLogo">
 
-            <span>Wonderland</span>
-        </a>
+<h1>História de Wonderland</h1>
 
-        <button
-            class="mobile-menu-button"
-            id="mobile-menu-button"
-            aria-label="Abrir menu"
-        >
-            ☰
-        </button>
+</header>
 
-        <nav class="header-menu" id="header-menu">
-            <a href="historia.html" class="active">História</a>
-            <a href="#">Mundo</a>
-            <a href="#">Raças</a>
-            <a href="#">Classes</a>
-            <a href="#">Atributos</a>
-            <a href="#">Grimório</a>
-        </nav>
+<div class="historyContainer">
 
-    </header>
+<aside class="timeline">
 
-    <main class="page-content">
+<button class="era active" data-file="primeiro-sonho.html">
+Primeiro Sonho
+</button>
 
-        <section class="page-hero">
+<button class="era" data-file="colossos.html">
+Colossos
+</button>
 
-            <span class="section-symbol">◆</span>
+<button class="era" data-file="dragoes.html">
+Dragões
+</button>
 
-            <p class="page-label">Crônicas de Wonderland</p>
+<button class="era" data-file="coroas.html">
+Coroas
+</button>
 
-            <h1>História</h1>
+<button class="era" data-file="cinzas.html">
+Cinzas
+</button>
 
-            <p class="page-description">
-                Os acontecimentos que moldaram os reinos, deram origem às
-                grandes civilizações e transformaram Wonderland para sempre.
-            </p>
+<button class="era" data-file="fraturas.html">
+Fraturas
+</button>
 
-        </section>
+<button class="era" data-file="era-atual.html">
+Era Atual
+</button>
 
-        <section class="grimoire-panel">
+</aside>
 
-            <div class="panel-decoration panel-decoration-top">
-                ◆ ───────── ◆
-            </div>
+<main class="book">
 
-            <h2>As Eras de Wonderland</h2>
+<div id="bookContent">
 
-            <p>
-                A história de Wonderland está dividida em diferentes eras.
-                Cada período representa uma fase importante da criação,
-                ascensão e transformação do mundo.
-            </p>
+Carregando...
 
-            <p>
-                Selecione uma era para conhecer os acontecimentos,
-                personagens e conflitos que definiram aquele período.
-            </p>
+</div>
 
-            <div class="era-grid">
+</main>
 
-                <a href="#" class="era-card">
-                    <span class="era-number">I</span>
+</div>
 
-                    <div>
-                        <h3>A Primeira Era</h3>
-                        <p>O nascimento do mundo e das forças primordiais.</p>
-                    </div>
-                </a>
+</main>
 
-                <a href="#" class="era-card">
-                    <span class="era-number">II</span>
-
-                    <div>
-                        <h3>A Segunda Era</h3>
-                        <p>A ascensão dos povos e dos primeiros reinos.</p>
-                    </div>
-                </a>
-
-                <a href="#" class="era-card">
-                    <span class="era-number">III</span>
-
-                    <div>
-                        <h3>A Terceira Era</h3>
-                        <p>Guerras, alianças e mudanças que abalaram o mundo.</p>
-                    </div>
-                </a>
-
-                <a href="#" class="era-card">
-                    <span class="era-number">IV</span>
-
-                    <div>
-                        <h3>A Era Atual</h3>
-                        <p>O período em que a nova aventura começa.</p>
-                    </div>
-                </a>
-
-            </div>
-
-            <div class="panel-decoration panel-decoration-bottom">
-                ◆ ───────── ◆
-            </div>
-
-        </section>
-
-        <a href="menu.html" class="return-link">
-            ← Voltar ao menu principal
-        </a>
-
-    </main>
-
-    <script src="script.js?v=3"></script>
+</div>
 
 </body>
+
 </html>

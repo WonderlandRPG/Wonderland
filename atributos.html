@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Atributos | Wonderland RPG</title>
+
+    <meta
+        name="description"
+        content="Conheça o sistema de atributos e criação de personagens de Wonderland."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/images/logo.png"
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="css/global.css?v=13">
+    <link rel="stylesheet" href="css/atributos.css?v=13">
+</head>
+
+<body class="attributes-page">
+
+    <div
+        class="attributes-background"
+        aria-hidden="true"
+    ></div>
+
+    <div
+        class="attributes-vignette"
+        aria-hidden="true"
+    ></div>
+
+    <div
+        id="attributeParticles"
+        class="attributes-particles"
+        aria-hidden="true"
+    ></div>
+
+    <audio
+        id="bgMusic"
+        loop
+        preload="auto"
+    >
+        <source
+            src="assets/audio/wonderland.mp3"
+            type="audio/mpeg"
+        >
+    </audio>
+
+    <header class="attributes-topbar">
+
+        <a
+            href="menu.html"
+            class="attributes-topbar-button"
+        >
+            <span aria-hidden="true">
+                ←
+            </span>
+
+            <span>
+                Menu
+            </span>
+        </a>
+
+        <a
+            href="index.html"
+            class="attributes-brand"
+            aria-label="Página inicial de Wonderland"
+        >
+            <img
+                src="assets/images/logo.png"
+                alt=""
+            >
+
+            <span>
+                Wonderland
+            </span>
+        </a>
+
+        <button
+            id="musicButton"
+            class="attributes-topbar-button attributes-music-button"
+            type="button"
+            aria-label="Tocar música"
+            title="Tocar música"
+        >
+            <span
+                id="musicIcon"
+                aria-hidden="true"
+            >
+                ♪
+            </span>
+        </button>
+
+    </header>
+
+    <main class="attributes-main">
+
+        <section class="attributes-hero">
+
+            <div
+                class="attributes-hero-symbol"
+                aria-hidden="true"
+            >
+                ✦
+            </div>
+
+            <div class="attributes-hero-content">
+
+                <span class="attributes-eyebrow">
+                    Sistema de Personagem
+                </span>
+
+                <h1>
+                    Atributos
+                </h1>
+
+                <p>
+                    Os atributos representam as capacidades físicas,
+                    defensivas, mágicas e táticas de cada personagem
+                    dentro de Wonderland.
+                </p>
+
+                <div class="attributes-hero-tags">
+
+                    <span>
+                        6 atributos
+                    </span>
+
+                    <span>
+                        20 pontos iniciais
+                    </span>
+
+                    <span>
+                        100 pontos livres
+                    </span>
+
+                </div>
+
+            </div>
+
+            <aside class="attributes-summary">
+
+                <article>
+                    <span>
+                        Base inicial
+                    </span>
+
+                    <strong>
+                        20
+                    </strong>
+
+                    <small>
+                        Em cada atributo
+                    </small>
+                </article>
+
+                <article>
+                    <span>
+                        Distribuição
+                    </span>
+
+                    <strong>
+                        +100
+                    </strong>
+
+                    <small>
+                        Pontos livres
+                    </small>
+                </article>
+
+                <article>
+                    <span>
+                        Etapa final
+                    </span>
+
+                    <strong>
+                        Raça
+                    </strong>
+
+                    <small>
+                        Bônus raciais
+                    </small>
+                </article>
+
+            </aside>
+
+        </section>
+
+        <section class="attributes-introduction">
+
+            <header class="attributes-section-heading">
+
+                <span class="attributes-eyebrow">
+                    Criação de Personagem
+                </span>
+
+                <h2>
+                    Como os atributos funcionam
+                </h2>
+
+            </header>
+
+            <div class="attributes-introduction-grid">
+
+                <article class="attributes-text-card">
+
+                    <p>
+                        Ao criar um personagem, todos os jogadores
+                        começam com uma base equilibrada de atributos.
+                        Cada atributo inicia com
+                        <strong>20 pontos</strong>, garantindo que
+                        nenhum personagem seja totalmente incapaz em
+                        determinada área.
+                    </p>
+
+                    <p>
+                        Após receber os atributos iniciais, o jogador
+                        ganha <strong>100 pontos adicionais</strong>
+                        para distribuir livremente entre os seis
+                        atributos.
+                    </p>
+
+                    <p>
+                        Essa distribuição permite criar personagens
+                        voltados para diferentes estilos de jogo, como
+                        dano físico, magia, resistência, velocidade,
+                        controle ou suporte.
+                    </p>
+
+                    <p>
+                        Depois da distribuição dos pontos, são
+                        aplicados os <strong>bônus raciais</strong>,
+                        que representam as características naturais da
+                        raça escolhida.
+                    </p>
+
+                    <p>
+                        Esses bônus são adicionados aos valores finais
+                        e podem fortalecer ainda mais o estilo de jogo
+                        desejado.
+                    </p>
+
+                </article>
+
+                <aside class="attributes-rule-card">
+
+                    <span
+                        class="attributes-rule-icon"
+                        aria-hidden="true"
+                    >
+                        ⚖
+                    </span>
+
+                    <h3>
+                        Liberdade de construção
+                    </h3>
+
+                    <p>
+                        Os 100 pontos podem ser distribuídos livremente.
+                        O jogador decide se prefere especializar seu
+                        personagem ou criar uma construção mais
+                        equilibrada.
+                    </p>
+
+                    <div class="attributes-rule-note">
+
+                        <span>
+                            Importante
+                        </span>
+
+                        <p>
+                            Os bônus raciais são aplicados somente
+                            depois da distribuição dos 100 pontos.
+                        </p>
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+        </section>
+
+        <section class="attributes-creation">
+
+            <header class="attributes-section-heading">
+
+                <span class="attributes-eyebrow">
+                    Ordem de criação
+                </span>
+
+                <h2>
+                    Distribuição dos pontos
+                </h2>
+
+                <p>
+                    A criação dos atributos acontece em três etapas.
+                </p>
+
+            </header>
+
+            <div class="attributes-steps">
+
+                <article class="attribute-step">
+
+                    <span class="attribute-step-number">
+                        01
+                    </span>
+
+                    <div class="attribute-step-icon">
+                        20
+                    </div>
+
+                    <div class="attribute-step-content">
+
+                        <span>
+                            Base do personagem
+                        </span>
+
+                        <h3>
+                            Atributos iniciais
+                        </h3>
+
+                        <p>
+                            FOR, DEF, RES, INI, INT e ARC começam com
+                            20 pontos cada.
+                        </p>
+
+                    </div>
+
+                </article>
+
+                <div
+                    class="attribute-step-connector"
+                    aria-hidden="true"
+                >
+                    →
+                </div>
+
+                <article class="attribute-step">
+
+                    <span class="attribute-step-number">
+                        02
+                    </span>
+
+                    <div class="attribute-step-icon">
+                        +100
+                    </div>
+
+                    <div class="attribute-step-content">
+
+                        <span>
+                            Escolha do jogador
+                        </span>
+
+                        <h3>
+                            Pontos livres
+                        </h3>
+
+                        <p>
+                            O jogador distribui 100 pontos livremente
+                            entre os seis atributos.
+                        </p>
+
+                    </div>
+
+                </article>
+
+                <div
+                    class="attribute-step-connector"
+                    aria-hidden="true"
+                >
+                    →
+                </div>
+
+                <article class="attribute-step">
+
+                    <span class="attribute-step-number">
+                        03
+                    </span>
+
+                    <div class="attribute-step-icon">
+                        ✦
+                    </div>
+
+                    <div class="attribute-step-content">
+
+                        <span>
+                            Característica natural
+                        </span>
+
+                        <h3>
+                            Bônus raciais
+                        </h3>
+
+                        <p>
+                            Os pontos concedidos pela raça são
+                            adicionados aos valores anteriores.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <section class="attributes-codex">
+
+            <header class="attributes-section-heading">
+
+                <span class="attributes-eyebrow">
+                    Capacidades do personagem
+                </span>
+
+                <h2>
+                    Os seis atributos
+                </h2>
+
+                <p>
+                    Passe o mouse ou toque em um atributo para ativar
+                    sua animação exclusiva.
+                </p>
+
+            </header>
+
+            <div class="attributes-grid">
+
+                <article
+                    class="attribute-details-card attribute-for"
+                    style="--attribute-color: 207, 80, 69;"
+                    data-attribute="for"
+                    tabindex="0"
+                >
+
+                    <div
+                        class="attribute-animation"
+                        aria-hidden="true"
+                    >
+                        <span class="attribute-energy attribute-energy-one"></span>
+                        <span class="attribute-energy attribute-energy-two"></span>
+                        <span class="attribute-energy attribute-energy-three"></span>
+                        <span class="attribute-ring attribute-ring-one"></span>
+                        <span class="attribute-ring attribute-ring-two"></span>
+                        <span class="attribute-crack attribute-crack-one"></span>
+                        <span class="attribute-crack attribute-crack-two"></span>
+                    </div>
+
+                    <div class="attribute-details-header">
+
+                        <span class="attribute-abbreviation">
+                            FOR
+                        </span>
+
+                        <div class="attribute-details-title">
+
+                            <span>
+                                Atributo físico
+                            </span>
+
+                            <h3>
+                                Força
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Aumenta o dano de ataques físicos e o poder de
+                        habilidades baseadas em força.
+                    </p>
+
+                    <div class="attribute-functions">
+
+                        <span>
+                            Dano físico
+                        </span>
+
+                        <span>
+                            Poder corporal
+                        </span>
+
+                        <span>
+                            Habilidades de força
+                        </span>
+
+                    </div>
+
+                </article>
+
+                <article
+                    class="attribute-details-card attribute-def"
+                    style="--attribute-color: 105, 138, 169;"
+                    data-attribute="def"
+                    tabindex="0"
+                >
+
+                    <div
+                        class="attribute-animation"
+                        aria-hidden="true"
+                    >
+                        <span class="attribute-energy attribute-energy-one"></span>
+                        <span class="attribute-energy attribute-energy-two"></span>
+                        <span class="attribute-energy attribute-energy-three"></span>
+                        <span class="attribute-ring attribute-ring-one"></span>
+                        <span class="attribute-ring attribute-ring-two"></span>
+                        <span class="attribute-shield attribute-shield-one"></span>
+                        <span class="attribute-shield attribute-shield-two"></span>
+                    </div>
+
+                    <div class="attribute-details-header">
+
+                        <span class="attribute-abbreviation">
+                            DEF
+                        </span>
+
+                        <div class="attribute-details-title">
+
+                            <span>
+                                Proteção física
+                            </span>
+
+                            <h3>
+                                Defesa
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Reduz o dano recebido de ataques físicos e
+                        aumenta a resistência da armadura.
+                    </p>
+
+                    <div class="attribute-functions">
+
+                        <span>
+                            Redução física
+                        </span>
+
+                        <span>
+                            Armadura
+                        </span>
+
+                        <span>
+                            Proteção
+                        </span>
+
+                    </div>
+
+                </article>
+
+                <article
+                    class="attribute-details-card attribute-res"
+                    style="--attribute-color: 95, 174, 128;"
+                    data-attribute="res"
+                    tabindex="0"
+                >
+
+                    <div
+                        class="attribute-animation"
+                        aria-hidden="true"
+                    >
+                        <span class="attribute-energy attribute-energy-one"></span>
+                        <span class="attribute-energy attribute-energy-two"></span>
+                        <span class="attribute-energy attribute-energy-three"></span>
+                        <span class="attribute-ring attribute-ring-one"></span>
+                        <span class="attribute-ring attribute-ring-two"></span>
+                        <span class="attribute-root attribute-root-one"></span>
+                        <span class="attribute-root attribute-root-two"></span>
+                        <span class="attribute-root attribute-root-three"></span>
+                    </div>
+
+                    <div class="attribute-details-header">
+
+                        <span class="attribute-abbreviation">
+                            RES
+                        </span>
+
+                        <div class="attribute-details-title">
+
+                            <span>
+                                Sobrevivência
+                            </span>
+
+                            <h3>
+                                Resistência
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Aumenta a vida, reduz efeitos negativos e
+                        melhora a resistência contra dano mágico e
+                        verdadeiro.
+                    </p>
+
+                    <div class="attribute-functions">
+
+                        <span>
+                            HP
+                        </span>
+
+                        <span>
+                            Efeitos negativos
+                        </span>
+
+                        <span>
+                            Resistência mágica
+                        </span>
+
+                    </div>
+
+                </article>
+
+                <article
+                    class="attribute-details-card attribute-ini"
+                    style="--attribute-color: 220, 177, 75;"
+                    data-attribute="ini"
+                    tabindex="0"
+                >
+
+                    <div
+                        class="attribute-animation"
+                        aria-hidden="true"
+                    >
+                        <span class="attribute-energy attribute-energy-one"></span>
+                        <span class="attribute-energy attribute-energy-two"></span>
+                        <span class="attribute-energy attribute-energy-three"></span>
+                        <span class="attribute-ring attribute-ring-one"></span>
+                        <span class="attribute-ring attribute-ring-two"></span>
+                        <span class="attribute-speed attribute-speed-one"></span>
+                        <span class="attribute-speed attribute-speed-two"></span>
+                        <span class="attribute-speed attribute-speed-three"></span>
+                    </div>
+
+                    <div class="attribute-details-header">
+
+                        <span class="attribute-abbreviation">
+                            INI
+                        </span>
+
+                        <div class="attribute-details-title">
+
+                            <span>
+                                Velocidade de combate
+                            </span>
+
+                            <h3>
+                                Iniciativa
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Define a ordem dos turnos no combate. Quanto
+                        maior a Iniciativa, mais cedo o personagem age.
+                    </p>
+
+                    <div class="attribute-functions">
+
+                        <span>
+                            Ordem dos turnos
+                        </span>
+
+                        <span>
+                            Velocidade
+                        </span>
+
+                        <span>
+                            Reação
+                        </span>
+
+                    </div>
+
+                </article>
+
+                <article
+                    class="attribute-details-card attribute-int"
+                    style="--attribute-color: 108, 130, 221;"
+                    data-attribute="int"
+                    tabindex="0"
+                >
+
+                    <div
+                        class="attribute-animation"
+                        aria-hidden="true"
+                    >
+                        <span class="attribute-energy attribute-energy-one"></span>
+                        <span class="attribute-energy attribute-energy-two"></span>
+                        <span class="attribute-energy attribute-energy-three"></span>
+                        <span class="attribute-ring attribute-ring-one"></span>
+                        <span class="attribute-ring attribute-ring-two"></span>
+                        <span class="attribute-rune attribute-rune-one">✦</span>
+                        <span class="attribute-rune attribute-rune-two">◇</span>
+                        <span class="attribute-rune attribute-rune-three">✧</span>
+                    </div>
+
+                    <div class="attribute-details-header">
+
+                        <span class="attribute-abbreviation">
+                            INT
+                        </span>
+
+                        <div class="attribute-details-title">
+
+                            <span>
+                                Poder mágico
+                            </span>
+
+                            <h3>
+                                Inteligência
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Aumenta o dano mágico, a Mana máxima e a
+                        eficiência de habilidades mágicas.
+                    </p>
+
+                    <div class="attribute-functions">
+
+                        <span>
+                            Dano mágico
+                        </span>
+
+                        <span>
+                            Mana máxima
+                        </span>
+
+                        <span>
+                            Magias ofensivas
+                        </span>
+
+                    </div>
+
+                </article>
+
+                <article
+                    class="attribute-details-card attribute-arc"
+                    style="--attribute-color: 181, 103, 211;"
+                    data-attribute="arc"
+                    tabindex="0"
+                >
+
+                    <div
+                        class="attribute-animation"
+                        aria-hidden="true"
+                    >
+                        <span class="attribute-energy attribute-energy-one"></span>
+                        <span class="attribute-energy attribute-energy-two"></span>
+                        <span class="attribute-energy attribute-energy-three"></span>
+                        <span class="attribute-ring attribute-ring-one"></span>
+                        <span class="attribute-ring attribute-ring-two"></span>
+                        <span class="attribute-star attribute-star-one"></span>
+                        <span class="attribute-star attribute-star-two"></span>
+                        <span class="attribute-star attribute-star-three"></span>
+                        <span class="attribute-line attribute-line-one"></span>
+                        <span class="attribute-line attribute-line-two"></span>
+                    </div>
+
+                    <div class="attribute-details-header">
+
+                        <span class="attribute-abbreviation">
+                            ARC
+                        </span>
+
+                        <div class="attribute-details-title">
+
+                            <span>
+                                Manipulação arcana
+                            </span>
+
+                            <h3>
+                                Arcano
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+                    <p>
+                        Aumenta a eficiência de curas, escudos, buffs
+                        e debuffs. Também fortalece invocações e
+                        efeitos mágicos que não causam dano direto.
+                    </p>
+
+                    <div class="attribute-functions">
+
+                        <span>
+                            Cura
+                        </span>
+
+                        <span>
+                            Escudos
+                        </span>
+
+                        <span>
+                            Buffs e debuffs
+                        </span>
+
+                        <span>
+                            Invocações
+                        </span>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <section class="attribute-example">
+
+            <header class="attribute-example-heading">
+
+                <span class="attributes-eyebrow">
+                    Exemplo de criação
+                </span>
+
+                <h2>
+                    Construção de um guerreiro
+                </h2>
+
+                <p>
+                    Um personagem focado em combate físico pode
+                    investir mais pontos em Força, Defesa e
+                    Resistência.
+                </p>
+
+            </header>
+
+            <div class="attribute-example-distribution">
+
+                <article>
+                    <span>
+                        FOR
+                    </span>
+
+                    <strong>
+                        55
+                    </strong>
+
+                    <small>
+                        20 base + 35 livres
+                    </small>
+                </article>
+
+                <article>
+                    <span>
+                        DEF
+                    </span>
+
+                    <strong>
+                        45
+                    </strong>
+
+                    <small>
+                        20 base + 25 livres
+                    </small>
+                </article>
+
+                <article>
+                    <span>
+                        RES
+                    </span>
+
+                    <strong>
+                        45
+                    </strong>
+
+                    <small>
+                        20 base + 25 livres
+                    </small>
+                </article>
+
+                <article>
+                    <span>
+                        INI
+                    </span>
+
+                    <strong>
+                        30
+                    </strong>
+
+                    <small>
+                        20 base + 10 livres
+                    </small>
+                </article>
+
+                <article>
+                    <span>
+                        INT
+                    </span>
+
+                    <strong>
+                        20
+                    </strong>
+
+                    <small>
+                        Somente a base
+                    </small>
+                </article>
+
+                <article>
+                    <span>
+                        ARC
+                    </span>
+
+                    <strong>
+                        25
+                    </strong>
+
+                    <small>
+                        20 base + 5 livres
+                    </small>
+                </article>
+
+            </div>
+
+            <div class="attribute-example-total">
+
+                <span>
+                    Pontos livres utilizados
+                </span>
+
+                <strong>
+                    100 / 100
+                </strong>
+
+            </div>
+
+            <p class="attribute-example-note">
+                Os bônus da raça escolhida seriam adicionados depois
+                dessa distribuição.
+            </p>
+
+        </section>
+
+    </main>
+
+    <noscript>
+
+        <p class="attributes-noscript">
+            Ative o JavaScript para visualizar todos os efeitos da
+            página.
+        </p>
+
+    </noscript>
+
+    <script src="js/atributos.js?v=13" defer></script>
+
+</body>
+
+</html>

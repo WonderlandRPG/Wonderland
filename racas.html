@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Raças | Wonderland RPG</title>
+
+    <meta
+        name="description"
+        content="Conheça as raças disponíveis no RPG Wonderland."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/images/logo.png"
+    >
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/global.css?v=10">
+    <link rel="stylesheet" href="css/racas.css?v=1">
+</head>
+
+<body class="races-page">
+
+    <!-- Cenário -->
+    <div
+        class="races-background"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Partículas -->
+    <div
+        id="particles"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Névoa -->
+    <div
+        class="mist-layer"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Música -->
+    <audio
+        id="bgMusic"
+        loop
+        preload="auto"
+    >
+        <source
+            src="assets/audio/wonderland.mp3"
+            type="audio/mpeg"
+        >
+    </audio>
+
+    <!-- Voltar -->
+    <a
+        href="menu.html"
+        class="races-return"
+    >
+        ← Menu
+    </a>
+
+    <!-- Controle da música -->
+    <button
+        id="musicButton"
+        class="races-music-button"
+        type="button"
+        aria-label="Tocar música"
+        title="Tocar música"
+    >
+        <span
+            id="musicIcon"
+            aria-hidden="true"
+        >
+            ♪
+        </span>
+    </button>
+
+    <!-- Cabeçalho -->
+    <header class="races-header">
+
+        <img
+            src="assets/images/logo.png"
+            alt="Símbolo do RPG Wonderland"
+            class="races-logo"
+        >
+
+        <span class="races-label">
+            Povos de Wonderland
+        </span>
+
+        <h1>
+            Raças
+        </h1>
+
+        <p>
+            Escolha uma raça e descubra sua origem, seus atributos,
+            suas habilidades e sua progressão dentro de Wonderland.
+        </p>
+
+    </header>
+
+    <!-- Conteúdo -->
+    <main class="races-layout">
+
+        <!-- Navegação lateral -->
+        <aside class="races-sidebar">
+
+            <div class="sidebar-heading">
+
+                <span>
+                    Raças disponíveis
+                </span>
+
+                <small id="raceCount">
+                    11 raças
+                </small>
+
+            </div>
+
+            <nav
+                class="races-menu"
+                aria-label="Lista de raças"
+            >
+
+                <button
+                    class="race-selector active"
+                    type="button"
+                    data-race="humano"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Humano</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="aengel"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Aengel</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="draconato"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Draconato</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="lobisomem"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Lobisomem</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="kitsune"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Kitsune</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="leonis"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Leonis</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="tiefling"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Tiefling</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="vampiro"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Vampiro</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="elfo"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Elfo</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="fada"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Fada</span>
+                </button>
+
+                <button
+                    class="race-selector"
+                    type="button"
+                    data-race="orc"
+                >
+                    <span class="race-selector-symbol">◆</span>
+                    <span>Orc</span>
+                </button>
+
+            </nav>
+
+        </aside>
+
+        <!-- Painel principal -->
+        <article
+            id="racePanel"
+            class="race-panel"
+            aria-live="polite"
+        >
+
+            <!-- Cabeçalho da raça -->
+            <header class="race-panel-header">
+
+                <div>
+
+                    <span class="race-panel-label">
+                        Raça selecionada
+                    </span>
+
+                    <h2 id="raceName">
+                        Humano
+                    </h2>
+
+                </div>
+
+                <div class="race-difficulty">
+
+                    <span>
+                        Dificuldade
+                    </span>
+
+                    <strong id="raceDifficulty">
+                        ★★☆☆☆
+                    </strong>
+
+                </div>
+
+            </header>
+
+            <!-- Descrição -->
+            <section class="race-section">
+
+                <h3>
+                    Descrição
+                </h3>
+
+                <p
+                    id="raceDescription"
+                    class="race-description"
+                >
+                    Os Humanos são conhecidos por sua capacidade de adaptação,
+                    ambição e diversidade. Espalhados por todos os reinos,
+                    podem seguir qualquer caminho e ocupar praticamente
+                    qualquer função dentro de Wonderland.
+                </p>
+
+            </section>
+
+            <!-- Bônus raciais -->
+            <section class="race-section">
+
+                <h3>
+                    Bônus Raciais
+                </h3>
+
+                <div class="race-bonuses">
+
+                    <div class="race-bonus-card">
+
+                        <span>
+                            HP Inicial
+                        </span>
+
+                        <strong id="raceHp">
+                            500
+                        </strong>
+
+                    </div>
+
+                    <div class="race-bonus-card">
+
+                        <span>
+                            Mana Inicial
+                        </span>
+
+                        <strong id="raceMana">
+                            +50
+                        </strong>
+
+                    </div>
+
+                    <div class="race-bonus-card">
+
+                        <span>
+                            Pontos Raciais
+                        </span>
+
+                        <strong id="racePoints">
+                            15
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- Atributos -->
+            <section class="race-section">
+
+                <h3>
+                    Atributos
+                </h3>
+
+                <div
+                    id="raceAttributes"
+                    class="attributes-grid"
+                >
+
+                    <div class="attribute-card">
+                        <span>FOR</span>
+                        <strong>+2</strong>
+                    </div>
+
+                    <div class="attribute-card">
+                        <span>DEF</span>
+                        <strong>+2</strong>
+                    </div>
+
+                    <div class="attribute-card">
+                        <span>RES</span>
+                        <strong>+2</strong>
+                    </div>
+
+                    <div class="attribute-card">
+                        <span>INI</span>
+                        <strong>+3</strong>
+                    </div>
+
+                    <div class="attribute-card">
+                        <span>INT</span>
+                        <strong>+3</strong>
+                    </div>
+
+                    <div class="attribute-card">
+                        <span>ARC</span>
+                        <strong>+3</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- Traços raciais -->
+            <section class="race-section">
+
+                <h3>
+                    Traços Raciais
+                </h3>
+
+                <div
+                    id="raceTraits"
+                    class="race-traits"
+                >
+
+                    <article class="trait-card">
+
+                        <h4>
+                            Versatilidade Humana
+                        </h4>
+
+                        <p>
+                            Humanos possuem facilidade para se adaptar a
+                            diferentes estilos de combate, profissões e
+                            situações inesperadas.
+                        </p>
+
+                    </article>
+
+                    <article class="trait-card">
+
+                        <h4>
+                            Espírito Ambicioso
+                        </h4>
+
+                        <p>
+                            Sua determinação permite superar limitações
+                            por meio de treinamento, estratégia e experiência.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+            <!-- Progressão -->
+            <section class="race-section">
+
+                <h3>
+                    Progressão Racial
+                </h3>
+
+                <div
+                    id="raceProgression"
+                    class="race-progression"
+                >
+
+                    <article class="progression-card">
+
+                        <span>
+                            Nível 1
+                        </span>
+
+                        <div>
+
+                            <h4>
+                                Potencial Humano
+                            </h4>
+
+                            <p>
+                                O personagem inicia sua jornada com grande
+                                liberdade para desenvolver qualquer atributo.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                    <article class="progression-card">
+
+                        <span>
+                            Nível 20
+                        </span>
+
+                        <div>
+
+                            <h4>
+                                Mestre da Adaptação
+                            </h4>
+
+                            <p>
+                                O Humano aperfeiçoa sua principal especialidade
+                                e recebe benefícios adicionais relacionados ao
+                                caminho que escolheu.
+                            </p>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </section>
+
+        </article>
+
+    </main>
+
+    <script src="js/racas.js?v=2" defer></script>
+
+</body>
+
+</html>

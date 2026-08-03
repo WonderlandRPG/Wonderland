@@ -28,8 +28,8 @@
 
     background:
         linear-gradient(
-            rgba(2, 6, 9, 0.68),
-            rgba(2, 6, 9, 0.92)
+            rgba(2, 6, 9, 0.7),
+            rgba(2, 6, 9, 0.94)
         ),
         url("../assets/images/background.png");
 
@@ -62,10 +62,10 @@
         ),
         linear-gradient(
             90deg,
-            rgba(0, 0, 0, 0.55),
+            rgba(0, 0, 0, 0.6),
             transparent 25%,
             transparent 75%,
-            rgba(0, 0, 0, 0.55)
+            rgba(0, 0, 0, 0.6)
         );
 }
 
@@ -85,9 +85,9 @@
     color: var(--gold);
 
     background:
-        rgba(4, 10, 13, 0.78);
+        rgba(4, 10, 13, 0.82);
 
-    border: 1px solid rgba(255, 216, 77, 0.28);
+    border: 1px solid rgba(255, 216, 77, 0.3);
     border-radius: 30px;
 
     font-family: var(--font-title);
@@ -135,7 +135,7 @@
     color: var(--gold);
 
     background:
-        rgba(4, 10, 13, 0.78);
+        rgba(4, 10, 13, 0.82);
 
     border: 1px solid rgba(255, 216, 77, 0.3);
     border-radius: 50%;
@@ -241,13 +241,13 @@
     position: relative;
     z-index: 10;
 
-    width: min(1380px, calc(100% - 40px));
+    width: min(1420px, calc(100% - 40px));
     margin: 0 auto;
 
     display: grid;
     grid-template-columns:
-        minmax(0, 1.55fr)
-        minmax(320px, 0.75fr);
+        minmax(0, 1.7fr)
+        minmax(340px, 0.72fr);
 
     gap: 28px;
     align-items: stretch;
@@ -261,7 +261,8 @@
 ==========================*/
 
 .world-map {
-    min-height: 700px;
+    min-width: 0;
+    min-height: 720px;
 }
 
 .map-frame {
@@ -269,24 +270,24 @@
 
     width: 100%;
     height: 100%;
-    min-height: 700px;
+    min-height: 720px;
 
     overflow: hidden;
 
     background:
         radial-gradient(
-            circle at center,
-            rgba(226, 207, 154, 0.94),
-            rgba(168, 139, 88, 0.97) 70%,
-            rgba(99, 67, 37, 0.98) 100%
+            circle at 50% 46%,
+            rgba(231, 214, 168, 0.98),
+            rgba(181, 151, 97, 0.98) 68%,
+            rgba(103, 70, 39, 0.99) 100%
         );
 
-    border: 3px solid rgba(104, 72, 35, 0.94);
+    border: 3px solid rgba(104, 72, 35, 0.95);
     border-radius: 18px;
 
     box-shadow:
         0 28px 75px rgba(0, 0, 0, 0.55),
-        inset 0 0 90px rgba(76, 45, 18, 0.3);
+        inset 0 0 95px rgba(76, 45, 18, 0.32);
 }
 
 .map-frame::before {
@@ -295,9 +296,11 @@
     position: absolute;
     inset: 18px;
 
+    z-index: 1;
+
     pointer-events: none;
 
-    border: 1px solid rgba(85, 54, 24, 0.48);
+    border: 1px solid rgba(85, 54, 24, 0.5);
     border-radius: 10px;
 
     box-shadow:
@@ -310,9 +313,11 @@
     position: absolute;
     inset: 0;
 
+    z-index: 2;
+
     pointer-events: none;
 
-    opacity: 0.42;
+    opacity: 0.45;
 
     background:
         repeating-linear-gradient(
@@ -322,101 +327,166 @@
         ),
         radial-gradient(
             circle at 15% 15%,
-            rgba(76, 48, 21, 0.12),
+            rgba(76, 48, 21, 0.13),
             transparent 20%
         ),
         radial-gradient(
             circle at 88% 86%,
-            rgba(76, 48, 21, 0.15),
+            rgba(76, 48, 21, 0.16),
             transparent 22%
         );
 }
 
-/* Continente estilizado */
+/*==========================
+       CONTINENTE PROVISÓRIO
+==========================*/
 
 .map-continent {
     position: absolute;
-    inset: 70px 70px;
+    inset: 72px 82px 68px;
 
     z-index: 3;
 
     background:
         radial-gradient(
-            ellipse at 50% 43%,
-            rgba(73, 91, 50, 0.78),
-            transparent 27%
-        ),
-        radial-gradient(
-            ellipse at 66% 57%,
-            rgba(66, 83, 43, 0.72),
-            transparent 24%
-        ),
-        radial-gradient(
-            ellipse at 35% 59%,
-            rgba(84, 94, 52, 0.75),
+            ellipse at 49% 23%,
+            rgba(74, 93, 53, 0.93),
             transparent 25%
         ),
         radial-gradient(
-            ellipse at 48% 73%,
-            rgba(116, 99, 52, 0.72),
-            transparent 22%
+            ellipse at 72% 42%,
+            rgba(76, 94, 54, 0.9),
+            transparent 25%
+        ),
+        radial-gradient(
+            ellipse at 47% 50%,
+            rgba(91, 104, 60, 0.96),
+            transparent 29%
+        ),
+        radial-gradient(
+            ellipse at 25% 50%,
+            rgba(95, 105, 62, 0.9),
+            transparent 25%
+        ),
+        radial-gradient(
+            ellipse at 49% 77%,
+            rgba(126, 103, 56, 0.93),
+            transparent 26%
         ),
         linear-gradient(
-            145deg,
-            rgba(86, 99, 55, 0.5),
-            rgba(135, 108, 61, 0.36)
+            150deg,
+            #65703f,
+            #4f633b 46%,
+            #75663a 100%
         );
 
     clip-path:
         polygon(
-            43% 2%,
-            61% 8%,
-            72% 20%,
-            89% 28%,
-            83% 45%,
-            92% 59%,
-            76% 67%,
-            70% 86%,
-            51% 95%,
-            36% 84%,
-            20% 89%,
-            12% 70%,
-            4% 53%,
-            14% 39%,
-            10% 22%,
-            29% 16%
+            42% 2%,
+            58% 7%,
+            68% 18%,
+            82% 23%,
+            92% 34%,
+            86% 47%,
+            94% 61%,
+            79% 69%,
+            74% 87%,
+            57% 96%,
+            44% 91%,
+            31% 97%,
+            22% 84%,
+            12% 73%,
+            7% 56%,
+            16% 42%,
+            12% 27%,
+            28% 20%
         );
 
     filter:
-        drop-shadow(0 14px 12px rgba(72, 44, 20, 0.38));
+        drop-shadow(0 18px 15px rgba(72, 44, 20, 0.42));
 }
 
 .map-continent::before {
     content: "";
 
     position: absolute;
-    inset: 6%;
+    inset: 5%;
 
-    border: 2px dashed rgba(74, 48, 23, 0.32);
+    opacity: 0.6;
+
+    background:
+        radial-gradient(
+            circle at 47% 25%,
+            rgba(218, 224, 181, 0.2),
+            transparent 17%
+        ),
+        radial-gradient(
+            circle at 25% 58%,
+            rgba(45, 76, 44, 0.25),
+            transparent 17%
+        ),
+        radial-gradient(
+            circle at 71% 52%,
+            rgba(41, 73, 43, 0.25),
+            transparent 16%
+        ),
+        radial-gradient(
+            circle at 50% 78%,
+            rgba(203, 168, 92, 0.22),
+            transparent 18%
+        );
 
     clip-path:
         polygon(
-            43% 2%,
-            61% 8%,
-            72% 20%,
-            89% 28%,
-            83% 45%,
-            92% 59%,
-            76% 67%,
-            70% 86%,
-            51% 95%,
-            36% 84%,
-            20% 89%,
-            12% 70%,
-            4% 53%,
-            14% 39%,
-            10% 22%,
-            29% 16%
+            42% 2%,
+            58% 7%,
+            68% 18%,
+            82% 23%,
+            92% 34%,
+            86% 47%,
+            94% 61%,
+            79% 69%,
+            74% 87%,
+            57% 96%,
+            44% 91%,
+            31% 97%,
+            22% 84%,
+            12% 73%,
+            7% 56%,
+            16% 42%,
+            12% 27%,
+            28% 20%
+        );
+}
+
+.map-continent::after {
+    content: "";
+
+    position: absolute;
+    inset: 8%;
+
+    border: 1px dashed rgba(60, 40, 20, 0.3);
+
+    clip-path:
+        polygon(
+            42% 2%,
+            58% 7%,
+            68% 18%,
+            82% 23%,
+            92% 34%,
+            86% 47%,
+            94% 61%,
+            79% 69%,
+            74% 87%,
+            57% 96%,
+            44% 91%,
+            31% 97%,
+            22% 84%,
+            12% 73%,
+            7% 56%,
+            16% 42%,
+            12% 27%,
+            28% 20%
         );
 }
 
@@ -431,15 +501,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5px;
+    gap: 7px;
 
     color: #4d351d;
 
     background: transparent;
 
     font-family: var(--font-title);
-    font-size: 11px;
-    letter-spacing: 1px;
+    font-size: 10px;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
 
     transform: translate(-50%, -50%);
@@ -451,8 +521,8 @@
 }
 
 .marker-symbol {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
 
     display: grid;
     place-items: center;
@@ -462,16 +532,16 @@
     background:
         radial-gradient(
             circle,
-            #f6dc7b,
+            #ffe795,
             #bd8d2c
         );
 
-    border: 2px solid rgba(80, 50, 20, 0.7);
+    border: 2px solid rgba(80, 50, 20, 0.72);
 
     transform: rotate(45deg);
 
     box-shadow:
-        0 4px 10px rgba(67, 41, 18, 0.4);
+        0 5px 12px rgba(67, 41, 18, 0.45);
 
     transition:
         transform 0.3s ease,
@@ -480,29 +550,39 @@
 }
 
 .marker-name {
-    padding: 4px 8px;
+    max-width: 150px;
+    padding: 5px 9px;
+
+    overflow: hidden;
+
+    color: #53391e;
 
     background:
-        rgba(230, 210, 160, 0.75);
+        rgba(239, 220, 171, 0.88);
 
+    border: 1px solid rgba(94, 62, 28, 0.2);
     border-radius: 4px;
 
     white-space: nowrap;
+    text-overflow: ellipsis;
 
     text-shadow:
-        0 1px 0 rgba(255, 246, 202, 0.7);
+        0 1px 0 rgba(255, 246, 202, 0.8);
+
+    box-shadow:
+        0 3px 8px rgba(67, 41, 18, 0.15);
 }
 
 .region-marker:hover,
 .region-marker.active {
-    color: #2d5d45;
+    color: #214b38;
 
     transform:
         translate(-50%, -50%)
         scale(1.08);
 
     filter:
-        drop-shadow(0 0 10px rgba(79, 174, 131, 0.4));
+        drop-shadow(0 0 11px rgba(79, 174, 131, 0.45));
 }
 
 .region-marker:hover .marker-symbol,
@@ -519,37 +599,38 @@
         scale(1.12);
 
     box-shadow:
-        0 0 18px rgba(79, 174, 131, 0.65);
+        0 0 12px rgba(79, 174, 131, 0.8),
+        0 0 30px rgba(79, 174, 131, 0.55);
 }
 
 .north-region {
-    top: 20%;
-    left: 48%;
+    top: 18%;
+    left: 50%;
 }
 
-.east-region {
-    top: 43%;
-    left: 76%;
+.west-region {
+    top: 51%;
+    left: 25%;
 }
 
 .center-region {
     top: 48%;
-    left: 49%;
+    left: 50%;
 }
 
-.west-region {
-    top: 50%;
-    left: 24%;
+.east-region {
+    top: 42%;
+    left: 74%;
 }
 
 .south-region {
-    top: 76%;
+    top: 78%;
     left: 50%;
 }
 
 .islands-region {
-    top: 70%;
-    left: 80%;
+    top: 69%;
+    left: 84%;
 }
 
 /*==========================
@@ -558,17 +639,17 @@
 
 .map-compass {
     position: absolute;
-    top: 42px;
-    right: 45px;
+    top: 40px;
+    right: 42px;
 
     z-index: 7;
 
-    width: 105px;
-    height: 105px;
+    width: 104px;
+    height: 104px;
 
     color: rgba(76, 48, 22, 0.72);
 
-    border: 2px solid rgba(76, 48, 22, 0.45);
+    border: 2px solid rgba(76, 48, 22, 0.44);
     border-radius: 50%;
 
     font-family: var(--font-title);
@@ -667,11 +748,11 @@
 }
 
 .map-decoration-top {
-    top: 36px;
+    top: 34px;
 }
 
 .map-decoration-bottom {
-    bottom: 36px;
+    bottom: 34px;
 }
 
 /*==========================
@@ -681,26 +762,27 @@
 .region-panel {
     position: relative;
 
-    min-height: 700px;
+    min-width: 0;
+    min-height: 720px;
     padding: 48px 38px;
 
     overflow: hidden;
 
     background:
         linear-gradient(
-            155deg,
-            rgba(14, 24, 25, 0.96),
-            rgba(5, 11, 14, 0.98)
+            180deg,
+            rgba(10, 20, 20, 0.97),
+            rgba(4, 8, 10, 0.99)
         );
 
-    border: 1px solid rgba(255, 216, 77, 0.22);
+    border: 1px solid rgba(255, 216, 77, 0.24);
     border-radius: 18px;
 
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(18px);
 
     box-shadow:
-        0 28px 70px rgba(0, 0, 0, 0.5),
-        inset 0 0 45px rgba(79, 174, 131, 0.025);
+        0 28px 70px rgba(0, 0, 0, 0.52),
+        inset 0 0 48px rgba(79, 174, 131, 0.025);
 }
 
 .region-panel::before,
@@ -715,7 +797,7 @@
     pointer-events: none;
 
     border-color:
-        rgba(255, 216, 77, 0.45);
+        rgba(255, 216, 77, 0.48);
 }
 
 .region-panel::before {
@@ -755,6 +837,8 @@
     font-size: clamp(30px, 4vw, 45px);
     line-height: 1.18;
     letter-spacing: 2px;
+
+    overflow-wrap: anywhere;
 
     text-shadow:
         0 0 18px rgba(255, 216, 77, 0.2);
@@ -801,6 +885,7 @@
 
     font-size: 18px;
     font-weight: 500;
+    line-height: 1.4;
 }
 
 .region-panel blockquote {
@@ -810,7 +895,7 @@
     color: var(--text-soft);
 
     background:
-        rgba(255, 216, 77, 0.035);
+        rgba(255, 216, 77, 0.04);
 
     border-left: 3px solid var(--gold);
 
@@ -925,7 +1010,7 @@
           RESPONSIVO
 ==========================*/
 
-@media (max-width: 1050px) {
+@media (max-width: 1120px) {
     .world-layout {
         grid-template-columns: 1fr;
     }
@@ -935,7 +1020,7 @@
     }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 760px) {
     .world-page {
         padding-bottom: 40px;
     }
@@ -984,28 +1069,63 @@
 
     .world-map,
     .map-frame {
-        min-height: 580px;
+        min-height: 590px;
     }
 
     .map-continent {
-        inset: 75px 25px 60px;
+        inset: 78px 28px 62px;
     }
 
     .map-compass {
-        top: 36px;
-        right: 30px;
+        top: 34px;
+        right: 28px;
 
         width: 78px;
         height: 78px;
     }
 
-    .marker-name {
+    .region-marker {
         font-size: 8px;
     }
 
+    .marker-name {
+        max-width: 105px;
+        padding: 4px 6px;
+    }
+
     .marker-symbol {
-        width: 24px;
-        height: 24px;
+        width: 25px;
+        height: 25px;
+    }
+
+    .north-region {
+        top: 20%;
+        left: 50%;
+    }
+
+    .west-region {
+        top: 52%;
+        left: 24%;
+    }
+
+    .center-region {
+        top: 48%;
+        left: 50%;
+    }
+
+    .east-region {
+        top: 42%;
+        left: 75%;
+    }
+
+    .south-region {
+        top: 79%;
+        left: 50%;
+    }
+
+    .islands-region {
+        top: 69%;
+        left: 82%;
     }
 
     .region-panel {
@@ -1014,5 +1134,31 @@
 
     .region-description {
         font-size: 19px;
+    }
+}
+
+@media (max-width: 480px) {
+    .world-map,
+    .map-frame {
+        min-height: 540px;
+    }
+
+    .map-continent {
+        inset: 82px 15px 62px;
+    }
+
+    .marker-name {
+        max-width: 88px;
+
+        font-size: 7px;
+    }
+
+    .islands-region {
+        left: 78%;
+    }
+
+    .region-panel {
+        padding:
+            42px 22px;
     }
 }

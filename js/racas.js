@@ -1,763 +1,1079 @@
 "use strict";
 
+/* =========================================================
+   CÓDICE DE RAÇAS — WONDERLAND
+   Responsável pela interface e pelo funcionamento da página.
+   Os conteúdos das raças ficam em js/racas-data.js.
+   ========================================================= */
+
 document.addEventListener("DOMContentLoaded", () => {
-    /*==================================================
-                    ELEMENTOS DA PÁGINA
-    ==================================================*/
-
-    const raceSelectors = document.querySelectorAll(".race-selector");
-
-    const racePanel = document.getElementById("racePanel");
-    const raceCount = document.getElementById("raceCount");
-
-    const raceName = document.getElementById("raceName");
-    const raceDifficulty = document.getElementById("raceDifficulty");
-    const raceDescription = document.getElementById("raceDescription");
-
-    const raceHp = document.getElementById("raceHp");
-    const raceMana = document.getElementById("raceMana");
-    const racePoints = document.getElementById("racePoints");
-
-    const raceAttributes = document.getElementById("raceAttributes");
-    const raceTraits = document.getElementById("raceTraits");
-    const raceProgression = document.getElementById("raceProgression");
-
-    const music = document.getElementById("bgMusic");
-    const musicButton = document.getElementById("musicButton");
-    const musicIcon = document.getElementById("musicIcon");
-
-    let selectedRace = "humano";
-
-    /*==================================================
-                    DADOS DAS RAÇAS
-    ==================================================*/
-
-    const races = {
-        humano: {
-            name: "Humano",
-            difficulty: 2,
-
-            description:
-                "Os Humanos são conhecidos por sua capacidade de adaptação, ambição e diversidade. Espalhados por todos os reinos, podem seguir qualquer caminho e ocupar praticamente qualquer função dentro de Wonderland. Embora não possuam as vantagens naturais de outras raças, compensam essa ausência com determinação, criatividade e liberdade para desenvolver diferentes estilos.",
-
-            hp: 500,
-            mana: 50,
-            points: 15,
-
-            attributes: {
-                FOR: 2,
-                DEF: 2,
-                RES: 2,
-                INI: 3,
-                INT: 3,
-                ARC: 3
-            },
-
-            traits: [
-                {
-                    name: "Versatilidade Humana",
-                    description:
-                        "O Humano possui grande facilidade para se adaptar a diferentes estilos de combate, profissões e situações inesperadas."
-                },
-                {
-                    name: "Espírito Ambicioso",
-                    description:
-                        "Sua determinação permite superar limitações por meio de treinamento, estratégia, conhecimento e experiência."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Potencial Humano",
-                    description:
-                        "O personagem inicia sua jornada com liberdade para desenvolver qualquer atributo e seguir qualquer caminho."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Mestre da Adaptação",
-                    description:
-                        "O Humano aperfeiçoa sua principal especialidade e recebe benefícios relacionados ao caminho que escolheu."
-                }
-            ]
-        },
-
-        aengel: {
-            name: "Aengel",
-            difficulty: 4,
-
-            description:
-                "Os Aengels descendem de seres tocados pela Luz Primordial. Possuem grandes asas, olhos luminosos e uma presença que inspira respeito. Sua sociedade valoriza disciplina, honra e responsabilidade. Muitos atuam como guardiões, juízes e protetores do equilíbrio, embora alguns rejeitem esse destino e escolham trilhar caminhos próprios.",
-
-            hp: 450,
-            mana: 100,
-            points: 15,
-
-            attributes: {
-                FOR: 1,
-                DEF: 3,
-                RES: 3,
-                INI: 2,
-                INT: 2,
-                ARC: 4
-            },
-
-            traits: [
-                {
-                    name: "Luz Celestial",
-                    description:
-                        "A energia da Luz Primordial fortalece curas, escudos e habilidades utilizadas para proteger aliados."
-                },
-                {
-                    name: "Asas Sagradas",
-                    description:
-                        "Os Aengels possuem grande mobilidade e podem alcançar locais elevados ou atravessar obstáculos com facilidade."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Centelha Primordial",
-                    description:
-                        "O Aengel desperta sua conexão com a Luz e aprende a canalizá-la em proteção e auxílio."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Ascensão Celestial",
-                    description:
-                        "Suas asas e sua energia luminosa atingem um novo estágio, tornando sua presença muito mais poderosa."
-                }
-            ]
-        },
-
-        draconato: {
-            name: "Draconato",
-            difficulty: 5,
-
-            description:
-                "Os Draconatos descendem dos antigos Dragões Primordiais. Embora tenham perdido a capacidade de assumir uma forma dracônica completa, ainda carregam escamas, chifres, caudas e parte da essência de seus ancestrais. Cada Draconato manifesta afinidade com um elemento, como fogo, gelo, trovão, terra, vento ou veneno.",
-
-            hp: 650,
-            mana: 50,
-            points: 15,
-
-            attributes: {
-                FOR: 5,
-                DEF: 3,
-                RES: 3,
-                INI: 1,
-                INT: 2,
-                ARC: 1
-            },
-
-            traits: [
-                {
-                    name: "Herança Dracônica",
-                    description:
-                        "O Draconato escolhe um elemento ancestral e recebe resistência contra efeitos relacionados a esse elemento."
-                },
-                {
-                    name: "Escamas Naturais",
-                    description:
-                        "Suas escamas oferecem proteção natural, tornando o Draconato resistente a ataques físicos."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Essência Elemental",
-                    description:
-                        "O Draconato desperta o elemento herdado de sua linhagem ancestral."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Despertar do Dragão",
-                    description:
-                        "Sua essência dracônica se fortalece, ampliando suas capacidades físicas e elementais."
-                }
-            ]
-        },
-
-        lobisomem: {
-            name: "Lobisomem",
-            difficulty: 4,
-
-            description:
-                "Os Lobisomens descendem da antiga Maldição da Lua. São guerreiros extremamente adaptáveis, capazes de alternar entre sua forma humana e sua forma bestial. Durante o combate, tornam-se progressivamente mais perigosos, utilizando força, velocidade e instintos para dominar seus inimigos.",
-
-            hp: 700,
-            mana: 0,
-            points: 15,
-
-            attributes: {
-                FOR: 4,
-                DEF: 2,
-                RES: 4,
-                INI: 4,
-                INT: 0,
-                ARC: 1
-            },
-
-            traits: [
-                {
-                    name: "Forma Bestial",
-                    description:
-                        "O Lobisomem pode assumir uma forma monstruosa, aumentando sua força, resistência e mobilidade."
-                },
-                {
-                    name: "Instinto Predador",
-                    description:
-                        "Quanto mais ferido estiver, mais agressivos e perigosos se tornam seus ataques."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Maldição da Lua",
-                    description:
-                        "O personagem aprende a controlar parcialmente sua transformação e seus instintos."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Lua Soberana",
-                    description:
-                        "O Lobisomem domina completamente sua forma bestial sem perder sua consciência."
-                }
-            ]
-        },
-
-        kitsune: {
-            name: "Kitsune",
-            difficulty: 5,
-
-            description:
-                "Os Kitsunes são espíritos ancestrais que assumiram forma física após séculos absorvendo a energia mágica de Wonderland. São mestres da ilusão, manipulação e enganação. Cada cauda representa o amadurecimento de sua alma, e os mais antigos podem manifestar as lendárias nove caudas.",
-
-            hp: 300,
-            mana: 200,
-            points: 15,
-
-            attributes: {
-                FOR: 0,
-                DEF: 1,
-                RES: 2,
-                INI: 4,
-                INT: 4,
-                ARC: 4
-            },
-
-            traits: [
-                {
-                    name: "Mestre das Ilusões",
-                    description:
-                        "O Kitsune consegue criar imagens falsas, esconder presenças e confundir a percepção de seus inimigos."
-                },
-                {
-                    name: "Caudas Espirituais",
-                    description:
-                        "Suas caudas armazenam energia mágica e representam o crescimento de seu poder espiritual."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Primeira Cauda",
-                    description:
-                        "O Kitsune manifesta sua primeira cauda e desperta seus poderes de ilusão."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Raposa Espiritual",
-                    description:
-                        "Suas ilusões tornam-se mais complexas, permitindo manipular vários alvos ao mesmo tempo."
-                }
-            ]
-        },
-
-        leonis: {
-            name: "Leonis",
-            difficulty: 3,
-
-            description:
-                "Os Leonis são um povo de guerreiros com traços felinos, conhecidos por sua coragem, orgulho e lealdade. Vivem em comunidades organizadas ao redor de grandes famílias e valorizam aqueles que demonstram força, honra e capacidade de proteger seus companheiros.",
-
-            hp: 650,
-            mana: 0,
-            points: 15,
-
-            attributes: {
-                FOR: 4,
-                DEF: 3,
-                RES: 3,
-                INI: 3,
-                INT: 1,
-                ARC: 1
-            },
-
-            traits: [
-                {
-                    name: "Orgulho do Leão",
-                    description:
-                        "O Leonis recebe força adicional quando luta para proteger seus aliados ou defender seu território."
-                },
-                {
-                    name: "Sentidos Felinos",
-                    description:
-                        "Sua audição, visão e percepção permitem identificar ameaças e movimentos com facilidade."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Garras do Caçador",
-                    description:
-                        "O Leonis desperta seus sentidos de combate e sua capacidade natural de perseguição."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Rei da Caçada",
-                    description:
-                        "Sua presença fortalece aliados próximos e intimida adversários mais fracos."
-                }
-            ]
-        },
-
-        tiefling: {
-            name: "Tiefling",
-            difficulty: 4,
-
-            description:
-                "Os Tieflings carregam em seu sangue a influência de forças infernais ou entidades de outros planos. Possuem chifres, caudas, olhos incomuns e grande afinidade com magia. Apesar do preconceito enfrentado em muitos lugares, não são naturalmente malignos e podem escolher livremente seu destino.",
-
-            hp: 450,
-            mana: 150,
-            points: 15,
-
-            attributes: {
-                FOR: 1,
-                DEF: 1,
-                RES: 2,
-                INI: 3,
-                INT: 4,
-                ARC: 4
-            },
-
-            traits: [
-                {
-                    name: "Sangue Infernal",
-                    description:
-                        "O Tiefling possui resistência natural contra calor, fogo e energias de origem infernal."
-                },
-                {
-                    name: "Pacto Interior",
-                    description:
-                        "Sua herança fortalece magias ofensivas, maldições e efeitos aplicados contra inimigos."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Marca Infernal",
-                    description:
-                        "O Tiefling desperta a energia adormecida em sua linhagem."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Herdeiro do Abismo",
-                    description:
-                        "O personagem domina sua herança e passa a utilizá-la sem ser consumido por ela."
-                }
-            ]
-        },
-
-        vampiro: {
-            name: "Vampiro",
-            difficulty: 5,
-
-            description:
-                "Os Vampiros são seres marcados pela sede de sangue e pela imortalidade incompleta. Possuem força, velocidade e sentidos superiores aos de muitas outras raças. Entretanto, precisam controlar seus instintos e lidar com fraquezas que podem ser exploradas por inimigos preparados.",
-
-            hp: 500,
-            mana: 100,
-            points: 15,
-
-            attributes: {
-                FOR: 3,
-                DEF: 2,
-                RES: 3,
-                INI: 4,
-                INT: 2,
-                ARC: 1
-            },
-
-            traits: [
-                {
-                    name: "Sede de Sangue",
-                    description:
-                        "O Vampiro pode recuperar parte de sua vitalidade ao causar dano direto a criaturas vivas."
-                },
-                {
-                    name: "Predador Noturno",
-                    description:
-                        "Durante a noite ou em locais escuros, seus sentidos e sua mobilidade tornam-se ainda mais poderosos."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Sangue Desperto",
-                    description:
-                        "O Vampiro aprende a utilizar sua sede como fonte de poder durante o combate."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Senhor da Noite",
-                    description:
-                        "Sua presença sombria e seus poderes predatórios atingem um novo estágio."
-                }
-            ]
-        },
-
-        elfo: {
-            name: "Elfo",
-            difficulty: 3,
-
-            description:
-                "Os Elfos possuem uma profunda ligação com a magia, a natureza e o conhecimento antigo. Vivem muito mais que os Humanos e dedicam décadas ao aperfeiçoamento de suas habilidades. São conhecidos por sua precisão, inteligência e percepção extraordinária.",
-
-            hp: 400,
-            mana: 150,
-            points: 15,
-
-            attributes: {
-                FOR: 1,
-                DEF: 1,
-                RES: 2,
-                INI: 4,
-                INT: 4,
-                ARC: 3
-            },
-
-            traits: [
-                {
-                    name: "Sentidos Élficos",
-                    description:
-                        "O Elfo possui percepção aguçada e facilidade para identificar movimentos, armadilhas e presenças escondidas."
-                },
-                {
-                    name: "Afinidade Ancestral",
-                    description:
-                        "Sua ligação com a magia melhora a eficiência de feitiços, rituais e efeitos arcanos."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Herança Élfica",
-                    description:
-                        "O Elfo desperta sua sensibilidade natural para a magia e para o ambiente ao seu redor."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Sabedoria Ancestral",
-                    description:
-                        "Décadas de conhecimento condensam-se em uma percepção mágica muito mais avançada."
-                }
-            ]
-        },
-
-        fada: {
-            name: "Fada",
-            difficulty: 4,
-
-            description:
-                "As Fadas são pequenas criaturas mágicas ligadas às forças naturais e ao mundo espiritual. Apesar de sua aparência delicada, possuem enorme poder arcano. São extremamente móveis e especializadas em curas, escudos, encantamentos e manipulação do campo de batalha.",
-
-            hp: 250,
-            mana: 250,
-            points: 15,
-
-            attributes: {
-                FOR: 0,
-                DEF: 0,
-                RES: 1,
-                INI: 4,
-                INT: 4,
-                ARC: 6
-            },
-
-            traits: [
-                {
-                    name: "Asas Encantadas",
-                    description:
-                        "A Fada pode voar e atravessar obstáculos que impediriam criaturas presas ao solo."
-                },
-                {
-                    name: "Essência Feérica",
-                    description:
-                        "Curas, escudos, fortalecimento de aliados e efeitos arcanos tornam-se mais eficientes."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Pó Feérico",
-                    description:
-                        "A Fada desperta uma energia capaz de fortalecer aliados e enfraquecer inimigos."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Coração da Floresta",
-                    description:
-                        "Sua essência mágica se expande, permitindo influenciar grandes áreas do campo de batalha."
-                }
-            ]
-        },
-
-        orc: {
-            name: "Orc",
-            difficulty: 2,
-
-            description:
-                "Os Orcs são um povo resistente, poderoso e profundamente ligado à tradição de seus clãs. Embora muitas vezes sejam vistos apenas como guerreiros brutais, também possuem cultura, honra e conhecimentos transmitidos entre gerações. Sua força física é acompanhada por uma enorme capacidade de sobrevivência.",
-
-            hp: 800,
-            mana: 0,
-            points: 15,
-
-            attributes: {
-                FOR: 5,
-                DEF: 4,
-                RES: 3,
-                INI: 1,
-                INT: 1,
-                ARC: 1
-            },
-
-            traits: [
-                {
-                    name: "Força do Clã",
-                    description:
-                        "O Orc causa mais impacto com ataques físicos e possui facilidade para quebrar defesas inimigas."
-                },
-                {
-                    name: "Resistência Brutal",
-                    description:
-                        "Seu corpo continua lutando mesmo após receber ferimentos que derrubariam outras raças."
-                }
-            ],
-
-            progression: [
-                {
-                    level: "Nível 1",
-                    name: "Sangue Guerreiro",
-                    description:
-                        "O Orc inicia sua jornada com grande resistência e poder físico."
-                },
-                {
-                    level: "Nível 20",
-                    name: "Campeão do Clã",
-                    description:
-                        "O personagem torna-se um símbolo de força, inspirando aliados e intimidando inimigos."
-                }
-            ]
-        }
+    const races = Array.isArray(window.WONDERLAND_RACES)
+        ? window.WONDERLAND_RACES
+        : [];
+
+    const state = {
+        raceId: "",
+        tab: "overview",
+        search: ""
     };
 
-    /*==================================================
-                    FUNÇÕES AUXILIARES
-    ==================================================*/
+    const elements = {
+        body: document.body,
 
-    function createDifficultyStars(difficulty) {
-        const filledStars = "★".repeat(difficulty);
-        const emptyStars = "☆".repeat(5 - difficulty);
+        raceList: document.getElementById("raceList"),
+        raceSearch: document.getElementById("raceSearch"),
+        raceCount: document.getElementById("raceCount"),
 
-        return filledStars + emptyStars;
+        raceHero: document.getElementById("raceHero"),
+        raceEmblem: document.getElementById("raceEmblem"),
+        raceArchetype: document.getElementById("raceArchetype"),
+        raceName: document.getElementById("raceName"),
+        raceTagline: document.getElementById("raceTagline"),
+        raceDifficulty: document.getElementById("raceDifficulty"),
+        raceDifficultyText: document.getElementById(
+            "raceDifficultyText"
+        ),
+        raceRoles: document.getElementById("raceRoles"),
+        raceHp: document.getElementById("raceHp"),
+        raceMana: document.getElementById("raceMana"),
+
+        attributeGrid: document.getElementById("attributeGrid"),
+        raceContent: document.getElementById("raceContent"),
+
+        tabs: [
+            ...document.querySelectorAll(".race-tab")
+        ],
+
+        music: document.getElementById("bgMusic"),
+        musicButton: document.getElementById("musicButton"),
+        musicIcon: document.getElementById("musicIcon"),
+
+        particles: document.getElementById("particles")
+    };
+
+    const difficultyLabels = {
+        1: "Muito baixa",
+        2: "Baixa",
+        3: "Moderada",
+        4: "Alta",
+        5: "Muito alta"
+    };
+
+    /* =====================================================
+       FUNÇÕES DE APOIO
+       ===================================================== */
+
+    function normalizeText(value) {
+        return String(value || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .trim();
     }
 
-    function formatMana(mana) {
-        if (!mana || mana <= 0) {
-            return "Não possui";
+    function escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function currentRace() {
+        return (
+            races.find(
+                (race) => race.id === state.raceId
+            ) || races[0]
+        );
+    }
+
+    function hexToRgb(hex) {
+        const cleaned = String(hex || "#d6b56b")
+            .replace("#", "");
+
+        const normalized =
+            cleaned.length === 3
+                ? cleaned
+                    .split("")
+                    .map((character) => character + character)
+                    .join("")
+                : cleaned;
+
+        const number = Number.parseInt(
+            normalized,
+            16
+        );
+
+        if (Number.isNaN(number)) {
+            return "214, 181, 107";
         }
 
-        return `+${mana}`;
+        return [
+            (number >> 16) & 255,
+            (number >> 8) & 255,
+            number & 255
+        ].join(", ");
     }
 
-    function formatAttribute(value) {
-        if (value > 0) {
-            return `+${value}`;
-        }
+    function setRaceTheme(race) {
+        const accent =
+            race?.theme?.accent || "#d6b56b";
 
-        return String(value);
+        const secondary =
+            race?.theme?.secondary || "#6e829a";
+
+        elements.body.style.setProperty(
+            "--race-accent",
+            accent
+        );
+
+        elements.body.style.setProperty(
+            "--race-accent-2",
+            secondary
+        );
+
+        elements.body.style.setProperty(
+            "--race-accent-rgb",
+            hexToRgb(accent)
+        );
     }
 
-    /*==================================================
-                    CRIAÇÃO DOS ATRIBUTOS
-    ==================================================*/
+    function getDifficultyStars(difficulty) {
+        const value = Math.max(
+            1,
+            Math.min(5, Number(difficulty) || 1)
+        );
 
-    function renderAttributes(attributes) {
-        raceAttributes.innerHTML = "";
-
-        Object.entries(attributes).forEach(([name, value]) => {
-            const card = document.createElement("div");
-            const attributeName = document.createElement("span");
-            const attributeValue = document.createElement("strong");
-
-            card.className = "attribute-card";
-
-            attributeName.textContent = name;
-            attributeValue.textContent = formatAttribute(value);
-
-            card.appendChild(attributeName);
-            card.appendChild(attributeValue);
-
-            raceAttributes.appendChild(card);
-        });
+        return (
+            "★".repeat(value) +
+            "☆".repeat(5 - value)
+        );
     }
 
-    /*==================================================
-                    CRIAÇÃO DOS TRAÇOS
-    ==================================================*/
-
-    function renderTraits(traits) {
-        raceTraits.innerHTML = "";
-
-        traits.forEach((trait) => {
-            const card = document.createElement("article");
-            const title = document.createElement("h4");
-            const description = document.createElement("p");
-
-            card.className = "trait-card";
-
-            title.textContent = trait.name;
-            description.textContent = trait.description;
-
-            card.appendChild(title);
-            card.appendChild(description);
-
-            raceTraits.appendChild(card);
-        });
-    }
-
-    /*==================================================
-                    CRIAÇÃO DA PROGRESSÃO
-    ==================================================*/
-
-    function renderProgression(progression) {
-        raceProgression.innerHTML = "";
-
-        progression.forEach((stage) => {
-            const card = document.createElement("article");
-            const level = document.createElement("span");
-            const content = document.createElement("div");
-            const title = document.createElement("h4");
-            const description = document.createElement("p");
-
-            card.className = "progression-card";
-
-            level.textContent = stage.level;
-            title.textContent = stage.name;
-            description.textContent = stage.description;
-
-            content.appendChild(title);
-            content.appendChild(description);
-
-            card.appendChild(level);
-            card.appendChild(content);
-
-            raceProgression.appendChild(card);
-        });
-    }
-
-    /*==================================================
-                    ATUALIZAÇÃO DA RAÇA
-    ==================================================*/
-
-    function updateRace(raceId) {
-        const race = races[raceId];
-
-        if (!race) {
-            console.warn(`A raça "${raceId}" não foi encontrada.`);
+    function scrollToRaceView() {
+        if (window.innerWidth > 960) {
             return;
         }
 
-        selectedRace = raceId;
+        const raceView =
+            document.querySelector(".race-view");
 
-        racePanel.classList.remove("updating");
+        if (!raceView) {
+            return;
+        }
 
-        void racePanel.offsetWidth;
+        raceView.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
 
-        racePanel.classList.add("updating");
+    /* =====================================================
+       LISTA DE RAÇAS
+       ===================================================== */
 
-        raceName.textContent = race.name;
-        raceDifficulty.textContent =
-            createDifficultyStars(race.difficulty);
+    function renderRaceList() {
+        const search =
+            normalizeText(state.search);
 
-        raceDescription.textContent = race.description;
+        const filteredRaces =
+            races.filter((race) => {
+                const searchableContent = [
+                    race.name,
+                    race.archetype,
+                    ...(race.roles || []),
+                    race?.playstyle?.main,
+                    race?.playstyle?.secondary,
+                    race?.playstyle?.strengths
+                ].join(" ");
 
-        raceHp.textContent = race.hp;
-        raceMana.textContent = formatMana(race.mana);
-        racePoints.textContent = race.points;
+                return normalizeText(
+                    searchableContent
+                ).includes(search);
+            });
 
-        renderAttributes(race.attributes);
-        renderTraits(race.traits);
-        renderProgression(race.progression);
+        elements.raceList.innerHTML = "";
 
-        raceSelectors.forEach((selector) => {
-            const isSelected =
-                selector.dataset.race === raceId;
+        filteredRaces.forEach((race) => {
+            const accent =
+                race?.theme?.accent || "#d6b56b";
 
-            selector.classList.toggle(
-                "active",
-                isSelected
+            const itemRgb =
+                hexToRgb(accent);
+
+            const button =
+                document.createElement("button");
+
+            button.type = "button";
+
+            button.className =
+                "race-list-button";
+
+            button.dataset.race =
+                race.id;
+
+            button.style.setProperty(
+                "--item-rgb",
+                itemRgb
             );
 
-            selector.setAttribute(
-                "aria-pressed",
-                String(isSelected)
+            button.classList.toggle(
+                "active",
+                race.id === state.raceId
+            );
+
+            button.setAttribute(
+                "aria-label",
+                `Selecionar ${race.name}`
+            );
+
+            button.innerHTML = `
+                <span
+                    class="race-list-emblem"
+                    aria-hidden="true"
+                >
+                    ${race.icon || "✦"}
+                </span>
+
+                <span class="race-list-copy">
+                    <strong>
+                        ${escapeHtml(race.name)}
+                    </strong>
+
+                    <small>
+                        ${escapeHtml(race.archetype)}
+                    </small>
+                </span>
+
+                <span
+                    class="race-list-stars"
+                    aria-label="Dificuldade ${race.difficulty} de 5"
+                >
+                    ${"★".repeat(race.difficulty)}
+                </span>
+            `;
+
+            button.addEventListener(
+                "click",
+                () => {
+                    selectRace(
+                        race.id,
+                        true
+                    );
+                }
+            );
+
+            elements.raceList.appendChild(
+                button
             );
         });
+
+        elements.raceCount.textContent =
+            `${filteredRaces.length} ${
+                filteredRaces.length === 1
+                    ? "raça"
+                    : "raças"
+            }`;
+
+        if (!filteredRaces.length) {
+            elements.raceList.innerHTML = `
+                <div class="empty-state">
+                    Nenhuma raça encontrada.
+                </div>
+            `;
+        }
+    }
+
+    /* =====================================================
+       CABEÇALHO DA RAÇA
+       ===================================================== */
+
+    function renderRaceHero(race) {
+        elements.raceEmblem.textContent =
+            race.icon || "✦";
+
+        elements.raceArchetype.textContent =
+            race.archetype || "Raça de Wonderland";
+
+        elements.raceName.textContent =
+            race.name || "Raça";
+
+        elements.raceTagline.textContent =
+            race.tagline || "";
+
+        elements.raceDifficulty.textContent =
+            getDifficultyStars(
+                race.difficulty
+            );
+
+        elements.raceDifficulty.setAttribute(
+            "aria-label",
+            `Dificuldade ${race.difficulty} de 5`
+        );
+
+        elements.raceDifficultyText.textContent =
+            difficultyLabels[
+                race.difficulty
+            ] || "—";
+
+        elements.raceHp.textContent =
+            race?.stats?.hp ?? "—";
+
+        elements.raceMana.textContent =
+            race?.stats?.mana ?? "—";
+
+        elements.raceRoles.innerHTML =
+            (race.roles || [])
+                .map(
+                    (role) => `
+                        <span class="role-tag">
+                            ${escapeHtml(role)}
+                        </span>
+                    `
+                )
+                .join("");
+
+        renderAttributes(race);
+    }
+
+    function renderAttributes(race) {
+        const attributes =
+            race?.stats?.attributes || {};
+
+        const order = [
+            "FOR",
+            "DEF",
+            "RES",
+            "INI",
+            "INT",
+            "ARC"
+        ];
+
+        elements.attributeGrid.innerHTML =
+            order.map((attribute) => {
+                const value =
+                    attributes[attribute] ?? 0;
+
+                return `
+                    <article class="attribute-card">
+                        <span>
+                            ${attribute}
+                        </span>
+
+                        <strong>
+                            +${value}
+                        </strong>
+                    </article>
+                `;
+            }).join("");
+    }
+
+    /* =====================================================
+       CABEÇALHO DAS SEÇÕES
+       ===================================================== */
+
+    function createSectionHeading(
+        kicker,
+        title,
+        lead
+    ) {
+        return `
+            <header class="section-heading">
+
+                <div class="section-kicker">
+                    ${escapeHtml(kicker)}
+                </div>
+
+                <h3 class="section-title">
+                    ${escapeHtml(title)}
+                </h3>
+
+                ${
+                    lead
+                        ? `
+                            <p class="section-lead">
+                                ${escapeHtml(lead)}
+                            </p>
+                        `
+                        : ""
+                }
+
+            </header>
+        `;
+    }
+
+    /* =====================================================
+       VISÃO GERAL
+       ===================================================== */
+
+    function renderOverview(race) {
+        const description =
+            Array.isArray(race.description)
+                ? race.description
+                : [];
+
+        const paragraphs =
+            description
+                .map(
+                    (paragraph) => `
+                        <p>
+                            ${escapeHtml(paragraph)}
+                        </p>
+                    `
+                )
+                .join("");
+
+        const recommended =
+            race?.playstyle?.recommended || [];
+
+        const recommendedTags =
+            recommended
+                .map(
+                    (attribute) => `
+                        <span class="recommended-tag">
+                            ${escapeHtml(attribute)}
+                        </span>
+                    `
+                )
+                .join("");
+
+        return `
+            ${createSectionHeading(
+                "Origem e cultura",
+                `Conheça os ${race.name}`,
+                race.tagline
+            )}
+
+            <div class="overview-grid">
+
+                <article class="lore-card">
+                    ${paragraphs}
+                </article>
+
+                <aside class="playstyle-card">
+
+                    <h4 class="card-title">
+                        Estilo de Jogo
+                    </h4>
+
+                    <div class="playstyle-list">
+
+                        <div class="playstyle-row">
+                            <span>
+                                Função principal
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                                    race?.playstyle?.main
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="playstyle-row">
+                            <span>
+                                Funções secundárias
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                                    race?.playstyle?.secondary
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="playstyle-row">
+                            <span>
+                                Pontos fortes
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                                    race?.playstyle?.strengths
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="playstyle-row">
+                            <span>
+                                Pontos fracos
+                            </span>
+
+                            <strong>
+                                ${escapeHtml(
+                                    race?.playstyle?.weaknesses
+                                )}
+                            </strong>
+                        </div>
+
+                        <div class="playstyle-row">
+                            <span>
+                                Atributos recomendados
+                            </span>
+
+                            <div class="recommended-tags">
+                                ${recommendedTags}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </aside>
+
+            </div>
+        `;
+    }
+
+    /* =====================================================
+       MECÂNICAS
+       ===================================================== */
+
+    function renderMechanics(race) {
+        const mechanics =
+            Array.isArray(race.mechanics)
+                ? race.mechanics
+                : [];
+
+        const cards =
+            mechanics
+                .map(
+                    (mechanic) => `
+                        <article class="info-card">
+
+                            <h3>
+                                ${escapeHtml(
+                                    mechanic.title
+                                )}
+                            </h3>
+
+                            ${mechanic.content || ""}
+
+                        </article>
+                    `
+                )
+                .join("");
+
+        return `
+            ${createSectionHeading(
+                "Sistema racial",
+                "Mecânicas",
+                "Recursos, estados e regras que definem a identidade da raça durante o combate."
+            )}
+
+            <div class="info-grid">
+                ${
+                    cards ||
+                    `
+                        <div class="empty-state">
+                            Esta raça não possui uma mecânica
+                            especial registrada.
+                        </div>
+                    `
+                }
+            </div>
+        `;
+    }
+
+    /* =====================================================
+       TRAÇOS
+       ===================================================== */
+
+    function renderTraits(race) {
+        const traits =
+            Array.isArray(race.traits)
+                ? race.traits
+                : [];
+
+        const cards =
+            traits
+                .map(
+                    (trait) => `
+                        <article class="trait-card">
+
+                            <span class="trait-label">
+                                ${escapeHtml(
+                                    trait.label
+                                )}
+                            </span>
+
+                            <h3>
+                                ${escapeHtml(
+                                    trait.title
+                                )}
+                            </h3>
+
+                            ${trait.content || ""}
+
+                        </article>
+                    `
+                )
+                .join("");
+
+        const weakness =
+            race.weakness
+                ? `
+                    <article class="weakness-card">
+
+                        <span class="trait-label">
+                            Fraqueza racial
+                        </span>
+
+                        <h3>
+                            ${escapeHtml(
+                                race.weakness.title
+                            )}
+                        </h3>
+
+                        ${
+                            race.weakness.content ||
+                            ""
+                        }
+
+                    </article>
+                `
+                : "";
+
+        return `
+            ${createSectionHeading(
+                "Características permanentes",
+                "Traços Raciais",
+                "Passivas, resistências e limitações que acompanham o personagem durante toda a jornada."
+            )}
+
+            <div class="traits-grid">
+
+                ${
+                    cards ||
+                    `
+                        <div class="empty-state">
+                            Nenhum traço racial registrado.
+                        </div>
+                    `
+                }
+
+                ${weakness}
+
+            </div>
+        `;
+    }
+
+    /* =====================================================
+       PROGRESSÃO
+       ===================================================== */
+
+    function renderProgression(race) {
+        const progression =
+            Array.isArray(race.progression)
+                ? race.progression
+                : [];
+
+        const skills =
+            progression
+                .map(
+                    (skill, index) => {
+                        const metadata =
+                            Array.isArray(skill.meta)
+                                ? skill.meta
+                                : [];
+
+                        const metaHtml =
+                            metadata
+                                .filter(Boolean)
+                                .map(
+                                    (item) => `
+                                        <span>
+                                            ${escapeHtml(item)}
+                                        </span>
+                                    `
+                                )
+                                .join("");
+
+                        return `
+                            <details
+                                class="skill-card"
+                                ${
+                                    index === 0
+                                        ? "open"
+                                        : ""
+                                }
+                            >
+
+                                <summary class="skill-summary">
+
+                                    <span class="skill-level">
+                                        Nível
+                                        <br>
+                                        ${skill.level}
+                                    </span>
+
+                                    <span class="skill-title-wrap">
+
+                                        <small>
+                                            ${escapeHtml(
+                                                skill.category
+                                            )}
+                                        </small>
+
+                                        <strong>
+                                            ${escapeHtml(
+                                                skill.name
+                                            )}
+                                        </strong>
+
+                                    </span>
+
+                                    <span
+                                        class="skill-toggle"
+                                        aria-hidden="true"
+                                    >
+                                        ＋
+                                    </span>
+
+                                </summary>
+
+                                <div class="skill-body">
+
+                                    ${
+                                        skill.content ||
+                                        ""
+                                    }
+
+                                    ${
+                                        metaHtml
+                                            ? `
+                                                <div class="skill-meta">
+                                                    ${metaHtml}
+                                                </div>
+                                            `
+                                            : ""
+                                    }
+
+                                </div>
+
+                            </details>
+                        `;
+                    }
+                )
+                .join("");
+
+        return `
+            ${createSectionHeading(
+                "Evolução racial",
+                "Progressão de Níveis",
+                "As habilidades raciais são desbloqueadas nos níveis 1, 20, 40, 60, 80 e 100."
+            )}
+
+            <div class="progression-list">
+
+                ${
+                    skills ||
+                    `
+                        <div class="empty-state">
+                            Nenhuma habilidade racial registrada.
+                        </div>
+                    `
+                }
+
+            </div>
+        `;
+    }
+
+    /* =====================================================
+       CURIOSIDADES
+       ===================================================== */
+
+    function renderCuriosities(race) {
+        const curiosities =
+            Array.isArray(race.curiosities)
+                ? race.curiosities
+                : [];
+
+        const cards =
+            curiosities
+                .map(
+                    (curiosity) => `
+                        <article class="curiosity-card">
+
+                            <p>
+                                ${escapeHtml(curiosity)}
+                            </p>
+
+                        </article>
+                    `
+                )
+                .join("");
+
+        return `
+            ${createSectionHeading(
+                "Costumes e detalhes",
+                "Curiosidades",
+                "Informações culturais, biológicas e históricas que ajudam a interpretar personagens dessa raça."
+            )}
+
+            <div class="curiosity-grid">
+
+                ${
+                    cards ||
+                    `
+                        <div class="empty-state">
+                            Nenhuma curiosidade registrada.
+                        </div>
+                    `
+                }
+
+            </div>
+        `;
+    }
+
+    /* =====================================================
+       CONTEÚDO ATUAL
+       ===================================================== */
+
+    function renderCurrentContent() {
+        const race =
+            currentRace();
+
+        if (!race) {
+            elements.raceContent.innerHTML = `
+                <div class="empty-state">
+                    Nenhuma raça disponível.
+                </div>
+            `;
+
+            return;
+        }
+
+        const renderers = {
+            overview: renderOverview,
+            mechanics: renderMechanics,
+            traits: renderTraits,
+            progression: renderProgression,
+            curiosities: renderCuriosities
+        };
+
+        const renderer =
+            renderers[state.tab] ||
+            renderOverview;
+
+        elements.raceContent.innerHTML = `
+            <div class="content-enter">
+                ${renderer(race)}
+            </div>
+        `;
+    }
+
+    /* =====================================================
+       ABAS
+       ===================================================== */
+
+    function updateTabs() {
+        elements.tabs.forEach((tab) => {
+            const isActive =
+                tab.dataset.tab === state.tab;
+
+            tab.classList.toggle(
+                "active",
+                isActive
+            );
+
+            tab.setAttribute(
+                "aria-selected",
+                String(isActive)
+            );
+        });
+    }
+
+    function setupTabs() {
+        elements.tabs.forEach((tab) => {
+            tab.addEventListener(
+                "click",
+                () => {
+                    state.tab =
+                        tab.dataset.tab;
+
+                    updateTabs();
+                    renderCurrentContent();
+                }
+            );
+        });
+    }
+
+    /* =====================================================
+       SELEÇÃO DE RAÇA
+       ===================================================== */
+
+    function selectRace(
+        raceId,
+        updateHash = false
+    ) {
+        const race =
+            races.find(
+                (item) => item.id === raceId
+            );
+
+        if (!race) {
+            return;
+        }
+
+        state.raceId =
+            race.id;
+
+        localStorage.setItem(
+            "wonderlandSelectedRace",
+            race.id
+        );
+
+        if (updateHash) {
+            history.replaceState(
+                null,
+                "",
+                `#${race.id}`
+            );
+        }
+
+        setRaceTheme(race);
+        renderRaceList();
+        renderRaceHero(race);
+        renderCurrentContent();
 
         document.title =
             `${race.name} | Raças de Wonderland`;
+
+        if (updateHash) {
+            scrollToRaceView();
+        }
     }
 
-    /*==================================================
-                    EVENTOS DAS RAÇAS
-    ==================================================*/
+    /* =====================================================
+       PESQUISA
+       ===================================================== */
 
-    raceSelectors.forEach((selector) => {
-        selector.addEventListener("click", () => {
-            updateRace(selector.dataset.race);
-        });
-    });
+    function setupSearch() {
+        elements.raceSearch.addEventListener(
+            "input",
+            (event) => {
+                state.search =
+                    event.target.value;
 
-    if (raceCount) {
-        raceCount.textContent =
-            `${Object.keys(races).length} raças`;
-    }
-
-    /*==================================================
-                    SISTEMA DE MÚSICA
-    ==================================================*/
-
-    if (music) {
-        music.volume = 0.25;
-
-        const savedTime = Number(
-            localStorage.getItem("wonderlandMusicTime")
+                renderRaceList();
+            }
         );
 
-        function musicIsEnabled() {
+        elements.raceSearch.addEventListener(
+            "keydown",
+            (event) => {
+                if (
+                    event.key === "Escape"
+                ) {
+                    elements.raceSearch.value =
+                        "";
+
+                    state.search = "";
+
+                    renderRaceList();
+
+                    elements.raceSearch.blur();
+                }
+            }
+        );
+    }
+
+    /* =====================================================
+       PARTÍCULAS
+       ===================================================== */
+
+    function setupParticles() {
+        if (!elements.particles) {
+            return;
+        }
+
+        elements.particles.innerHTML = "";
+
+        const fragment =
+            document.createDocumentFragment();
+
+        const amount =
+            window.innerWidth <= 760
+                ? 16
+                : 28;
+
+        for (
+            let index = 0;
+            index < amount;
+            index += 1
+        ) {
+            const particle =
+                document.createElement("span");
+
+            const size =
+                1 + Math.random() * 3;
+
+            particle.className =
+                "race-particle";
+
+            particle.style.left =
+                `${Math.random() * 100}%`;
+
+            particle.style.animationDuration =
+                `${12 + Math.random() * 18}s`;
+
+            particle.style.animationDelay =
+                `${Math.random() * -24}s`;
+
+            particle.style.setProperty(
+                "--drift",
+                `${-70 + Math.random() * 140}px`
+            );
+
+            particle.style.width =
+                `${size}px`;
+
+            particle.style.height =
+                `${size}px`;
+
+            fragment.appendChild(
+                particle
+            );
+        }
+
+        elements.particles.appendChild(
+            fragment
+        );
+    }
+
+    /* =====================================================
+       MÚSICA
+       ===================================================== */
+
+    function setupMusic() {
+        const music =
+            elements.music;
+
+        const button =
+            elements.musicButton;
+
+        const icon =
+            elements.musicIcon;
+
+        if (
+            !music ||
+            !button ||
+            !icon
+        ) {
+            return;
+        }
+
+        music.volume = 0.25;
+
+        const savedTime =
+            Number(
+                localStorage.getItem(
+                    "wonderlandMusicTime"
+                ) || 0
+            );
+
+        function isMusicEnabled() {
             return (
                 localStorage.getItem(
                     "wonderlandMusicEnabled"
@@ -767,146 +1083,82 @@ document.addEventListener("DOMContentLoaded", () => {
 
         function saveMusicTime() {
             if (
-                Number.isFinite(music.currentTime) &&
-                music.currentTime >= 0
+                Number.isFinite(
+                    music.currentTime
+                )
             ) {
                 localStorage.setItem(
                     "wonderlandMusicTime",
-                    String(music.currentTime)
+                    String(
+                        music.currentTime
+                    )
                 );
             }
         }
 
         function restoreMusicTime() {
             if (
-                Number.isFinite(savedTime) &&
                 savedTime > 0 &&
-                Number.isFinite(music.duration) &&
-                savedTime < music.duration
+                Number.isFinite(
+                    music.duration
+                ) &&
+                savedTime <
+                    music.duration
             ) {
-                music.currentTime = savedTime;
+                music.currentTime =
+                    savedTime;
             }
         }
 
         function updateMusicButton() {
-            if (!musicButton || !musicIcon) {
-                return;
-            }
+            const isPlaying =
+                !music.paused;
 
-            const paused = music.paused;
-
-            musicButton.classList.toggle(
-                "paused",
-                paused
+            button.classList.toggle(
+                "playing",
+                isPlaying
             );
 
-            musicIcon.textContent =
-                paused ? "♪" : "♫";
+            icon.textContent =
+                isPlaying
+                    ? "♫"
+                    : "♪";
 
-            const label = paused
-                ? "Tocar música"
-                : "Pausar música";
+            const label =
+                isPlaying
+                    ? "Pausar música"
+                    : "Tocar música";
 
-            musicButton.setAttribute(
+            button.setAttribute(
                 "aria-label",
                 label
             );
 
-            musicButton.setAttribute(
+            button.setAttribute(
                 "title",
                 label
             );
         }
 
-        function removeUnlockListeners() {
-            document.removeEventListener(
-                "pointerdown",
-                unlockMusic
-            );
-
-            document.removeEventListener(
-                "keydown",
-                unlockMusic
-            );
-
-            document.removeEventListener(
-                "touchstart",
-                unlockMusic
-            );
-        }
-
-        function tryToPlayMusic() {
+        function attemptAutoplay() {
             if (
-                !musicIsEnabled() ||
+                !isMusicEnabled() ||
                 !music.paused
             ) {
                 return;
             }
 
-            music.play()
-                .then(() => {
-                    updateMusicButton();
-                    removeUnlockListeners();
-                })
-                .catch(() => {
-                    /*
-                     * O navegador aguardará
-                     * a primeira interação.
-                     */
-                });
-        }
-
-        function unlockMusic() {
-            if (
-                !musicIsEnabled() ||
-                !music.paused
-            ) {
-                removeUnlockListeners();
-                return;
-            }
-
-            music.play()
-                .then(() => {
-                    updateMusicButton();
-                    removeUnlockListeners();
-                })
-                .catch((error) => {
-                    console.warn(
-                        "A reprodução ainda foi bloqueada.",
-                        error
-                    );
-                });
+            music.play().catch(() => {
+                updateMusicButton();
+            });
         }
 
         music.addEventListener(
             "loadedmetadata",
             () => {
                 restoreMusicTime();
-                tryToPlayMusic();
+                attemptAutoplay();
             }
-        );
-
-        if (music.readyState >= 1) {
-            restoreMusicTime();
-            tryToPlayMusic();
-        }
-
-        document.addEventListener(
-            "pointerdown",
-            unlockMusic
-        );
-
-        document.addEventListener(
-            "touchstart",
-            unlockMusic,
-            {
-                passive: true
-            }
-        );
-
-        document.addEventListener(
-            "keydown",
-            unlockMusic
         );
 
         music.addEventListener(
@@ -936,50 +1188,179 @@ document.addEventListener("DOMContentLoaded", () => {
             saveMusicTime
         );
 
-        window.addEventListener(
-            "beforeunload",
-            saveMusicTime
+        button.addEventListener(
+            "click",
+            () => {
+                if (music.paused) {
+                    localStorage.setItem(
+                        "wonderlandMusicEnabled",
+                        "true"
+                    );
+
+                    music.play().catch(() => {
+                        updateMusicButton();
+                    });
+                } else {
+                    music.pause();
+
+                    localStorage.setItem(
+                        "wonderlandMusicEnabled",
+                        "false"
+                    );
+
+                    saveMusicTime();
+                }
+            }
         );
 
-        if (musicButton) {
-            musicButton.addEventListener(
-                "click",
-                (event) => {
-                    event.stopPropagation();
+        const unlockMusic = () => {
+            attemptAutoplay();
 
-                    if (music.paused) {
-                        localStorage.setItem(
-                            "wonderlandMusicEnabled",
-                            "true"
-                        );
-
-                        music.play()
-                            .catch((error) => {
-                                console.error(
-                                    "Não foi possível tocar a música.",
-                                    error
-                                );
-                            });
-                    } else {
-                        music.pause();
-
-                        localStorage.setItem(
-                            "wonderlandMusicEnabled",
-                            "false"
-                        );
-
-                        saveMusicTime();
-                    }
-                }
+            document.removeEventListener(
+                "pointerdown",
+                unlockMusic
             );
+
+            document.removeEventListener(
+                "keydown",
+                unlockMusic
+            );
+        };
+
+        document.addEventListener(
+            "pointerdown",
+            unlockMusic
+        );
+
+        document.addEventListener(
+            "keydown",
+            unlockMusic
+        );
+
+        if (music.readyState >= 1) {
+            restoreMusicTime();
+            attemptAutoplay();
         }
 
         updateMusicButton();
     }
 
-    /*==================================================
-                    ESTADO INICIAL
-    ==================================================*/
+    /* =====================================================
+       ALTERAÇÃO DA URL
+       ===================================================== */
 
-    updateRace(selectedRace);
+    function setupHashNavigation() {
+        window.addEventListener(
+            "hashchange",
+            () => {
+                const raceId =
+                    location.hash.replace(
+                        "#",
+                        ""
+                    );
+
+                const exists =
+                    races.some(
+                        (race) =>
+                            race.id === raceId
+                    );
+
+                if (exists) {
+                    selectRace(
+                        raceId,
+                        false
+                    );
+                }
+            }
+        );
+    }
+
+    /* =====================================================
+       ERRO DE CARREGAMENTO
+       ===================================================== */
+
+    function showDataError() {
+        elements.raceContent.innerHTML = `
+            <div class="empty-state">
+
+                <p>
+                    Os dados das raças ainda não foram
+                    carregados.
+                </p>
+
+                <p>
+                    Confirme se o arquivo
+                    <strong>js/racas-data.js</strong>
+                    existe e está sendo carregado antes de
+                    <strong>js/racas.js</strong>.
+                </p>
+
+            </div>
+        `;
+
+        elements.raceList.innerHTML = `
+            <div class="empty-state">
+                Aguardando os dados das raças.
+            </div>
+        `;
+
+        elements.raceCount.textContent =
+            "0 raças";
+    }
+
+    /* =====================================================
+       INICIALIZAÇÃO
+       ===================================================== */
+
+    function initialize() {
+        setupTabs();
+        setupSearch();
+        setupParticles();
+        setupMusic();
+        setupHashNavigation();
+
+        if (!races.length) {
+            showDataError();
+            return;
+        }
+
+        const hashRace =
+            location.hash.replace(
+                "#",
+                ""
+            );
+
+        const savedRace =
+            localStorage.getItem(
+                "wonderlandSelectedRace"
+            );
+
+        const hashExists =
+            races.some(
+                (race) =>
+                    race.id === hashRace
+            );
+
+        const savedExists =
+            races.some(
+                (race) =>
+                    race.id === savedRace
+            );
+
+        const initialRace =
+            hashExists
+                ? hashRace
+                : savedExists
+                    ? savedRace
+                    : races[0].id;
+
+        updateTabs();
+
+        selectRace(
+            initialRace,
+            false
+        );
+    }
+
+    initialize();
 });

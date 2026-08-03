@@ -13,7 +13,7 @@
 
     <meta
         name="description"
-        content="Conheça as raças disponíveis no RPG Wonderland."
+        content="Conheça os povos, poderes e progressões raciais de Wonderland."
     >
 
     <link
@@ -32,32 +32,33 @@
     >
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
     <!-- Estilos -->
     <link rel="stylesheet" href="css/global.css?v=10">
-    <link rel="stylesheet" href="css/racas.css?v=1">
+    <link rel="stylesheet" href="css/racas.css?v=10">
 </head>
 
 <body class="races-page">
 
-    <!-- Cenário -->
+    <!-- Fundo -->
     <div
         class="races-background"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Sombras das bordas -->
+    <div
+        class="races-vignette"
         aria-hidden="true"
     ></div>
 
     <!-- Partículas -->
     <div
         id="particles"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Névoa -->
-    <div
-        class="mist-layer"
+        class="races-particles"
         aria-hidden="true"
     ></div>
 
@@ -73,437 +74,349 @@
         >
     </audio>
 
-    <!-- Voltar -->
-    <a
-        href="menu.html"
-        class="races-return"
-    >
-        ← Menu
-    </a>
+    <!-- Barra superior -->
+    <header class="races-topbar">
 
-    <!-- Controle da música -->
-    <button
-        id="musicButton"
-        class="races-music-button"
-        type="button"
-        aria-label="Tocar música"
-        title="Tocar música"
-    >
-        <span
-            id="musicIcon"
-            aria-hidden="true"
+        <a
+            href="menu.html"
+            class="topbar-button topbar-return"
         >
-            ♪
-        </span>
-    </button>
+            <span aria-hidden="true">
+                ←
+            </span>
 
-    <!-- Cabeçalho -->
-    <header class="races-header">
+            <span>
+                Menu
+            </span>
+        </a>
 
-        <img
-            src="assets/images/logo.png"
-            alt="Símbolo do RPG Wonderland"
-            class="races-logo"
+        <a
+            href="index.html"
+            class="races-brand"
+            aria-label="Página inicial de Wonderland"
         >
+            <img
+                src="assets/images/logo.png"
+                alt=""
+            >
 
-        <span class="races-label">
-            Povos de Wonderland
-        </span>
+            <span>
+                Wonderland
+            </span>
+        </a>
 
-        <h1>
-            Raças
-        </h1>
-
-        <p>
-            Escolha uma raça e descubra sua origem, seus atributos,
-            suas habilidades e sua progressão dentro de Wonderland.
-        </p>
+        <button
+            id="musicButton"
+            class="topbar-button music-button"
+            type="button"
+            aria-label="Tocar música"
+            title="Tocar música"
+        >
+            <span
+                id="musicIcon"
+                aria-hidden="true"
+            >
+                ♪
+            </span>
+        </button>
 
     </header>
 
-    <!-- Conteúdo -->
-    <main class="races-layout">
+    <!-- Estrutura principal -->
+    <main class="races-codex">
 
-        <!-- Navegação lateral -->
-        <aside class="races-sidebar">
+        <!-- Lista lateral -->
+        <aside
+            class="race-index"
+            aria-label="Seleção de raças"
+        >
 
-            <div class="sidebar-heading">
+            <header class="race-index-heading">
 
-                <span>
-                    Raças disponíveis
+                <span class="race-eyebrow">
+                    Códice dos Povos
                 </span>
 
-                <small id="raceCount">
+                <h1>
+                    Raças
+                </h1>
+
+                <p>
+                    Selecione uma raça para consultar sua história,
+                    suas mecânicas e sua progressão.
+                </p>
+
+            </header>
+
+            <!-- Pesquisa -->
+            <label class="race-search">
+
+                <span aria-hidden="true">
+                    ⌕
+                </span>
+
+                <input
+                    id="raceSearch"
+                    type="search"
+                    placeholder="Procurar raça"
+                    autocomplete="off"
+                >
+
+            </label>
+
+            <!-- Contador -->
+            <div class="race-index-meta">
+
+                <span id="raceCount">
                     11 raças
-                </small>
+                </span>
+
+                <span>
+                    Wonderland
+                </span>
 
             </div>
 
+            <!-- Botões criados pelo JavaScript -->
             <nav
-                class="races-menu"
+                id="raceList"
+                class="race-list"
                 aria-label="Lista de raças"
-            >
-
-                <button
-                    class="race-selector active"
-                    type="button"
-                    data-race="humano"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Humano</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="aengel"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Aengel</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="draconato"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Draconato</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="lobisomem"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Lobisomem</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="kitsune"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Kitsune</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="leonis"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Leonis</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="tiefling"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Tiefling</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="vampiro"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Vampiro</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="elfo"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Elfo</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="fada"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Fada</span>
-                </button>
-
-                <button
-                    class="race-selector"
-                    type="button"
-                    data-race="orc"
-                >
-                    <span class="race-selector-symbol">◆</span>
-                    <span>Orc</span>
-                </button>
-
-            </nav>
+            ></nav>
 
         </aside>
 
-        <!-- Painel principal -->
-        <article
-            id="racePanel"
-            class="race-panel"
-            aria-live="polite"
-        >
+        <!-- Conteúdo da raça -->
+        <section class="race-view">
 
-            <!-- Cabeçalho da raça -->
-            <header class="race-panel-header">
+            <!-- Apresentação -->
+            <article
+                id="raceHero"
+                class="race-hero"
+            >
 
-                <div>
+                <div
+                    class="hero-ornament hero-ornament-left"
+                    aria-hidden="true"
+                ></div>
 
-                    <span class="race-panel-label">
-                        Raça selecionada
+                <div
+                    class="hero-ornament hero-ornament-right"
+                    aria-hidden="true"
+                ></div>
+
+                <!-- Símbolo -->
+                <div
+                    id="raceEmblem"
+                    class="race-emblem"
+                    aria-hidden="true"
+                >
+                    ✦
+                </div>
+
+                <!-- Nome e função -->
+                <div class="race-hero-copy">
+
+                    <span
+                        id="raceArchetype"
+                        class="race-eyebrow"
+                    >
+                        Raça adaptável
                     </span>
 
                     <h2 id="raceName">
                         Humano
                     </h2>
 
+                    <p
+                        id="raceTagline"
+                        class="race-tagline"
+                    >
+                        A maior força dos Humanos é aquilo que
+                        decidem se tornar.
+                    </p>
+
+                    <div class="race-hero-tags">
+
+                        <span
+                            id="raceDifficulty"
+                            class="difficulty-pill"
+                        >
+                            ★★☆☆☆
+                        </span>
+
+                        <div
+                            id="raceRoles"
+                            class="role-tags"
+                        ></div>
+
+                    </div>
+
                 </div>
 
-                <div class="race-difficulty">
+                <!-- Informações rápidas -->
+                <div class="hero-stats">
 
-                    <span>
-                        Dificuldade
-                    </span>
-
-                    <strong id="raceDifficulty">
-                        ★★☆☆☆
-                    </strong>
-
-                </div>
-
-            </header>
-
-            <!-- Descrição -->
-            <section class="race-section">
-
-                <h3>
-                    Descrição
-                </h3>
-
-                <p
-                    id="raceDescription"
-                    class="race-description"
-                >
-                    Os Humanos são conhecidos por sua capacidade de adaptação,
-                    ambição e diversidade. Espalhados por todos os reinos,
-                    podem seguir qualquer caminho e ocupar praticamente
-                    qualquer função dentro de Wonderland.
-                </p>
-
-            </section>
-
-            <!-- Bônus raciais -->
-            <section class="race-section">
-
-                <h3>
-                    Bônus Raciais
-                </h3>
-
-                <div class="race-bonuses">
-
-                    <div class="race-bonus-card">
+                    <article class="hero-stat">
 
                         <span>
-                            HP Inicial
+                            HP inicial
                         </span>
 
                         <strong id="raceHp">
-                            500
+                            550
                         </strong>
 
-                    </div>
+                    </article>
 
-                    <div class="race-bonus-card">
+                    <article class="hero-stat">
 
                         <span>
-                            Mana Inicial
+                            Mana racial
                         </span>
 
                         <strong id="raceMana">
-                            +50
+                            Sem bônus
                         </strong>
 
-                    </div>
+                    </article>
 
-                    <div class="race-bonus-card">
+                    <article class="hero-stat">
 
                         <span>
-                            Pontos Raciais
+                            Dificuldade
                         </span>
 
-                        <strong id="racePoints">
-                            15
+                        <strong id="raceDifficultyText">
+                            Baixa
                         </strong>
 
-                    </div>
+                    </article>
 
                 </div>
 
-            </section>
+            </article>
 
             <!-- Atributos -->
-            <section class="race-section">
+            <section
+                class="attribute-strip"
+                aria-label="Atributos raciais"
+            >
 
-                <h3>
-                    Atributos
-                </h3>
+                <header class="attribute-heading">
+
+                    <span class="race-eyebrow">
+                        Bônus Raciais
+                    </span>
+
+                    <strong>
+                        15 pontos
+                    </strong>
+
+                </header>
 
                 <div
-                    id="raceAttributes"
-                    class="attributes-grid"
+                    id="attributeGrid"
+                    class="attribute-grid"
+                ></div>
+
+            </section>
+
+            <!-- Abas -->
+            <nav
+                class="race-tabs"
+                aria-label="Seções da raça"
+                role="tablist"
+            >
+
+                <button
+                    class="race-tab active"
+                    type="button"
+                    data-tab="overview"
+                    role="tab"
+                    aria-selected="true"
                 >
+                    Visão Geral
+                </button>
 
-                    <div class="attribute-card">
-                        <span>FOR</span>
-                        <strong>+2</strong>
-                    </div>
+                <button
+                    class="race-tab"
+                    type="button"
+                    data-tab="mechanics"
+                    role="tab"
+                    aria-selected="false"
+                >
+                    Mecânicas
+                </button>
 
-                    <div class="attribute-card">
-                        <span>DEF</span>
-                        <strong>+2</strong>
-                    </div>
+                <button
+                    class="race-tab"
+                    type="button"
+                    data-tab="traits"
+                    role="tab"
+                    aria-selected="false"
+                >
+                    Traços
+                </button>
 
-                    <div class="attribute-card">
-                        <span>RES</span>
-                        <strong>+2</strong>
-                    </div>
+                <button
+                    class="race-tab"
+                    type="button"
+                    data-tab="progression"
+                    role="tab"
+                    aria-selected="false"
+                >
+                    Progressão
+                </button>
 
-                    <div class="attribute-card">
-                        <span>INI</span>
-                        <strong>+3</strong>
-                    </div>
+                <button
+                    class="race-tab"
+                    type="button"
+                    data-tab="curiosities"
+                    role="tab"
+                    aria-selected="false"
+                >
+                    Curiosidades
+                </button>
 
-                    <div class="attribute-card">
-                        <span>INT</span>
-                        <strong>+3</strong>
-                    </div>
+            </nav>
 
-                    <div class="attribute-card">
-                        <span>ARC</span>
-                        <strong>+3</strong>
-                    </div>
+            <!-- Conteúdo criado pelo JavaScript -->
+            <section
+                id="raceContent"
+                class="race-content"
+                aria-live="polite"
+            >
+
+                <div class="race-loading">
+
+                    <span aria-hidden="true">
+                        ✦
+                    </span>
+
+                    <p>
+                        Carregando o Códice de Raças...
+                    </p>
 
                 </div>
 
             </section>
 
-            <!-- Traços raciais -->
-            <section class="race-section">
-
-                <h3>
-                    Traços Raciais
-                </h3>
-
-                <div
-                    id="raceTraits"
-                    class="race-traits"
-                >
-
-                    <article class="trait-card">
-
-                        <h4>
-                            Versatilidade Humana
-                        </h4>
-
-                        <p>
-                            Humanos possuem facilidade para se adaptar a
-                            diferentes estilos de combate, profissões e
-                            situações inesperadas.
-                        </p>
-
-                    </article>
-
-                    <article class="trait-card">
-
-                        <h4>
-                            Espírito Ambicioso
-                        </h4>
-
-                        <p>
-                            Sua determinação permite superar limitações
-                            por meio de treinamento, estratégia e experiência.
-                        </p>
-
-                    </article>
-
-                </div>
-
-            </section>
-
-            <!-- Progressão -->
-            <section class="race-section">
-
-                <h3>
-                    Progressão Racial
-                </h3>
-
-                <div
-                    id="raceProgression"
-                    class="race-progression"
-                >
-
-                    <article class="progression-card">
-
-                        <span>
-                            Nível 1
-                        </span>
-
-                        <div>
-
-                            <h4>
-                                Potencial Humano
-                            </h4>
-
-                            <p>
-                                O personagem inicia sua jornada com grande
-                                liberdade para desenvolver qualquer atributo.
-                            </p>
-
-                        </div>
-
-                    </article>
-
-                    <article class="progression-card">
-
-                        <span>
-                            Nível 20
-                        </span>
-
-                        <div>
-
-                            <h4>
-                                Mestre da Adaptação
-                            </h4>
-
-                            <p>
-                                O Humano aperfeiçoa sua principal especialidade
-                                e recebe benefícios adicionais relacionados ao
-                                caminho que escolheu.
-                            </p>
-
-                        </div>
-
-                    </article>
-
-                </div>
-
-            </section>
-
-        </article>
+        </section>
 
     </main>
 
-    <script src="js/racas.js?v=2" defer></script>
+    <noscript>
+
+        <p class="noscript-message">
+            Ative o JavaScript para consultar o Códice de Raças.
+        </p>
+
+    </noscript>
+
+    <!-- Os dados precisam carregar antes da interface -->
+    <script src="js/racas-data.js?v=10"></script>
+    <script src="js/racas.js?v=10" defer></script>
 
 </body>
 

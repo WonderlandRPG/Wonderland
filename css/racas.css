@@ -1,46 +1,53 @@
-/*==================================================
-                    RAÇAS.CSS
-==================================================*/
-
-/*==========================
-            PÁGINA
-==========================*/
+/* =========================================================
+   CÓDICE DE RAÇAS — WONDERLAND
+   ========================================================= */
 
 .races-page {
-    position: relative;
+    --race-accent: #d6b56b;
+    --race-accent-2: #6e829a;
+    --race-accent-rgb: 214, 181, 107;
 
     min-height: 100vh;
-    padding-bottom: 70px;
-
+    margin: 0;
+    color: #f3f0e8;
+    background: #040708;
     overflow-x: hidden;
-    overflow-y: auto;
 }
 
-/*==========================
-          BACKGROUND
-==========================*/
+.races-page *,
+.races-page *::before,
+.races-page *::after {
+    box-sizing: border-box;
+}
+
+.races-page button,
+.races-page input {
+    font: inherit;
+}
+
+.races-page button,
+.races-page a {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================================
+   FUNDO
+   ========================================================= */
 
 .races-background {
     position: fixed;
-    inset: 0;
-
-    z-index: 0;
+    inset: -4%;
+    z-index: -4;
 
     background:
         linear-gradient(
-            rgba(2, 6, 9, 0.74),
-            rgba(2, 6, 9, 0.96)
+            rgba(2, 6, 7, 0.78),
+            rgba(2, 6, 7, 0.97)
         ),
-        url("../assets/images/background.png");
+        url("../assets/images/background.png") center / cover no-repeat;
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    transform: scale(1.06);
-
-    animation:
-        racesBackgroundMove 42s ease-in-out infinite alternate;
+    filter: saturate(0.82);
+    transform: scale(1.04);
 }
 
 .races-background::after {
@@ -51,1017 +58,2324 @@
 
     background:
         radial-gradient(
-            circle at 50% 15%,
-            rgba(79, 174, 131, 0.2),
-            transparent 38%
+            circle at 75% 15%,
+            rgba(var(--race-accent-rgb), 0.17),
+            transparent 34%
         ),
         radial-gradient(
-            circle at 50% 70%,
-            rgba(255, 216, 77, 0.05),
-            transparent 44%
+            circle at 58% 68%,
+            rgba(var(--race-accent-rgb), 0.08),
+            transparent 42%
         ),
         linear-gradient(
             90deg,
-            rgba(0, 0, 0, 0.65),
-            transparent 25%,
-            transparent 75%,
-            rgba(0, 0, 0, 0.65)
+            rgba(0, 0, 0, 0.78),
+            transparent 42%,
+            rgba(0, 0, 0, 0.24)
         );
+
+    transition: background 0.45s ease;
 }
 
-/*==========================
-            VOLTAR
-==========================*/
-
-.races-return {
+.races-vignette {
     position: fixed;
-    top: 26px;
-    left: 30px;
+    inset: 0;
+    z-index: -3;
 
-    z-index: 40;
-
-    padding: 11px 18px;
-
-    color: var(--gold);
-
-    background:
-        rgba(4, 10, 13, 0.86);
-
-    border: 1px solid rgba(255, 216, 77, 0.3);
-    border-radius: 30px;
-
-    font-family: var(--font-title);
-    font-size: 12px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-
-    backdrop-filter: blur(12px);
-
-    transition:
-        color 0.3s ease,
-        background 0.3s ease,
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-}
-
-.races-return:hover {
-    color: #17120a;
-
-    background: var(--gold);
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 0 24px rgba(255, 216, 77, 0.45);
-}
-
-/*==========================
-            MÚSICA
-==========================*/
-
-.races-music-button {
-    position: fixed;
-    top: 23px;
-    right: 28px;
-
-    z-index: 40;
-
-    width: 49px;
-    height: 49px;
-
-    display: grid;
-    place-items: center;
-
-    color: var(--gold);
-
-    background:
-        rgba(4, 10, 13, 0.86);
-
-    border: 1px solid rgba(255, 216, 77, 0.3);
-    border-radius: 50%;
-
-    font-size: 21px;
-
-    backdrop-filter: blur(12px);
-
-    transition:
-        color 0.3s ease,
-        background 0.3s ease,
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-}
-
-.races-music-button:hover {
-    color: #17120a;
-
-    background: var(--gold);
-
-    transform: scale(1.08);
-
-    box-shadow:
-        0 0 24px rgba(255, 216, 77, 0.48);
-}
-
-.races-music-button.paused {
-    color: var(--text-muted);
-
-    border-color:
-        rgba(255, 255, 255, 0.16);
-}
-
-/*==========================
-          CABEÇALHO
-==========================*/
-
-.races-header {
-    position: relative;
-    z-index: 10;
-
-    width: min(980px, calc(100% - 40px));
-    margin: 0 auto;
-    padding: 68px 20px 42px;
-
-    text-align: center;
-
-    animation:
-        racesEntrance 1s ease both;
-}
-
-.races-logo {
-    width: 118px;
-    margin: 0 auto 17px;
-
-    animation:
-        racesLogoFloat 6s ease-in-out infinite,
-        racesLogoGlow 4s ease-in-out infinite;
-}
-
-.races-label {
-    color: var(--green-light);
-
-    font-family: var(--font-title);
-    font-size: 11px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-}
-
-.races-header h1 {
-    margin-top: 10px;
-
-    color: var(--gold);
-
-    font-family: var(--font-title);
-    font-size: clamp(44px, 7vw, 76px);
-    line-height: 1.05;
-    letter-spacing: 9px;
-    text-transform: uppercase;
-
-    text-shadow:
-        0 0 15px rgba(255, 216, 77, 0.55),
-        0 0 42px rgba(255, 216, 77, 0.2);
-}
-
-.races-header p {
-    max-width: 740px;
-    margin: 18px auto 0;
-
-    color: var(--text-soft);
-
-    font-size: 22px;
-    line-height: 1.55;
-
-    text-shadow:
-        0 2px 12px rgba(0, 0, 0, 0.95);
-}
-
-/*==========================
-            LAYOUT
-==========================*/
-
-.races-layout {
-    position: relative;
-    z-index: 10;
-
-    width: min(1450px, calc(100% - 40px));
-    margin: 0 auto;
-
-    display: grid;
-    grid-template-columns:
-        minmax(250px, 0.52fr)
-        minmax(0, 1.48fr);
-
-    gap: 26px;
-    align-items: start;
-
-    animation:
-        racesEntrance 1s 0.12s ease both;
-}
-
-/*==========================
-          MENU LATERAL
-==========================*/
-
-.races-sidebar {
-    position: sticky;
-    top: 25px;
-
-    min-width: 0;
-    padding: 25px 20px;
+    pointer-events: none;
 
     background:
         linear-gradient(
             180deg,
-            rgba(9, 18, 19, 0.97),
-            rgba(4, 9, 11, 0.99)
+            rgba(0, 0, 0, 0.48),
+            transparent 25%,
+            transparent 76%,
+            rgba(0, 0, 0, 0.72)
+        ),
+        radial-gradient(
+            circle at center,
+            transparent 32%,
+            rgba(0, 0, 0, 0.72) 100%
         );
+}
 
-    border:
-        1px solid rgba(255, 216, 77, 0.24);
-    border-radius: 16px;
+/* =========================================================
+   PARTÍCULAS
+   ========================================================= */
 
-    backdrop-filter: blur(16px);
+.races-particles {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.race-particle {
+    position: absolute;
+    bottom: -20px;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: var(--race-accent);
 
     box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.5),
-        inset 0 0 40px rgba(79, 174, 131, 0.025);
+        0 0 12px rgba(var(--race-accent-rgb), 0.8);
+
+    opacity: 0;
+
+    animation:
+        particleRise linear infinite;
 }
 
-.sidebar-heading {
-    padding: 0 4px 18px;
+@keyframes particleRise {
+    0% {
+        opacity: 0;
 
-    display: flex;
+        transform:
+            translate3d(0, 0, 0)
+            scale(0.5);
+    }
+
+    18% {
+        opacity: 0.58;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate3d(
+                var(--drift),
+                -112vh,
+                0
+            )
+            scale(1.2);
+    }
+}
+
+/* =========================================================
+   BARRA SUPERIOR
+   ========================================================= */
+
+.races-topbar {
+    position: relative;
+    z-index: 30;
+
+    width: min(
+        1600px,
+        calc(100% - 38px)
+    );
+
+    min-height: 78px;
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: space-between;
-    gap: 15px;
-
-    border-bottom:
-        1px solid rgba(255, 255, 255, 0.08);
+    gap: 20px;
 }
 
-.sidebar-heading span {
-    color: var(--gold);
+.topbar-button {
+    min-height: 42px;
+    padding: 0 16px;
 
-    font-family: var(--font-title);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    color: #d8d2c5;
+
+    background:
+        rgba(5, 10, 11, 0.76);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.1);
+
+    border-radius: 999px;
+
+    backdrop-filter: blur(14px);
+
+    text-decoration: none;
+    cursor: pointer;
+
+    transition:
+        color 0.25s ease,
+        border-color 0.25s ease,
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+.topbar-button:hover {
+    color: #fff8e4;
+
+    border-color:
+        rgba(var(--race-accent-rgb), 0.5);
+
+    background:
+        rgba(var(--race-accent-rgb), 0.1);
+
+    transform: translateY(-2px);
+}
+
+.topbar-return {
+    justify-self: start;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.music-button {
+    justify-self: end;
+
+    width: 44px;
+    padding: 0;
+
+    color: var(--race-accent);
+}
+
+.music-button.playing {
+    box-shadow:
+        0 0 26px
+        rgba(var(--race-accent-rgb), 0.22);
+}
+
+.races-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #eee8dc;
+
+    text-decoration: none;
+
+    font-family:
+        "Cinzel",
+        serif;
+
     font-size: 12px;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
 }
 
-.sidebar-heading small {
-    color: var(--text-muted);
+.races-brand img {
+    width: 34px;
+    height: 34px;
 
-    font-size: 14px;
-}
+    object-fit: contain;
 
-/*==========================
-          LISTA DE RAÇAS
-==========================*/
-
-.races-menu {
-    margin-top: 18px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
-.race-selector {
-    position: relative;
-
-    width: 100%;
-    padding: 14px 15px;
-
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    color: #c9cecc;
-
-    background:
-        rgba(255, 255, 255, 0.018);
-
-    border:
-        1px solid transparent;
-    border-radius: 8px;
-
-    font-family: var(--font-title);
-    font-size: 13px;
-    letter-spacing: 1.2px;
-    text-align: left;
-    text-transform: uppercase;
-
-    transition:
-        color 0.3s ease,
-        background 0.3s ease,
-        border-color 0.3s ease,
-        transform 0.3s ease,
-        box-shadow 0.3s ease;
-}
-
-.race-selector:hover {
-    color: var(--gold-light);
-
-    background:
-        rgba(255, 216, 77, 0.055);
-
-    border-color:
-        rgba(255, 216, 77, 0.18);
-
-    transform: translateX(4px);
-}
-
-.race-selector.active {
-    color: #11150f;
-
-    background:
-        linear-gradient(
-            90deg,
-            var(--gold),
-            var(--gold-dark)
+    filter:
+        drop-shadow(
+            0 0 12px
+            rgba(var(--race-accent-rgb), 0.25)
         );
+}
 
-    border-color:
-        rgba(255, 238, 157, 0.52);
+/* =========================================================
+   ESTRUTURA PRINCIPAL
+   ========================================================= */
+
+.races-codex {
+    position: relative;
+    z-index: 10;
+
+    width: min(
+        1600px,
+        calc(100% - 38px)
+    );
+
+    margin: 0 auto;
+    padding: 12px 0 60px;
+
+    display: grid;
+    grid-template-columns:
+        290px
+        minmax(0, 1fr);
+
+    gap: 22px;
+    align-items: start;
+}
+
+.race-index,
+.race-view > section,
+.race-hero {
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.09);
 
     box-shadow:
-        0 0 20px rgba(255, 216, 77, 0.2);
+        0 26px 70px
+        rgba(0, 0, 0, 0.32);
+
+    backdrop-filter:
+        blur(17px);
 }
 
-.race-selector-symbol {
-    flex: 0 0 auto;
+/* =========================================================
+   ÍNDICE LATERAL
+   ========================================================= */
 
-    color: var(--green-light);
+.race-index {
+    position: sticky;
+    top: 18px;
 
-    font-size: 10px;
+    max-height:
+        calc(100vh - 36px);
 
-    transition:
-        color 0.3s ease,
-        transform 0.3s ease;
-}
-
-.race-selector:hover .race-selector-symbol {
-    transform: rotate(45deg);
-}
-
-.race-selector.active .race-selector-symbol {
-    color: #1d4d38;
-
-    transform: rotate(45deg);
-}
-
-/*==========================
-          PAINEL PRINCIPAL
-==========================*/
-
-.race-panel {
-    position: relative;
-
-    min-width: 0;
-    padding: 48px 44px;
+    padding:
+        25px
+        18px
+        18px;
 
     overflow: hidden;
 
     background:
         linear-gradient(
             180deg,
-            rgba(10, 20, 20, 0.98),
-            rgba(4, 8, 10, 0.995)
+            rgba(8, 15, 16, 0.94),
+            rgba(3, 8, 9, 0.97)
         );
 
-    border:
-        1px solid rgba(255, 216, 77, 0.25);
     border-radius: 18px;
-
-    backdrop-filter: blur(18px);
-
-    box-shadow:
-        0 28px 70px rgba(0, 0, 0, 0.54),
-        inset 0 0 48px rgba(79, 174, 131, 0.025);
 }
 
-.race-panel::before,
-.race-panel::after {
-    content: "";
-
-    position: absolute;
-
-    width: 64px;
-    height: 64px;
-
-    pointer-events: none;
-
-    border-color:
-        rgba(255, 216, 77, 0.48);
+.race-index-heading {
+    padding:
+        0
+        5px
+        18px;
 }
 
-.race-panel::before {
-    top: 14px;
-    left: 14px;
+.race-eyebrow {
+    color:
+        var(--race-accent);
 
-    border-top: 2px solid;
-    border-left: 2px solid;
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
 }
 
-.race-panel::after {
-    right: 14px;
-    bottom: 14px;
+.race-index-heading h1 {
+    margin:
+        5px
+        0
+        8px;
 
-    border-right: 2px solid;
-    border-bottom: 2px solid;
-}
+    color: #f4ead2;
 
-.race-panel.updating {
-    animation:
-        racePanelUpdate 0.35s ease;
-}
+    font-family:
+        "Cinzel",
+        serif;
 
-/*==========================
-      CABEÇALHO DA RAÇA
-==========================*/
-
-.race-panel-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 25px;
-
-    padding-bottom: 25px;
-
-    border-bottom:
-        1px solid rgba(255, 216, 77, 0.16);
-}
-
-.race-panel-label {
-    color: var(--green-light);
-
-    font-family: var(--font-title);
-    font-size: 10px;
+    font-size: 29px;
+    font-weight: 600;
     letter-spacing: 4px;
     text-transform: uppercase;
 }
 
-.race-panel-header h2 {
-    margin-top: 9px;
+.race-index-heading p {
+    margin: 0;
 
-    color: var(--gold);
+    color: #aeb6b3;
 
-    font-family: var(--font-title);
-    font-size: clamp(38px, 5vw, 58px);
-    line-height: 1.08;
-    letter-spacing: 3px;
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 17px;
+    line-height: 1.42;
+}
+
+/* =========================================================
+   PESQUISA
+   ========================================================= */
+
+.race-search {
+    height: 42px;
+    padding:
+        0
+        13px;
+
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    color:
+        var(--race-accent);
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    border-radius: 10px;
+}
+
+.race-search input {
+    width: 100%;
+
+    color: #f4f1ea;
+    background: transparent;
+
+    border: 0;
+    outline: 0;
+
+    font-size: 14px;
+}
+
+.race-search input::placeholder {
+    color: #77807d;
+}
+
+.race-index-meta {
+    margin:
+        14px
+        4px
+        8px;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+
+    color: #707a77;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 8px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+}
+
+/* =========================================================
+   LISTA DE RAÇAS
+   ========================================================= */
+
+.race-list {
+    max-height:
+        calc(100vh - 250px);
+
+    padding:
+        4px
+        2px
+        4px
+        0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        rgba(var(--race-accent-rgb), 0.42)
+        transparent;
+}
+
+.race-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.race-list::-webkit-scrollbar-thumb {
+    background:
+        rgba(var(--race-accent-rgb), 0.42);
+
+    border-radius: 999px;
+}
+
+.race-list-button {
+    position: relative;
+
+    width: 100%;
+    min-height: 51px;
+
+    padding:
+        7px
+        10px;
+
+    display: grid;
+    grid-template-columns:
+        36px
+        minmax(0, 1fr)
+        auto;
+
+    align-items: center;
+    gap: 10px;
+
+    color: #bcc3c0;
+
+    background: transparent;
+
+    border:
+        1px solid
+        transparent;
+
+    border-radius: 10px;
+
+    text-align: left;
+    cursor: pointer;
+
+    overflow: hidden;
+
+    transition:
+        color 0.23s ease,
+        background 0.23s ease,
+        border-color 0.23s ease,
+        transform 0.23s ease;
+}
+
+.race-list-button::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(var(--item-rgb), 0.14),
+            transparent 76%
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity 0.23s ease;
+}
+
+.race-list-button:hover {
+    color: #fff7e5;
+
+    border-color:
+        rgba(var(--item-rgb), 0.18);
+
+    transform:
+        translateX(3px);
+}
+
+.race-list-button:hover::before {
+    opacity: 1;
+}
+
+.race-list-button.active {
+    color: #fff8e4;
+
+    background:
+        rgba(var(--item-rgb), 0.11);
+
+    border-color:
+        rgba(var(--item-rgb), 0.38);
+
+    box-shadow:
+        inset 3px 0 0
+        rgb(var(--item-rgb));
+}
+
+.race-list-button.active::before {
+    opacity: 1;
+}
+
+.race-list-emblem {
+    position: relative;
+    z-index: 1;
+
+    width: 35px;
+    height: 35px;
+
+    display: grid;
+    place-items: center;
+
+    color:
+        rgb(var(--item-rgb));
+
+    background:
+        rgba(var(--item-rgb), 0.09);
+
+    border:
+        1px solid
+        rgba(var(--item-rgb), 0.22);
+
+    border-radius: 50%;
+
+    font-size: 15px;
+}
+
+.race-list-copy {
+    position: relative;
+    z-index: 1;
+
+    min-width: 0;
+}
+
+.race-list-copy strong,
+.race-list-copy small {
+    display: block;
+}
+
+.race-list-copy strong {
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+}
+
+.race-list-copy small {
+    margin-top: 2px;
+
+    color: #747d7a;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.race-list-stars {
+    position: relative;
+    z-index: 1;
+
+    color:
+        rgb(var(--item-rgb));
+
+    font-size: 8px;
+    letter-spacing: 1px;
+}
+
+/* =========================================================
+   PAINEL DA RAÇA
+   ========================================================= */
+
+.race-view {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* =========================================================
+   APRESENTAÇÃO PRINCIPAL
+   ========================================================= */
+
+.race-hero {
+    position: relative;
+
+    min-height: 340px;
+
+    padding:
+        45px
+        43px
+        36px;
+
+    display: grid;
+    grid-template-columns:
+        150px
+        minmax(0, 1fr)
+        230px;
+
+    gap: 34px;
+    align-items: center;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 84% 12%,
+            rgba(var(--race-accent-rgb), 0.25),
+            transparent 33%
+        ),
+        linear-gradient(
+            135deg,
+            rgba(var(--race-accent-rgb), 0.1),
+            rgba(5, 10, 11, 0.95) 48%,
+            rgba(3, 7, 8, 0.99)
+        );
+
+    border-color:
+        rgba(var(--race-accent-rgb), 0.25);
+
+    border-radius: 22px;
+
+    transition:
+        background 0.42s ease,
+        border-color 0.42s ease;
+}
+
+.race-hero::before {
+    content: "";
+
+    position: absolute;
+
+    width: 520px;
+    height: 520px;
+
+    right: -130px;
+    top: -230px;
+
+    border:
+        1px solid
+        rgba(var(--race-accent-rgb), 0.14);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 0 42px
+        rgba(var(--race-accent-rgb), 0.035),
+
+        0 0 0 90px
+        rgba(var(--race-accent-rgb), 0.02);
+}
+
+.race-hero::after {
+    content: "";
+
+    position: absolute;
+
+    inset:
+        auto
+        0
+        0;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(var(--race-accent-rgb), 0.65),
+            transparent
+        );
+}
+
+/* =========================================================
+   ORNAMENTOS
+   ========================================================= */
+
+.hero-ornament {
+    position: absolute;
+
+    width: 88px;
+    height: 88px;
+
+    pointer-events: none;
+
+    opacity: 0.45;
+}
+
+.hero-ornament::before,
+.hero-ornament::after {
+    content: "";
+
+    position: absolute;
+
+    background:
+        rgba(var(--race-accent-rgb), 0.55);
+}
+
+.hero-ornament::before {
+    width: 100%;
+    height: 1px;
+}
+
+.hero-ornament::after {
+    width: 1px;
+    height: 100%;
+}
+
+.hero-ornament-left {
+    top: 18px;
+    left: 18px;
+}
+
+.hero-ornament-right {
+    right: 18px;
+    bottom: 18px;
+
+    transform:
+        rotate(180deg);
+}
+
+/* =========================================================
+   EMBLEMA
+   ========================================================= */
+
+.race-emblem {
+    position: relative;
+    z-index: 2;
+
+    width: 138px;
+    height: 138px;
+
+    display: grid;
+    place-items: center;
+
+    color:
+        var(--race-accent);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(var(--race-accent-rgb), 0.15),
+            rgba(var(--race-accent-rgb), 0.025) 66%
+        );
+
+    border:
+        1px solid
+        rgba(var(--race-accent-rgb), 0.38);
+
+    border-radius: 50%;
+
+    font-size: 53px;
+
+    text-shadow:
+        0 0 25px
+        rgba(var(--race-accent-rgb), 0.62);
+
+    box-shadow:
+        inset 0 0 34px
+        rgba(var(--race-accent-rgb), 0.09),
+
+        0 0 44px
+        rgba(var(--race-accent-rgb), 0.09);
+}
+
+.race-emblem::before,
+.race-emblem::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 10px;
+
+    border:
+        1px solid
+        rgba(var(--race-accent-rgb), 0.17);
+
+    border-radius: 50%;
+}
+
+.race-emblem::after {
+    inset: -8px;
+
+    border-style: dashed;
+
+    animation:
+        emblemSpin 26s linear infinite;
+}
+
+@keyframes emblemSpin {
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+/* =========================================================
+   TEXTO PRINCIPAL
+   ========================================================= */
+
+.race-hero-copy {
+    position: relative;
+    z-index: 2;
+
+    min-width: 0;
+}
+
+.race-hero-copy h2 {
+    margin:
+        8px
+        0
+        11px;
+
+    color: #fff4dc;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size:
+        clamp(
+            41px,
+            5vw,
+            72px
+        );
+
+    font-weight: 600;
+    line-height: 0.98;
+    letter-spacing: 4px;
     text-transform: uppercase;
 
     text-shadow:
-        0 0 18px rgba(255, 216, 77, 0.23);
+        0 0 26px
+        rgba(var(--race-accent-rgb), 0.25),
+
+        0 4px 18px
+        rgba(0, 0, 0, 0.75);
 }
 
-.race-difficulty {
-    flex: 0 0 auto;
+.race-tagline {
+    max-width: 780px;
+    margin: 0;
 
-    min-width: 155px;
-    padding: 14px 16px;
+    color: #cbd2cf;
 
-    text-align: center;
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size:
+        clamp(
+            19px,
+            2vw,
+            24px
+        );
+
+    line-height: 1.42;
+}
+
+.race-hero-tags,
+.role-tags {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.race-hero-tags {
+    margin-top: 22px;
+}
+
+/* =========================================================
+   ETIQUETAS
+   ========================================================= */
+
+.difficulty-pill,
+.role-tag {
+    min-height: 30px;
+    padding:
+        0
+        11px;
+
+    display: inline-flex;
+    align-items: center;
+
+    border-radius: 999px;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 9px;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+}
+
+.difficulty-pill {
+    color:
+        var(--race-accent);
+
+    background:
+        rgba(var(--race-accent-rgb), 0.1);
+
+    border:
+        1px solid
+        rgba(var(--race-accent-rgb), 0.3);
+
+    letter-spacing: 2px;
+}
+
+.role-tag {
+    color: #c1c9c6;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+}
+
+/* =========================================================
+   ESTATÍSTICAS DO CABEÇALHO
+   ========================================================= */
+
+.hero-stats {
+    position: relative;
+    z-index: 2;
+
+    display: grid;
+    gap: 9px;
+}
+
+.hero-stat {
+    min-height: 72px;
+
+    padding:
+        13px
+        16px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    background:
+        rgba(2, 7, 8, 0.58);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.075);
+
+    border-radius: 11px;
+}
+
+.hero-stat span {
+    color: #7f8b87;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 8px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+}
+
+.hero-stat strong {
+    margin-top: 5px;
+
+    color: #f6ead1;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* =========================================================
+   ATRIBUTOS
+   ========================================================= */
+
+.attribute-strip {
+    padding:
+        18px
+        22px;
+
+    display: grid;
+    grid-template-columns:
+        150px
+        minmax(0, 1fr);
+
+    gap: 18px;
+    align-items: center;
+
+    background:
+        rgba(5, 11, 12, 0.9);
+
+    border-radius: 15px;
+}
+
+.attribute-heading {
+    padding-right: 17px;
+
+    border-right:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+}
+
+.attribute-heading span,
+.attribute-heading strong {
+    display: block;
+}
+
+.attribute-heading strong {
+    margin-top: 5px;
+
+    color: #e6dfd1;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 17px;
+}
+
+.attribute-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            6,
+            minmax(0, 1fr)
+        );
+
+    gap: 9px;
+}
+
+.attribute-card {
+    min-height: 63px;
+
+    padding:
+        10px
+        12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
 
     background:
         rgba(255, 255, 255, 0.025);
 
     border:
-        1px solid rgba(255, 255, 255, 0.08);
+        1px solid
+        rgba(255, 255, 255, 0.07);
+
     border-radius: 9px;
 }
 
-.race-difficulty span {
-    display: block;
+.attribute-card span {
+    color: #84908c;
 
-    margin-bottom: 8px;
+    font-family:
+        "Cinzel",
+        serif;
 
-    color: var(--text-muted);
-
-    font-family: var(--font-title);
     font-size: 9px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
+    letter-spacing: 1.5px;
 }
 
-.race-difficulty strong {
-    color: var(--gold);
+.attribute-card strong {
+    color:
+        var(--race-accent);
 
-    font-size: 21px;
-    letter-spacing: 3px;
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 19px;
+    font-weight: 600;
 }
 
-/*==========================
-            SEÇÕES
-==========================*/
+/* =========================================================
+   ABAS
+   ========================================================= */
 
-.race-section {
-    margin-top: 31px;
-    padding-top: 25px;
+.race-tabs {
+    min-height: 58px;
+    padding: 7px;
 
-    border-top:
-        1px solid rgba(255, 255, 255, 0.075);
-}
-
-.race-section:first-of-type {
-    margin-top: 0;
-    padding-top: 30px;
-
-    border-top: 0;
-}
-
-.race-section h3 {
-    margin-bottom: 18px;
-
-    color: var(--green-light);
-
-    font-family: var(--font-title);
-    font-size: 12px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-}
-
-/*==========================
-          DESCRIÇÃO
-==========================*/
-
-.race-description {
-    color: #d5dad9;
-
-    font-size: 21px;
-    line-height: 1.7;
-}
-
-/*==========================
-        BÔNUS RACIAIS
-==========================*/
-
-.race-bonuses {
     display: grid;
     grid-template-columns:
-        repeat(3, minmax(0, 1fr));
+        repeat(
+            5,
+            minmax(0, 1fr)
+        );
 
-    gap: 14px;
+    gap: 6px;
+
+    background:
+        rgba(5, 11, 12, 0.92);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.09);
+
+    border-radius: 14px;
+
+    backdrop-filter:
+        blur(17px);
 }
 
-.race-bonus-card {
-    padding: 20px 18px;
+.race-tab {
+    position: relative;
 
-    text-align: center;
+    min-height: 43px;
+
+    color: #8f9a96;
+    background: transparent;
+
+    border: 0;
+    border-radius: 9px;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 9px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        color 0.22s ease,
+        background 0.22s ease;
+}
+
+.race-tab:hover {
+    color: #f7efdf;
+}
+
+.race-tab.active {
+    color: #fff7e4;
+
+    background:
+        rgba(var(--race-accent-rgb), 0.11);
+}
+
+.race-tab.active::after {
+    content: "";
+
+    position: absolute;
+
+    right: 18%;
+    bottom: 3px;
+    left: 18%;
+
+    height: 1px;
+
+    background:
+        var(--race-accent);
+
+    box-shadow:
+        0 0 12px
+        rgba(var(--race-accent-rgb), 0.75);
+}
+
+/* =========================================================
+   CONTEÚDO
+   ========================================================= */
+
+.race-content {
+    min-height: 420px;
+
+    padding: 32px;
 
     background:
         linear-gradient(
             180deg,
-            rgba(255, 216, 77, 0.065),
-            rgba(255, 255, 255, 0.018)
+            rgba(7, 14, 15, 0.95),
+            rgba(3, 8, 9, 0.975)
         );
 
     border:
-        1px solid rgba(255, 216, 77, 0.14);
-    border-radius: 10px;
+        1px solid
+        rgba(255, 255, 255, 0.09);
 
-    transition:
-        transform 0.3s ease,
-        border-color 0.3s ease,
-        box-shadow 0.3s ease;
-}
-
-.race-bonus-card:hover {
-    transform: translateY(-3px);
-
-    border-color:
-        rgba(255, 216, 77, 0.3);
+    border-radius: 18px;
 
     box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.25);
+        0 26px 70px
+        rgba(0, 0, 0, 0.3);
+
+    backdrop-filter:
+        blur(17px);
 }
 
-.race-bonus-card span {
-    display: block;
+.content-enter {
+    animation:
+        contentEnter 0.33s ease both;
+}
 
-    margin-bottom: 8px;
+@keyframes contentEnter {
+    from {
+        opacity: 0;
 
-    color: var(--text-muted);
+        transform:
+            translateY(8px);
+    }
 
-    font-family: var(--font-title);
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+/* =========================================================
+   CARREGAMENTO
+   ========================================================= */
+
+.race-loading {
+    min-height: 350px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 13px;
+
+    color: #8e9995;
+
+    text-align: center;
+}
+
+.race-loading span {
+    color:
+        var(--race-accent);
+
+    font-size: 34px;
+
+    animation:
+        loadingPulse 1.7s ease-in-out infinite;
+}
+
+.race-loading p {
+    margin: 0;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 19px;
+}
+
+@keyframes loadingPulse {
+    0%,
+    100% {
+        opacity: 0.35;
+
+        transform:
+            scale(0.9)
+            rotate(0deg);
+    }
+
+    50% {
+        opacity: 1;
+
+        transform:
+            scale(1.1)
+            rotate(90deg);
+    }
+}
+
+/* =========================================================
+   TÍTULOS DE SEÇÃO
+   ========================================================= */
+
+.section-heading {
+    margin-bottom: 24px;
+}
+
+.section-kicker {
+    margin-bottom: 7px;
+
+    color:
+        var(--race-accent);
+
+    font-family:
+        "Cinzel",
+        serif;
+
     font-size: 9px;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
 }
 
-.race-bonus-card strong {
-    color: var(--gold-light);
+.section-title {
+    margin: 0;
 
-    font-family: var(--font-title);
-    font-size: 25px;
-    font-weight: 600;
+    color: #f4ead7;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size:
+        clamp(
+            25px,
+            3vw,
+            38px
+        );
+
+    font-weight: 500;
+    letter-spacing: 1px;
 }
 
-/*==========================
-          ATRIBUTOS
-==========================*/
+.section-lead {
+    max-width: 930px;
 
-.attributes-grid {
+    margin:
+        10px
+        0
+        0;
+
+    color: #9ba7a3;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 19px;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   VISÃO GERAL
+   ========================================================= */
+
+.overview-grid {
     display: grid;
     grid-template-columns:
-        repeat(6, minmax(0, 1fr));
+        minmax(0, 1.6fr)
+        minmax(260px, 0.8fr);
 
-    gap: 11px;
+    gap: 22px;
 }
 
-.attribute-card {
-    padding: 17px 10px;
-
-    text-align: center;
-
+.lore-card,
+.playstyle-card,
+.info-card,
+.trait-card,
+.weakness-card,
+.curiosity-card {
     background:
         rgba(255, 255, 255, 0.025);
 
     border:
-        1px solid rgba(255, 255, 255, 0.075);
-    border-radius: 8px;
+        1px solid
+        rgba(255, 255, 255, 0.075);
 
-    transition:
-        transform 0.3s ease,
-        background 0.3s ease,
-        border-color 0.3s ease;
+    border-radius: 13px;
 }
 
-.attribute-card:hover {
-    transform: translateY(-3px);
+.lore-card {
+    padding:
+        27px
+        29px;
+}
+
+.lore-card p {
+    margin:
+        0
+        0
+        16px;
+
+    color: #cbd2cf;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 20px;
+    line-height: 1.67;
+}
+
+.lore-card p:last-child {
+    margin-bottom: 0;
+}
+
+.playstyle-card {
+    padding: 24px;
+}
+
+.card-title {
+    margin:
+        0
+        0
+        16px;
+
+    color: #eee3cd;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.playstyle-list {
+    display: grid;
+    gap: 14px;
+}
+
+.playstyle-row {
+    padding-bottom: 12px;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.065);
+}
+
+.playstyle-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.playstyle-row span,
+.playstyle-row strong {
+    display: block;
+}
+
+.playstyle-row span {
+    color: #717d79;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.playstyle-row strong {
+    margin-top: 5px;
+
+    color: #cfd6d2;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.recommended-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+
+    margin-top: 7px;
+}
+
+.recommended-tag {
+    padding:
+        5px
+        8px;
+
+    color:
+        var(--race-accent);
 
     background:
-        rgba(79, 174, 131, 0.07);
+        rgba(var(--race-accent-rgb), 0.08);
 
-    border-color:
-        rgba(79, 174, 131, 0.26);
+    border:
+        1px solid
+        rgba(var(--race-accent-rgb), 0.2);
+
+    border-radius: 7px;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 9px;
 }
 
-.attribute-card span {
-    display: block;
+/* =========================================================
+   MECÂNICAS E TRAÇOS
+   ========================================================= */
 
-    margin-bottom: 7px;
-
-    color: var(--green-light);
-
-    font-family: var(--font-title);
-    font-size: 10px;
-    letter-spacing: 2px;
-}
-
-.attribute-card strong {
-    color: var(--gold-light);
-
-    font-size: 23px;
-    font-weight: 600;
-}
-
-/*==========================
-        TRAÇOS RACIAIS
-==========================*/
-
-.race-traits {
+.info-grid,
+.traits-grid {
     display: grid;
     grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
 
     gap: 15px;
 }
 
-.trait-card {
+.info-card,
+.trait-card,
+.weakness-card {
     position: relative;
 
-    padding: 22px 22px 22px 26px;
-
-    background:
-        rgba(255, 255, 255, 0.022);
-
-    border:
-        1px solid rgba(255, 255, 255, 0.075);
-    border-radius: 10px;
+    padding:
+        24px
+        25px;
 
     overflow: hidden;
 }
 
-.trait-card::before {
+.info-card::before,
+.trait-card::before,
+.weakness-card::before {
     content: "";
 
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
+
+    inset:
+        0
+        auto
+        0
+        0;
 
     width: 3px;
 
     background:
         linear-gradient(
             180deg,
-            var(--gold),
-            var(--green)
+            var(--race-accent),
+            var(--race-accent-2)
         );
 }
 
-.trait-card h4 {
-    color: var(--gold-light);
+.info-card h3,
+.trait-card h3,
+.weakness-card h3 {
+    margin:
+        0
+        0
+        12px;
 
-    font-family: var(--font-title);
+    color: #eee4d1;
+
+    font-family:
+        "Cinzel",
+        serif;
+
     font-size: 16px;
-    letter-spacing: 1px;
+    font-weight: 500;
+    letter-spacing: 0.8px;
 }
 
-.trait-card p {
-    margin-top: 10px;
+.info-card p,
+.trait-card p,
+.weakness-card p,
+.info-card li,
+.trait-card li,
+.weakness-card li {
+    color: #b8c1be;
 
-    color: #cfd4d2;
+    font-family:
+        "Cormorant Garamond",
+        serif;
 
-    font-size: 18px;
-    line-height: 1.58;
+    font-size: 17px;
+    line-height: 1.56;
 }
 
-/*==========================
-         PROGRESSÃO
-==========================*/
-
-.race-progression {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+.info-card p,
+.trait-card p,
+.weakness-card p {
+    margin:
+        0
+        0
+        11px;
 }
 
-.progression-card {
-    display: grid;
-    grid-template-columns:
-        110px
-        minmax(0, 1fr);
-
-    gap: 20px;
-    align-items: start;
-
-    padding: 19px 21px;
-
-    background:
-        rgba(255, 255, 255, 0.022);
-
-    border:
-        1px solid rgba(255, 255, 255, 0.075);
-    border-radius: 9px;
+.info-card p:last-child,
+.trait-card p:last-child,
+.weakness-card p:last-child {
+    margin-bottom: 0;
 }
 
-.progression-card > span {
+.info-card ul,
+.trait-card ul,
+.weakness-card ul,
+.skill-body ul {
+    margin:
+        9px
+        0
+        12px;
+
+    padding-left: 19px;
+}
+
+.info-card li + li,
+.trait-card li + li,
+.weakness-card li + li,
+.skill-body li + li {
+    margin-top: 5px;
+}
+
+.info-card strong,
+.trait-card strong,
+.weakness-card strong,
+.skill-body strong {
+    color: #f1e6ce;
+    font-weight: 600;
+}
+
+.trait-label {
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
 
-    min-height: 38px;
-    padding: 8px 10px;
+    margin-bottom: 11px;
 
-    color: #10140f;
+    color:
+        var(--race-accent);
 
-    background:
-        linear-gradient(
-            180deg,
-            var(--gold-light),
-            var(--gold-dark)
-        );
+    font-family:
+        "Cinzel",
+        serif;
 
-    border-radius: 20px;
-
-    font-family: var(--font-title);
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 8px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
 }
 
-.progression-card h4 {
-    color: var(--gold-light);
+/* =========================================================
+   FRAQUEZA RACIAL
+   ========================================================= */
 
-    font-family: var(--font-title);
-    font-size: 16px;
-    letter-spacing: 1px;
+.weakness-card {
+    grid-column: 1 / -1;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(178, 53, 63, 0.07),
+            rgba(255, 255, 255, 0.02)
+        );
+
+    border-color:
+        rgba(207, 91, 97, 0.18);
 }
 
-.progression-card p {
-    margin-top: 9px;
+.weakness-card::before {
+    background:
+        linear-gradient(
+            180deg,
+            #d66b73,
+            #71353a
+        );
+}
 
-    color: #cfd4d2;
+/* =========================================================
+   PROGRESSÃO
+   ========================================================= */
+
+.progression-list {
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+}
+
+.skill-card {
+    background:
+        rgba(255, 255, 255, 0.022);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.075);
+
+    border-radius: 13px;
+
+    overflow: hidden;
+
+    transition:
+        border-color 0.23s ease,
+        background 0.23s ease;
+}
+
+.skill-card[open] {
+    background:
+        rgba(var(--race-accent-rgb), 0.045);
+
+    border-color:
+        rgba(var(--race-accent-rgb), 0.23);
+}
+
+.skill-summary {
+    min-height: 83px;
+
+    padding:
+        13px
+        18px;
+
+    display: grid;
+    grid-template-columns:
+        66px
+        minmax(0, 1fr)
+        auto;
+
+    gap: 17px;
+    align-items: center;
+
+    list-style: none;
+    cursor: pointer;
+}
+
+.skill-summary::-webkit-details-marker {
+    display: none;
+}
+
+.skill-level {
+    width: 58px;
+    height: 58px;
+
+    display: grid;
+    place-items: center;
+
+    color:
+        var(--race-accent);
+
+    background:
+        rgba(var(--race-accent-rgb), 0.08);
+
+    border:
+        1px solid
+        rgba(var(--race-accent-rgb), 0.23);
+
+    border-radius: 50%;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.skill-title-wrap {
+    min-width: 0;
+}
+
+.skill-title-wrap small,
+.skill-title-wrap strong {
+    display: block;
+}
+
+.skill-title-wrap small {
+    color: #727d79;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.skill-title-wrap strong {
+    margin-top: 5px;
+
+    color: #f1e7d3;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.skill-toggle {
+    width: 32px;
+    height: 32px;
+
+    display: grid;
+    place-items: center;
+
+    color:
+        var(--race-accent);
+
+    border:
+        1px solid
+        rgba(var(--race-accent-rgb), 0.2);
+
+    border-radius: 50%;
+
+    transition:
+        transform 0.23s ease;
+}
+
+.skill-card[open] .skill-toggle {
+    transform:
+        rotate(45deg);
+}
+
+.skill-body {
+    padding:
+        2px
+        24px
+        24px
+        101px;
+
+    color: #b9c2bf;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
 
     font-size: 18px;
     line-height: 1.58;
 }
 
-/*==========================
-          ANIMAÇÕES
-==========================*/
+.skill-body p {
+    margin:
+        0
+        0
+        12px;
+}
 
-@keyframes racesEntrance {
-    from {
-        opacity: 0;
+.skill-formula {
+    margin:
+        15px
+        0;
 
-        transform: translateY(22px);
+    padding:
+        13px
+        15px;
+
+    color: #fff0c8;
+
+    background:
+        rgba(var(--race-accent-rgb), 0.08);
+
+    border:
+        1px solid
+        rgba(var(--race-accent-rgb), 0.18);
+
+    border-radius: 9px;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 13px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.skill-meta {
+    margin-top: 18px;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.skill-meta span {
+    padding:
+        6px
+        9px;
+
+    color: #9ba7a3;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.075);
+
+    border-radius: 7px;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 8px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+/* =========================================================
+   CURIOSIDADES
+   ========================================================= */
+
+.curiosity-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 12px;
+
+    counter-reset:
+        curiosidade;
+}
+
+.curiosity-card {
+    position: relative;
+
+    min-height: 100px;
+
+    padding:
+        20px
+        21px
+        20px
+        63px;
+
+    display: flex;
+    align-items: center;
+
+    counter-increment:
+        curiosidade;
+}
+
+.curiosity-card::before {
+    content:
+        counter(
+            curiosidade,
+            decimal-leading-zero
+        );
+
+    position: absolute;
+    left: 19px;
+
+    color:
+        var(--race-accent);
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+.curiosity-card p {
+    margin: 0;
+
+    color: #bdc6c3;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 17px;
+    line-height: 1.48;
+}
+
+/* =========================================================
+   ESTADOS VAZIOS
+   ========================================================= */
+
+.empty-state {
+    padding:
+        50px
+        20px;
+
+    color: #89938f;
+
+    text-align: center;
+
+    font-family:
+        "Cormorant Garamond",
+        serif;
+
+    font-size: 20px;
+}
+
+.noscript-message {
+    max-width: 700px;
+
+    margin:
+        30px
+        auto;
+
+    color: #ffffff;
+    text-align: center;
+}
+
+/* =========================================================
+   TABLETS E TELAS MÉDIAS
+   ========================================================= */
+
+@media (max-width: 1240px) {
+    .races-codex {
+        grid-template-columns:
+            250px
+            minmax(0, 1fr);
     }
 
-    to {
-        opacity: 1;
+    .race-hero {
+        grid-template-columns:
+            120px
+            minmax(0, 1fr);
+    }
 
-        transform: translateY(0);
+    .race-emblem {
+        width: 112px;
+        height: 112px;
+
+        font-size: 44px;
+    }
+
+    .hero-stats {
+        grid-column: 1 / -1;
+
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
     }
 }
 
-@keyframes racesBackgroundMove {
-    from {
-        transform: scale(1.06);
-    }
+/* =========================================================
+   TABLETS VERTICAIS
+   ========================================================= */
 
-    to {
-        transform: scale(1.13);
-    }
-}
-
-@keyframes racesLogoFloat {
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-@keyframes racesLogoGlow {
-    0%,
-    100% {
-        filter:
-            drop-shadow(0 0 12px rgba(79, 174, 131, 0.42));
-    }
-
-    50% {
-        filter:
-            drop-shadow(0 0 28px rgba(79, 174, 131, 0.9))
-            drop-shadow(0 0 65px rgba(79, 174, 131, 0.28));
-    }
-}
-
-@keyframes racePanelUpdate {
-    0% {
-        opacity: 0.55;
-
-        transform: translateY(8px);
-    }
-
-    100% {
-        opacity: 1;
-
-        transform: translateY(0);
-    }
-}
-
-/*==========================
-          RESPONSIVO
-==========================*/
-
-@media (max-width: 1120px) {
-    .races-layout {
+@media (max-width: 960px) {
+    .races-codex {
         grid-template-columns: 1fr;
     }
 
-    .races-sidebar {
+    .race-index {
         position: relative;
         top: auto;
+
+        max-height: none;
     }
 
-    .races-menu {
+    .race-list {
+        max-height: none;
+
         display: grid;
         grid-template-columns:
-            repeat(3, minmax(0, 1fr));
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+
+        overflow: visible;
+    }
+
+    .race-list-stars {
+        display: none;
+    }
+
+    .overview-grid,
+    .info-grid,
+    .traits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .weakness-card {
+        grid-column: auto;
     }
 }
 
-@media (max-width: 820px) {
-    .races-page {
-        padding-bottom: 40px;
-    }
+/* =========================================================
+   CELULAR
+   ========================================================= */
 
-    .races-return {
-        top: 14px;
-        left: 14px;
+@media (max-width: 760px) {
+    .races-topbar {
+        width:
+            calc(100% - 22px);
 
-        font-size: 10px;
-    }
-
-    .races-music-button {
-        top: 12px;
-        right: 14px;
-
-        width: 43px;
-        height: 43px;
-    }
-
-    .races-header {
-        width: calc(100% - 24px);
-        padding:
-            82px 12px 30px;
-    }
-
-    .races-logo {
-        width: 98px;
-    }
-
-    .races-label {
-        font-size: 9px;
-        letter-spacing: 3px;
-    }
-
-    .races-header h1 {
-        font-size: 40px;
-        letter-spacing: 5px;
-    }
-
-    .races-header p {
-        font-size: 19px;
-    }
-
-    .races-layout {
-        width: calc(100% - 18px);
-    }
-
-    .races-menu {
         grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+            1fr
+            auto;
     }
 
-    .race-panel {
-        padding:
-            42px 26px;
+    .races-brand {
+        display: none;
     }
 
-    .race-panel-header {
-        flex-direction: column;
+    .races-codex {
+        width:
+            calc(100% - 18px);
+
+        padding-top: 4px;
     }
 
-    .race-difficulty {
-        width: 100%;
-        min-width: 0;
-    }
-
-    .race-bonuses {
-        grid-template-columns: 1fr;
-    }
-
-    .attributes-grid {
+    .race-list {
         grid-template-columns:
-            repeat(3, minmax(0, 1fr));
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
     }
 
-    .race-traits {
+    .race-hero {
+        min-height: auto;
+
+        padding:
+            35px
+            23px
+            26px;
+
+        grid-template-columns: 1fr;
+
+        gap: 22px;
+
+        text-align: center;
+    }
+
+    .race-emblem {
+        margin:
+            0
+            auto;
+    }
+
+    .race-hero-tags,
+    .role-tags {
+        justify-content: center;
+    }
+
+    .hero-stats {
+        grid-template-columns: 1fr;
+
+        text-align: left;
+    }
+
+    .attribute-strip {
         grid-template-columns: 1fr;
     }
 
-    .progression-card {
+    .attribute-heading {
+        padding:
+            0
+            0
+            11px;
+
+        border-right: 0;
+
+        border-bottom:
+            1px solid
+            rgba(255, 255, 255, 0.08);
+    }
+
+    .attribute-grid {
+        grid-template-columns:
+            repeat(
+                3,
+                minmax(0, 1fr)
+            );
+    }
+
+    .race-tabs {
+        display: flex;
+
+        overflow-x: auto;
+
+        scrollbar-width: none;
+    }
+
+    .race-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .race-tab {
+        min-width: 130px;
+    }
+
+    .race-content {
+        padding:
+            24px
+            18px;
+    }
+
+    .curiosity-grid {
         grid-template-columns: 1fr;
     }
 
-    .progression-card > span {
-        width: max-content;
-        min-width: 105px;
+    .skill-summary {
+        grid-template-columns:
+            54px
+            minmax(0, 1fr)
+            auto;
+
+        padding: 12px;
+        gap: 11px;
+    }
+
+    .skill-level {
+        width: 50px;
+        height: 50px;
+    }
+
+    .skill-body {
+        padding:
+            3px
+            17px
+            20px;
     }
 }
 
-@media (max-width: 520px) {
-    .sidebar-heading {
-        align-items: flex-start;
-        flex-direction: column;
-    }
+/* =========================================================
+   CELULARES PEQUENOS
+   ========================================================= */
 
-    .races-menu {
+@media (max-width: 470px) {
+    .race-list {
         grid-template-columns: 1fr;
     }
 
-    .race-selector {
-        padding: 13px 14px;
-    }
-
-    .race-panel {
-        padding:
-            42px 21px;
-    }
-
-    .race-panel-header h2 {
-        font-size: 34px;
-    }
-
-    .race-description {
-        font-size: 19px;
-    }
-
-    .attributes-grid {
+    .attribute-grid {
         grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
     }
 
-    .trait-card p,
-    .progression-card p {
-        font-size: 17px;
+    .race-hero-copy h2 {
+        font-size: 35px;
+        letter-spacing: 2px;
+    }
+
+    .skill-toggle {
+        display: none;
+    }
+
+    .race-content {
+        padding:
+            21px
+            14px;
+    }
+
+    .lore-card,
+    .playstyle-card,
+    .info-card,
+    .trait-card,
+    .weakness-card {
+        padding:
+            20px
+            18px;
+    }
+}
+
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .race-particle,
+    .race-emblem::after,
+    .race-loading span {
+        animation: none !important;
+    }
+
+    .races-page * {
+        scroll-behavior:
+            auto !important;
     }
 }

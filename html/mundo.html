@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Mundo | Wonderland RPG</title>
+
+    <meta
+        name="description"
+        content="Explore as regiões e os mistérios do mundo de Wonderland."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/images/logo.png"
+    >
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/global.css?v=9">
+    <link rel="stylesheet" href="css/mundo.css?v=1">
+</head>
+
+<body class="world-page">
+
+    <!-- Cenário -->
+    <div
+        class="world-background"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Partículas -->
+    <div
+        id="particles"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Névoa -->
+    <div
+        class="mist-layer"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Música -->
+    <audio
+        id="bgMusic"
+        loop
+        preload="auto"
+    >
+        <source
+            src="assets/audio/wonderland.mp3"
+            type="audio/mpeg"
+        >
+    </audio>
+
+    <!-- Voltar -->
+    <a
+        href="menu.html"
+        class="world-return"
+    >
+        ← Menu
+    </a>
+
+    <!-- Controle da música -->
+    <button
+        id="musicButton"
+        class="world-music-button"
+        type="button"
+        aria-label="Tocar música"
+        title="Tocar música"
+    >
+        <span id="musicIcon">♪</span>
+    </button>
+
+    <!-- Cabeçalho -->
+    <header class="world-header">
+
+        <img
+            src="assets/images/logo.png"
+            alt="Símbolo do RPG Wonderland"
+            class="world-logo"
+        >
+
+        <span class="world-label">
+            Atlas do Primeiro Sonho
+        </span>
+
+        <h1>
+            Mundo de Wonderland
+        </h1>
+
+        <p>
+            Explore os territórios que formam Wonderland e descubra
+            os segredos escondidos em cada região.
+        </p>
+
+    </header>
+
+    <!-- Conteúdo -->
+    <main class="world-layout">
+
+        <!-- Mapa -->
+        <section class="world-map">
+
+            <div class="map-frame">
+
+                <div
+                    class="map-compass"
+                    aria-hidden="true"
+                >
+                    <span class="north">N</span>
+                    <span class="east">L</span>
+                    <span class="south">S</span>
+                    <span class="west">O</span>
+
+                    <div class="compass-center">◆</div>
+                </div>
+
+                <div class="map-continent">
+
+                    <button
+                        class="region-marker north-region"
+                        type="button"
+                        data-region="norte"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Terras do Norte
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker east-region"
+                        type="button"
+                        data-region="leste"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Domínios do Leste
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker center-region active"
+                        type="button"
+                        data-region="centro"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Reinos Centrais
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker west-region"
+                        type="button"
+                        data-region="oeste"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Terras do Oeste
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker south-region"
+                        type="button"
+                        data-region="sul"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Fronteiras do Sul
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker islands-region"
+                        type="button"
+                        data-region="ilhas"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Ilhas Distantes
+                        </span>
+                    </button>
+
+                </div>
+
+                <div class="map-decoration map-decoration-top">
+                    ◆ ━━━━━━━━━ ◆
+                </div>
+
+                <div class="map-decoration map-decoration-bottom">
+                    ◆ ━━━━━━━━━ ◆
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Informações -->
+        <aside class="region-panel">
+
+            <span class="region-label">
+                Região selecionada
+            </span>
+
+            <h2 id="regionTitle">
+                Reinos Centrais
+            </h2>
+
+            <p
+                id="regionDescription"
+                class="region-description"
+            >
+                O coração político e comercial de Wonderland. Suas grandes
+                cidades foram erguidas sobre ruínas pertencentes a civilizações
+                esquecidas.
+            </p>
+
+            <div class="region-details">
+
+                <div class="region-detail">
+
+                    <span>
+                        Terreno
+                    </span>
+
+                    <strong id="regionTerrain">
+                        Planícies, rios e grandes cidades
+                    </strong>
+
+                </div>
+
+                <div class="region-detail">
+
+                    <span>
+                        Perigo
+                    </span>
+
+                    <strong id="regionDanger">
+                        Moderado
+                    </strong>
+
+                </div>
+
+                <div class="region-detail">
+
+                    <span>
+                        Conhecida por
+                    </span>
+
+                    <strong id="regionKnownFor">
+                        Reinos, comércio e academias
+                    </strong>
+
+                </div>
+
+            </div>
+
+            <blockquote id="regionQuote">
+                “Onde muitas coroas disputam o mesmo horizonte.”
+            </blockquote>
+
+            <button
+                id="exploreButton"
+                class="explore-button"
+                type="button"
+            >
+                Explorar região
+            </button>
+
+            <p
+                id="exploreMessage"
+                class="explore-message"
+                aria-live="polite"
+            ></p>
+
+        </aside>
+
+    </main>
+
+    <script src="js/mundo.js?v=1" defer></script>
+
+</body>
+
+</html>

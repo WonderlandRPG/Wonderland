@@ -1,0 +1,1018 @@
+/*==================================================
+                    MUNDO.CSS
+==================================================*/
+
+/*==========================
+            PÁGINA
+==========================*/
+
+.world-page {
+    position: relative;
+
+    min-height: 100vh;
+    padding-bottom: 70px;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/*==========================
+          BACKGROUND
+==========================*/
+
+.world-background {
+    position: fixed;
+    inset: 0;
+
+    z-index: 0;
+
+    background:
+        linear-gradient(
+            rgba(2, 6, 9, 0.68),
+            rgba(2, 6, 9, 0.92)
+        ),
+        url("../assets/images/background.png");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    transform: scale(1.06);
+
+    animation:
+        worldBackgroundMove 42s ease-in-out infinite alternate;
+}
+
+.world-background::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 50% 18%,
+            rgba(79, 174, 131, 0.2),
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 50% 75%,
+            rgba(255, 216, 77, 0.06),
+            transparent 45%
+        ),
+        linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.55),
+            transparent 25%,
+            transparent 75%,
+            rgba(0, 0, 0, 0.55)
+        );
+}
+
+/*==========================
+            VOLTAR
+==========================*/
+
+.world-return {
+    position: fixed;
+    top: 26px;
+    left: 30px;
+
+    z-index: 30;
+
+    padding: 11px 18px;
+
+    color: var(--gold);
+
+    background:
+        rgba(4, 10, 13, 0.78);
+
+    border: 1px solid rgba(255, 216, 77, 0.28);
+    border-radius: 30px;
+
+    font-family: var(--font-title);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+    backdrop-filter: blur(12px);
+
+    transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.world-return:hover {
+    color: #17120a;
+
+    background: var(--gold);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 0 24px rgba(255, 216, 77, 0.45);
+}
+
+/*==========================
+            MÚSICA
+==========================*/
+
+.world-music-button {
+    position: fixed;
+    top: 23px;
+    right: 28px;
+
+    z-index: 30;
+
+    width: 49px;
+    height: 49px;
+
+    display: grid;
+    place-items: center;
+
+    color: var(--gold);
+
+    background:
+        rgba(4, 10, 13, 0.78);
+
+    border: 1px solid rgba(255, 216, 77, 0.3);
+    border-radius: 50%;
+
+    font-size: 21px;
+
+    backdrop-filter: blur(12px);
+
+    transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.world-music-button:hover {
+    color: #17120a;
+
+    background: var(--gold);
+
+    transform: scale(1.08);
+
+    box-shadow:
+        0 0 24px rgba(255, 216, 77, 0.48);
+}
+
+.world-music-button.paused {
+    color: var(--text-muted);
+
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+/*==========================
+          CABEÇALHO
+==========================*/
+
+.world-header {
+    position: relative;
+    z-index: 10;
+
+    width: min(1000px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 68px 20px 42px;
+
+    text-align: center;
+
+    animation:
+        worldEntrance 1s ease both;
+}
+
+.world-logo {
+    width: 118px;
+    margin: 0 auto 17px;
+
+    animation:
+        worldLogoFloat 6s ease-in-out infinite,
+        worldLogoGlow 4s ease-in-out infinite;
+}
+
+.world-label {
+    color: var(--green-light);
+
+    font-family: var(--font-title);
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+}
+
+.world-header h1 {
+    margin-top: 10px;
+
+    color: var(--gold);
+
+    font-family: var(--font-title);
+    font-size: clamp(40px, 6vw, 70px);
+    line-height: 1.08;
+    letter-spacing: 7px;
+    text-transform: uppercase;
+
+    text-shadow:
+        0 0 15px rgba(255, 216, 77, 0.55),
+        0 0 42px rgba(255, 216, 77, 0.2);
+}
+
+.world-header p {
+    max-width: 720px;
+    margin: 18px auto 0;
+
+    color: var(--text-soft);
+
+    font-size: 22px;
+    line-height: 1.55;
+
+    text-shadow:
+        0 2px 12px rgba(0, 0, 0, 0.95);
+}
+
+/*==========================
+            LAYOUT
+==========================*/
+
+.world-layout {
+    position: relative;
+    z-index: 10;
+
+    width: min(1380px, calc(100% - 40px));
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.55fr)
+        minmax(320px, 0.75fr);
+
+    gap: 28px;
+    align-items: stretch;
+
+    animation:
+        worldEntrance 1s 0.12s ease both;
+}
+
+/*==========================
+              MAPA
+==========================*/
+
+.world-map {
+    min-height: 700px;
+}
+
+.map-frame {
+    position: relative;
+
+    width: 100%;
+    height: 100%;
+    min-height: 700px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(226, 207, 154, 0.94),
+            rgba(168, 139, 88, 0.97) 70%,
+            rgba(99, 67, 37, 0.98) 100%
+        );
+
+    border: 3px solid rgba(104, 72, 35, 0.94);
+    border-radius: 18px;
+
+    box-shadow:
+        0 28px 75px rgba(0, 0, 0, 0.55),
+        inset 0 0 90px rgba(76, 45, 18, 0.3);
+}
+
+.map-frame::before {
+    content: "";
+
+    position: absolute;
+    inset: 18px;
+
+    pointer-events: none;
+
+    border: 1px solid rgba(85, 54, 24, 0.48);
+    border-radius: 10px;
+
+    box-shadow:
+        inset 0 0 0 5px rgba(255, 239, 186, 0.1);
+}
+
+.map-frame::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: 0.42;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent 0 4px,
+            rgba(82, 52, 23, 0.025) 4px 5px
+        ),
+        radial-gradient(
+            circle at 15% 15%,
+            rgba(76, 48, 21, 0.12),
+            transparent 20%
+        ),
+        radial-gradient(
+            circle at 88% 86%,
+            rgba(76, 48, 21, 0.15),
+            transparent 22%
+        );
+}
+
+/* Continente estilizado */
+
+.map-continent {
+    position: absolute;
+    inset: 70px 70px;
+
+    z-index: 3;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 43%,
+            rgba(73, 91, 50, 0.78),
+            transparent 27%
+        ),
+        radial-gradient(
+            ellipse at 66% 57%,
+            rgba(66, 83, 43, 0.72),
+            transparent 24%
+        ),
+        radial-gradient(
+            ellipse at 35% 59%,
+            rgba(84, 94, 52, 0.75),
+            transparent 25%
+        ),
+        radial-gradient(
+            ellipse at 48% 73%,
+            rgba(116, 99, 52, 0.72),
+            transparent 22%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(86, 99, 55, 0.5),
+            rgba(135, 108, 61, 0.36)
+        );
+
+    clip-path:
+        polygon(
+            43% 2%,
+            61% 8%,
+            72% 20%,
+            89% 28%,
+            83% 45%,
+            92% 59%,
+            76% 67%,
+            70% 86%,
+            51% 95%,
+            36% 84%,
+            20% 89%,
+            12% 70%,
+            4% 53%,
+            14% 39%,
+            10% 22%,
+            29% 16%
+        );
+
+    filter:
+        drop-shadow(0 14px 12px rgba(72, 44, 20, 0.38));
+}
+
+.map-continent::before {
+    content: "";
+
+    position: absolute;
+    inset: 6%;
+
+    border: 2px dashed rgba(74, 48, 23, 0.32);
+
+    clip-path:
+        polygon(
+            43% 2%,
+            61% 8%,
+            72% 20%,
+            89% 28%,
+            83% 45%,
+            92% 59%,
+            76% 67%,
+            70% 86%,
+            51% 95%,
+            36% 84%,
+            20% 89%,
+            12% 70%,
+            4% 53%,
+            14% 39%,
+            10% 22%,
+            29% 16%
+        );
+}
+
+/*==========================
+          MARCADORES
+==========================*/
+
+.region-marker {
+    position: absolute;
+    z-index: 8;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+
+    color: #4d351d;
+
+    background: transparent;
+
+    font-family: var(--font-title);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+
+    transform: translate(-50%, -50%);
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease,
+        filter 0.3s ease;
+}
+
+.marker-symbol {
+    width: 30px;
+    height: 30px;
+
+    display: grid;
+    place-items: center;
+
+    color: #73501f;
+
+    background:
+        radial-gradient(
+            circle,
+            #f6dc7b,
+            #bd8d2c
+        );
+
+    border: 2px solid rgba(80, 50, 20, 0.7);
+
+    transform: rotate(45deg);
+
+    box-shadow:
+        0 4px 10px rgba(67, 41, 18, 0.4);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        background 0.3s ease;
+}
+
+.marker-name {
+    padding: 4px 8px;
+
+    background:
+        rgba(230, 210, 160, 0.75);
+
+    border-radius: 4px;
+
+    white-space: nowrap;
+
+    text-shadow:
+        0 1px 0 rgba(255, 246, 202, 0.7);
+}
+
+.region-marker:hover,
+.region-marker.active {
+    color: #2d5d45;
+
+    transform:
+        translate(-50%, -50%)
+        scale(1.08);
+
+    filter:
+        drop-shadow(0 0 10px rgba(79, 174, 131, 0.4));
+}
+
+.region-marker:hover .marker-symbol,
+.region-marker.active .marker-symbol {
+    background:
+        radial-gradient(
+            circle,
+            var(--green-light),
+            var(--green-dark)
+        );
+
+    transform:
+        rotate(45deg)
+        scale(1.12);
+
+    box-shadow:
+        0 0 18px rgba(79, 174, 131, 0.65);
+}
+
+.north-region {
+    top: 20%;
+    left: 48%;
+}
+
+.east-region {
+    top: 43%;
+    left: 76%;
+}
+
+.center-region {
+    top: 48%;
+    left: 49%;
+}
+
+.west-region {
+    top: 50%;
+    left: 24%;
+}
+
+.south-region {
+    top: 76%;
+    left: 50%;
+}
+
+.islands-region {
+    top: 70%;
+    left: 80%;
+}
+
+/*==========================
+           BÚSSOLA
+==========================*/
+
+.map-compass {
+    position: absolute;
+    top: 42px;
+    right: 45px;
+
+    z-index: 7;
+
+    width: 105px;
+    height: 105px;
+
+    color: rgba(76, 48, 22, 0.72);
+
+    border: 2px solid rgba(76, 48, 22, 0.45);
+    border-radius: 50%;
+
+    font-family: var(--font-title);
+    font-size: 12px;
+
+    transform: rotate(-8deg);
+}
+
+.map-compass::before,
+.map-compass::after {
+    content: "";
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    background:
+        rgba(76, 48, 22, 0.4);
+
+    transform:
+        translate(-50%, -50%);
+}
+
+.map-compass::before {
+    width: 1px;
+    height: 85%;
+}
+
+.map-compass::after {
+    width: 85%;
+    height: 1px;
+}
+
+.map-compass span {
+    position: absolute;
+}
+
+.map-compass .north {
+    top: 6px;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+.map-compass .south {
+    bottom: 6px;
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+.map-compass .east {
+    top: 50%;
+    right: 8px;
+
+    transform: translateY(-50%);
+}
+
+.map-compass .west {
+    top: 50%;
+    left: 8px;
+
+    transform: translateY(-50%);
+}
+
+.compass-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    z-index: 2;
+
+    color: #795526;
+
+    transform:
+        translate(-50%, -50%)
+        rotate(45deg);
+}
+
+/*==========================
+          DECORAÇÕES
+==========================*/
+
+.map-decoration {
+    position: absolute;
+    left: 50%;
+
+    z-index: 6;
+
+    color: rgba(88, 56, 24, 0.52);
+
+    font-size: 10px;
+    letter-spacing: 8px;
+
+    transform: translateX(-50%);
+}
+
+.map-decoration-top {
+    top: 36px;
+}
+
+.map-decoration-bottom {
+    bottom: 36px;
+}
+
+/*==========================
+       PAINEL DA REGIÃO
+==========================*/
+
+.region-panel {
+    position: relative;
+
+    min-height: 700px;
+    padding: 48px 38px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            155deg,
+            rgba(14, 24, 25, 0.96),
+            rgba(5, 11, 14, 0.98)
+        );
+
+    border: 1px solid rgba(255, 216, 77, 0.22);
+    border-radius: 18px;
+
+    backdrop-filter: blur(16px);
+
+    box-shadow:
+        0 28px 70px rgba(0, 0, 0, 0.5),
+        inset 0 0 45px rgba(79, 174, 131, 0.025);
+}
+
+.region-panel::before,
+.region-panel::after {
+    content: "";
+
+    position: absolute;
+
+    width: 60px;
+    height: 60px;
+
+    pointer-events: none;
+
+    border-color:
+        rgba(255, 216, 77, 0.45);
+}
+
+.region-panel::before {
+    top: 14px;
+    left: 14px;
+
+    border-top: 2px solid;
+    border-left: 2px solid;
+}
+
+.region-panel::after {
+    right: 14px;
+    bottom: 14px;
+
+    border-right: 2px solid;
+    border-bottom: 2px solid;
+}
+
+.region-label {
+    color: var(--green-light);
+
+    font-family: var(--font-title);
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.region-panel h2 {
+    margin-top: 10px;
+    padding-bottom: 20px;
+
+    color: var(--gold);
+
+    border-bottom: 1px solid rgba(255, 216, 77, 0.16);
+
+    font-family: var(--font-title);
+    font-size: clamp(30px, 4vw, 45px);
+    line-height: 1.18;
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 0 18px rgba(255, 216, 77, 0.2);
+}
+
+.region-description {
+    margin-top: 24px;
+
+    color: #d5dad9;
+
+    font-size: 21px;
+    line-height: 1.7;
+}
+
+.region-details {
+    margin-top: 30px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.region-detail {
+    padding: 15px 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.region-detail span {
+    color: var(--text-muted);
+
+    font-family: var(--font-title);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.region-detail strong {
+    color: var(--gold-light);
+
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.region-panel blockquote {
+    margin-top: 32px;
+    padding: 18px 20px;
+
+    color: var(--text-soft);
+
+    background:
+        rgba(255, 216, 77, 0.035);
+
+    border-left: 3px solid var(--gold);
+
+    font-size: 21px;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.explore-button {
+    width: 100%;
+
+    margin-top: 32px;
+    padding: 16px 24px;
+
+    color: #15110a;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--gold-light),
+            var(--gold-dark)
+        );
+
+    border: 1px solid rgba(255, 239, 164, 0.45);
+    border-radius: 30px;
+
+    font-family: var(--font-title);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+
+    box-shadow:
+        0 0 22px rgba(255, 216, 77, 0.18);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.explore-button:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 0 32px rgba(255, 216, 77, 0.52);
+}
+
+.explore-message {
+    min-height: 24px;
+    margin-top: 15px;
+
+    color: var(--green-light);
+
+    font-size: 17px;
+    text-align: center;
+}
+
+/*==========================
+          ANIMAÇÕES
+==========================*/
+
+@keyframes worldEntrance {
+    from {
+        opacity: 0;
+
+        transform: translateY(22px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+@keyframes worldBackgroundMove {
+    from {
+        transform: scale(1.06);
+    }
+
+    to {
+        transform: scale(1.13);
+    }
+}
+
+@keyframes worldLogoFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes worldLogoGlow {
+    0%,
+    100% {
+        filter:
+            drop-shadow(0 0 12px rgba(79, 174, 131, 0.42));
+    }
+
+    50% {
+        filter:
+            drop-shadow(0 0 28px rgba(79, 174, 131, 0.9))
+            drop-shadow(0 0 65px rgba(79, 174, 131, 0.28));
+    }
+}
+
+/*==========================
+          RESPONSIVO
+==========================*/
+
+@media (max-width: 1050px) {
+    .world-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .region-panel {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 700px) {
+    .world-page {
+        padding-bottom: 40px;
+    }
+
+    .world-return {
+        top: 14px;
+        left: 14px;
+
+        font-size: 10px;
+    }
+
+    .world-music-button {
+        top: 12px;
+        right: 14px;
+
+        width: 43px;
+        height: 43px;
+    }
+
+    .world-header {
+        width: calc(100% - 24px);
+        padding: 82px 12px 30px;
+    }
+
+    .world-logo {
+        width: 98px;
+    }
+
+    .world-label {
+        font-size: 9px;
+        letter-spacing: 3px;
+    }
+
+    .world-header h1 {
+        font-size: 36px;
+        letter-spacing: 3px;
+    }
+
+    .world-header p {
+        font-size: 19px;
+    }
+
+    .world-layout {
+        width: calc(100% - 18px);
+    }
+
+    .world-map,
+    .map-frame {
+        min-height: 580px;
+    }
+
+    .map-continent {
+        inset: 75px 25px 60px;
+    }
+
+    .map-compass {
+        top: 36px;
+        right: 30px;
+
+        width: 78px;
+        height: 78px;
+    }
+
+    .marker-name {
+        font-size: 8px;
+    }
+
+    .marker-symbol {
+        width: 24px;
+        height: 24px;
+    }
+
+    .region-panel {
+        padding: 42px 26px;
+    }
+
+    .region-description {
+        font-size: 19px;
+    }
+}

@@ -28,8 +28,8 @@
 
     background:
         linear-gradient(
-            rgba(2, 6, 9, 0.7),
-            rgba(2, 6, 9, 0.94)
+            rgba(2, 6, 9, 0.72),
+            rgba(2, 6, 9, 0.95)
         ),
         url("../assets/images/background.png");
 
@@ -55,17 +55,12 @@
             rgba(79, 174, 131, 0.2),
             transparent 40%
         ),
-        radial-gradient(
-            circle at 50% 75%,
-            rgba(255, 216, 77, 0.06),
-            transparent 45%
-        ),
         linear-gradient(
             90deg,
-            rgba(0, 0, 0, 0.6),
+            rgba(0, 0, 0, 0.62),
             transparent 25%,
             transparent 75%,
-            rgba(0, 0, 0, 0.6)
+            rgba(0, 0, 0, 0.62)
         );
 }
 
@@ -78,14 +73,14 @@
     top: 26px;
     left: 30px;
 
-    z-index: 30;
+    z-index: 50;
 
     padding: 11px 18px;
 
     color: var(--gold);
 
     background:
-        rgba(4, 10, 13, 0.82);
+        rgba(4, 10, 13, 0.86);
 
     border: 1px solid rgba(255, 216, 77, 0.3);
     border-radius: 30px;
@@ -124,7 +119,7 @@
     top: 23px;
     right: 28px;
 
-    z-index: 30;
+    z-index: 50;
 
     width: 49px;
     height: 49px;
@@ -135,7 +130,7 @@
     color: var(--gold);
 
     background:
-        rgba(4, 10, 13, 0.82);
+        rgba(4, 10, 13, 0.86);
 
     border: 1px solid rgba(255, 216, 77, 0.3);
     border-radius: 50%;
@@ -241,16 +236,16 @@
     position: relative;
     z-index: 10;
 
-    width: min(1420px, calc(100% - 40px));
+    width: min(1500px, calc(100% - 40px));
     margin: 0 auto;
 
     display: grid;
     grid-template-columns:
-        minmax(0, 1.7fr)
-        minmax(340px, 0.72fr);
+        minmax(0, 1.8fr)
+        minmax(360px, 0.72fr);
 
-    gap: 28px;
-    align-items: stretch;
+    gap: 26px;
+    align-items: start;
 
     animation:
         worldEntrance 1s 0.12s ease both;
@@ -262,49 +257,43 @@
 
 .world-map {
     min-width: 0;
-    min-height: 720px;
 }
 
 .map-frame {
     position: relative;
 
     width: 100%;
-    height: 100%;
-    min-height: 720px;
+    aspect-ratio: 16 / 10;
 
     overflow: hidden;
 
-    background:
-        radial-gradient(
-            circle at 50% 46%,
-            rgba(231, 214, 168, 0.98),
-            rgba(181, 151, 97, 0.98) 68%,
-            rgba(103, 70, 39, 0.99) 100%
-        );
+    background: #17262a;
 
-    border: 3px solid rgba(104, 72, 35, 0.95);
+    border: 3px solid rgba(111, 75, 38, 0.96);
     border-radius: 18px;
 
     box-shadow:
-        0 28px 75px rgba(0, 0, 0, 0.55),
-        inset 0 0 95px rgba(76, 45, 18, 0.32);
+        0 28px 75px rgba(0, 0, 0, 0.58),
+        inset 0 0 50px rgba(255, 216, 77, 0.04);
+
+    isolation: isolate;
 }
 
 .map-frame::before {
     content: "";
 
     position: absolute;
-    inset: 18px;
+    inset: 13px;
 
-    z-index: 1;
+    z-index: 6;
 
     pointer-events: none;
 
-    border: 1px solid rgba(85, 54, 24, 0.5);
-    border-radius: 10px;
+    border: 1px solid rgba(255, 226, 153, 0.2);
+    border-radius: 11px;
 
     box-shadow:
-        inset 0 0 0 5px rgba(255, 239, 186, 0.1);
+        inset 0 0 0 4px rgba(72, 45, 21, 0.18);
 }
 
 .map-frame::after {
@@ -313,181 +302,49 @@
     position: absolute;
     inset: 0;
 
-    z-index: 2;
+    z-index: 5;
 
     pointer-events: none;
 
-    opacity: 0.45;
-
     background:
-        repeating-linear-gradient(
-            0deg,
-            transparent 0 4px,
-            rgba(82, 52, 23, 0.025) 4px 5px
-        ),
         radial-gradient(
-            circle at 15% 15%,
-            rgba(76, 48, 21, 0.13),
-            transparent 20%
-        ),
-        radial-gradient(
-            circle at 88% 86%,
-            rgba(76, 48, 21, 0.16),
-            transparent 22%
+            circle at center,
+            transparent 58%,
+            rgba(0, 0, 0, 0.24) 100%
         );
 }
 
 /*==========================
-       CONTINENTE PROVISÓRIO
+              SVG
 ==========================*/
 
-.map-continent {
+.world-map-svg {
     position: absolute;
-    inset: 72px 82px 68px;
+    inset: 0;
 
-    z-index: 3;
+    z-index: 1;
 
-    background:
-        radial-gradient(
-            ellipse at 49% 23%,
-            rgba(74, 93, 53, 0.93),
-            transparent 25%
-        ),
-        radial-gradient(
-            ellipse at 72% 42%,
-            rgba(76, 94, 54, 0.9),
-            transparent 25%
-        ),
-        radial-gradient(
-            ellipse at 47% 50%,
-            rgba(91, 104, 60, 0.96),
-            transparent 29%
-        ),
-        radial-gradient(
-            ellipse at 25% 50%,
-            rgba(95, 105, 62, 0.9),
-            transparent 25%
-        ),
-        radial-gradient(
-            ellipse at 49% 77%,
-            rgba(126, 103, 56, 0.93),
-            transparent 26%
-        ),
-        linear-gradient(
-            150deg,
-            #65703f,
-            #4f633b 46%,
-            #75663a 100%
-        );
+    display: block;
 
-    clip-path:
-        polygon(
-            42% 2%,
-            58% 7%,
-            68% 18%,
-            82% 23%,
-            92% 34%,
-            86% 47%,
-            94% 61%,
-            79% 69%,
-            74% 87%,
-            57% 96%,
-            44% 91%,
-            31% 97%,
-            22% 84%,
-            12% 73%,
-            7% 56%,
-            16% 42%,
-            12% 27%,
-            28% 20%
-        );
+    width: 100%;
+    height: 100%;
 
-    filter:
-        drop-shadow(0 18px 15px rgba(72, 44, 20, 0.42));
+    border: 0;
+
+    pointer-events: none;
 }
 
-.map-continent::before {
-    content: "";
+/*==========================
+        CAMADA DE MARCADORES
+==========================*/
 
+.map-markers {
     position: absolute;
-    inset: 5%;
+    inset: 0;
 
-    opacity: 0.6;
+    z-index: 10;
 
-    background:
-        radial-gradient(
-            circle at 47% 25%,
-            rgba(218, 224, 181, 0.2),
-            transparent 17%
-        ),
-        radial-gradient(
-            circle at 25% 58%,
-            rgba(45, 76, 44, 0.25),
-            transparent 17%
-        ),
-        radial-gradient(
-            circle at 71% 52%,
-            rgba(41, 73, 43, 0.25),
-            transparent 16%
-        ),
-        radial-gradient(
-            circle at 50% 78%,
-            rgba(203, 168, 92, 0.22),
-            transparent 18%
-        );
-
-    clip-path:
-        polygon(
-            42% 2%,
-            58% 7%,
-            68% 18%,
-            82% 23%,
-            92% 34%,
-            86% 47%,
-            94% 61%,
-            79% 69%,
-            74% 87%,
-            57% 96%,
-            44% 91%,
-            31% 97%,
-            22% 84%,
-            12% 73%,
-            7% 56%,
-            16% 42%,
-            12% 27%,
-            28% 20%
-        );
-}
-
-.map-continent::after {
-    content: "";
-
-    position: absolute;
-    inset: 8%;
-
-    border: 1px dashed rgba(60, 40, 20, 0.3);
-
-    clip-path:
-        polygon(
-            42% 2%,
-            58% 7%,
-            68% 18%,
-            82% 23%,
-            92% 34%,
-            86% 47%,
-            94% 61%,
-            79% 69%,
-            74% 87%,
-            57% 96%,
-            44% 91%,
-            31% 97%,
-            22% 84%,
-            12% 73%,
-            7% 56%,
-            16% 42%,
-            12% 27%,
-            28% 20%
-        );
+    pointer-events: none;
 }
 
 /*==========================
@@ -496,97 +353,110 @@
 
 .region-marker {
     position: absolute;
-    z-index: 8;
 
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 7px;
+    gap: 6px;
 
-    color: #4d351d;
+    padding: 0;
+
+    color: #4c331b;
 
     background: transparent;
+    border: 0;
 
     font-family: var(--font-title);
-    font-size: 10px;
+    font-size: clamp(7px, 0.72vw, 11px);
     letter-spacing: 0.8px;
     text-transform: uppercase;
 
-    transform: translate(-50%, -50%);
+    transform:
+        translate(-50%, -50%);
+
+    pointer-events: auto;
 
     transition:
-        color 0.3s ease,
         transform 0.3s ease,
         filter 0.3s ease;
 }
 
 .marker-symbol {
-    width: 32px;
-    height: 32px;
+    width: clamp(24px, 2.4vw, 35px);
+    height: clamp(24px, 2.4vw, 35px);
 
     display: grid;
     place-items: center;
 
-    color: #73501f;
+    color: #684719;
 
     background:
         radial-gradient(
             circle,
-            #ffe795,
-            #bd8d2c
+            #ffe99b,
+            #c18e28
         );
 
-    border: 2px solid rgba(80, 50, 20, 0.72);
+    border: 2px solid rgba(71, 44, 18, 0.76);
 
     transform: rotate(45deg);
 
     box-shadow:
-        0 5px 12px rgba(67, 41, 18, 0.45);
+        0 5px 13px rgba(43, 27, 12, 0.55);
 
     transition:
+        color 0.3s ease,
+        background 0.3s ease,
         transform 0.3s ease,
-        box-shadow 0.3s ease,
-        background 0.3s ease;
+        box-shadow 0.3s ease;
+}
+
+.marker-symbol::first-letter {
+    transform: rotate(-45deg);
 }
 
 .marker-name {
-    max-width: 150px;
+    max-width: 170px;
     padding: 5px 9px;
 
-    overflow: hidden;
-
-    color: #53391e;
+    color: #4d351c;
 
     background:
-        rgba(239, 220, 171, 0.88);
+        rgba(238, 219, 171, 0.92);
 
-    border: 1px solid rgba(94, 62, 28, 0.2);
+    border: 1px solid rgba(83, 54, 24, 0.32);
     border-radius: 4px;
 
     white-space: nowrap;
-    text-overflow: ellipsis;
 
     text-shadow:
-        0 1px 0 rgba(255, 246, 202, 0.8);
+        0 1px 0 rgba(255, 247, 211, 0.85);
 
     box-shadow:
-        0 3px 8px rgba(67, 41, 18, 0.15);
+        0 4px 11px rgba(45, 27, 10, 0.25);
+
+    transition:
+        color 0.3s ease,
+        background 0.3s ease,
+        border-color 0.3s ease;
 }
 
 .region-marker:hover,
+.region-marker:focus-visible,
 .region-marker.active {
-    color: #214b38;
-
     transform:
         translate(-50%, -50%)
-        scale(1.08);
+        scale(1.09);
 
     filter:
-        drop-shadow(0 0 11px rgba(79, 174, 131, 0.45));
+        drop-shadow(0 0 12px rgba(79, 174, 131, 0.6));
 }
 
 .region-marker:hover .marker-symbol,
+.region-marker:focus-visible .marker-symbol,
 .region-marker.active .marker-symbol {
+    color: #092c20;
+
     background:
         radial-gradient(
             circle,
@@ -599,160 +469,186 @@
         scale(1.12);
 
     box-shadow:
-        0 0 12px rgba(79, 174, 131, 0.8),
-        0 0 30px rgba(79, 174, 131, 0.55);
+        0 0 12px rgba(79, 174, 131, 0.9),
+        0 0 30px rgba(79, 174, 131, 0.6);
 }
 
-.north-region {
-    top: 18%;
-    left: 50%;
+.region-marker:hover .marker-name,
+.region-marker:focus-visible .marker-name,
+.region-marker.active .marker-name {
+    color: #173b2d;
+
+    background:
+        rgba(213, 233, 205, 0.95);
+
+    border-color:
+        rgba(46, 115, 84, 0.48);
 }
 
-.west-region {
-    top: 51%;
-    left: 25%;
+/* Cidade livre */
+
+.city-marker .marker-symbol {
+    color: #4b244f;
+
+    background:
+        radial-gradient(
+            circle,
+            #d6addd,
+            #8f5c99
+        );
 }
 
-.center-region {
-    top: 48%;
-    left: 50%;
+/* Terras neutras */
+
+.neutral-marker .marker-symbol {
+    color: #36312b;
+
+    background:
+        radial-gradient(
+            circle,
+            #d5c7ad,
+            #81715a
+        );
 }
 
-.east-region {
-    top: 42%;
+.neutral-marker .marker-name {
+    color: #39322a;
+
+    background:
+        rgba(214, 202, 174, 0.91);
+}
+
+/*==========================
+       POSIÇÕES DOS REINOS
+==========================*/
+
+.marker-vinterhold {
+    top: 25%;
+    left: 48%;
+}
+
+.marker-valdor {
+    top: 57%;
+    left: 24%;
+}
+
+.marker-aurelia {
+    top: 57%;
+    left: 48%;
+}
+
+.marker-eldoria {
+    top: 56%;
     left: 74%;
 }
 
-.south-region {
-    top: 78%;
-    left: 50%;
+.marker-ashkara {
+    top: 84%;
+    left: 48%;
 }
 
-.islands-region {
-    top: 69%;
-    left: 84%;
+.marker-elysium {
+    top: 60%;
+    left: 34%;
 }
 
 /*==========================
-           BÚSSOLA
+    POSIÇÕES TERRAS NEUTRAS
 ==========================*/
 
-.map-compass {
-    position: absolute;
-    top: 40px;
-    right: 42px;
-
-    z-index: 7;
-
-    width: 104px;
-    height: 104px;
-
-    color: rgba(76, 48, 22, 0.72);
-
-    border: 2px solid rgba(76, 48, 22, 0.44);
-    border-radius: 50%;
-
-    font-family: var(--font-title);
-    font-size: 12px;
-
-    transform: rotate(-8deg);
+.marker-floresta {
+    top: 43%;
+    left: 22%;
 }
 
-.map-compass::before,
-.map-compass::after {
-    content: "";
+.marker-colossos {
+    top: 34%;
+    left: 69%;
+}
 
+.marker-fraturas {
+    top: 76%;
+    left: 74%;
+}
+
+.marker-asterion {
+    top: 87%;
+    left: 67%;
+}
+
+.marker-selvagens {
+    top: 70%;
+    left: 17%;
+}
+
+.marker-nevoa {
+    top: 25%;
+    left: 88%;
+}
+
+/*==========================
+           LEGENDA
+==========================*/
+
+.map-legend {
     position: absolute;
-    top: 50%;
     left: 50%;
+    bottom: 18px;
+
+    z-index: 12;
+
+    width: max-content;
+    max-width: calc(100% - 40px);
+    padding: 9px 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    flex-wrap: wrap;
+
+    color: #eadbb7;
 
     background:
-        rgba(76, 48, 22, 0.4);
+        rgba(8, 14, 14, 0.87);
 
-    transform:
-        translate(-50%, -50%);
-}
+    border: 1px solid rgba(255, 216, 77, 0.25);
+    border-radius: 30px;
 
-.map-compass::before {
-    width: 1px;
-    height: 85%;
-}
+    font-family: var(--font-title);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
 
-.map-compass::after {
-    width: 85%;
-    height: 1px;
-}
-
-.map-compass span {
-    position: absolute;
-}
-
-.map-compass .north {
-    top: 6px;
-    left: 50%;
+    backdrop-filter: blur(10px);
 
     transform: translateX(-50%);
+
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.35);
 }
 
-.map-compass .south {
-    bottom: 6px;
-    left: 50%;
-
-    transform: translateX(-50%);
+.map-legend span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
 }
 
-.map-compass .east {
-    top: 50%;
-    right: 8px;
-
-    transform: translateY(-50%);
+.legend-symbol {
+    font-style: normal;
+    font-size: 13px;
 }
 
-.map-compass .west {
-    top: 50%;
-    left: 8px;
-
-    transform: translateY(-50%);
+.kingdom-symbol {
+    color: var(--gold);
 }
 
-.compass-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-
-    z-index: 2;
-
-    color: #795526;
-
-    transform:
-        translate(-50%, -50%)
-        rotate(45deg);
+.city-symbol {
+    color: #c995d1;
 }
 
-/*==========================
-          DECORAÇÕES
-==========================*/
-
-.map-decoration {
-    position: absolute;
-    left: 50%;
-
-    z-index: 6;
-
-    color: rgba(88, 56, 24, 0.52);
-
-    font-size: 10px;
-    letter-spacing: 8px;
-
-    transform: translateX(-50%);
-}
-
-.map-decoration-top {
-    top: 34px;
-}
-
-.map-decoration-bottom {
-    bottom: 34px;
+.neutral-symbol {
+    color: #c9b998;
 }
 
 /*==========================
@@ -771,17 +667,17 @@
     background:
         linear-gradient(
             180deg,
-            rgba(10, 20, 20, 0.97),
-            rgba(4, 8, 10, 0.99)
+            rgba(10, 20, 20, 0.98),
+            rgba(4, 8, 10, 0.995)
         );
 
-    border: 1px solid rgba(255, 216, 77, 0.24);
+    border: 1px solid rgba(255, 216, 77, 0.25);
     border-radius: 18px;
 
     backdrop-filter: blur(18px);
 
     box-shadow:
-        0 28px 70px rgba(0, 0, 0, 0.52),
+        0 28px 70px rgba(0, 0, 0, 0.54),
         inset 0 0 48px rgba(79, 174, 131, 0.025);
 }
 
@@ -816,6 +712,11 @@
     border-bottom: 2px solid;
 }
 
+.region-panel.updating {
+    animation:
+        panelUpdate 0.35s ease;
+}
+
 .region-label {
     color: var(--green-light);
 
@@ -831,78 +732,164 @@
 
     color: var(--gold);
 
-    border-bottom: 1px solid rgba(255, 216, 77, 0.16);
+    border-bottom: 1px solid rgba(255, 216, 77, 0.17);
 
     font-family: var(--font-title);
-    font-size: clamp(30px, 4vw, 45px);
+    font-size: clamp(30px, 3vw, 45px);
     line-height: 1.18;
     letter-spacing: 2px;
 
     overflow-wrap: anywhere;
 
     text-shadow:
-        0 0 18px rgba(255, 216, 77, 0.2);
+        0 0 18px rgba(255, 216, 77, 0.22);
 }
 
-.region-description {
+/*==========================
+           RESUMO
+==========================*/
+
+.region-summary {
     margin-top: 24px;
 
-    color: #d5dad9;
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
 
-    font-size: 21px;
-    line-height: 1.7;
+    gap: 12px;
 }
 
-.region-details {
-    margin-top: 30px;
+.region-summary-item {
+    padding: 14px 15px;
 
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    background:
+        rgba(255, 255, 255, 0.025);
+
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: 8px;
 }
 
-.region-detail {
-    padding: 15px 0;
+.region-summary-item span {
+    display: block;
 
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    margin-bottom: 6px;
 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.region-detail span {
     color: var(--text-muted);
 
     font-family: var(--font-title);
-    font-size: 10px;
-    letter-spacing: 3px;
+    font-size: 9px;
+    letter-spacing: 2px;
     text-transform: uppercase;
 }
 
-.region-detail strong {
+.region-summary-item strong {
     color: var(--gold-light);
 
     font-size: 18px;
     font-weight: 500;
+    line-height: 1.3;
+}
+
+/*==========================
+          DESCRIÇÃO
+==========================*/
+
+.region-description {
+    margin-top: 25px;
+
+    color: #d5dad9;
+
+    font-size: 20px;
+    line-height: 1.68;
+}
+
+/*==========================
+           SEÇÕES
+==========================*/
+
+.region-section {
+    margin-top: 29px;
+    padding-top: 22px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.075);
+}
+
+.region-section h3 {
+    margin-bottom: 17px;
+
+    color: var(--green-light);
+
+    font-family: var(--font-title);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+/*==========================
+        CARACTERÍSTICAS
+==========================*/
+
+.region-characteristics {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 9px 18px;
+
+    list-style: none;
+}
+
+.region-characteristics li {
+    position: relative;
+
+    padding-left: 15px;
+
+    color: #d9d6ca;
+
+    font-size: 17px;
     line-height: 1.4;
 }
 
-.region-panel blockquote {
-    margin-top: 32px;
-    padding: 18px 20px;
+.region-characteristics li::before {
+    content: "◆";
 
-    color: var(--text-soft);
+    position: absolute;
+    top: 6px;
+    left: 0;
 
-    background:
-        rgba(255, 216, 77, 0.04);
+    color: var(--gold);
 
-    border-left: 3px solid var(--gold);
-
-    font-size: 21px;
-    line-height: 1.5;
-    font-style: italic;
+    font-size: 6px;
 }
+
+/*==========================
+          GOVERNO
+==========================*/
+
+.government-name {
+    display: block;
+
+    color: var(--gold-light);
+
+    font-family: var(--font-title);
+    font-size: 17px;
+    line-height: 1.4;
+    letter-spacing: 1px;
+}
+
+.government-description {
+    margin-top: 13px;
+
+    color: #cfd4d2;
+
+    font-size: 18px;
+    line-height: 1.65;
+}
+
+/*==========================
+           BOTÃO
+==========================*/
 
 .explore-button {
     width: 100%;
@@ -923,7 +910,7 @@
     border-radius: 30px;
 
     font-family: var(--font-title);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 3px;
     text-transform: uppercase;
@@ -950,6 +937,7 @@
     color: var(--green-light);
 
     font-size: 17px;
+    line-height: 1.4;
     text-align: center;
 }
 
@@ -1006,11 +994,25 @@
     }
 }
 
+@keyframes panelUpdate {
+    0% {
+        opacity: 0.55;
+
+        transform: translateY(8px);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
 /*==========================
           RESPONSIVO
 ==========================*/
 
-@media (max-width: 1120px) {
+@media (max-width: 1180px) {
     .world-layout {
         grid-template-columns: 1fr;
     }
@@ -1042,7 +1044,8 @@
 
     .world-header {
         width: calc(100% - 24px);
-        padding: 82px 12px 30px;
+        padding:
+            82px 12px 30px;
     }
 
     .world-logo {
@@ -1067,25 +1070,18 @@
         width: calc(100% - 18px);
     }
 
-    .world-map,
     .map-frame {
-        min-height: 590px;
+        aspect-ratio: 4 / 5;
+
+        min-height: 650px;
     }
 
-    .map-continent {
-        inset: 78px 28px 62px;
-    }
-
-    .map-compass {
-        top: 34px;
-        right: 28px;
-
-        width: 78px;
-        height: 78px;
+    .world-map-svg {
+        object-fit: cover;
     }
 
     .region-marker {
-        font-size: 8px;
+        font-size: 7px;
     }
 
     .marker-name {
@@ -1094,42 +1090,28 @@
     }
 
     .marker-symbol {
-        width: 25px;
-        height: 25px;
+        width: 24px;
+        height: 24px;
     }
 
-    .north-region {
-        top: 20%;
-        left: 50%;
-    }
+    .map-legend {
+        bottom: 10px;
 
-    .west-region {
-        top: 52%;
-        left: 24%;
-    }
+        gap: 10px;
 
-    .center-region {
-        top: 48%;
-        left: 50%;
-    }
-
-    .east-region {
-        top: 42%;
-        left: 75%;
-    }
-
-    .south-region {
-        top: 79%;
-        left: 50%;
-    }
-
-    .islands-region {
-        top: 69%;
-        left: 82%;
+        font-size: 7px;
     }
 
     .region-panel {
-        padding: 42px 26px;
+        padding: 43px 26px;
+    }
+
+    .region-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .region-characteristics {
+        grid-template-columns: 1fr;
     }
 
     .region-description {
@@ -1138,27 +1120,28 @@
 }
 
 @media (max-width: 480px) {
-    .world-map,
     .map-frame {
-        min-height: 540px;
-    }
-
-    .map-continent {
-        inset: 82px 15px 62px;
+        min-height: 590px;
     }
 
     .marker-name {
-        max-width: 88px;
-
-        font-size: 7px;
+        display: none;
     }
 
-    .islands-region {
-        left: 78%;
+    .marker-symbol {
+        width: 22px;
+        height: 22px;
+
+        font-size: 10px;
+    }
+
+    .map-legend {
+        width: calc(100% - 24px);
+        padding: 8px 10px;
     }
 
     .region-panel {
         padding:
-            42px 22px;
+            42px 21px;
     }
 }

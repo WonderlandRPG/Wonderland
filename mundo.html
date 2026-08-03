@@ -13,7 +13,7 @@
 
     <meta
         name="description"
-        content="Explore as regiões e os mistérios do mundo de Wonderland."
+        content="Explore os reinos, cidades e territórios neutros de Wonderland."
     >
 
     <link
@@ -37,8 +37,8 @@
     >
 
     <!-- Estilos -->
-    <link rel="stylesheet" href="css/global.css?v=9">
-    <link rel="stylesheet" href="css/mundo.css?v=1">
+    <link rel="stylesheet" href="css/global.css?v=10">
+    <link rel="stylesheet" href="css/mundo.css?v=3">
 </head>
 
 <body class="world-page">
@@ -71,6 +71,8 @@
             src="assets/audio/wonderland.mp3"
             type="audio/mpeg"
         >
+
+        Seu navegador não suporta reprodução de áudio.
     </audio>
 
     <!-- Voltar -->
@@ -89,7 +91,12 @@
         aria-label="Tocar música"
         title="Tocar música"
     >
-        <span id="musicIcon">♪</span>
+        <span
+            id="musicIcon"
+            aria-hidden="true"
+        >
+            ♪
+        </span>
     </button>
 
     <!-- Cabeçalho -->
@@ -110,8 +117,8 @@
         </h1>
 
         <p>
-            Explore os territórios que formam Wonderland e descubra
-            os segredos escondidos em cada região.
+            Explore os cinco reinos, a Cidade Livre e os territórios
+            que permanecem fora do domínio das coroas.
         </p>
 
     </header>
@@ -120,180 +127,317 @@
     <main class="world-layout">
 
         <!-- Mapa -->
-        <section class="world-map">
+        <section
+            class="world-map"
+            aria-label="Mapa interativo de Wonderland"
+        >
 
             <div class="map-frame">
 
-                <div
-                    class="map-compass"
-                    aria-hidden="true"
+                <!-- SVG desenhado -->
+                <object
+                    id="worldMapObject"
+                    class="world-map-svg"
+                    type="image/svg+xml"
+                    data="assets/maps/wonderland-map.svg"
+                    aria-label="Mapa de Wonderland"
                 >
-                    <span class="north">N</span>
-                    <span class="east">L</span>
-                    <span class="south">S</span>
-                    <span class="west">O</span>
+                    Seu navegador não conseguiu carregar o mapa.
+                </object>
 
-                    <div class="compass-center">◆</div>
+                <!-- Marcadores dos reinos -->
+                <div class="map-markers">
+
+                    <button
+                        class="region-marker marker-vinterhold"
+                        type="button"
+                        data-region="vinterhold"
+                        aria-label="Selecionar Reino de Vinterhold"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Vinterhold
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker marker-valdor"
+                        type="button"
+                        data-region="valdor"
+                        aria-label="Selecionar Reino de Valdor"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Valdor
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker marker-aurelia active"
+                        type="button"
+                        data-region="aurelia"
+                        aria-label="Selecionar Reino de Aurelia"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Aurelia
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker marker-eldoria"
+                        type="button"
+                        data-region="eldoria"
+                        aria-label="Selecionar Reino de Eldoria"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Eldoria
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker marker-ashkara"
+                        type="button"
+                        data-region="ashkara"
+                        aria-label="Selecionar Reino de Ashkara"
+                    >
+                        <span class="marker-symbol">◆</span>
+
+                        <span class="marker-name">
+                            Ashkara
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker marker-elysium city-marker"
+                        type="button"
+                        data-region="elysium"
+                        aria-label="Selecionar Cidade Livre de Elysium"
+                    >
+                        <span class="marker-symbol">◇</span>
+
+                        <span class="marker-name">
+                            Elysium
+                        </span>
+                    </button>
+
+                    <!-- Terras neutras -->
+
+                    <button
+                        class="region-marker neutral-marker marker-floresta"
+                        type="button"
+                        data-region="floresta-antiga"
+                        aria-label="Selecionar Floresta Antiga"
+                    >
+                        <span class="marker-symbol">✦</span>
+
+                        <span class="marker-name">
+                            Floresta Antiga
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker neutral-marker marker-colossos"
+                        type="button"
+                        data-region="cordilheira-colossos"
+                        aria-label="Selecionar Cordilheira dos Colossos"
+                    >
+                        <span class="marker-symbol">▲</span>
+
+                        <span class="marker-name">
+                            Cordilheira dos Colossos
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker neutral-marker marker-fraturas"
+                        type="button"
+                        data-region="fraturas"
+                        aria-label="Selecionar As Fraturas"
+                    >
+                        <span class="marker-symbol">✧</span>
+
+                        <span class="marker-name">
+                            As Fraturas
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker neutral-marker marker-asterion"
+                        type="button"
+                        data-region="ruinas-asterion"
+                        aria-label="Selecionar Ruínas de Asterion"
+                    >
+                        <span class="marker-symbol">⌂</span>
+
+                        <span class="marker-name">
+                            Ruínas de Asterion
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker neutral-marker marker-selvagens"
+                        type="button"
+                        data-region="terras-selvagens"
+                        aria-label="Selecionar Terras Selvagens"
+                    >
+                        <span class="marker-symbol">✦</span>
+
+                        <span class="marker-name">
+                            Terras Selvagens
+                        </span>
+                    </button>
+
+                    <button
+                        class="region-marker neutral-marker marker-nevoa"
+                        type="button"
+                        data-region="mar-nevoa"
+                        aria-label="Selecionar Mar da Névoa"
+                    >
+                        <span class="marker-symbol">◈</span>
+
+                        <span class="marker-name">
+                            Mar da Névoa
+                        </span>
+                    </button>
+
                 </div>
 
-                <div class="map-continent">
+                <!-- Legenda -->
+                <div
+                    class="map-legend"
+                    aria-label="Legenda do mapa"
+                >
+                    <span>
+                        <i class="legend-symbol kingdom-symbol">◆</i>
+                        Reino
+                    </span>
 
-                    <button
-                        class="region-marker north-region"
-                        type="button"
-                        data-region="norte"
-                    >
-                        <span class="marker-symbol">◆</span>
+                    <span>
+                        <i class="legend-symbol city-symbol">◇</i>
+                        Cidade Livre
+                    </span>
 
-                        <span class="marker-name">
-                            Terras do Norte
-                        </span>
-                    </button>
-
-                    <button
-                        class="region-marker east-region"
-                        type="button"
-                        data-region="leste"
-                    >
-                        <span class="marker-symbol">◆</span>
-
-                        <span class="marker-name">
-                            Domínios do Leste
-                        </span>
-                    </button>
-
-                    <button
-                        class="region-marker center-region active"
-                        type="button"
-                        data-region="centro"
-                    >
-                        <span class="marker-symbol">◆</span>
-
-                        <span class="marker-name">
-                            Reinos Centrais
-                        </span>
-                    </button>
-
-                    <button
-                        class="region-marker west-region"
-                        type="button"
-                        data-region="oeste"
-                    >
-                        <span class="marker-symbol">◆</span>
-
-                        <span class="marker-name">
-                            Terras do Oeste
-                        </span>
-                    </button>
-
-                    <button
-                        class="region-marker south-region"
-                        type="button"
-                        data-region="sul"
-                    >
-                        <span class="marker-symbol">◆</span>
-
-                        <span class="marker-name">
-                            Fronteiras do Sul
-                        </span>
-                    </button>
-
-                    <button
-                        class="region-marker islands-region"
-                        type="button"
-                        data-region="ilhas"
-                    >
-                        <span class="marker-symbol">◆</span>
-
-                        <span class="marker-name">
-                            Ilhas Distantes
-                        </span>
-                    </button>
-
-                </div>
-
-                <div class="map-decoration map-decoration-top">
-                    ◆ ━━━━━━━━━ ◆
-                </div>
-
-                <div class="map-decoration map-decoration-bottom">
-                    ◆ ━━━━━━━━━ ◆
+                    <span>
+                        <i class="legend-symbol neutral-symbol">✦</i>
+                        Território neutro
+                    </span>
                 </div>
 
             </div>
 
         </section>
 
-        <!-- Informações -->
-        <aside class="region-panel">
+        <!-- Painel de informações -->
+        <aside
+            id="regionPanel"
+            class="region-panel"
+            aria-live="polite"
+        >
 
-            <span class="region-label">
-                Região selecionada
+            <span
+                id="regionType"
+                class="region-label"
+            >
+                Reino selecionado
             </span>
 
             <h2 id="regionTitle">
-                Reinos Centrais
+                Reino de Aurelia
             </h2>
 
-            <p
-                id="regionDescription"
-                class="region-description"
-            >
-                O coração político e comercial de Wonderland. Suas grandes
-                cidades foram erguidas sobre ruínas pertencentes a civilizações
-                esquecidas.
-            </p>
+            <div class="region-summary">
 
-            <div class="region-details">
-
-                <div class="region-detail">
+                <div class="region-summary-item">
 
                     <span>
-                        Terreno
+                        Capital
                     </span>
 
-                    <strong id="regionTerrain">
-                        Planícies, rios e grandes cidades
+                    <strong id="regionCapital">
+                        Solaris
                     </strong>
 
                 </div>
 
-                <div class="region-detail">
+                <div class="region-summary-item">
 
                     <span>
-                        Perigo
+                        Localização
                     </span>
 
-                    <strong id="regionDanger">
-                        Moderado
-                    </strong>
-
-                </div>
-
-                <div class="region-detail">
-
-                    <span>
-                        Conhecida por
-                    </span>
-
-                    <strong id="regionKnownFor">
-                        Reinos, comércio e academias
+                    <strong id="regionLocation">
+                        Centro
                     </strong>
 
                 </div>
 
             </div>
 
-            <blockquote id="regionQuote">
-                “Onde muitas coroas disputam o mesmo horizonte.”
-            </blockquote>
+            <p
+                id="regionDescription"
+                class="region-description"
+            >
+                Aurelia é o coração político e comercial de Wonderland.
+                Todas as grandes estradas passam por seu território.
+                É o reino mais populoso e abriga o maior mercado do continente.
+            </p>
+
+            <section class="region-section">
+
+                <h3>
+                    Características
+                </h3>
+
+                <ul
+                    id="regionCharacteristics"
+                    class="region-characteristics"
+                >
+                    <li>Grandes planícies</li>
+                    <li>Fazendas</li>
+                    <li>Castelos</li>
+                    <li>Cidades fortificadas</li>
+                    <li>Guildas influentes</li>
+                    <li>Centro da diplomacia</li>
+                </ul>
+
+            </section>
+
+            <section class="region-section">
+
+                <h3>
+                    Forma de governo
+                </h3>
+
+                <strong
+                    id="regionGovernment"
+                    class="government-name"
+                >
+                    Monarquia Hereditária
+                </strong>
+
+                <p
+                    id="regionGovernmentDescription"
+                    class="government-description"
+                >
+                    Aurelia é governada pela Casa Solaris, uma linhagem
+                    que governa há séculos. O rei possui grande autoridade,
+                    mas precisa lidar constantemente com as Casas Nobres.
+                </p>
+
+            </section>
 
             <button
                 id="exploreButton"
                 class="explore-button"
                 type="button"
             >
-                Explorar região
+                Ver detalhes
             </button>
 
             <p
@@ -306,7 +450,7 @@
 
     </main>
 
-    <script src="js/mundo.js?v=1" defer></script>
+    <script src="js/mundo.js?v=4" defer></script>
 
 </body>
 

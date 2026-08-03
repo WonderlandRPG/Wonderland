@@ -24,27 +24,24 @@
          BACKGROUND
 ==========================*/
 
-.menu-background {
-    position: fixed;
-    inset: 0;
+.menu-background{
 
-    z-index: 0;
+    position:fixed;
 
-    background:
+    inset:0;
+
+    z-index:0;
+
+    background-image:
         linear-gradient(
-            rgba(4, 7, 11, 0.58),
-            rgba(4, 7, 11, 0.82)
+            rgba(5,8,12,.45),
+            rgba(5,8,12,.70)
         ),
         url("../assets/images/background.png");
 
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-
-    transform: scale(1.06);
-
-    animation:
-        menuBackgroundMove 38s ease-in-out infinite alternate;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
 }
 
 .menu-background::after {

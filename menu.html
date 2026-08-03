@@ -37,8 +37,8 @@
     >
 
     <!-- Estilos -->
-    <link rel="stylesheet" href="css/global.css?v=6">
-    <link rel="stylesheet" href="css/menu.css?v=1">
+    <link rel="stylesheet" href="css/global.css?v=7">
+    <link rel="stylesheet" href="css/menu.css?v=3">
 </head>
 
 <body class="menu-page">
@@ -71,6 +71,8 @@
             src="assets/audio/wonderland.mp3"
             type="audio/mpeg"
         >
+
+        Seu navegador não suporta reprodução de áudio.
     </audio>
 
     <!-- Controle da música -->
@@ -78,10 +80,15 @@
         id="musicButton"
         class="music-button"
         type="button"
-        aria-label="Pausar música"
-        title="Pausar música"
+        aria-label="Tocar música"
+        title="Tocar música"
     >
-        <span id="musicIcon">♫</span>
+        <span
+            id="musicIcon"
+            aria-hidden="true"
+        >
+            ♪
+        </span>
     </button>
 
     <!-- Conteúdo -->
@@ -93,7 +100,7 @@
             class="menu-logo"
         >
 
-        <div class="menu-heading">
+        <header class="menu-heading">
 
             <span class="menu-label">
                 Bem-vindo a
@@ -107,7 +114,7 @@
                 Escolha um caminho e descubra os segredos do Primeiro Sonho.
             </p>
 
-        </div>
+        </header>
 
         <nav
             class="main-menu"
@@ -118,7 +125,12 @@
                 href="historia.html"
                 class="menu-link"
             >
-                <span class="menu-symbol">◆</span>
+                <span
+                    class="menu-symbol"
+                    aria-hidden="true"
+                >
+                    ◆
+                </span>
 
                 <span class="menu-link-text">
                     História
@@ -129,84 +141,132 @@
                 href="#"
                 class="menu-link unavailable"
                 aria-disabled="true"
+                tabindex="-1"
             >
-                <span class="menu-symbol">◆</span>
+                <span
+                    class="menu-symbol"
+                    aria-hidden="true"
+                >
+                    ◆
+                </span>
 
                 <span class="menu-link-text">
                     Mundo
                 </span>
 
-                <small>Em breve</small>
+                <small>
+                    Em breve
+                </small>
             </a>
 
             <a
                 href="#"
                 class="menu-link unavailable"
                 aria-disabled="true"
+                tabindex="-1"
             >
-                <span class="menu-symbol">◆</span>
+                <span
+                    class="menu-symbol"
+                    aria-hidden="true"
+                >
+                    ◆
+                </span>
 
                 <span class="menu-link-text">
                     Raças
                 </span>
 
-                <small>Em breve</small>
+                <small>
+                    Em breve
+                </small>
             </a>
 
             <a
                 href="#"
                 class="menu-link unavailable"
                 aria-disabled="true"
+                tabindex="-1"
             >
-                <span class="menu-symbol">◆</span>
+                <span
+                    class="menu-symbol"
+                    aria-hidden="true"
+                >
+                    ◆
+                </span>
 
                 <span class="menu-link-text">
                     Classes
                 </span>
 
-                <small>Em breve</small>
+                <small>
+                    Em breve
+                </small>
             </a>
 
             <a
                 href="#"
                 class="menu-link unavailable"
                 aria-disabled="true"
+                tabindex="-1"
             >
-                <span class="menu-symbol">◆</span>
+                <span
+                    class="menu-symbol"
+                    aria-hidden="true"
+                >
+                    ◆
+                </span>
 
                 <span class="menu-link-text">
                     Atributos
                 </span>
 
-                <small>Em breve</small>
+                <small>
+                    Em breve
+                </small>
             </a>
 
             <a
                 href="#"
                 class="menu-link unavailable"
                 aria-disabled="true"
+                tabindex="-1"
             >
-                <span class="menu-symbol">◆</span>
+                <span
+                    class="menu-symbol"
+                    aria-hidden="true"
+                >
+                    ◆
+                </span>
 
                 <span class="menu-link-text">
                     Grimório
                 </span>
 
-                <small>Em breve</small>
+                <small>
+                    Em breve
+                </small>
             </a>
 
             <a
                 href="#"
                 class="menu-link unavailable"
                 aria-disabled="true"
+                tabindex="-1"
             >
-                <span class="menu-symbol">◆</span>
+                <span
+                    class="menu-symbol"
+                    aria-hidden="true"
+                >
+                    ◆
+                </span>
 
                 <span class="menu-link-text">
                     Minigames
                 </span>
 
-                <small>Em breve</small>
+                <small>
+                    Em breve
+                </small>
             </a>
 
         </nav>
@@ -220,7 +280,7 @@
 
     </main>
 
-    <script src="js/menu.js?v=1"></script>
+    <script src="js/menu.js?v=3" defer></script>
 
 </body>
 

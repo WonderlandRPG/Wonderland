@@ -4,19 +4,23 @@
     const content = document.getElementById("classContent");
     if (!content) return;
 
-    function createStars(value) {
+    function createRating(value) {
         const text = String(value || "☆☆☆☆☆");
-        const filled = (text.match(/★/g) || []).length;
-        const fragment = document.createDocumentFragment();
+        const filledCount = Math.max(0, Math.min(5, (text.match(/★/g) || []).length));
+        const row = document.createElement("span");
+        row.className = "rating-stars-inline";
+        row.setAttribute("aria-label", `${filledCount} de 5 estrelas`);
 
-        for (let index = 0; index < 5; index += 1) {
-            const star = document.createElement("span");
-            star.className = index < filled ? "rating-star filled" : "rating-star empty";
-            star.textContent = "★";
-            fragment.appendChild(star);
-        }
+        const filled = document.createElement("span");
+        filled.className = "rating-stars-filled";
+        filled.textContent = "★".repeat(filledCount);
 
-        return fragment;
+        const empty = document.createElement("span");
+        empty.className = "rating-stars-empty";
+        empty.textContent = "★".repeat(5 - filledCount);
+
+        row.append(filled, empty);
+        return row;
     }
 
     function enhanceRatings() {
@@ -24,28 +28,22 @@
         if (difficulty && !difficulty.dataset.enhanced) {
             const raw = difficulty.textContent.trim();
             difficulty.dataset.enhanced = "true";
-            difficulty.dataset.value = raw;
             difficulty.innerHTML = "";
 
             const label = document.createElement("span");
             label.className = "rating-label";
             label.textContent = "Dificuldade";
 
-            const stars = document.createElement("span");
-            stars.className = "rating-stars-row";
-            stars.appendChild(createStars(raw));
-
-            difficulty.append(label, stars);
+            difficulty.append(label, createRating(raw));
         }
 
         content.querySelectorAll(".class-affinity-card strong").forEach((element) => {
             if (element.dataset.enhanced) return;
             const raw = element.textContent.trim();
             element.dataset.enhanced = "true";
-            element.dataset.value = raw;
             element.innerHTML = "";
             element.classList.add("affinity-stars-row");
-            element.appendChild(createStars(raw));
+            element.appendChild(createRating(raw));
         });
     }
 

@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css?v=14">
-    <link rel="stylesheet" href="css/menu.css?v=10">
+    <link rel="stylesheet" href="css/menu.css?v=11">
 </head>
 <body class="menu-page">
     <div class="menu-background" aria-hidden="true"></div>
@@ -23,9 +23,17 @@
         <source src="assets/audio/wonderland.mp3" type="audio/mpeg">
     </audio>
 
-    <button id="musicButton" class="music-button" type="button" aria-label="Tocar música" title="Tocar música">
-        <span id="musicIcon" aria-hidden="true">♪</span>
-    </button>
+    <div class="music-controls" aria-label="Controles de música">
+        <button id="musicButton" class="music-button" type="button" aria-label="Tocar música" title="Tocar música">
+            <span id="musicIcon" aria-hidden="true">♪</span>
+        </button>
+
+        <label class="volume-control" for="volumeSlider">
+            <span aria-hidden="true">🔊</span>
+            <input id="volumeSlider" type="range" min="0" max="100" step="1" value="25" aria-label="Volume da música">
+            <output id="volumeValue" for="volumeSlider">25%</output>
+        </label>
+    </div>
 
     <main class="menu-shell">
         <section class="menu-hero">
@@ -127,6 +135,6 @@
         </footer>
     </main>
 
-    <script src="js/menu.js?v=8" defer></script>
+    <script src="js/pages/menu.js?v=9" defer></script>
 </body>
 </html>

@@ -1,10 +1,6 @@
 "use strict";
 
-/*
- * Grimório oficial de Wonderland.
- * Os registros abaixo são gerados exclusivamente a partir dos dados já
- * existentes em window.WONDERLAND_CLASSES. Nenhuma habilidade é inventada.
- */
+/* Grimório oficial de Wonderland, gerado a partir das classes existentes. */
 (function () {
   const classes = window.WONDERLAND_CLASSES || {};
   const records = [];
@@ -29,8 +25,7 @@
       ["cura", "Cura"], ["escudo", "Escudo"], ["invoca", "Invocação"],
       ["mobilidade", "Mobilidade"], ["execução", "Execução"],
       ["provoca", "Provocação"], ["dano contínuo", "Dano contínuo"],
-      ["buff", "Fortalecimento"], ["fortalecimento", "Fortalecimento"],
-      ["debuff", "Enfraquecimento"], ["reduz", "Enfraquecimento"],
+      ["fortalecimento", "Fortalecimento"], ["reduz", "Enfraquecimento"],
       ["ultimate", "Ultimate"]
     ];
     map.forEach(([needle, tag]) => {
@@ -39,48 +34,58 @@
     return tags.slice(0, 4);
   };
 
-  const extractCost = (descricao) => {
+  const explicitCost = (descricao) => {
     const text = String(descricao || "");
     const patterns = [
-      { regex: /custa\s+(\d+)\s*mana/i, type: "Mana" },
-      { regex: /consome\s+(\d+)\s*mana/i, type: "Mana" },
-      { regex: /gasta\s+(\d+)\s*mana/i, type: "Mana" },
-      { regex: /custa\s+(\d+)\s*energia/i, type: "Energia" },
-      { regex: /consome\s+(\d+)\s*energia/i, type: "Energia" },
-      { regex: /gasta\s+(\d+)\s*energia/i, type: "Energia" },
-      { regex: /custa\s+(\d+)%\s*do\s*hp/i, type: "HP" },
-      { regex: /consome\s+(\d+)%\s*do\s*hp/i, type: "HP" },
-      { regex: /gasta\s+(\d+)%\s*do\s*hp/i, type: "HP" },
-      { regex: /custa\s+(\d+)\s*f[úu]ria/i, type: "Fúria" },
-      { regex: /consome\s+(\d+)\s*f[úu]ria/i, type: "Fúria" },
-      { regex: /gasta\s+(\d+)\s*f[úu]ria/i, type: "Fúria" },
-      { regex: /custa\s+(\d+)\s*reagentes?/i, type: "Reagente" },
-      { regex: /consome\s+(\d+)\s*reagentes?/i, type: "Reagente" },
-      { regex: /gasta\s+(\d+)\s*reagentes?/i, type: "Reagente" }
+      { regex: /(?:custa|consome|gasta)\s+(\d+)\s*mana/i, type: "Mana" },
+      { regex: /(?:custa|consome|gasta)\s+(\d+)\s*energia/i, type: "Energia" },
+      { regex: /(?:custa|consome|gasta)\s+(\d+)%\s*do\s*hp/i, type: "HP" },
+      { regex: /(?:custa|consome|gasta)\s+(\d+)\s*f[úu]ria/i, type: "Fúria" },
+      { regex: /(?:custa|consome|gasta)\s+(\d+)\s*reagentes?/i, type: "Reagente" }
     ];
-
     for (const pattern of patterns) {
       const match = text.match(pattern.regex);
       if (match) {
         const suffix = pattern.type === "HP" ? "% do HP" : pattern.type;
-        return {
-          type: pattern.type,
-          value: Number(match[1]),
-          label: `${match[1]} ${suffix}`
-        };
+        return { type: pattern.type, value: Number(match[1]), label: `${match[1]} ${suffix}` };
       }
     }
+    return null;
+  };
 
-    return {
-      type: "Pendente",
-      value: null,
-      label: "Custo não definido"
-    };
+  const classResourceType = (classe) => {
+    const resource = `${classe?.recurso?.nome || ""} ${classe?.estilo?.secundaria || ""}`.toLowerCase();
+    if (resource.includes("fúria")) return "Fúria";
+    if (resource.includes("reagente")) return "Reagente";
+    if (resource.includes("energia")) return "Energia";
+    if (resource.includes("sangue") || resource.includes("vida")) return "HP";
+    if (resource.includes("mana")) return "Mana";
+    const role = String(classe?.cargo || "").toLowerCase();
+    if (role.includes("mágico") || role.includes("magico") || role.includes("suporte") || role.includes("invocador")) return "Mana";
+    if (role.includes("assassino") || role.includes("infiltração") || role.includes("infiltracao") || role.includes("arqueiro")) return "Energia";
+    return "Sem custo";
+  };
+
+  const costByLevel = (type, level, isUltimate, isPassive) => {
+    if (isPassive || type === "Sem custo") return { type: "Sem custo", value: 0, label: "Sem custo" };
+    const n = Number(level) || 1;
+    let value;
+    if (type === "Mana") value = Math.min(120, 20 + Math.round(n * 0.9) + (isUltimate ? 25 : 0));
+    else if (type === "Energia") value = Math.min(80, 15 + Math.round(n * 0.45) + (isUltimate ? 20 : 0));
+    else if (type === "Fúria") value = isUltimate ? 10 : Math.max(2, Math.min(8, Math.ceil(n / 15) + 1));
+    else if (type === "Reagente") value = isUltimate ? 3 : (n >= 60 ? 2 : 1);
+    else if (type === "HP") value = isUltimate ? 18 : Math.max(4, Math.min(12, Math.ceil(n / 10) + 3));
+    else return { type: "Sem custo", value: 0, label: "Sem custo" };
+    const label = type === "HP" ? `${value}% do HP` : `${value} ${type}`;
+    return { type, value, label };
+  };
+
+  const resolveCost = (classe, descricao, level, isUltimate = false, isPassive = false) => {
+    return explicitCost(descricao) || costByLevel(classResourceType(classe), level, isUltimate, isPassive);
   };
 
   const extractCooldown = (descricao, fallback = "Não definida") => {
-    const text = String(descricao || "");
-    const match = text.match(/recarga\s+de\s+(\d+)\s*turnos?/i);
+    const match = String(descricao || "").match(/recarga\s+de\s+(\d+)\s*turnos?/i);
     return match ? `${match[1]} turnos` : fallback;
   };
 
@@ -88,6 +93,7 @@
     const atributo = inferAttribute(classe);
 
     (classe.passivas || []).forEach((passiva, index) => {
+      const cost = resolveCost(classe, passiva.descricao, 1, false, true);
       records.push({
         id: `${classe.id}-passiva-${slugify(passiva.nome || index)}`,
         nome: passiva.nome,
@@ -96,8 +102,8 @@
         origem: classe.nome,
         nivel: "Passiva inicial",
         atributo,
-        custo: "Sem custo",
-        custoEstruturado: { type: "Sem custo", value: 0, label: "Sem custo" },
+        custo: cost.label,
+        custoEstruturado: cost,
         recarga: "Permanente",
         alcance: "Próprio",
         area: "Efeito permanente",
@@ -109,8 +115,8 @@
     });
 
     (classe.progressao || []).forEach((skill, index) => {
-      const nivel = String(skill.nivel || "").replace(/[^0-9]/g, "") || "—";
-      const cost = extractCost(skill.descricao);
+      const nivel = String(skill.nivel || "").replace(/[^0-9]/g, "") || "1";
+      const cost = resolveCost(classe, skill.descricao, nivel);
       records.push({
         id: `${classe.id}-nivel-${nivel}-${slugify(skill.nome || index)}`,
         nome: skill.nome,
@@ -127,14 +133,13 @@
         tags: inferTags(skill.categoria, skill.descricao),
         descricao: skill.descricao,
         efeito: skill.descricao,
-        observacoes: cost.type === "Pendente"
-          ? `Habilidade oficial da progressão da classe ${classe.nome}. O custo ainda precisa ser definido no balanceamento.`
-          : `Habilidade oficial da progressão da classe ${classe.nome}.`
+        observacoes: `Habilidade oficial da progressão da classe ${classe.nome}.`
       });
     });
 
     (classe.caminhos || []).forEach((caminho, pathIndex) => {
       if (caminho.passiva) {
+        const cost = resolveCost(classe, caminho.passiva.descricao, 50, false, true);
         records.push({
           id: `${classe.id}-caminho-${slugify(caminho.id || pathIndex)}-passiva`,
           nome: caminho.passiva.nome,
@@ -143,8 +148,8 @@
           origem: `${classe.nome} — ${caminho.nome}`,
           nivel: 50,
           atributo,
-          custo: "Sem custo",
-          custoEstruturado: { type: "Sem custo", value: 0, label: "Sem custo" },
+          custo: cost.label,
+          custoEstruturado: cost,
           recarga: "Permanente",
           alcance: "Próprio",
           area: "Efeito permanente",
@@ -159,7 +164,7 @@
       (caminho.habilidades || []).forEach((skill, index) => {
         const level = unlockLevels[index] || 100;
         const isUltimate = String(skill.tipo || "").toLowerCase() === "ultimate";
-        const cost = extractCost(skill.descricao);
+        const cost = resolveCost(classe, skill.descricao, level, isUltimate);
         records.push({
           id: `${classe.id}-caminho-${slugify(caminho.id || pathIndex)}-${slugify(skill.nome || index)}`,
           nome: skill.nome,
@@ -170,15 +175,13 @@
           atributo,
           custo: cost.label,
           custoEstruturado: cost,
-          recarga: extractCooldown(skill.descricao, isUltimate ? "Conforme descrição" : "Não definida"),
+          recarga: extractCooldown(skill.descricao, isUltimate ? "Uma vez por combate" : "Não definida"),
           alcance: "Conforme descrição",
           area: isUltimate ? "Poder Supremo" : "Conforme descrição",
           tags: [isUltimate ? "Ultimate" : "Caminho", ...inferTags(skill.tipo, skill.descricao)],
           descricao: skill.descricao,
           efeito: skill.descricao,
-          observacoes: cost.type === "Pendente"
-            ? `${isUltimate ? "Ultimate" : "Habilidade"} oficial do caminho ${caminho.nome}. O custo ainda precisa ser definido no balanceamento.`
-            : `${isUltimate ? "Ultimate" : "Habilidade"} oficial do caminho ${caminho.nome}.`
+          observacoes: `${isUltimate ? "Ultimate" : "Habilidade"} oficial do caminho ${caminho.nome}.`
         });
       });
     });

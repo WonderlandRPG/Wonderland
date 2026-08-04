@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
   <link rel="stylesheet" href="css/components/inputs.css?v=1">
-  <link rel="stylesheet" href="css/character-create.css?v=2">
+  <link rel="stylesheet" href="css/character-create.css?v=3">
 </head>
 <body class="character-create-page">
   <div class="character-create-background" aria-hidden="true"></div>
@@ -56,6 +56,23 @@
 
       <section class="character-create-step" data-step="3">
         <header><span>Etapa 3</span><h2>Distribuição de atributos</h2><p>Todo personagem começa com 20 pontos em cada atributo e recebe +100 pontos livres. Os bônus raciais são aplicados automaticamente.</p></header>
+
+        <section id="classAttributeGuide" class="class-attribute-guide" aria-live="polite"></section>
+
+        <section class="auto-distribution-panel" aria-labelledby="autoDistributionTitle">
+          <div class="auto-distribution-copy">
+            <span>Distribuição recomendada</span>
+            <h3 id="autoDistributionTitle">Escolha um estilo de construção</h3>
+            <p>A distribuição considera a classe, seus atributos principais e os bônus da raça escolhida. Você ainda poderá ajustar tudo manualmente.</p>
+          </div>
+          <div class="auto-distribution-options" role="group" aria-label="Perfis de distribuição automática">
+            <button class="auto-distribution-button aggressive" type="button" data-auto-profile="aggressive"><strong>Agressivo</strong><small>Prioriza dano e iniciativa</small></button>
+            <button class="auto-distribution-button balanced" type="button" data-auto-profile="balanced"><strong>Equilibrado</strong><small>Distribuição versátil</small></button>
+            <button class="auto-distribution-button defensive" type="button" data-auto-profile="defensive"><strong>Defensivo</strong><small>Prioriza defesa e resistência</small></button>
+          </div>
+          <p id="autoDistributionMessage" class="auto-distribution-message" role="status"></p>
+        </section>
+
         <div class="character-points-summary"><span>Pontos restantes</span><strong id="remainingPoints">100</strong></div>
         <div id="attributeAllocator" class="attribute-allocator"></div>
         <button id="resetAttributes" class="wl-button wl-button-ghost" type="button">Redefinir distribuição</button>
@@ -78,6 +95,6 @@
   <script src="js/account-store.js?v=3"></script>
   <script src="js/data/racas-data.js?v=1"></script>
   <script src="js/data/classes-all.js?v=2"></script>
-  <script src="js/pages/character-create.js?v=1" defer></script>
+  <script src="js/pages/character-create.js?v=2" defer></script>
 </body>
 </html>

@@ -1,0 +1,423 @@
+/* =========================================================
+   WONDERLAND RPG — POLIMENTO VISUAL DA PÁGINA DE ATRIBUTOS
+   ========================================================= */
+
+.attributes-page {
+    --attr-for: 207, 80, 69;
+    --attr-def: 105, 138, 169;
+    --attr-res: 95, 174, 128;
+    --attr-ini: 220, 177, 75;
+    --attr-int: 154, 111, 214;
+    --attr-arc: 82, 177, 201;
+}
+
+/* Menos ruído visual geral */
+.attributes-main {
+    gap: 26px;
+}
+
+.attributes-hero,
+.attributes-introduction,
+.attributes-creation,
+.attributes-codex,
+.attribute-example {
+    border-color: rgba(214, 181, 107, 0.14);
+    box-shadow:
+        0 26px 70px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    backdrop-filter: blur(12px);
+}
+
+.attributes-introduction,
+.attributes-creation,
+.attributes-codex,
+.attribute-example {
+    padding: clamp(28px, 3vw, 44px);
+    border-radius: 22px;
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.018), transparent 18%),
+        rgba(4, 10, 12, 0.78);
+}
+
+/* Hero mais limpo */
+.attributes-hero {
+    min-height: 300px;
+    padding: clamp(34px, 4vw, 52px);
+    grid-template-columns: 110px minmax(0, 1fr) minmax(260px, 320px);
+    gap: clamp(22px, 3vw, 38px);
+    background:
+        radial-gradient(circle at 82% 16%, rgba(var(--page-accent), 0.12), transparent 30%),
+        linear-gradient(135deg, rgba(var(--page-accent), 0.045), rgba(5, 11, 13, 0.94));
+}
+
+.attributes-hero::before {
+    width: 430px;
+    height: 430px;
+    right: -180px;
+    top: -240px;
+    opacity: 0.5;
+}
+
+.attributes-hero-symbol {
+    width: 96px;
+    height: 96px;
+    font-size: 38px;
+}
+
+.attributes-hero-content h1 {
+    font-size: clamp(44px, 5.2vw, 68px);
+    letter-spacing: 2px;
+}
+
+.attributes-hero-content > p {
+    max-width: 700px;
+    font-size: clamp(19px, 1.8vw, 23px);
+}
+
+.attributes-hero-tags {
+    gap: 7px;
+    margin-top: 18px;
+}
+
+.attributes-hero-tags span {
+    min-height: 29px;
+    padding-inline: 11px;
+    font-size: 8px;
+}
+
+.attributes-summary {
+    gap: 8px;
+}
+
+.attributes-summary article {
+    min-height: 68px;
+    padding: 12px 15px;
+    background: rgba(2, 7, 8, 0.48);
+}
+
+.attributes-summary strong {
+    font-size: 22px;
+}
+
+/* Introdução compacta */
+.attributes-introduction-grid {
+    gap: 18px;
+}
+
+.attributes-text-card,
+.attributes-rule-card {
+    padding: clamp(22px, 2.4vw, 30px);
+    border-radius: 18px;
+    background: rgba(3, 9, 11, 0.66);
+    border: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.attributes-text-card p,
+.attributes-rule-card p {
+    font-size: 18px;
+    line-height: 1.58;
+}
+
+.attributes-text-card p + p {
+    margin-top: 14px;
+}
+
+.attributes-rule-note {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 14px;
+    background: rgba(var(--page-accent), 0.055);
+    border: 1px solid rgba(var(--page-accent), 0.16);
+}
+
+/* Etapas mais leves */
+.attributes-steps {
+    gap: 14px;
+}
+
+.attribute-step {
+    min-height: 150px;
+    padding: 24px;
+    border-radius: 18px;
+    background: rgba(3, 9, 11, 0.66);
+    border: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.attribute-step-connector {
+    color: rgba(var(--page-accent), 0.55);
+    font-size: 22px;
+}
+
+.attribute-step-icon {
+    width: 62px;
+    height: 62px;
+}
+
+/* Códice dos atributos */
+.attributes-codex {
+    background:
+        radial-gradient(circle at 50% 0%, rgba(var(--page-accent), 0.055), transparent 36%),
+        rgba(4, 10, 12, 0.82);
+}
+
+.attributes-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.attribute-details-card {
+    min-height: 300px;
+    padding: 26px;
+    border-radius: 20px;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+        linear-gradient(180deg, rgba(var(--attribute-color), 0.075), transparent 34%),
+        rgba(3, 9, 11, 0.86);
+    border: 1px solid rgba(var(--attribute-color), 0.22);
+    box-shadow:
+        0 20px 44px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    transition:
+        transform 0.28s ease,
+        border-color 0.28s ease,
+        box-shadow 0.28s ease,
+        background 0.28s ease;
+}
+
+.attribute-details-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        radial-gradient(circle at 84% 14%, rgba(var(--attribute-color), 0.14), transparent 28%);
+    opacity: 0.8;
+}
+
+.attribute-details-card::after {
+    content: "";
+    position: absolute;
+    left: 24px;
+    right: 24px;
+    bottom: 18px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgb(var(--attribute-color)), transparent);
+    opacity: 0.45;
+}
+
+.attribute-details-card:hover,
+.attribute-details-card:focus-visible {
+    transform: translateY(-5px);
+    border-color: rgba(var(--attribute-color), 0.62);
+    background:
+        linear-gradient(180deg, rgba(var(--attribute-color), 0.12), transparent 40%),
+        rgba(4, 11, 13, 0.94);
+    box-shadow:
+        0 26px 52px rgba(0, 0, 0, 0.38),
+        0 0 32px rgba(var(--attribute-color), 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.attribute-details-header {
+    align-items: center;
+    gap: 14px;
+}
+
+.attribute-abbreviation {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    flex: 0 0 58px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    color: rgb(var(--attribute-color));
+    background: rgba(var(--attribute-color), 0.085);
+    border: 1px solid rgba(var(--attribute-color), 0.32);
+    box-shadow: inset 0 0 20px rgba(var(--attribute-color), 0.06);
+    font-size: 0;
+}
+
+.attribute-abbreviation::before {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.attribute-for .attribute-abbreviation::before { content: "⚔"; }
+.attribute-def .attribute-abbreviation::before { content: "🛡"; }
+.attribute-res .attribute-abbreviation::before { content: "❤"; }
+.attribute-ini .attribute-abbreviation::before { content: "🪽"; }
+.attribute-int .attribute-abbreviation::before { content: "✨"; }
+.attribute-arc .attribute-abbreviation::before { content: "🔮"; }
+
+.attribute-details-title span {
+    color: rgba(var(--attribute-color), 0.86);
+    font-size: 8px;
+    letter-spacing: 2px;
+}
+
+.attribute-details-title h3 {
+    margin-top: 4px;
+    font-size: clamp(26px, 2.4vw, 34px);
+    color: #f3ede1;
+}
+
+.attribute-details-card > p {
+    margin-top: 22px;
+    font-size: 18px;
+    line-height: 1.55;
+    color: #bac4c1;
+}
+
+.attribute-functions {
+    gap: 7px;
+    margin-top: 20px;
+}
+
+.attribute-functions span {
+    min-height: 30px;
+    padding-inline: 10px;
+    color: rgba(239, 240, 236, 0.78);
+    background: rgba(var(--attribute-color), 0.06);
+    border: 1px solid rgba(var(--attribute-color), 0.14);
+    font-size: 8px;
+    letter-spacing: 0.9px;
+}
+
+.attribute-animation {
+    opacity: 0.28;
+    filter: saturate(0.85);
+}
+
+.attribute-details-card:hover .attribute-animation,
+.attribute-details-card:focus-visible .attribute-animation {
+    opacity: 0.58;
+}
+
+/* Exemplo menos carregado */
+.attribute-example {
+    background:
+        linear-gradient(180deg, rgba(var(--page-accent), 0.04), transparent 30%),
+        rgba(4, 10, 12, 0.8);
+}
+
+.attribute-example-grid {
+    gap: 18px;
+}
+
+.attribute-example-card,
+.attribute-example-result {
+    border-radius: 18px;
+    background: rgba(3, 9, 11, 0.68);
+    border: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+/* Identidades visuais oficiais */
+.attribute-for { --attribute-color: var(--attr-for) !important; }
+.attribute-def { --attribute-color: var(--attr-def) !important; }
+.attribute-res { --attribute-color: var(--attr-res) !important; }
+.attribute-ini { --attribute-color: var(--attr-ini) !important; }
+.attribute-int { --attribute-color: var(--attr-int) !important; }
+.attribute-arc { --attribute-color: var(--attr-arc) !important; }
+
+/* Tablet */
+@media (max-width: 1100px) {
+    .attributes-hero {
+        grid-template-columns: 90px minmax(0, 1fr);
+    }
+
+    .attributes-summary {
+        grid-column: 1 / -1;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .attributes-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Celular */
+@media (max-width: 760px) {
+    .attributes-main {
+        width: calc(100% - 14px);
+        gap: 14px;
+    }
+
+    .attributes-hero,
+    .attributes-introduction,
+    .attributes-creation,
+    .attributes-codex,
+    .attribute-example {
+        padding: 22px 14px;
+        border-radius: 18px;
+    }
+
+    .attributes-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .attributes-hero-symbol {
+        width: 78px;
+        height: 78px;
+        margin-inline: auto;
+        font-size: 30px;
+    }
+
+    .attributes-hero-content h1 {
+        font-size: clamp(36px, 12vw, 52px);
+    }
+
+    .attributes-hero-tags {
+        justify-content: center;
+    }
+
+    .attributes-summary {
+        grid-template-columns: 1fr;
+    }
+
+    .attributes-section-heading {
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .attributes-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .attribute-details-card {
+        min-height: auto;
+        padding: 22px 18px;
+    }
+
+    .attribute-details-title h3 {
+        font-size: 28px;
+    }
+
+    .attributes-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .attribute-step-connector {
+        transform: rotate(90deg);
+        justify-self: center;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .attribute-details-card:hover {
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .attribute-details-card,
+    .attribute-animation,
+    .attributes-hero-symbol::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

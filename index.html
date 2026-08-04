@@ -90,6 +90,7 @@
         </section>
     </main>
 
+    <script src="js/global-audio.js?v=1"></script>
     <script src="js/engine/render.js"></script>
     <script src="js/engine/theme.js"></script>
     <script src="js/engine/effects.js"></script>
@@ -146,7 +147,15 @@
                     "true"
                 );
 
-                music.volume = 0.25;
+                const savedVolume = Number(
+                    localStorage.getItem("wonderlandMusicVolume")
+                );
+
+                music.volume = Number.isFinite(savedVolume)
+                    ? Math.min(Math.max(savedVolume, 0), 1)
+                    : 0.25;
+
+                music.muted = music.volume === 0;
                 music.play().catch(() => {});
 
                 window.setTimeout(() => {

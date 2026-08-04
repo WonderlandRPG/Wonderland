@@ -1417,7 +1417,8 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    function scrollToRaceView() {
+    function scrollToRaceView() 
+    {
         if (
             window.innerWidth > 1020 ||
             !elements.raceView

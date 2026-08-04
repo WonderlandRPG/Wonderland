@@ -1103,24 +1103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                             </summary>
 
-                            <div class="skill-body">
-
-                                ${
-                                    skill.content ||
-                                    "<p>Sem descrição.</p>"
-                                }
-
-                                ${
-                                    metaHtml
-                                        ? `
-                                            <div class="skill-meta">
-                                                ${metaHtml}
-                                            </div>
-                                        `
-                                        : ""
-                                }
-
-                            </div>
+                            div class="skill-body"
 
                         </details>
                     `;
@@ -1208,37 +1191,36 @@ document.addEventListener("DOMContentLoaded", () => {
        CONTEÚDO DA ABA
        ===================================================== */
 
-    function renderActiveTab() {
-        const race =
-            getCurrentRace();
+    elements.raceContent.setAttribute(
+    "aria-labelledby",
+    `${state.activeTab}Tab`
+);
 
-        if (!race || !elements.raceContent) {
-            return;
-        }
+// Accordion Premium
+const cards =
+    elements.raceContent.querySelectorAll(".skill-card");
 
-        const renderers = {
-            overview: renderOverview,
-            mechanics: renderMechanics,
-            traits: renderTraits,
-            progression: renderProgression,
-            curiosities: renderCuriosities
-        };
+cards.forEach((card) => {
 
-        const renderer =
-            renderers[state.activeTab] ||
-            renderOverview;
+    card.addEventListener("toggle", () => {
 
-        elements.raceContent.innerHTML = `
-            <div class="content-enter">
-                ${renderer(race)}
-            </div>
-        `;
+        if (!card.open) return;
 
-        elements.raceContent.setAttribute(
-            "aria-labelledby",
-            `${state.activeTab}Tab`
-        );
-    }
+        cards.forEach((other) => {
+
+            if (other !== card) {
+
+                other.removeAttribute("open");
+
+            }
+
+        });
+
+    });
+
+});
+
+}
 
     /* =====================================================
        ABAS
@@ -1443,18 +1425,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const hero = elements.raceHero;
 
     if (!hero) {
+
         applyRaceTheme(race);
+
         renderRaceHero(race);
+
         renderAttributes(race);
+
         renderRaceList();
+
         renderActiveTab();
+
         return;
+
     }
 
     hero.classList.remove("hero-show");
+
     hero.classList.add("hero-hide");
 
-    requestAnimationFrame(() => {
+    window.setTimeout(() => {
 
         applyRaceTheme(race);
 
@@ -1466,10 +1456,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         renderActiveTab();
 
-        hero.classList.remove("hero-hide");
-        hero.classList.add("hero-show");
+        requestAnimationFrame(() => {
 
-    });
+            hero.classList.remove("hero-hide");
+
+            hero.classList.add("hero-show");
+
+        });
+
+    },220);
 
 }
 

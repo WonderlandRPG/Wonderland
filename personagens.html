@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Personagens | Wonderland RPG</title>
+  <meta name="description" content="Gerencie seus personagens em Wonderland.">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css?v=15">
+  <link rel="stylesheet" href="css/components/buttons.css?v=1">
+  <link rel="stylesheet" href="css/components/cards.css?v=1">
+  <link rel="stylesheet" href="css/characters.css?v=1">
+</head>
+<body class="characters-page">
+  <div class="characters-background" aria-hidden="true"></div>
+  <header class="characters-topbar">
+    <a href="menu.html" class="wl-button wl-button-ghost">← Menu</a>
+    <a href="index.html" class="characters-brand"><img src="assets/images/logo.png" alt=""><span>Wonderland</span></a>
+    <button id="logoutButton" class="wl-button wl-button-red" type="button">Sair</button>
+  </header>
+
+  <main class="characters-shell">
+    <section class="characters-hero">
+      <div>
+        <span class="characters-eyebrow">Salão dos Aventureiros</span>
+        <h1>Meus personagens</h1>
+        <p id="charactersGreeting">Gerencie suas fichas, inventários e progressões.</p>
+      </div>
+      <div class="characters-capacity"><span>Vagas utilizadas</span><strong id="characterCapacity">0 / 3</strong></div>
+    </section>
+
+    <section id="charactersGrid" class="characters-grid" aria-live="polite"></section>
+  </main>
+
+  <template id="emptyCharacterTemplate">
+    <article class="character-empty-card">
+      <span class="character-empty-symbol">＋</span>
+      <h2>Novo personagem</h2>
+      <p>Crie uma nova ficha e comece uma jornada em Wonderland.</p>
+      <a href="criar-personagem.html" class="wl-button wl-button-gold">Criar personagem</a>
+    </article>
+  </template>
+
+  <script src="js/account-store.js?v=1"></script>
+  <script src="js/pages/characters.js?v=1" defer></script>
+</body>
+</html>

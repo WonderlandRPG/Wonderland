@@ -1,6 +1,8 @@
 "use strict";
 
 (() => {
+    const DEFAULT_VOLUME = 0.25;
+
     const STORAGE_KEYS = {
         enabled: "wonderlandMusicEnabled",
         time: "wonderlandMusicTime",
@@ -9,17 +11,32 @@
 
     function clampVolume(value) {
         const numeric = Number(value);
-        if (!Number.isFinite(numeric)) return 0.25;
+
+        if (!Number.isFinite(numeric)) {
+            return DEFAULT_VOLUME;
+        }
+
         return Math.min(Math.max(numeric, 0), 1);
     }
 
     function syncAudioState() {
         const music = document.getElementById("bgMusic");
-        if (!music) return;
 
-        const savedVolume = clampVolume(
-            localStorage.getItem(STORAGE_KEYS.volume)
-        );
+        if (!music) {
+            return;
+        }
+
+        const storedVolume = localStorage.getItem(STORAGE_KEYS.volume);
+        const savedVolume = storedVolume === null
+            ? DEFAULT_VOLUME
+            : clampVolume(storedVolume);
+
+        if (storedVolume === null) {
+            localStorage.setItem(
+                STORAGE_KEYS.volume,
+                String(DEFAULT_VOLUME)
+            );
+        }
 
         music.volume = savedVolume;
         music.muted = savedVolume === 0;
@@ -56,7 +73,11 @@
             );
         };
 
-        music.addEventListener("loadedmetadata", restoreTime, { once: true });
+        music.addEventListener(
+            "loadedmetadata",
+            restoreTime,
+            { once: true }
+        );
 
         if (music.readyState >= 1) {
             restoreTime();
@@ -73,21 +94,29 @@
         window.addEventListener("pagehide", saveState);
         window.addEventListener("beforeunload", saveState);
 
-        const syncFromStorage = (event) => {
-            if (event.key === STORAGE_KEYS.volume) {
-                const nextVolume = clampVolume(event.newValue);
-                music.volume = nextVolume;
-                music.muted = nextVolume === 0;
+        window.addEventListener("storage", (event) => {
+            if (event.key !== STORAGE_KEYS.volume) {
+                return;
             }
-        };
 
-        window.addEventListener("storage", syncFromStorage);
+            const nextVolume = event.newValue === null
+                ? DEFAULT_VOLUME
+                : clampVolume(event.newValue);
+
+            music.volume = nextVolume;
+            music.muted = nextVolume === 0;
+        });
 
         const originalPlay = music.play.bind(music);
+
         music.play = (...args) => {
-            const currentVolume = clampVolume(
-                localStorage.getItem(STORAGE_KEYS.volume)
+            const currentStoredVolume = localStorage.getItem(
+                STORAGE_KEYS.volume
             );
+
+            const currentVolume = currentStoredVolume === null
+                ? DEFAULT_VOLUME
+                : clampVolume(currentStoredVolume);
 
             music.volume = currentVolume;
             music.muted = currentVolume === 0;
@@ -97,7 +126,11 @@
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", syncAudioState, { once: true });
+        document.addEventListener(
+            "DOMContentLoaded",
+            syncAudioState,
+            { once: true }
+        );
     } else {
         syncAudioState();
     }

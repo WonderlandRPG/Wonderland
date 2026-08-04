@@ -38,7 +38,7 @@
       </div>
 
       <form id="loginForm" class="account-form active" data-account-panel="login" novalidate>
-        <label class="account-field"><span>Login ou e-mail</span><input id="loginEmail" type="text" autocomplete="username" required placeholder="Nome de usuário ou e-mail"></label>
+        <label class="account-field"><span>E-mail</span><input id="loginEmail" type="email" autocomplete="email" required placeholder="voce@exemplo.com"></label>
         <label class="account-field"><span>Senha</span><input id="loginPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Sua senha"></label>
         <p id="loginMessage" class="account-message" role="status"></p>
         <button class="wl-button wl-button-gold account-submit" type="submit">Entrar</button>
@@ -54,13 +54,15 @@
       </form>
 
       <aside class="account-prototype-note">
-        <strong>Protótipo local</strong>
-        <p>Esta primeira versão usa o armazenamento do navegador. A autenticação real será conectada a um backend e banco de dados seguro na próxima fase.</p>
+        <strong>Conta protegida</strong>
+        <p>Login, sessões e personagens agora são armazenados com segurança no Supabase.</p>
       </aside>
     </section>
   </main>
 
-  <script src="js/account-store.js?v=2"></script>
-  <script src="js/pages/account.js?v=2" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js?v=1"></script>
+  <script src="js/account-store.js?v=4"></script>
+  <script src="js/pages/account.js?v=3" defer></script>
 </body>
 </html>

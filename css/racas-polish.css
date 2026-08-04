@@ -3,7 +3,7 @@
    ========================================================= */
 
 .races-page .race-hero {
-    grid-template-columns: minmax(300px, 0.92fr) minmax(380px, 1.22fr) minmax(210px, 0.62fr);
+    grid-template-columns: minmax(300px, 0.92fr) minmax(0, 1.22fr) minmax(210px, 0.62fr);
     gap: clamp(26px, 3vw, 54px);
     min-height: 430px;
     padding: clamp(34px, 3.4vw, 58px);
@@ -26,20 +26,29 @@
 }
 
 .races-page .race-hero-copy {
+    min-width: 0;
+    width: 100%;
     align-self: center;
     padding-right: clamp(6px, 1vw, 18px);
+    overflow: visible;
 }
 
 .races-page .race-hero-copy h2 {
+    width: 100%;
+    max-width: 100%;
     margin: 8px 0 14px;
-    font-size: clamp(56px, 5.8vw, 94px);
-    line-height: 0.94;
-    letter-spacing: clamp(1px, 0.45vw, 5px);
+    font-size: clamp(46px, 4.8vw, 82px);
+    line-height: 1;
+    letter-spacing: clamp(0.5px, 0.28vw, 3px);
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    hyphens: none;
 }
 
 .races-page .race-tagline {
-    max-width: 18ch;
-    font-size: clamp(24px, 2.25vw, 35px);
+    max-width: 22ch;
+    font-size: clamp(24px, 2.05vw, 33px);
     line-height: 1.42;
 }
 
@@ -96,6 +105,18 @@
     padding-block: 12px;
 }
 
+@media (max-width: 1500px) {
+    .races-page .race-hero {
+        grid-template-columns: minmax(260px, 0.88fr) minmax(0, 1.12fr) minmax(200px, 0.58fr);
+        gap: clamp(22px, 2.3vw, 38px);
+        padding: clamp(30px, 2.8vw, 46px);
+    }
+
+    .races-page .race-hero-copy h2 {
+        font-size: clamp(44px, 4.4vw, 72px);
+    }
+}
+
 @media (max-width: 1280px) {
     .races-page .race-hero {
         grid-template-columns: minmax(250px, 0.9fr) minmax(0, 1.2fr);
@@ -104,6 +125,10 @@
     .races-page .hero-stats {
         grid-column: 1 / -1;
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .races-page .race-hero-copy h2 {
+        font-size: clamp(42px, 6.6vw, 68px);
     }
 }
 
@@ -124,7 +149,7 @@
     }
 
     .races-page .race-hero-copy h2 {
-        font-size: clamp(46px, 8vw, 70px);
+        font-size: clamp(40px, 7.4vw, 62px);
     }
 
     .races-page .race-tagline {
@@ -159,7 +184,10 @@
     }
 
     .races-page .race-hero-copy h2 {
-        font-size: clamp(40px, 14vw, 62px);
+        font-size: clamp(34px, 11vw, 56px);
+        line-height: 1.02;
+        overflow-wrap: normal;
+        word-break: normal;
     }
 
     .races-page .race-tagline {
@@ -180,6 +208,11 @@
     .races-page .race-artwork {
         height: 286px;
         max-height: 286px;
+    }
+
+    .races-page .race-hero-copy h2 {
+        font-size: clamp(30px, 10.4vw, 46px);
+        letter-spacing: 0;
     }
 
     .races-page .hero-stat {

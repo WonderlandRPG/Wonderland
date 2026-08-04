@@ -1038,96 +1038,169 @@ document.addEventListener("DOMContentLoaded", () => {
        ===================================================== */
 
     function renderProgression(race) {
-        const progression =
-            Array.isArray(race.progression)
-                ? race.progression
-                : [];
+    const progression =
+    Array.isArray(race.progressao)
+        ? race.progressao
+        : [];
 
-        const progressionHtml =
-            progression
-                .map((skill, index) => {
-                    const metadata =
-                        Array.isArray(skill.meta)
-                            ? skill.meta
-                            : [];
+if (!progression.length) {
 
-                    const metaHtml =
-                        metadata
-                            .filter(Boolean)
-                            .map((item) => {
-                                return `
-                                    <span>
-                                        ${escapeHtml(item)}
-                                    </span>
-                                `;
-                            })
-                            .join("");
+    return `
+        <section class="empty-state">
 
-                    return `
-                        <details
-                            class="skill-card"
-                            ${index === 0 ? "open" : ""}
-                        >
+            <h3>
+                Progressão indisponível
+            </h3>
 
-                            <summary class="skill-summary">
+            <p>
+                Esta raça ainda não possui
+                habilidades cadastradas.
+            </p>
 
-                                <span class="skill-level">
-                                    Nível
-                                    <br>
-                                    ${escapeHtml(skill.level)}
-                                </span>
+        </section>
+    `;
 
-                                <span class="skill-title-wrap">
+}
 
-                                    <small>
-                                        ${escapeHtml(
-                                            skill.category ||
-                                            "Habilidade racial"
-                                        )}
-                                    </small>
+return `
 
-                                    <strong>
-                                        ${escapeHtml(
-                                            skill.name
-                                        )}
-                                    </strong>
+<section class="progression-section">
 
-                                </span>
+    <header class="progression-header">
 
-                                <span
-                                    class="skill-toggle"
-                                    aria-hidden="true"
-                                >
-                                    ＋
-                                </span>
+        <span class="section-eyebrow">
 
-                            </summary>
+            Evolução Racial
 
-                            div class="skill-body"
+        </span>
 
-                        </details>
-                    `;
-                })
-                .join("");
+        <h2>
 
-        return `
-            ${createSectionHeading(
-                "Evolução racial",
-                "Progressão de Níveis",
-                "As habilidades raciais são desbloqueadas nos níveis 1, 20, 40, 60, 80 e 100."
-            )}
+            Progressão de Níveis
 
-            <div class="progression-list">
+        </h2>
 
-                ${
-                    progressionHtml ||
-                    createEmptyState(
-                        "Nenhuma habilidade racial registrada."
-                    )
-                }
+        <p>
 
-            </div>
-        `;
+            As habilidades raciais são
+            desbloqueadas nos níveis
+            1, 20, 40, 60, 80 e 100.
+
+        </p>
+
+    </header>
+
+    <div class="progression-list">
+
+    ${progression.map((skill) => {
+
+        const meta = [];
+
+        if (skill.tipo) {
+
+            meta.push(`
+                <span class="skill-type">
+                    ${skill.tipo}
+                </span>
+            `);
+
+        }
+
+            if (skill.categoria) {
+
+                meta.push(`
+                    <span class="skill-category">
+                        ${skill.categoria}
+                    </span>
+                `);
+
+            }
+
+            const metaHtml =
+                meta.join("");
+
+            return `
+
+<details class="skill-card">
+
+    <summary class="skill-summary">
+
+        <div class="skill-level">
+
+            <span>
+
+                Nível
+
+            </span>
+
+            <strong>
+
+                ${skill.nivel}
+
+            </strong>
+
+        </div>
+
+        <div class="skill-info">
+
+            ${metaHtml}
+
+            <h3>
+
+                ${skill.nome}
+
+            </h3>
+
+        </div>
+
+        <span class="skill-toggle">
+
+            +
+
+        </span>
+
+    </summary>
+
+    <div class="skill-body">
+
+        <div class="skill-body-content">
+
+            ${
+                skill.content ||
+                "<p>Sem descrição.</p>"
+            }
+
+            ${
+                skill.custo
+                    ? `
+                        <div class="skill-meta">
+
+                            <strong>
+                                Custo:
+                            </strong>
+
+                            ${skill.custo}
+
+                        </div>
+                    `
+                    : ""
+            }        </div>
+
+    </div>
+
+</details>
+
+`;
+
+        }).join("")}
+
+    </div>
+
+</section>
+
+`;
+
+}
     }
 
     /* =====================================================

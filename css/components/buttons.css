@@ -1,0 +1,359 @@
+/* =========================================================
+   WONDERLAND UI — BUTTON SYSTEM
+   ========================================================= */
+
+.wl-button {
+    --wl-button-color: 214, 181, 107;
+    --wl-button-dark: 89, 63, 28;
+
+    position: relative;
+
+    min-width: 150px;
+    min-height: 48px;
+
+    padding: 0 25px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    overflow: hidden;
+    isolation: isolate;
+
+    color: #fff2d2;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(var(--wl-button-color), 0.18),
+            rgba(var(--wl-button-dark), 0.16)
+        ),
+        rgba(10, 10, 15, 0.94);
+
+    border:
+        1px solid
+        rgba(var(--wl-button-color), 0.52);
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, 0.38),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.55);
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+/* Brilho interno */
+
+.wl-button::before {
+    content: "";
+
+    position: absolute;
+    inset: 3px;
+
+    z-index: -2;
+
+    border:
+        1px solid
+        rgba(var(--wl-button-color), 0.15);
+
+    border-radius: 5px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(var(--wl-button-color), 0.04),
+            transparent
+        );
+
+    pointer-events: none;
+}
+
+/* Reflexo que atravessa o botão */
+
+.wl-button::after {
+    content: "";
+
+    position: absolute;
+
+    top: -70%;
+    left: -55%;
+
+    z-index: -1;
+
+    width: 34%;
+    height: 240%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.28),
+            transparent
+        );
+
+    transform:
+        rotate(20deg);
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+/* Hover */
+
+.wl-button:hover,
+.wl-button:focus-visible {
+    color: #ffffff;
+
+    border-color:
+        rgba(var(--wl-button-color), 0.9);
+
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.46),
+        0 0 24px rgba(var(--wl-button-color), 0.25),
+        inset 0 0 20px rgba(var(--wl-button-color), 0.08);
+
+    transform:
+        translateY(-3px);
+}
+
+.wl-button:hover::after,
+.wl-button:focus-visible::after {
+    animation:
+        wlButtonShine
+        0.85s
+        ease
+        forwards;
+}
+
+@keyframes wlButtonShine {
+    0% {
+        left: -55%;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        left: 130%;
+        opacity: 0;
+    }
+}
+
+/* Clique */
+
+.wl-button:active {
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.5),
+        inset 0 0 22px rgba(var(--wl-button-color), 0.14);
+
+    transform:
+        translateY(1px)
+        scale(0.98);
+}
+
+/* Foco pelo teclado */
+
+.wl-button:focus-visible {
+    outline:
+        2px solid
+        rgba(var(--wl-button-color), 0.65);
+
+    outline-offset: 4px;
+}
+
+/* Desabilitado */
+
+.wl-button:disabled,
+.wl-button[aria-disabled="true"] {
+    color: #706d68;
+
+    background:
+        rgba(30, 29, 34, 0.85);
+
+    border-color:
+        rgba(255, 255, 255, 0.08);
+
+    box-shadow: none;
+
+    cursor: not-allowed;
+
+    opacity: 0.62;
+
+    transform: none;
+}
+
+.wl-button:disabled::after,
+.wl-button[aria-disabled="true"]::after {
+    display: none;
+}
+
+/* =========================================================
+   VARIAÇÕES
+   ========================================================= */
+
+.wl-button-gold,
+.wl-button.gold {
+    --wl-button-color: 214, 181, 107;
+    --wl-button-dark: 99, 67, 24;
+}
+
+.wl-button-blue {
+    --wl-button-color: 91, 151, 225;
+    --wl-button-dark: 30, 65, 119;
+}
+
+.wl-button-green {
+    --wl-button-color: 91, 177, 119;
+    --wl-button-dark: 30, 83, 53;
+}
+
+.wl-button-red {
+    --wl-button-color: 205, 74, 70;
+    --wl-button-dark: 101, 29, 31;
+}
+
+.wl-button-purple {
+    --wl-button-color: 162, 93, 211;
+    --wl-button-dark: 73, 34, 111;
+}
+
+/* Botão secundário */
+
+.wl-button-ghost {
+    --wl-button-color: 178, 164, 137;
+    --wl-button-dark: 52, 49, 47;
+
+    background:
+        rgba(255, 255, 255, 0.025);
+
+    border-color:
+        rgba(255, 255, 255, 0.13);
+
+    color: #cac5ba;
+}
+
+.wl-button-ghost:hover,
+.wl-button-ghost:focus-visible {
+    color: #fff2d2;
+
+    background:
+        rgba(var(--wl-button-color), 0.08);
+
+    border-color:
+        rgba(var(--wl-button-color), 0.48);
+}
+
+/* =========================================================
+   DETALHES ORNAMENTAIS
+   ========================================================= */
+
+.wl-button-corner {
+    position: absolute;
+
+    width: 6px;
+    height: 6px;
+
+    background:
+        rgb(var(--wl-button-color));
+
+    box-shadow:
+        0 0 8px
+        rgba(var(--wl-button-color), 0.8);
+
+    transform:
+        rotate(45deg);
+
+    pointer-events: none;
+
+    opacity: 0.55;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+.wl-button-corner-left {
+    left: 8px;
+}
+
+.wl-button-corner-right {
+    right: 8px;
+}
+
+.wl-button:hover .wl-button-corner,
+.wl-button:focus-visible .wl-button-corner {
+    opacity: 1;
+
+    transform:
+        rotate(135deg)
+        scale(1.18);
+}
+
+/* =========================================================
+   BOTÃO DE ÍCONE
+   ========================================================= */
+
+.wl-icon-button {
+    min-width: 46px;
+    width: 46px;
+    min-height: 46px;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    font-size: 16px;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 600px) {
+    .wl-button {
+        min-width: 135px;
+        min-height: 46px;
+
+        padding:
+            0
+            19px;
+
+        font-size: 10px;
+    }
+}
+
+/* =========================================================
+   REDUÇÃO DE MOVIMENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .wl-button,
+    .wl-button::before,
+    .wl-button::after,
+    .wl-button-corner {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+    }
+}

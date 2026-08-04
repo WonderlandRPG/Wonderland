@@ -22,154 +22,49 @@
         href="assets/images/logo.png"
     >
 
-    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
-    <!-- Estilos globais -->
-    <link
-        rel="stylesheet"
-        href="css/global.css?v=21"
-    >
-
-    <!-- Componentes -->
-    <link
-        rel="stylesheet"
-        href="css/components/buttons.css?v=3"
-    >
-
-    <link
-        rel="stylesheet"
-        href="css/components/cards.css?v=3"
-    >
-
-    <link
-        rel="stylesheet"
-        href="css/components/panel.css?v=3"
-    >
-
-    <link
-        rel="stylesheet"
-        href="css/components/scrollbar.css?v=2"
-    >
-
-    <link
-        rel="stylesheet"
-        href="css/components/animations.css?v=2"
-    >
-
-    <link
-        rel="stylesheet"
-        href="css/components/transition.css?v=2"
-    >
-
-    <!-- Página -->
-    <link
-        rel="stylesheet"
-        href="css/racas.css?v=21"
-    >
+    <link rel="stylesheet" href="css/global.css?v=21">
+    <link rel="stylesheet" href="css/components/buttons.css?v=3">
+    <link rel="stylesheet" href="css/components/cards.css?v=3">
+    <link rel="stylesheet" href="css/components/panel.css?v=3">
+    <link rel="stylesheet" href="css/components/scrollbar.css?v=2">
+    <link rel="stylesheet" href="css/components/animations.css?v=3">
+    <link rel="stylesheet" href="css/components/transition.css?v=2">
+    <link rel="stylesheet" href="css/racas.css?v=21">
+    <link rel="stylesheet" href="css/racas-polish.css?v=1">
 </head>
 
 <body class="races-page">
+    <div class="races-background" aria-hidden="true"></div>
+    <div class="races-background-light" aria-hidden="true"></div>
+    <div class="races-vignette" aria-hidden="true"></div>
+    <div class="races-mist races-mist-one" aria-hidden="true"></div>
+    <div class="races-mist races-mist-two" aria-hidden="true"></div>
+    <div id="particles" class="races-particles" aria-hidden="true"></div>
 
-    <!-- Cenário -->
-
-    <div
-        class="races-background"
-        aria-hidden="true"
-    ></div>
-
-    <div
-        class="races-background-light"
-        aria-hidden="true"
-    ></div>
-
-    <div
-        class="races-vignette"
-        aria-hidden="true"
-    ></div>
-
-    <div
-        class="races-mist races-mist-one"
-        aria-hidden="true"
-    ></div>
-
-    <div
-        class="races-mist races-mist-two"
-        aria-hidden="true"
-    ></div>
-
-    <div
-        id="particles"
-        class="races-particles"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Música -->
-
-    <audio
-        id="bgMusic"
-        loop
-        preload="auto"
-    >
-        <source
-            src="assets/audio/wonderland.mp3"
-            type="audio/mpeg"
-        >
+    <audio id="bgMusic" loop preload="auto">
+        <source src="assets/audio/wonderland.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Barra superior -->
-
     <header class="races-topbar">
-
-        <a
-            href="menu.html"
-            class="topbar-button topbar-return"
-        >
-            <span aria-hidden="true">
-                ←
-            </span>
-
-            <span>
-                Menu
-            </span>
+        <a href="menu.html" class="topbar-button topbar-return">
+            <span aria-hidden="true">←</span>
+            <span>Menu</span>
         </a>
 
-        <a
-            href="index.html"
-            class="races-brand"
-            aria-label="Página inicial de Wonderland"
-        >
-            <span
-                class="races-brand-emblem"
-                aria-hidden="true"
-            >
-                <img
-                    src="assets/images/logo.png"
-                    alt=""
-                >
+        <a href="index.html" class="races-brand" aria-label="Página inicial de Wonderland">
+            <span class="races-brand-emblem" aria-hidden="true">
+                <img src="assets/images/logo.png" alt="">
             </span>
-
             <span class="races-brand-copy">
-
-                <small>
-                    RPG
-                </small>
-
-                <strong>
-                    Wonderland
-                </strong>
-
+                <small>RPG</small>
+                <strong>Wonderland</strong>
             </span>
         </a>
 
@@ -180,127 +75,54 @@
             aria-label="Tocar música"
             title="Tocar música"
         >
-            <span
-                id="musicIcon"
-                aria-hidden="true"
-            >
-                ♪
-            </span>
+            <span id="musicIcon" aria-hidden="true">♪</span>
         </button>
-
     </header>
 
-    <!-- Introdução -->
-
     <section class="races-intro">
-
-        <div
-            class="races-intro-rune races-intro-rune-left"
-            aria-hidden="true"
-        >
-            ✦
-        </div>
-
-        <div
-            class="races-intro-rune races-intro-rune-right"
-            aria-hidden="true"
-        >
-            ✦
-        </div>
+        <div class="races-intro-rune races-intro-rune-left" aria-hidden="true">✦</div>
+        <div class="races-intro-rune races-intro-rune-right" aria-hidden="true">✦</div>
 
         <div class="races-intro-content">
-
-            <span class="races-kicker">
-                Arquivos do Primeiro Sonho
-            </span>
-
-            <h1>
-                Códice das Raças
-            </h1>
-
+            <span class="races-kicker">Arquivos do Primeiro Sonho</span>
+            <h1>Códice das Raças</h1>
             <p>
                 Cada povo de Wonderland carrega uma origem, uma cultura
                 e uma forma única de enfrentar os perigos do mundo.
             </p>
-
             <blockquote>
                 “Antes de escolher como lutar, todo aventureiro precisa
                 compreender aquilo que nasceu para ser.”
             </blockquote>
-
-            <div
-                class="races-intro-divider"
-                aria-hidden="true"
-            >
+            <div class="races-intro-divider" aria-hidden="true">
                 <span></span>
                 <strong>◆</strong>
                 <span></span>
             </div>
-
         </div>
 
-        <div
-            class="races-intro-orbit"
-            aria-hidden="true"
-        >
+        <div class="races-intro-orbit" aria-hidden="true">
             <span class="intro-orbit-ring intro-orbit-ring-one"></span>
-
             <span class="intro-orbit-ring intro-orbit-ring-two"></span>
-
-            <img
-                src="assets/images/logo.png"
-                alt=""
-            >
+            <img src="assets/images/logo.png" alt="">
         </div>
-
     </section>
 
-    <!-- Estrutura principal -->
-
     <main class="races-codex">
-
-        <!-- Índice lateral -->
-
-        <aside
-            class="race-index"
-            aria-label="Seleção de raças"
-        >
-
-            <div
-                class="race-index-decoration race-index-decoration-top"
-                aria-hidden="true"
-            ></div>
+        <aside class="race-index" aria-label="Seleção de raças">
+            <div class="race-index-decoration race-index-decoration-top" aria-hidden="true"></div>
 
             <header class="race-index-heading">
-
-                <span class="race-eyebrow">
-                    Povos conhecidos
-                </span>
-
-                <h2>
-                    Raças
-                </h2>
-
+                <span class="race-eyebrow">Povos conhecidos</span>
+                <h2>Raças</h2>
                 <p>
                     Escolha um povo para consultar sua origem,
                     características e progressão racial.
                 </p>
-
             </header>
 
-            <!-- Pesquisa -->
-
-            <label
-                class="race-search"
-                for="raceSearch"
-            >
-                <span
-                    class="race-search-icon"
-                    aria-hidden="true"
-                >
-                    ⌕
-                </span>
-
+            <label class="race-search" for="raceSearch">
+                <span class="race-search-icon" aria-hidden="true">⌕</span>
                 <input
                     id="raceSearch"
                     type="search"
@@ -308,7 +130,6 @@
                     autocomplete="off"
                     spellcheck="false"
                 >
-
                 <button
                     id="clearRaceSearch"
                     class="race-search-clear"
@@ -316,441 +137,158 @@
                     aria-label="Limpar pesquisa"
                     title="Limpar pesquisa"
                     hidden
-                >
-                    ×
-                </button>
+                >×</button>
             </label>
 
-            <!-- Contador -->
-
             <div class="race-index-meta">
-
-                <span id="raceCount">
-                    0 raças
-                </span>
-
-                <span>
-                    Códice oficial
-                </span>
-
+                <span id="raceCount">0 raças</span>
+                <span>Códice oficial</span>
             </div>
 
-            <!-- Lista criada pelo JavaScript -->
-
-            <nav
-                id="raceList"
-                class="race-list"
-                aria-label="Lista de raças disponíveis"
-            >
+            <nav id="raceList" class="race-list" aria-label="Lista de raças disponíveis">
                 <div class="race-list-loading">
-
-                    <span aria-hidden="true">
-                        ✦
-                    </span>
-
-                    <p>
-                        Consultando o códice...
-                    </p>
-
+                    <span aria-hidden="true">✦</span>
+                    <p>Consultando o códice...</p>
                 </div>
             </nav>
 
             <footer class="race-index-footer">
-
-                <span aria-hidden="true">
-                    ◆
-                </span>
-
+                <span aria-hidden="true">◆</span>
                 <p>
                     Os bônus raciais são aplicados depois da
                     distribuição dos atributos iniciais.
                 </p>
-
             </footer>
 
-            <div
-                class="race-index-decoration race-index-decoration-bottom"
-                aria-hidden="true"
-            ></div>
-
+            <div class="race-index-decoration race-index-decoration-bottom" aria-hidden="true"></div>
         </aside>
 
-        <!-- Área da raça selecionada -->
-
-        <section
-            id="raceView"
-            class="race-view"
-            aria-live="polite"
-        ><!-- ============================================= -->
-<!-- HERO DA RAÇA -->
-<!-- ============================================= -->
-
-<article
-    id="raceHero"
-    class="race-hero"
->
-
-    <div
-        class="race-hero-glow"
-        aria-hidden="true"
-    ></div>
-
-    <div
-        class="race-hero-pattern"
-        aria-hidden="true"
-    ></div>
-
-    <span
-        class="race-hero-corner race-hero-corner-top-left"
-        aria-hidden="true"
-    ></span>
-
-    <span
-        class="race-hero-corner race-hero-corner-top-right"
-        aria-hidden="true"
-    ></span>
-
-    <span
-        class="race-hero-corner race-hero-corner-bottom-left"
-        aria-hidden="true"
-    ></span>
-
-    <span
-        class="race-hero-corner race-hero-corner-bottom-right"
-        aria-hidden="true"
-    ></span>
-
-    <!-- Arte -->
-
-    <div class="race-art">
-
-        <span
-            class="race-art-halo"
-            aria-hidden="true"
-        ></span>
-
-        <span
-            class="race-art-frame"
-            aria-hidden="true"
-        ></span>
-
-        <img
-            id="raceArtwork"
-            class="race-artwork"
-            src="assets/images/logo.png"
-            alt=""
-        >
-
-        <div
-            id="raceEmblem"
-            class="race-emblem"
-        >
-            ✦
-        </div>
-
-    </div>
-
-    <!-- Texto -->
-
-    <div class="race-hero-copy">
-
-        <span
-            id="raceArchetype"
-            class="race-eyebrow"
-        >
-            Raça
-        </span>
-
-        <h2 id="raceName">
-            Carregando...
-        </h2>
-
-        <p
-            id="raceTagline"
-            class="race-tagline"
-        >
-            Aguarde...
-        </p>
-
-        <div
-            id="raceRoles"
-            class="role-tags"
-        ></div>
-
-        <div class="race-hero-tags">
-
-            <span
-                id="raceDifficulty"
-                class="difficulty-pill"
-            >
-                ★★★★★
-            </span>
-
-            <span
-                id="raceDifficultyText"
-                class="role-tag"
-            >
-                Muito alta
-            </span>
-
-        </div>
-
-    </div>
-
-    <!-- Estatísticas -->
-
-    <div class="hero-stats">
-
-        <article class="hero-stat">
-
-            <div class="hero-stat-icon">
-                ♥
-            </div>
-
-            <div class="hero-stat-copy">
-
-                <span>
-                    VIDA
-                </span>
-
-                <strong id="raceHp">
-                    0
-                </strong>
-
-            </div>
-
-        </article>
-
-        <article class="hero-stat">
-
-            <div class="hero-stat-icon">
-                ✦
-            </div>
-
-            <div class="hero-stat-copy">
-
-                <span>
-                    MANA
-                </span>
-
-                <strong id="raceMana">
-                    0
-                </strong>
-
-            </div>
-
-        </article>
-
-    </div>
-
-    <div
-        class="race-hero-line"
-        aria-hidden="true"
-    >
-        <span></span>
-        <strong>◆</strong>
-        <span></span>
-    </div>
-
-</article>
-
-<!-- ============================================= -->
-<!-- ATRIBUTOS -->
-<!-- ============================================= -->
-
-<section class="attribute-strip">
-
-    <div class="attribute-heading">
-
-        <h3>
-            Atributos Raciais
-        </h3>
-
-        <p>
-            Bônus concedidos automaticamente
-            ao escolher esta raça.
-        </p>
-
-        <strong>
-            Total: +25 Pontos
-        </strong>
-
-    </div>
-
-    <div
-        id="attributeGrid"
-        class="attribute-grid"
-    ></div>
-
-</section>
-
-<!-- ============================================= -->
-<!-- ABAS -->
-<!-- ============================================= -->
-
-<nav
-    class="race-tabs"
-    aria-label="Informações da raça"
->
-
-    <button
-        class="race-tab active"
-        data-tab="overview"
-    >
-        <span class="race-tab-icon">
-            ✦
-        </span>
-
-        Visão Geral
-    </button>
-
-    <button
-        class="race-tab"
-        data-tab="mechanics"
-    >
-        <span class="race-tab-icon">
-            ⚙
-        </span>
-
-        Mecânicas
-    </button>
-
-    <button
-        class="race-tab"
-        data-tab="traits"
-    >
-        <span class="race-tab-icon">
-            ◆
-        </span>
-
-        Traços
-    </button>
-
-    <button
-        class="race-tab"
-        data-tab="progression"
-    >
-        <span class="race-tab-icon">
-            ▲
-        </span>
-
-        Progressão
-    </button>
-
-    <button
-        class="race-tab"
-        data-tab="curiosities"
-    >
-        <span class="race-tab-icon">
-            ❖
-        </span>
-
-        Curiosidades
-    </button>
-
-</nav><!-- ============================================= -->
-<!-- CONTEÚDO DINÂMICO -->
-<!-- ============================================= -->
-
-<section
-    id="raceContent"
-    class="race-content"
->
-
-    <div class="race-loading">
-
-        <div class="race-loading-symbol">
-
+        <section id="raceView" class="race-view" aria-live="polite">
+            <article id="raceHero" class="race-hero">
+                <div class="race-hero-glow" aria-hidden="true"></div>
+                <div class="race-hero-pattern" aria-hidden="true"></div>
+
+                <span class="race-hero-corner race-hero-corner-top-left" aria-hidden="true"></span>
+                <span class="race-hero-corner race-hero-corner-top-right" aria-hidden="true"></span>
+                <span class="race-hero-corner race-hero-corner-bottom-left" aria-hidden="true"></span>
+                <span class="race-hero-corner race-hero-corner-bottom-right" aria-hidden="true"></span>
+
+                <div class="race-art">
+                    <span class="race-art-halo" aria-hidden="true"></span>
+                    <span class="race-art-frame" aria-hidden="true"></span>
+                    <img
+                        id="raceArtwork"
+                        class="race-artwork"
+                        src="assets/images/logo.png"
+                        alt=""
+                    >
+                    <div id="raceEmblem" class="race-emblem">✦</div>
+                </div>
+
+                <div class="race-hero-copy">
+                    <span id="raceArchetype" class="race-eyebrow">Raça</span>
+                    <h2 id="raceName">Carregando...</h2>
+                    <p id="raceTagline" class="race-tagline">Aguarde...</p>
+                    <div id="raceRoles" class="role-tags"></div>
+                    <div class="race-hero-tags">
+                        <span id="raceDifficulty" class="difficulty-pill">★★★★★</span>
+                        <span id="raceDifficultyText" class="role-tag">Muito alta</span>
+                    </div>
+                </div>
+
+                <div class="hero-stats">
+                    <article class="hero-stat">
+                        <div class="hero-stat-icon">♥</div>
+                        <div class="hero-stat-copy">
+                            <span>VIDA</span>
+                            <strong id="raceHp">0</strong>
+                        </div>
+                    </article>
+
+                    <article class="hero-stat">
+                        <div class="hero-stat-icon">✦</div>
+                        <div class="hero-stat-copy">
+                            <span>MANA</span>
+                            <strong id="raceMana">0</strong>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="race-hero-line" aria-hidden="true">
+                    <span></span>
+                    <strong>◆</strong>
+                    <span></span>
+                </div>
+            </article>
+
+            <section class="attribute-strip">
+                <div class="attribute-heading">
+                    <h3>Atributos Raciais</h3>
+                    <p>
+                        Bônus concedidos automaticamente
+                        ao escolher esta raça.
+                    </p>
+                    <strong>Total: +25 Pontos</strong>
+                </div>
+
+                <div id="attributeGrid" class="attribute-grid"></div>
+            </section>
+
+            <nav class="race-tabs" aria-label="Informações da raça">
+                <button class="race-tab active" data-tab="overview">
+                    <span class="race-tab-icon">✦</span>
+                    Visão Geral
+                </button>
+                <button class="race-tab" data-tab="mechanics">
+                    <span class="race-tab-icon">⚙</span>
+                    Mecânicas
+                </button>
+                <button class="race-tab" data-tab="traits">
+                    <span class="race-tab-icon">◆</span>
+                    Traços
+                </button>
+                <button class="race-tab" data-tab="progression">
+                    <span class="race-tab-icon">▲</span>
+                    Progressão
+                </button>
+                <button class="race-tab" data-tab="curiosities">
+                    <span class="race-tab-icon">❖</span>
+                    Curiosidades
+                </button>
+            </nav>
+
+            <section id="raceContent" class="race-content">
+                <div class="race-loading">
+                    <div class="race-loading-symbol">
+                        <span></span>
+                        <strong>✦</strong>
+                        <span></span>
+                    </div>
+                    <p>Carregando informações da raça...</p>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <div id="raceTransition" class="race-transition" aria-hidden="true">
+        <div class="race-transition-symbol">
             <span></span>
-
             <strong>✦</strong>
-
             <span></span>
-
         </div>
-
-        <p>
-            Carregando informações da raça...
-        </p>
-
     </div>
 
-</section>
+    <dialog id="raceModal" class="race-modal">
+        <div class="race-modal-content">
+            <button class="race-modal-close" type="button">✕</button>
+            <div id="raceModalBody"></div>
+        </div>
+    </dialog>
 
-</section>
-
-</main>
-
-<!-- ============================================= -->
-<!-- TRANSIÇÃO -->
-<!-- ============================================= -->
-
-<div
-    id="raceTransition"
-    class="race-transition"
-    aria-hidden="true"
->
-
-    <div class="race-transition-symbol">
-
-        <span></span>
-
-        <strong>✦</strong>
-
-        <span></span>
-
-    </div>
-
-</div>
-
-<!-- ============================================= -->
-<!-- MODAL -->
-<!-- ============================================= -->
-
-<dialog
-    id="raceModal"
-    class="race-modal"
->
-
-    <div class="race-modal-content">
-
-        <button
-            class="race-modal-close"
-            type="button"
-        >
-            ✕
-        </button>
-
-        <div id="raceModalBody"></div>
-
-    </div>
-
-</dialog>
-
-<!-- ============================================= -->
-<!-- ENGINE -->
-<!-- ============================================= -->
-
-<script src="js/engine/render.js"></script>
-
-<script src="js/engine/wonderland.js"></script>
-
-<!-- ============================================= -->
-<!-- DADOS -->
-<!-- ============================================= -->
-
-<script src="js/data/racas-data.js"></script>
-<script src="js/pages/racas.js"></script>
-
-<!-- ============================================= -->
-<!-- PÁGINA -->
-<!-- ============================================= -->
-
-<script
-    src="js/pages/racas.js?v=21"
-    defer
-></script>
-
+    <script src="js/engine/render.js"></script>
+    <script src="js/engine/wonderland.js"></script>
+    <script src="js/data/racas-data.js"></script>
+    <script src="js/pages/racas.js?v=22" defer></script>
 </body>
 
 </html>

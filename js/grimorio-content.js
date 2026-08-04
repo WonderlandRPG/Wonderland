@@ -34,54 +34,9 @@
     return tags.slice(0, 4);
   };
 
-  const explicitCost = (descricao) => {
-    const text = String(descricao || "");
-    const patterns = [
-      { regex: /(?:custa|consome|gasta)\s+(\d+)\s*mana/i, type: "Mana" },
-      { regex: /(?:custa|consome|gasta)\s+(\d+)\s*energia/i, type: "Energia" },
-      { regex: /(?:custa|consome|gasta)\s+(\d+)%\s*do\s*hp/i, type: "HP" },
-      { regex: /(?:custa|consome|gasta)\s+(\d+)\s*f[úu]ria/i, type: "Fúria" },
-      { regex: /(?:custa|consome|gasta)\s+(\d+)\s*reagentes?/i, type: "Reagente" }
-    ];
-    for (const pattern of patterns) {
-      const match = text.match(pattern.regex);
-      if (match) {
-        const suffix = pattern.type === "HP" ? "% do HP" : pattern.type;
-        return { type: pattern.type, value: Number(match[1]), label: `${match[1]} ${suffix}` };
-      }
-    }
-    return null;
-  };
-
-  const classResourceType = (classe) => {
-    const resource = `${classe?.recurso?.nome || ""} ${classe?.estilo?.secundaria || ""}`.toLowerCase();
-    if (resource.includes("fúria")) return "Fúria";
-    if (resource.includes("reagente")) return "Reagente";
-    if (resource.includes("energia")) return "Energia";
-    if (resource.includes("sangue") || resource.includes("vida")) return "HP";
-    if (resource.includes("mana")) return "Mana";
-    const role = String(classe?.cargo || "").toLowerCase();
-    if (role.includes("mágico") || role.includes("magico") || role.includes("suporte") || role.includes("invocador")) return "Mana";
-    if (role.includes("assassino") || role.includes("infiltração") || role.includes("infiltracao") || role.includes("arqueiro")) return "Energia";
-    return "Sem custo";
-  };
-
-  const costByLevel = (type, level, isUltimate, isPassive) => {
-    if (isPassive || type === "Sem custo") return { type: "Sem custo", value: 0, label: "Sem custo" };
-    const n = Number(level) || 1;
-    let value;
-    if (type === "Mana") value = Math.min(120, 20 + Math.round(n * 0.9) + (isUltimate ? 25 : 0));
-    else if (type === "Energia") value = Math.min(80, 15 + Math.round(n * 0.45) + (isUltimate ? 20 : 0));
-    else if (type === "Fúria") value = isUltimate ? 10 : Math.max(2, Math.min(8, Math.ceil(n / 15) + 1));
-    else if (type === "Reagente") value = isUltimate ? 3 : (n >= 60 ? 2 : 1);
-    else if (type === "HP") value = isUltimate ? 18 : Math.max(4, Math.min(12, Math.ceil(n / 10) + 3));
-    else return { type: "Sem custo", value: 0, label: "Sem custo" };
-    const label = type === "HP" ? `${value}% do HP` : `${value} ${type}`;
-    return { type, value, label };
-  };
-
-  const resolveCost = (classe, descricao, level, isUltimate = false, isPassive = false) => {
-    return explicitCost(descricao) || costByLevel(classResourceType(classe), level, isUltimate, isPassive);
+  const getCost = (classe, skill, level, options = {}) => {
+    return window.WONDERLAND_SKILL_COSTS?.infer(classe, skill, level, options)
+      || { type: "Sem custo", value: 0, label: "Sem custo" };
   };
 
   const extractCooldown = (descricao, fallback = "Não definida") => {
@@ -93,7 +48,7 @@
     const atributo = inferAttribute(classe);
 
     (classe.passivas || []).forEach((passiva, index) => {
-      const cost = resolveCost(classe, passiva.descricao, 1, false, true);
+      const cost = getCost(classe, passiva, 1, { passive: true });
       records.push({
         id: `${classe.id}-passiva-${slugify(passiva.nome || index)}`,
         nome: passiva.nome,
@@ -116,7 +71,7 @@
 
     (classe.progressao || []).forEach((skill, index) => {
       const nivel = String(skill.nivel || "").replace(/[^0-9]/g, "") || "1";
-      const cost = resolveCost(classe, skill.descricao, nivel);
+      const cost = getCost(classe, skill, Number(nivel));
       records.push({
         id: `${classe.id}-nivel-${nivel}-${slugify(skill.nome || index)}`,
         nome: skill.nome,
@@ -139,7 +94,7 @@
 
     (classe.caminhos || []).forEach((caminho, pathIndex) => {
       if (caminho.passiva) {
-        const cost = resolveCost(classe, caminho.passiva.descricao, 50, false, true);
+        const cost = getCost(classe, caminho.passiva, 50, { passive: true, path: true });
         records.push({
           id: `${classe.id}-caminho-${slugify(caminho.id || pathIndex)}-passiva`,
           nome: caminho.passiva.nome,
@@ -164,7 +119,7 @@
       (caminho.habilidades || []).forEach((skill, index) => {
         const level = unlockLevels[index] || 100;
         const isUltimate = String(skill.tipo || "").toLowerCase() === "ultimate";
-        const cost = resolveCost(classe, skill.descricao, level, isUltimate);
+        const cost = getCost(classe, skill, level, { ultimate: isUltimate, path: true });
         records.push({
           id: `${classe.id}-caminho-${slugify(caminho.id || pathIndex)}-${slugify(skill.nome || index)}`,
           nome: skill.nome,

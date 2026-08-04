@@ -1187,38 +1187,78 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    /* =====================================================
-       CONTEÚDO DA ABA
-       ===================================================== */
+    function renderActiveTab() {
+
+    const race =
+        getCurrentRace();
+
+    if (!race || !elements.raceContent) {
+        return;
+    }
+
+    const renderers = {
+
+        overview: renderOverview,
+
+        mechanics: renderMechanics,
+
+        traits: renderTraits,
+
+        progression: renderProgression,
+
+        curiosities: renderCuriosities
+
+    };
+
+    const renderer =
+        renderers[state.activeTab] ||
+        renderOverview;
+
+    elements.raceContent.innerHTML = `
+        <div class="content-enter">
+            ${renderer(race)}
+        </div>
+    `;
 
     elements.raceContent.setAttribute(
-    "aria-labelledby",
-    `${state.activeTab}Tab`
-);
+        "aria-labelledby",
+        `${state.activeTab}Tab`
+    );
 
-// Accordion Premium
-const cards =
-    elements.raceContent.querySelectorAll(".skill-card");
+    // Accordion Premium
+    const cards =
+        elements.raceContent.querySelectorAll(".skill-card");
 
-cards.forEach((card) => {
+    cards.forEach((card) => {
 
-    card.addEventListener("toggle", () => {
+        card.addEventListener("toggle", () => {
 
-        if (!card.open) return;
-
-        cards.forEach((other) => {
-
-            if (other !== card) {
-
-                other.removeAttribute("open");
-
+            if (!card.open) {
+                return;
             }
+
+                const cards =
+        elements.raceContent.querySelectorAll(".skill-card");
+
+    cards.forEach((card) => {
+
+        card.addEventListener("toggle", () => {
+
+            if (!card.open) {
+                return;
+            }
+
+            cards.forEach((other) => {
+
+                if (other !== card) {
+                    other.removeAttribute("open");
+                }
+
+            });
 
         });
 
     });
-
-});
 
 }
 

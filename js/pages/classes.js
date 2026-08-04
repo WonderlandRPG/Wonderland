@@ -1,26 +1,21 @@
+"use strict";
+
 const classesList = document.getElementById("classesList");
 const classContent = document.getElementById("classContent");
-
+let classes = {};
 let currentClass = null;
 let activeTab = "overview";
 
+const esc = (value) => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+
 function createSidebar() {
     classesList.innerHTML = "";
-
     Object.values(classes).forEach((classe) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "class-button";
         button.dataset.id = classe.id;
-
-        button.innerHTML = `
-            <img class="class-icon" src="${classe.icone || classe.imagem}" alt="${classe.nome}">
-            <div class="class-info">
-                <span class="class-name">${classe.nome}</span>
-                <span class="class-role">${classe.cargo}</span>
-            </div>
-        `;
-
+        button.innerHTML = `<span class="class-icon class-icon-symbol" aria-hidden="true">${esc(classe.icone || "✦")}</span><div class="class-info"><span class="class-name">${esc(classe.nome)}</span><span class="class-role">${esc(classe.cargo)}</span></div>`;
         button.addEventListener("click", () => loadClass(classe.id));
         classesList.appendChild(button);
     });
@@ -29,285 +24,88 @@ function createSidebar() {
 function loadClass(id) {
     currentClass = classes[id];
     if (!currentClass) return;
-
     activeTab = "overview";
-
-    document.querySelectorAll(".class-button").forEach((button) => {
-        button.classList.toggle("active", button.dataset.id === id);
-    });
-
+    document.querySelectorAll(".class-button").forEach((button) => button.classList.toggle("active", button.dataset.id === id));
     renderClass();
 }
 
 function renderClass() {
     const c = currentClass;
-
     classContent.innerHTML = `
         <div class="class-header">
-            <div class="class-image">
-                <img src="${c.imagem}" alt="${c.nome}">
-            </div>
-
-            <div>
-                <span class="class-kicker">${c.cargo}</span>
-                <h1 class="class-title">${c.nome}</h1>
-                <div class="class-stars" aria-label="Dificuldade ${c.dificuldade}">${c.dificuldade}</div>
-                <p class="class-description">${c.descricao}</p>
-            </div>
+            <div class="class-image"><img src="${esc(c.imagem)}" alt="${esc(c.nome)}"></div>
+            <div><span class="class-kicker">${esc(c.cargo)}</span><h1 class="class-title">${esc(c.nome)}</h1><div class="class-stars">${esc(c.dificuldade)}</div><p class="class-description">${esc(c.descricao)}</p></div>
         </div>
-
         <nav class="class-tabs" aria-label="Informações da classe">
-            <button class="class-tab ${activeTab === "overview" ? "active" : ""}" data-tab="overview" type="button">
-                <span aria-hidden="true">✦</span>
-                Visão Geral
-            </button>
-            <button class="class-tab ${activeTab === "skills" ? "active" : ""}" data-tab="skills" type="button">
-                <span aria-hidden="true">⚔</span>
-                Habilidades
-            </button>
-            <button class="class-tab ${activeTab === "paths" ? "active" : ""}" data-tab="paths" type="button">
-                <span aria-hidden="true">▲</span>
-                Caminhos
-            </button>
+            <button class="class-tab ${activeTab === "overview" ? "active" : ""}" data-tab="overview" type="button"><span>✦</span>Visão Geral</button>
+            <button class="class-tab ${activeTab === "skills" ? "active" : ""}" data-tab="skills" type="button"><span>⚔</span>Habilidades</button>
+            <button class="class-tab ${activeTab === "paths" ? "active" : ""}" data-tab="paths" type="button"><span>▲</span>Caminhos</button>
         </nav>
+        <section class="class-tab-content">${renderActiveTab()}</section>`;
 
-        <section class="class-tab-content">
-            ${renderActiveTab()}
-        </section>
-    `;
-
-    classContent.querySelectorAll(".class-tab").forEach((tab) => {
-        tab.addEventListener("click", () => {
-            activeTab = tab.dataset.tab;
-            renderClass();
-        });
-    });
-
+    const artwork = classContent.querySelector(".class-image img");
+    if (artwork) artwork.addEventListener("error", () => { artwork.src = "assets/images/logo.png"; artwork.classList.add("fallback"); }, { once: true });
+    classContent.querySelectorAll(".class-tab").forEach((tab) => tab.addEventListener("click", () => { activeTab = tab.dataset.tab; renderClass(); }));
     bindPathTabs();
 }
 
 function renderActiveTab() {
-    if (activeTab === "skills") return renderSkillsTab();
-    if (activeTab === "paths") return renderPathsTab();
+    if (activeTab === "skills") return renderProgressao();
+    if (activeTab === "paths") return renderCaminhos();
     return renderOverviewTab();
 }
 
 function renderOverviewTab() {
     const c = currentClass;
-
-    return `
-        <div class="overview-grid">
-            <article class="class-highlight-card">
-                <span>Especialização</span>
-                <h2>${c.especializacao?.titulo || c.cargo}</h2>
-                <p>${c.especializacao?.descricao || c.descricao}</p>
-            </article>
-
-            <aside class="class-playstyle-card">
-                <div class="playstyle-row"><span>Função principal</span><strong>${c.estilo?.principal || "—"}</strong></div>
-                <div class="playstyle-row"><span>Função secundária</span><strong>${c.estilo?.secundaria || "—"}</strong></div>
-                <div class="playstyle-row"><span>Pontos fortes</span><strong>${c.estilo?.fortes || "—"}</strong></div>
-                <div class="playstyle-row"><span>Pontos fracos</span><strong>${c.estilo?.fracos || "—"}</strong></div>
-                <div class="playstyle-row"><span>Atributos recomendados</span><strong>${c.estilo?.atributos || "—"}</strong></div>
-            </aside>
-        </div>
-
-        ${renderResourceCard()}
-        ${renderPassivas()}
-        ${renderComplexidade()}
-        ${renderCuriosidades()}
-    `;
+    return `<div class="overview-grid">
+        <article class="class-highlight-card"><span>Especialização</span><h2>${esc(c.especializacao?.titulo || c.cargo)}</h2><p>${esc(c.especializacao?.descricao || c.descricao)}</p></article>
+        <aside class="class-playstyle-card">
+            ${row("Função principal", c.estilo?.principal)}${row("Mecânica exclusiva", c.recurso?.nome)}${row("Pontos fortes", c.estilo?.fortes)}${row("Pontos fracos", c.estilo?.fracos)}${row("Atributos centrais", c.estilo?.atributos)}
+        </aside></div>${renderResourceCard()}${renderPassivas()}${renderComplexidade()}${renderCuriosidades()}`;
 }
 
-function renderSkillsTab() {
-    return renderProgressao();
-}
-
-function renderPathsTab() {
-    return renderCaminhos();
-}
-
-function renderResourceCard() {
-    const recurso = currentClass.recurso;
-    if (!recurso) return "";
-
-    return `
-        <section class="class-resource-card">
-            <span>Recurso da Classe</span>
-            <h2>${recurso.nome}</h2>
-            <p>${recurso.descricao}</p>
-        </section>
-    `;
-}
-
-function renderPassivas() {
-    if (!currentClass.passivas?.length) return "";
-
-    return `
-        <section class="class-section-block">
-            <header class="class-section-heading">
-                <span>Características permanentes</span>
-                <h2>Passiva da Classe</h2>
-            </header>
-            <div class="class-passive-grid">
-                ${currentClass.passivas.map((passiva) => `
-                    <article class="passive-card">
-                        <h3>${passiva.nome}</h3>
-                        <p>${passiva.descricao}</p>
-                    </article>
-                `).join("")}
-            </div>
-        </section>
-    `;
-}
+function row(label, value) { return `<div class="playstyle-row"><span>${esc(label)}</span><strong>${esc(value || "—")}</strong></div>`; }
+function renderResourceCard() { const r=currentClass.recurso; return r?`<section class="class-resource-card"><span>Mecânica da Classe</span><h2>${esc(r.nome)}</h2><p>${esc(r.descricao)}</p></section>`:""; }
+function renderPassivas() { return currentClass.passivas?.length?`<section class="class-section-block"><header class="class-section-heading"><span>Característica permanente</span><h2>Passiva da Classe</h2></header><div class="class-passive-grid">${currentClass.passivas.map(p=>`<article class="passive-card"><h3>${esc(p.nome)}</h3><p>${esc(p.descricao)}</p></article>`).join("")}</div></section>`:""; }
+function renderComplexidade() { const c=currentClass.complexidade; return c?`<section class="class-complexity-card"><span>Grau de Complexidade</span><h2>${esc(c.grau)}</h2><p>${esc(c.descricao)}</p></section>`:""; }
+function renderCuriosidades() { return currentClass.curiosidades?.length?`<section class="curiosities"><h2 class="section-title">Regras de progressão</h2><ul>${currentClass.curiosidades.map(i=>`<li>${esc(i)}</li>`).join("")}</ul></section>`:""; }
 
 function renderProgressao() {
-    if (!currentClass.progressao?.length) return "";
-
-    return `
-        <section class="class-progression-section">
-            <header class="class-section-heading">
-                <span>Arsenal da Classe</span>
-                <h2>Habilidades</h2>
-                <p>As habilidades são apresentadas diretamente por nível, com todos os valores de dano, custo, alcance, duração e recarga.</p>
-            </header>
-
-            <div class="class-progression-list">
-                ${currentClass.progressao.map((skill, index) => `
-                    <article class="class-progression-card">
-                        <div class="class-progression-level">
-                            <span>Nível</span>
-                            <strong>${String(skill.nivel).replace(/[^0-9]/g, "") || index + 1}</strong>
-                        </div>
-
-                        <div class="class-progression-copy">
-                            <span class="class-progression-label">Habilidade da Classe</span>
-                            <h3>${skill.nome}</h3>
-                            <div class="class-progression-description">${skill.descricao}</div>
-                        </div>
-                    </article>
-                `).join("")}
-            </div>
-        </section>
-    `;
-}
-
-function renderComplexidade() {
-    const complexidade = currentClass.complexidade;
-    if (!complexidade) return "";
-
-    return `
-        <section class="class-complexity-card">
-            <span>Grau de Complexidade</span>
-            <h2>${complexidade.grau}</h2>
-            <p>${complexidade.descricao}</p>
-        </section>
-    `;
+    const skills = currentClass.progressao || [];
+    return `<section class="class-progression-section"><header class="class-section-heading"><span>Arsenal da Classe</span><h2>Habilidades — níveis 1 a 50</h2><p>Duas habilidades são desbloqueadas em cada marco. Clique em uma habilidade para consultar seu efeito completo.</p></header><div class="class-skill-list">${skills.map((skill,index)=>`
+        <details class="class-skill-card" ${index === 0 ? "open" : ""}>
+            <summary class="class-skill-summary">
+                <span class="class-skill-level">Nível<br><strong>${esc(String(skill.nivel).replace(/[^0-9]/g, "") || index + 1)}</strong></span>
+                <span class="class-skill-title-wrap"><small>${esc(skill.categoria || "Habilidade da Classe")}</small><strong>${esc(skill.nome)}</strong></span>
+                <span class="class-skill-toggle" aria-hidden="true">＋</span>
+            </summary>
+            <div class="class-skill-body"><p>${esc(skill.descricao)}</p></div>
+        </details>`).join("")}</div></section>`;
 }
 
 function renderCaminhos() {
-    if (!currentClass.caminhos?.length) {
-        return `
-            <div class="class-empty-state">
-                <strong>Nenhum Caminho registrado.</strong>
-                <p>Esta classe ainda não possui especializações de nível 50 cadastradas.</p>
-            </div>
-        `;
-    }
-
-    return `
-        <section class="class-paths-section">
-            <header class="class-section-heading">
-                <span>Especializações de nível 50</span>
-                <h2>Caminhos de ${currentClass.nome}</h2>
-                <p>No nível 50, a escolha é definitiva e as habilidades originais da classe são preservadas.</p>
-            </header>
-
-            <div class="class-path-selector" role="tablist" aria-label="Caminhos da classe">
-                ${currentClass.caminhos.map((caminho, index) => `
-                    <button class="class-path-selector-button ${index === 0 ? "active" : ""}" type="button" data-path-index="${index}">
-                        <span>Caminho ${index + 1}</span>
-                        <strong>${caminho.nome}</strong>
-                    </button>
-                `).join("")}
-            </div>
-
-            <div id="classPathView">
-                ${renderSinglePath(currentClass.caminhos[0], 0)}
-            </div>
-        </section>
-    `;
+    const caminhos = currentClass.caminhos || [];
+    if (!caminhos.length) return `<div class="class-empty-state"><strong>Nenhum Caminho registrado.</strong></div>`;
+    return `<section class="class-paths-section"><header class="class-section-heading"><span>Especializações de nível 50</span><h2>Caminhos de ${esc(currentClass.nome)}</h2><p>A escolha é definitiva e as doze habilidades da classe-base são preservadas.</p></header><div class="class-path-selector">${caminhos.map((c,i)=>`<button class="class-path-selector-button ${i===0?"active":""}" type="button" data-path-index="${i}"><span>Caminho ${i+1}</span><strong>${esc(c.nome)}</strong></button>`).join("")}</div><div id="classPathView">${renderSinglePath(caminhos[0],0)}</div></section>`;
 }
 
 function renderSinglePath(caminho, index) {
-    return `
-        <article class="class-path-card">
-            <header class="class-path-header">
-                <span>Caminho ${index + 1}</span>
-                <h3>${caminho.nome}</h3>
-                <div class="class-path-meta">
-                    <strong>${caminho.especializacao}</strong>
-                    <small>Complexidade: ${caminho.complexidade}</small>
-                </div>
-                <p>${caminho.descricao}</p>
-            </header>
-
-            <section class="class-path-passive">
-                <span>Passiva do Caminho</span>
-                <h4>${caminho.passiva.nome}</h4>
-                <div>${caminho.passiva.descricao}</div>
-            </section>
-
-            <div class="class-progression-list class-path-progression">
-                ${caminho.habilidades.map((habilidade, skillIndex) => `
-                    <article class="class-progression-card ${skillIndex === caminho.habilidades.length - 1 ? "ultimate" : ""}">
-                        <div class="class-progression-level">
-                            <span>${skillIndex === caminho.habilidades.length - 1 ? "Ultimate" : "Habilidade"}</span>
-                            <strong>${skillIndex + 1}</strong>
-                        </div>
-
-                        <div class="class-progression-copy">
-                            <span class="class-progression-label">${skillIndex === caminho.habilidades.length - 1 ? "Poder Supremo" : "Habilidade do Caminho"}</span>
-                            <h3>${habilidade.nome}</h3>
-                            <div class="class-progression-description">${habilidade.descricao}</div>
-                        </div>
-                    </article>
-                `).join("")}
-            </div>
-        </article>
-    `;
+    return `<article class="class-path-card"><header class="class-path-header"><span>Caminho ${index+1}</span><h3>${esc(caminho.nome)}</h3><div class="class-path-meta"><strong>${esc(caminho.especializacao)}</strong><small>Complexidade: ${esc(caminho.complexidade)}</small></div><p>${esc(caminho.descricao)}</p></header><section class="class-path-passive"><span>Nova Passiva</span><h4>${esc(caminho.passiva?.nome)}</h4><div>${esc(caminho.passiva?.descricao)}</div></section><div class="class-progression-list class-path-progression">${(caminho.habilidades||[]).map((h,i)=>`<article class="class-progression-card ${String(h.tipo).toLowerCase()==="ultimate"?"ultimate":""}"><div class="class-progression-level"><span>${esc(h.tipo || "Ativa")}</span><strong>${i+1}</strong></div><div class="class-progression-copy"><span class="class-progression-label">${String(h.tipo).toLowerCase()==="ultimate"?"Poder Supremo":"Habilidade do Caminho"}</span><h3>${esc(h.nome)}</h3><div class="class-progression-description">${esc(h.descricao)}</div></div></article>`).join("")}</div></article>`;
 }
 
 function bindPathTabs() {
-    const pathButtons = classContent.querySelectorAll(".class-path-selector-button");
-    const pathView = classContent.querySelector("#classPathView");
-
-    if (!pathButtons.length || !pathView) return;
-
-    pathButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-            const index = Number(button.dataset.pathIndex);
-            const caminho = currentClass.caminhos?.[index];
-            if (!caminho) return;
-
-            pathButtons.forEach((item) => item.classList.toggle("active", item === button));
-            pathView.innerHTML = renderSinglePath(caminho, index);
-        });
-    });
+    const buttons = classContent.querySelectorAll(".class-path-selector-button");
+    const view = classContent.querySelector("#classPathView");
+    buttons.forEach(button => button.addEventListener("click", () => { const i=Number(button.dataset.pathIndex); buttons.forEach(b=>b.classList.toggle("active",b===button)); view.innerHTML=renderSinglePath(currentClass.caminhos[i],i); }));
 }
 
-function renderCuriosidades() {
-    if (!currentClass.curiosidades?.length) return "";
-
-    return `
-        <section class="curiosities">
-            <h2 class="section-title">Observações</h2>
-            <ul>
-                ${currentClass.curiosidades.map((item) => `<li>${item}</li>`).join("")}
-            </ul>
-        </section>
-    `;
+async function initializeClasses() {
+    try { if (window.WONDERLAND_CLASSES_READY) await window.WONDERLAND_CLASSES_READY; } catch (error) { console.error("Falha ao carregar classes:", error); }
+    classes = window.WONDERLAND_CLASSES || {};
+    const ids = Object.keys(classes);
+    if (!ids.length) { classContent.innerHTML = `<div class="class-empty-state"><strong>Não foi possível carregar as classes.</strong></div>`; return; }
+    createSidebar();
+    loadClass(ids[0]);
 }
 
-createSidebar();
-loadClass(Object.keys(classes)[0]);
+initializeClasses();

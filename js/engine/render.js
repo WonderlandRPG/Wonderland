@@ -1,129 +1,26 @@
 "use strict";
 
-/*
-===========================================================
-WONDERLAND ENGINE
-Render System
-v1.0
-===========================================================
-*/
+const Render = {
 
-window.Wonderland = window.Wonderland || {};
-
-Wonderland.Render = (() => {
-
-    /*========================================*/
-
-    function clear(element){
-
-        if(!element) return;
+    clear(element) {
 
         element.innerHTML = "";
 
-    }
+    },
 
-    /*========================================*/
+    html(element, content) {
 
-    function create(tag, classes = "", html = ""){
+        element.innerHTML = content;
 
-        const el = document.createElement(tag);
+    },
 
-        if(classes){
+    append(element, content) {
 
-            el.className = classes;
-
-        }
-
-        if(html){
-
-            el.innerHTML = html;
-
-        }
-
-        return el;
+        element.insertAdjacentHTML(
+            "beforeend",
+            content
+        );
 
     }
 
-    /*========================================*/
-
-    function append(parent,...children){
-
-        children.forEach(child=>{
-
-            parent.appendChild(child);
-
-        });
-
-    }
-
-    /*========================================*/
-
-    function fadeOut(element,duration=350){
-
-        return new Promise(resolve=>{
-
-            element.style.transition =
-                `opacity ${duration}ms`;
-
-            element.style.opacity="0";
-
-            setTimeout(resolve,duration);
-
-        });
-
-    }
-
-    /*========================================*/
-
-    function fadeIn(element,duration=350){
-
-        return new Promise(resolve=>{
-
-            element.style.transition =
-                `opacity ${duration}ms`;
-
-            element.style.opacity="1";
-
-            setTimeout(resolve,duration);
-
-        });
-
-    }
-
-    /*========================================*/
-
-    async function replace(
-
-        element,
-
-        callback
-
-    ){
-
-        await fadeOut(element);
-
-        callback();
-
-        await fadeIn(element);
-
-    }
-
-    /*========================================*/
-
-    return{
-
-        clear,
-
-        create,
-
-        append,
-
-        replace,
-
-        fadeIn,
-
-        fadeOut
-
-    };
-
-})();
+};

@@ -10,12 +10,15 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css?v=15">
+    <link rel="stylesheet" href="css/components/buttons.css?v=1">
+    <link rel="stylesheet" href="css/components/cards.css?v=1">
+    <link rel="stylesheet" href="css/components/modal.css?v=2">
     <link rel="stylesheet" href="css/grimorio.css?v=3">
     <link rel="stylesheet" href="css/grimorio-theme.css?v=1">
     <link rel="stylesheet" href="css/grimorio-effects.css?v=2">
     <link rel="stylesheet" href="css/grimorio-core.css?v=1">
     <link rel="stylesheet" href="css/grimorio-cards.css?v=1">
-    <link rel="stylesheet" href="css/grimorio-content.css?v=1">
+    <link rel="stylesheet" href="css/grimorio-content.css?v=2">
 </head>
 <body class="grimorio-page">
     <div class="grimorio-background"></div>
@@ -27,7 +30,7 @@
     </audio>
 
     <button id="musicButton" class="music-button" type="button" aria-label="Alternar música" title="Alternar música"><span id="musicIcon" aria-hidden="true">♪</span></button>
-    <a href="menu.html" class="return-button">← Menu</a>
+    <a href="menu.html" class="return-button wl-button wl-button-ghost">← Menu</a>
 
     <header class="grimorio-hero">
         <img src="assets/images/logo.png" class="grimorio-logo" alt="Wonderland RPG">
@@ -49,6 +52,13 @@
         </section>
     </main>
 
+    <dialog id="grimorioSkillModal" class="wl-modal grimorio-skill-modal" aria-labelledby="grimorioSkillModalTitle">
+        <div class="wl-modal-panel">
+            <button type="button" class="wl-button wl-button-ghost grimorio-modal-close" data-close-grimorio-modal aria-label="Fechar">Fechar</button>
+            <div id="grimorioSkillModalBody"></div>
+        </div>
+    </dialog>
+
     <script src="js/engine/render.js?v=1"></script>
     <script src="js/engine/theme.js?v=1"></script>
     <script src="js/engine/effects.js?v=1"></script>
@@ -56,6 +66,6 @@
     <script src="js/engine/particles.js?v=1"></script>
     <script src="js/data/classes-all.js?v=2"></script>
     <script src="js/grimorio-content.js?v=2"></script>
-    <script src="js/grimorio-app.js?v=2" defer></script>
+    <script src="js/grimorio-app.js?v=3" defer></script>
 </body>
 </html>

@@ -1,136 +1,107 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
 <title id="title">Mapa ilustrado de Wonderland</title>
-<desc id="desc">Atlas de fantasia com cinco reinos, cidade livre, mares, montanhas, florestas, rios, estradas e territórios neutros.</desc>
+<desc id="desc">Atlas fantástico de Wonderland com cinco reinos, Cidade Livre, mares, montanhas, florestas, rios, estradas, ruínas e territórios neutros.</desc>
 <defs>
-  <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#335a64"/><stop offset="1" stop-color="#18343c"/></linearGradient>
-  <radialGradient id="seaLight" cx="50%" cy="42%" r="75%"><stop stop-color="#87a8a5" stop-opacity=".18"/><stop offset="1" stop-color="#0d2027" stop-opacity=".35"/></radialGradient>
-  <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e7eff0"/><stop offset=".55" stop-color="#b8c9cc"/><stop offset="1" stop-color="#718b90"/></linearGradient>
-  <linearGradient id="valdor" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#73969a"/><stop offset="1" stop-color="#3f6065"/></linearGradient>
-  <linearGradient id="aurelia" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a5b86e"/><stop offset="1" stop-color="#627641"/></linearGradient>
-  <linearGradient id="eldoria" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#719463"/><stop offset="1" stop-color="#31513a"/></linearGradient>
-  <linearGradient id="ashkara" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d99a57"/><stop offset=".6" stop-color="#ac6337"/><stop offset="1" stop-color="#6e321c"/></linearGradient>
-  <linearGradient id="parchment" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d7bd87"/><stop offset="1" stop-color="#81552e"/></linearGradient>
-  <pattern id="waves" width="42" height="24" patternUnits="userSpaceOnUse"><path d="M0 12Q10 4 21 12T42 12" fill="none" stroke="#dce9e5" stroke-opacity=".12" stroke-width="1.4"/></pattern>
-  <pattern id="terrainDots" width="18" height="18" patternUnits="userSpaceOnUse"><circle cx="4" cy="5" r="1.2" fill="#20170f" opacity=".09"/><circle cx="14" cy="12" r=".8" fill="#fff7dc" opacity=".08"/></pattern>
-  <filter id="landShadow" x="-25%" y="-25%" width="150%" height="150%"><feDropShadow dx="0" dy="14" stdDeviation="12" flood-color="#120b06" flood-opacity=".56"/></filter>
-  <filter id="symbolShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#160d07" flood-opacity=".48"/></filter>
-  <filter id="fractureGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  <g id="mountain"><path d="M0 38L24 0l24 38z" fill="#665948" stroke="#372d24" stroke-width="1.6"/><path d="M24 0l-8 14 8-5 7 8 8-5z" fill="#f0ede6"/><path d="M7 38l10-17 8 17z" fill="#463d32" opacity=".5"/></g>
-  <g id="hill"><path d="M0 25Q18 0 36 25z" fill="#667548" stroke="#3f4b31" stroke-width="1.2"/></g>
-  <g id="tree"><path d="M13 0L3 18h7L0 32h26l-9-14h7z" fill="#294e37" stroke="#173224" stroke-width="1.2"/><rect x="11" y="32" width="4" height="8" fill="#5d3e25"/></g>
-  <g id="pine"><path d="M12 0L4 14h5L1 26h22l-7-12h5z" fill="#365941" stroke="#203b2c" stroke-width="1.1"/><rect x="10" y="26" width="4" height="7" fill="#5b4028"/></g>
-  <g id="city"><rect x="3" y="14" width="38" height="22" rx="2" fill="#67513e" stroke="#2f231b" stroke-width="1.5"/><path d="M0 16L10 6l9 10 11-12 14 12" fill="#927651" stroke="#2f231b" stroke-width="1.5"/><rect x="18" y="24" width="8" height="12" fill="#2b2119"/><rect x="8" y="20" width="5" height="5" fill="#d8bd77"/></g>
-  <g id="tower"><rect x="7" y="12" width="24" height="30" fill="#65503e" stroke="#2f231b" stroke-width="1.5"/><path d="M4 13L19 0l15 13z" fill="#8b704e" stroke="#2f231b" stroke-width="1.5"/><rect x="16" y="29" width="6" height="13" fill="#2d2118"/></g>
+  <linearGradient id="ocean" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#3f6870"/><stop offset=".52" stop-color="#244852"/><stop offset="1" stop-color="#122d36"/></linearGradient>
+  <radialGradient id="oceanGlow" cx="48%" cy="40%" r="78%"><stop stop-color="#b8d4cf" stop-opacity=".18"/><stop offset="1" stop-color="#07191f" stop-opacity=".48"/></radialGradient>
+  <linearGradient id="frame" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#e1c48e"/><stop offset=".48" stop-color="#ae7d47"/><stop offset="1" stop-color="#5c341d"/></linearGradient>
+  <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f0f5f4"/><stop offset=".58" stop-color="#b9c9ca"/><stop offset="1" stop-color="#71868a"/></linearGradient>
+  <linearGradient id="west" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#76979a"/><stop offset="1" stop-color="#405f63"/></linearGradient>
+  <linearGradient id="central" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#b7c47b"/><stop offset="1" stop-color="#657743"/></linearGradient>
+  <linearGradient id="east" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#759a68"/><stop offset="1" stop-color="#2d5038"/></linearGradient>
+  <linearGradient id="south" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#dfa05b"/><stop offset=".58" stop-color="#b46438"/><stop offset="1" stop-color="#6b2f1c"/></linearGradient>
+  <linearGradient id="freecity" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c5a879"/><stop offset="1" stop-color="#806245"/></linearGradient>
+  <pattern id="waves" width="54" height="30" patternUnits="userSpaceOnUse"><path d="M0 15Q13 4 27 15T54 15" fill="none" stroke="#d9ebe7" stroke-opacity=".11" stroke-width="1.6"/></pattern>
+  <pattern id="grain" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="5" cy="7" r="1" fill="#2a2117" opacity=".08"/><circle cx="18" cy="17" r=".9" fill="#fff7df" opacity=".08"/></pattern>
+  <filter id="landShadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="18" stdDeviation="15" flood-color="#100905" flood-opacity=".58"/></filter>
+  <filter id="softShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-color="#140b06" flood-opacity=".5"/></filter>
+  <filter id="fractureGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <g id="mountain"><path d="M0 42L26 0l26 42z" fill="#625645" stroke="#30271f" stroke-width="1.8"/><path d="M26 0l-9 16 9-5 8 8 8-5z" fill="#f2efe9"/><path d="M7 42l11-19 9 19z" fill="#40372e" opacity=".52"/></g>
+  <g id="tree"><path d="M14 0L4 20h7L0 35h28l-10-15h8z" fill="#294c36" stroke="#173123" stroke-width="1.2"/><rect x="12" y="35" width="4" height="9" fill="#5a3d25"/></g>
+  <g id="city"><rect x="4" y="15" width="40" height="24" rx="2" fill="#69523e" stroke="#2f231b" stroke-width="1.6"/><path d="M0 17L11 6l9 11 12-13 15 13" fill="#957951" stroke="#2f231b" stroke-width="1.6"/><rect x="20" y="26" width="8" height="13" fill="#2c2119"/><rect x="9" y="21" width="5" height="5" fill="#d5bb78"/></g>
+  <g id="ruin"><path d="M0 42V8h8v34m10 0V0h8v42m10 0V15h8v27" fill="none" stroke="#493728" stroke-width="5"/><path d="M-6 42h58" stroke="#493728" stroke-width="5"/></g>
 </defs>
 
-<rect width="1600" height="1000" fill="#1c1109"/>
-<rect x="18" y="18" width="1564" height="964" rx="26" fill="url(#parchment)" stroke="#59381e" stroke-width="12"/>
-<rect x="40" y="40" width="1520" height="920" rx="18" fill="#b48955" opacity=".28"/>
-<rect x="60" y="60" width="1480" height="880" rx="14" fill="url(#sea)"/>
-<rect x="60" y="60" width="1480" height="880" rx="14" fill="url(#seaLight)"/>
-<rect x="60" y="60" width="1480" height="880" rx="14" fill="url(#waves)"/>
+<rect width="1600" height="1000" fill="#160d07"/>
+<rect x="14" y="14" width="1572" height="972" rx="30" fill="url(#frame)" stroke="#3d2415" stroke-width="14"/>
+<rect x="34" y="34" width="1532" height="932" rx="22" fill="#c3975f" opacity=".32"/>
+<rect x="58" y="58" width="1484" height="884" rx="16" fill="url(#ocean)"/>
+<rect x="58" y="58" width="1484" height="884" rx="16" fill="url(#oceanGlow)"/>
+<rect x="58" y="58" width="1484" height="884" rx="16" fill="url(#waves)"/>
 
-<!-- ilhas externas -->
-<g fill="#677149" stroke="#3b3122" stroke-width="3" filter="url(#symbolShadow)">
-  <path d="M155 250c38-24 76-12 96 18-20 33-72 38-104 13z"/>
-  <path d="M1445 410c34-22 70-9 86 21-22 28-61 30-88 8z"/>
-  <path d="M1348 760c50-35 98-18 119 22-30 39-87 43-126 12z"/>
-  <path d="M245 820c43-28 83-15 99 19-24 29-70 34-102 11z"/>
+<!-- arquipélagos e ilhas -->
+<g fill="#70794e" stroke="#3a3122" stroke-width="3" filter="url(#softShadow)">
+  <path d="M150 250c42-29 88-15 108 20-24 35-78 40-112 12z"/>
+  <path d="M1438 430c38-26 78-11 95 23-25 31-68 33-97 9z"/>
+  <path d="M1360 790c53-39 106-18 128 25-35 42-95 46-136 13z"/>
+  <path d="M225 820c47-34 93-16 111 22-28 33-78 38-113 12z"/>
 </g>
 
-<!-- continente principal, silhueta mais orgânica -->
-<path d="M390 126c118-72 283-77 430-48 128 25 226 83 327 151 111 75 222 154 263 270 39 110 6 232-73 318-87 95-216 146-360 173-157 30-334 18-477-35-132-49-257-132-323-247-67-117-66-256-5-378 50-101 121-158 218-204z" fill="#536143" stroke="#32291d" stroke-width="8" filter="url(#landShadow)"/>
+<!-- continente -->
+<path d="M378 128c121-77 291-87 446-59 143 26 251 87 356 161 117 82 226 169 264 291 34 112-4 239-90 328-94 98-232 151-383 175-166 26-350 9-496-52-135-56-253-145-313-263-60-119-54-257 12-380 52-97 112-151 204-201z" fill="#536142" stroke="#2f281c" stroke-width="9" filter="url(#landShadow)"/>
 
-<!-- regiões redesenhadas -->
-<path id="region-vinterhold" data-region="vinterhold" d="M337 110c124-46 276-54 420-34 119 17 233 35 343 9l27 273c-125 15-231-3-347-11-134-10-236 28-331-8-70-27-104-101-112-229z" fill="url(#snow)" stroke="#506165" stroke-width="4"/>
-<path id="region-valdor" data-region="valdor" d="M237 305c78-72 176-73 254-5 73 64 86 157 52 254-37 106-83 201-165 255-88-47-147-129-166-235-20-113-7-211 25-269z" fill="url(#valdor)" stroke="#3c555a" stroke-width="4"/>
-<path id="region-aurelia" data-region="aurelia" d="M455 316c116-53 260-55 375-4 109 48 183 151 169 266-14 116-100 200-226 219-129 20-248-31-302-135-49-95-56-241-16-346z" fill="url(#aurelia)" stroke="#4b5b35" stroke-width="4"/>
-<path id="region-eldoria" data-region="eldoria" d="M798 304c145-54 311-40 446 45 113 71 175 183 138 299-39 122-149 199-302 230-68-57-110-136-123-224-18-119 10-226-159-350z" fill="url(#eldoria)" stroke="#2c4a35" stroke-width="4"/>
-<path id="region-ashkara" data-region="ashkara" d="M336 683c119-56 250-37 377 33 121 67 253 84 394 45-32 105-146 184-296 204-160 21-314-17-420-101-75-59-103-130-55-181z" fill="url(#ashkara)" stroke="#703e21" stroke-width="4"/>
-<path id="city-elysium" data-region="elysium" d="M422 505c47-50 110-58 162-26 56 35 69 98 34 151-39 59-118 77-177 40-56-35-66-108-19-165z" fill="#9f8461" stroke="#5e4936" stroke-width="4"/>
+<!-- regiões com bordas orgânicas -->
+<path id="region-vinterhold" data-region="vinterhold" d="M320 116c136-53 300-62 456-39 132 20 251 33 366 4l20 280c-130 18-246-1-366-9-142-9-253 30-351-9-74-30-111-104-125-227z" fill="url(#snow)" stroke="#506064" stroke-width="4"/>
+<path id="region-valdor" data-region="valdor" d="M228 308c82-75 187-76 271-4 78 67 90 164 55 268-39 115-88 211-174 266-94-48-157-136-178-247-22-117-8-218 26-283z" fill="url(#west)" stroke="#3a5459" stroke-width="4"/>
+<path id="region-aurelia" data-region="aurelia" d="M450 314c125-56 279-57 402-3 117 51 194 160 178 280-16 121-109 207-240 226-139 20-265-35-321-145-50-99-60-250-19-358z" fill="url(#central)" stroke="#4b5b35" stroke-width="4"/>
+<path id="region-eldoria" data-region="eldoria" d="M816 305c153-59 327-45 467 43 120 76 184 192 145 313-42 129-157 209-318 242-72-61-117-144-130-237-20-124 11-237-164-361z" fill="url(#east)" stroke="#294731" stroke-width="4"/>
+<path id="region-ashkara" data-region="ashkara" d="M320 691c126-61 267-42 401 33 129 71 269 89 417 48-33 112-153 196-311 219-170 24-335-16-448-105-81-63-113-139-59-195z" fill="url(#south)" stroke="#6f3c20" stroke-width="4"/>
+<path id="city-elysium" data-region="elysium" d="M420 505c52-54 122-62 180-26 61 38 74 107 36 164-43 64-130 83-194 43-61-38-73-118-22-181z" fill="url(#freecity)" stroke="#5d4936" stroke-width="4"/>
 
-<!-- texturas internas -->
-<g opacity=".2"><path d="M337 110c124-46 276-54 420-34 119 17 233 35 343 9l27 273c-125 15-231-3-347-11-134-10-236 28-331-8-70-27-104-101-112-229z" fill="url(#terrainDots)"/><path d="M237 305c78-72 176-73 254-5 73 64 86 157 52 254-37 106-83 201-165 255-88-47-147-129-166-235-20-113-7-211 25-269z" fill="url(#terrainDots)"/><path d="M455 316c116-53 260-55 375-4 109 48 183 151 169 266-14 116-100 200-226 219-129 20-248-31-302-135-49-95-56-241-16-346z" fill="url(#terrainDots)"/><path d="M798 304c145-54 311-40 446 45 113 71 175 183 138 299-39 122-149 199-302 230-68-57-110-136-123-224-18-119 10-226-159-350z" fill="url(#terrainDots)"/><path d="M336 683c119-56 250-37 377 33 121 67 253 84 394 45-32 105-146 184-296 204-160 21-314-17-420-101-75-59-103-130-55-181z" fill="url(#terrainDots)"/></g>
-
-<!-- rios e lagos -->
-<g fill="none" stroke="#d6e7e4" stroke-linecap="round">
-  <path d="M730 176c-34 91-14 162-48 238-31 69-13 143-50 213-31 59-34 126-43 194" stroke-width="6" stroke-opacity=".74"/>
-  <path d="M1018 332c-36 59-34 113-82 170-44 52-38 103-79 149" stroke-width="5" stroke-opacity=".68"/>
-  <path d="M392 371c61 29 87 77 77 135" stroke-width="4.5" stroke-opacity=".7"/>
-</g>
-<ellipse cx="696" cy="480" rx="34" ry="20" fill="#3d6970" stroke="#c8deda" stroke-opacity=".38"/>
-
-<!-- estradas -->
-<g fill="none" stroke="#4b3826" stroke-opacity=".62" stroke-width="4" stroke-dasharray="12 9" stroke-linecap="round">
-  <path d="M741 228c-46 102-53 221-30 351 18 102-11 193-45 275"/>
-  <path d="M305 529c150 18 284 47 431 79 188 40 369-14 520-104"/>
-  <path d="M446 564c65 20 114 37 161 58"/>
+<g opacity=".2" fill="url(#grain)">
+  <path d="M320 116c136-53 300-62 456-39 132 20 251 33 366 4l20 280c-130 18-246-1-366-9-142-9-253 30-351-9-74-30-111-104-125-227z"/>
+  <path d="M228 308c82-75 187-76 271-4 78 67 90 164 55 268-39 115-88 211-174 266-94-48-157-136-178-247-22-117-8-218 26-283z"/>
+  <path d="M450 314c125-56 279-57 402-3 117 51 194 160 178 280-16 121-109 207-240 226-139 20-265-35-321-145-50-99-60-250-19-358z"/>
+  <path d="M816 305c153-59 327-45 467 43 120 76 184 192 145 313-42 129-157 209-318 242-72-61-117-144-130-237-20-124 11-237-164-361z"/>
+  <path d="M320 691c126-61 267-42 401 33 129 71 269 89 417 48-33 112-153 196-311 219-170 24-335-16-448-105-81-63-113-139-59-195z"/>
 </g>
 
-<!-- relevo de Vinterhold -->
-<g filter="url(#symbolShadow)" opacity=".98">
-  <use href="#mountain" x="428" y="128"/><use href="#mountain" x="492" y="103" transform="scale(1.28)"/><use href="#mountain" x="588" y="136" transform="scale(.95)"/><use href="#mountain" x="657" y="95" transform="scale(1.2)"/><use href="#mountain" x="743" y="130"/><use href="#mountain" x="830" y="108" transform="scale(1.1)"/><use href="#mountain" x="920" y="136" transform="scale(.9)"/>
+<!-- rios e estradas -->
+<g fill="none" stroke="#d7e8e4" stroke-linecap="round">
+  <path d="M728 177c-39 94-14 166-51 244-35 74-13 151-51 225-33 63-35 134-45 200" stroke-width="6" stroke-opacity=".72"/>
+  <path d="M1023 338c-39 62-37 120-89 180-47 54-41 109-85 158" stroke-width="5" stroke-opacity=".67"/>
+  <path d="M384 374c65 31 93 82 82 145" stroke-width="4.5" stroke-opacity=".7"/>
+</g>
+<g fill="none" stroke="#493624" stroke-opacity=".63" stroke-width="4" stroke-dasharray="12 9" stroke-linecap="round">
+  <path d="M743 226c-49 108-57 232-31 370 19 105-10 201-48 286"/>
+  <path d="M302 535c157 20 298 50 451 83 199 43 389-13 548-108"/>
+  <path d="M444 570c69 21 122 39 172 62"/>
 </g>
 
-<!-- cordilheira dos colossos -->
-<g id="neutral-colossus-range" data-neutral="cordilheira-colossos" filter="url(#symbolShadow)">
-  <use href="#mountain" x="935" y="250" transform="scale(1.55)"/><use href="#mountain" x="1021" y="304" transform="scale(1.2)"/><use href="#mountain" x="1086" y="242" transform="scale(1.62)"/><use href="#mountain" x="1180" y="305" transform="scale(1.05)"/><use href="#mountain" x="1245" y="275" transform="scale(.9)"/>
+<!-- montanhas e vegetação -->
+<g filter="url(#softShadow)">
+  <use href="#mountain" x="418" y="132"/><use href="#mountain" x="486" y="104" transform="scale(1.3)"/><use href="#mountain" x="586" y="138" transform="scale(.96)"/><use href="#mountain" x="658" y="93" transform="scale(1.22)"/><use href="#mountain" x="748" y="129"/><use href="#mountain" x="840" y="106" transform="scale(1.1)"/>
+  <use href="#mountain" x="936" y="247" transform="scale(1.56)"/><use href="#mountain" x="1025" y="302" transform="scale(1.22)"/><use href="#mountain" x="1094" y="240" transform="scale(1.66)"/><use href="#mountain" x="1193" y="305" transform="scale(1.08)"/>
 </g>
-
-<!-- colinas de Aurelia -->
-<g opacity=".75"><use href="#hill" x="585" y="400"/><use href="#hill" x="650" y="430"/><use href="#hill" x="770" y="455"/><use href="#hill" x="830" y="520"/><use href="#hill" x="560" y="570"/></g>
-
-<!-- floresta antiga -->
-<g id="neutral-ancient-forest" data-neutral="floresta-antiga" filter="url(#symbolShadow)">
-  <use href="#tree" x="275" y="355" transform="scale(1.35)"/><use href="#tree" x="326" y="385" transform="scale(1.12)"/><use href="#tree" x="305" y="440"/><use href="#tree" x="364" y="423"/><use href="#tree" x="342" y="478" transform="scale(.9)"/><use href="#tree" x="393" y="465" transform="scale(.82)"/>
+<g id="neutral-ancient-forest" data-neutral="floresta-antiga" filter="url(#softShadow)">
+  <use href="#tree" x="260" y="358" transform="scale(1.36)"/><use href="#tree" x="316" y="391" transform="scale(1.15)"/><use href="#tree" x="292" y="448"/><use href="#tree" x="355" y="430"/><use href="#tree" x="333" y="487" transform="scale(.92)"/><use href="#tree" x="386" y="470" transform="scale(.82)"/>
 </g>
-
-<!-- floresta de Eldoria, muito mais densa -->
 <g id="eldoria-forest" opacity=".98">
-  <use href="#tree" x="978" y="392"/><use href="#tree" x="1023" y="420"/><use href="#tree" x="1070" y="398"/><use href="#tree" x="1120" y="431"/><use href="#tree" x="1170" y="403"/><use href="#tree" x="1220" y="440"/>
-  <use href="#tree" x="990" y="478"/><use href="#tree" x="1042" y="500"/><use href="#tree" x="1095" y="472"/><use href="#tree" x="1152" y="510"/><use href="#tree" x="1210" y="485"/><use href="#tree" x="1265" y="518"/>
-  <use href="#tree" x="1008" y="555"/><use href="#tree" x="1060" y="580"/><use href="#tree" x="1122" y="552"/><use href="#tree" x="1183" y="588"/><use href="#tree" x="1240" y="562"/>
-  <use href="#pine" x="1080" y="632"/><use href="#pine" x="1145" y="650"/><use href="#pine" x="1210" y="624"/>
+  <use href="#tree" x="978" y="392"/><use href="#tree" x="1028" y="418"/><use href="#tree" x="1080" y="395"/><use href="#tree" x="1134" y="430"/><use href="#tree" x="1188" y="402"/><use href="#tree" x="1244" y="438"/>
+  <use href="#tree" x="992" y="482"/><use href="#tree" x="1048" y="505"/><use href="#tree" x="1104" y="475"/><use href="#tree" x="1166" y="512"/><use href="#tree" x="1228" y="486"/><use href="#tree" x="1282" y="520"/>
+  <use href="#tree" x="1010" y="562"/><use href="#tree" x="1068" y="588"/><use href="#tree" x="1130" y="558"/><use href="#tree" x="1192" y="593"/><use href="#tree" x="1250" y="567"/>
 </g>
 
 <!-- cidades -->
-<g filter="url(#symbolShadow)">
-  <use href="#city" x="695" y="500" transform="scale(1.9)"/>
-  <use href="#tower" x="318" y="548" transform="scale(1.45)"/>
-  <use href="#city" x="1110" y="525" transform="scale(1.45)"/>
-  <use href="#tower" x="690" y="202" transform="scale(1.35)"/>
-  <use href="#city" x="677" y="827" transform="scale(1.5)"/>
-  <use href="#city" x="505" y="555" transform="scale(1.2)"/>
+<g filter="url(#softShadow)">
+  <use href="#city" x="690" y="500" transform="scale(1.95)"/>
+  <use href="#city" x="314" y="552" transform="scale(1.38)"/>
+  <use href="#city" x="1110" y="528" transform="scale(1.5)"/>
+  <use href="#city" x="686" y="205" transform="scale(1.4)"/>
+  <use href="#city" x="672" y="830" transform="scale(1.55)"/>
+  <use href="#city" x="508" y="556" transform="scale(1.22)"/>
 </g>
 
-<!-- Ashkara: dunas, cânions e vulcão -->
-<g fill="none" stroke="#e6b36e" stroke-opacity=".28" stroke-width="3"><path d="M420 765c95-35 190-31 278 10"/><path d="M505 835c98-28 197-24 296 17"/><path d="M760 810c78-21 147-16 216 15"/></g>
-<g transform="translate(765 730)" filter="url(#symbolShadow)"><path d="M0 95L58 0l116 95z" fill="#6c4228" stroke="#3e281c" stroke-width="4"/><path d="M43 19c17-12 35-12 50 0-16 12-34 12-50 0z" fill="#d9582d"/><path d="M61 17c-5-19 8-28 13-43 10 16 5 31 0 43" fill="#ffb143"/></g>
+<!-- Ashkara e territórios especiais -->
+<g fill="none" stroke="#ebb56e" stroke-opacity=".3" stroke-width="3"><path d="M420 773c103-38 204-34 299 11"/><path d="M514 846c105-31 212-26 318 18"/><path d="M786 815c83-23 158-18 232 16"/></g>
+<g transform="translate(772 732)" filter="url(#softShadow)"><path d="M0 100L62 0l124 100z" fill="#6d4229" stroke="#3e281c" stroke-width="4"/><path d="M46 20c18-13 37-13 53 0-18 13-36 13-53 0z" fill="#da5a2f"/><path d="M65 18c-5-20 8-30 14-46 10 17 5 33 0 46" fill="#ffb348"/></g>
+<path id="neutral-wildlands" data-neutral="terras-selvagens" d="M210 410c69-66 150-68 219-16-39 114-66 211-140 290-73-57-121-168-79-274z" fill="#7f8d57" fill-opacity=".18" stroke="#3e4f31" stroke-width="4" stroke-dasharray="12 9"/>
+<g id="neutral-fractures" data-neutral="fraturas" filter="url(#fractureGlow)" fill="none"><path d="M1128 704l-18 25 18 18-28 35 18 29" stroke="#ad59df" stroke-width="7"/><path d="M1125 742l30-21m-52 61l-26-12m39 40l29-22" stroke="#d694ff" stroke-width="4"/><path d="M1196 722l-12 18 12 15-19 25 13 21" stroke="#9250c7" stroke-width="5"/></g>
+<g id="neutral-ruins-asterion" data-neutral="ruinas-asterion" transform="translate(1016 833)" filter="url(#softShadow)"><use href="#ruin"/></g>
+<g id="neutral-mist-sea" data-neutral="mar-nevoa"><ellipse cx="1382" cy="220" rx="137" ry="84" fill="#d8e5e2" fill-opacity=".12"/><path d="M1267 220c58-52 168-52 226 0-58 52-168 52-226 0z" fill="none" stroke="#d8e5e2" stroke-opacity=".39" stroke-width="3"/><path d="M1320 220c36-30 79-28 110 0-31 28-74 30-110 0z" fill="none" stroke="#d8e5e2" stroke-opacity=".36" stroke-width="2"/></g>
 
-<!-- Fraturas -->
-<g id="neutral-fractures" data-neutral="fraturas" filter="url(#fractureGlow)" fill="none">
-  <path d="M1123 700l-18 24 17 17-27 33 18 28" stroke="#aa57dd" stroke-width="7"/><path d="M1120 736l29-20m-49 58l-25-11m37 38l27-21" stroke="#d08bff" stroke-width="4"/>
-  <path d="M1188 720l-11 17 11 14-18 24 13 20" stroke="#9250c7" stroke-width="5"/>
-</g>
+<!-- rosa dos ventos deslocada para não colidir -->
+<g transform="translate(1390 760)" opacity=".72"><circle r="68" fill="#10242b" fill-opacity=".3" stroke="#d9c590" stroke-opacity=".56" stroke-width="2"/><circle r="48" fill="none" stroke="#d9c590" stroke-opacity=".32"/><path d="M0-56L12-10 0 0-12-10z" fill="#ead6a1"/><path d="M56 0L10 12 0 0 10-12z" fill="#aa884d"/><path d="M0 56L-12 10 0 0 12 10z" fill="#ead6a1"/><path d="M-56 0L-10-12 0 0-10 12z" fill="#aa884d"/><circle r="6" fill="#ead6a3" stroke="#5b4027"/></g>
 
-<!-- Ruínas de Asterion -->
-<g id="neutral-ruins-asterion" data-neutral="ruinas-asterion" stroke="#4a3827" stroke-width="5" fill="none" filter="url(#symbolShadow)">
-  <path d="M1020 874v-42h12v42m13 0v-57h12v57m13 0v-35h12v35"/><path d="M1008 874h88"/><path d="M1016 822l17-14 14 14 17-19 22 19"/>
-</g>
-
-<!-- Terras Selvagens -->
-<path id="neutral-wildlands" data-neutral="terras-selvagens" d="M220 405c65-63 141-65 205-15-36 108-61 199-130 274-68-54-112-159-75-259z" fill="#7f8c55" fill-opacity=".16" stroke="#3f5032" stroke-width="4" stroke-dasharray="12 9"/>
-
-<!-- Mar da Névoa -->
-<g id="neutral-mist-sea" data-neutral="mar-nevoa">
-  <ellipse cx="1380" cy="224" rx="130" ry="80" fill="#d6e2df" fill-opacity=".11"/>
-  <path d="M1270 224c55-50 160-50 215 0-55 50-160 50-215 0z" fill="none" stroke="#d6e2df" stroke-opacity=".36" stroke-width="3"/>
-  <path d="M1320 224c35-28 75-26 105 0-30 26-70 28-105 0z" fill="none" stroke="#d6e2df" stroke-opacity=".34" stroke-width="2"/>
-</g>
-
-<!-- rosa dos ventos -->
-<g transform="translate(1370 770)" opacity=".78"><circle r="74" fill="#1c2e33" fill-opacity=".28" stroke="#d7c28d" stroke-opacity=".58" stroke-width="2"/><circle r="53" fill="none" stroke="#d7c28d" stroke-opacity=".34"/><path d="M0-60L13-10 0 0-13-10z" fill="#e9d59f"/><path d="M60 0L10 13 0 0 10-13z" fill="#ad8a50"/><path d="M0 60L-13 10 0 0 13 10z" fill="#e9d59f"/><path d="M-60 0L-10-13 0 0-10 13z" fill="#ad8a50"/><circle r="6" fill="#ead6a3" stroke="#5b4027"/></g>
-
-<!-- moldura final -->
-<rect x="60" y="60" width="1480" height="880" rx="14" fill="none" stroke="#b18b54" stroke-width="4"/>
+<rect x="58" y="58" width="1484" height="884" rx="16" fill="none" stroke="#b88d55" stroke-width="4"/>
 </svg>

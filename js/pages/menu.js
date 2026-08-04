@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const music = document.getElementById("bgMusic");
     const musicButton = document.getElementById("musicButton");
     const musicIcon = document.getElementById("musicIcon");
+    const volumeSlider = document.getElementById("volumeSlider");
+    const volumeValue = document.getElementById("volumeValue");
 
     const unavailableLinks = document.querySelectorAll(
         ".menu-link.unavailable"
@@ -14,191 +16,158 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
     }
 
-    music.volume = 0.25;
+    const STORAGE_KEYS = {
+        enabled: "wonderlandMusicEnabled",
+        time: "wonderlandMusicTime",
+        volume: "wonderlandMusicVolume"
+    };
 
-    const savedTime = Number(
-        localStorage.getItem("wonderlandMusicTime")
-    );
+    const savedVolume = Number(localStorage.getItem(STORAGE_KEYS.volume));
+    const initialVolume = Number.isFinite(savedVolume)
+        ? Math.min(Math.max(savedVolume, 0), 1)
+        : 0.25;
 
-    const musicEnabled =
-        localStorage.getItem("wonderlandMusicEnabled") === "true";
+    music.volume = initialVolume;
 
-    function salvarPosicao() {
+    if (volumeSlider) {
+        volumeSlider.value = String(Math.round(initialVolume * 100));
+    }
+
+    if (volumeValue) {
+        volumeValue.textContent = `${Math.round(initialVolume * 100)}%`;
+    }
+
+    const savedTime = Number(localStorage.getItem(STORAGE_KEYS.time));
+
+    function isMusicEnabled() {
+        return localStorage.getItem(STORAGE_KEYS.enabled) !== "false";
+    }
+
+    function savePosition() {
+        if (Number.isFinite(music.currentTime) && music.currentTime >= 0) {
+            localStorage.setItem(STORAGE_KEYS.time, String(music.currentTime));
+        }
+    }
+
+    function saveVolume(volume) {
+        localStorage.setItem(STORAGE_KEYS.volume, String(volume));
+    }
+
+    function updateMusicButton() {
+        if (!musicButton || !musicIcon) return;
+
+        const paused = music.paused;
+        musicButton.classList.toggle("paused", paused);
+        musicButton.classList.toggle("playing", !paused);
+        musicIcon.textContent = paused ? "♪" : "♫";
+
+        const text = paused ? "Tocar música" : "Pausar música";
+        musicButton.setAttribute("aria-label", text);
+        musicButton.setAttribute("title", text);
+    }
+
+    function restorePosition() {
         if (
-            Number.isFinite(music.currentTime) &&
-            music.currentTime >= 0
+            Number.isFinite(savedTime) &&
+            savedTime > 0 &&
+            Number.isFinite(music.duration) &&
+            savedTime < music.duration
         ) {
-            localStorage.setItem(
-                "wonderlandMusicTime",
-                String(music.currentTime)
-            );
+            music.currentTime = savedTime;
         }
     }
 
-    function atualizarBotao() {
-        if (!musicButton || !musicIcon) {
-            return;
-        }
+    function playMusic() {
+        localStorage.setItem(STORAGE_KEYS.enabled, "true");
 
-        const pausada = music.paused;
-
-        musicButton.classList.toggle("paused", pausada);
-
-        musicIcon.textContent = pausada ? "♪" : "♫";
-
-        const texto = pausada
-            ? "Tocar música"
-            : "Pausar música";
-
-        musicButton.setAttribute("aria-label", texto);
-        musicButton.setAttribute("title", texto);
-    }
-
-    function tentarTocarMusica() {
-        if (!musicEnabled || !music.paused) {
-            return;
-        }
-
-        music.play()
+        return music.play()
             .then(() => {
-                atualizarBotao();
-                removerDesbloqueioAutomatico();
-            })
-            .catch(() => {
-                /*
-                 * O navegador ainda bloqueou o áudio.
-                 * A música será iniciada na primeira interação.
-                 */
-            });
-    }
-
-    function desbloquearMusica() {
-        if (!musicEnabled || !music.paused) {
-            removerDesbloqueioAutomatico();
-            return;
-        }
-
-        music.play()
-            .then(() => {
-                atualizarBotao();
-                removerDesbloqueioAutomatico();
+                updateMusicButton();
+                removeAutoUnlock();
             })
             .catch((error) => {
-                console.warn(
-                    "A música ainda não pôde ser iniciada.",
-                    error
-                );
+                console.warn("O navegador bloqueou o início automático da música.", error);
+                updateMusicButton();
             });
     }
 
-    function removerDesbloqueioAutomatico() {
-        document.removeEventListener(
-            "pointerdown",
-            desbloquearMusica
-        );
+    function tryAutoplay() {
+        if (!isMusicEnabled() || !music.paused) return;
+        playMusic();
+    }
 
-        document.removeEventListener(
-            "keydown",
-            desbloquearMusica
-        );
+    function unlockMusic() {
+        if (!isMusicEnabled() || !music.paused) {
+            removeAutoUnlock();
+            return;
+        }
 
-        document.removeEventListener(
-            "touchstart",
-            desbloquearMusica
-        );
+        playMusic();
+    }
+
+    function removeAutoUnlock() {
+        document.removeEventListener("pointerdown", unlockMusic);
+        document.removeEventListener("keydown", unlockMusic);
+        document.removeEventListener("touchstart", unlockMusic);
     }
 
     music.addEventListener("loadedmetadata", () => {
-        if (
-            Number.isFinite(savedTime) &&
-            savedTime > 0 &&
-            savedTime < music.duration
-        ) {
-            music.currentTime = savedTime;
-        }
-
-        tentarTocarMusica();
+        restorePosition();
+        tryAutoplay();
     });
 
-    /*
-     * Caso os dados do áudio já tenham sido carregados
-     * antes de o evento acima ser registrado.
-     */
     if (music.readyState >= 1) {
-        if (
-            Number.isFinite(savedTime) &&
-            savedTime > 0 &&
-            savedTime < music.duration
-        ) {
-            music.currentTime = savedTime;
-        }
-
-        tentarTocarMusica();
+        restorePosition();
+        tryAutoplay();
     }
 
-    /*
-     * Se o navegador bloquear o autoplay, qualquer clique,
-     * toque ou tecla fará a música continuar automaticamente.
-     */
-    document.addEventListener(
-        "pointerdown",
-        desbloquearMusica
-    );
-
-    document.addEventListener(
-        "touchstart",
-        desbloquearMusica,
-        { passive: true }
-    );
-
-    document.addEventListener(
-        "keydown",
-        desbloquearMusica
-    );
+    document.addEventListener("pointerdown", unlockMusic);
+    document.addEventListener("keydown", unlockMusic);
+    document.addEventListener("touchstart", unlockMusic, { passive: true });
 
     music.addEventListener("play", () => {
-        localStorage.setItem(
-            "wonderlandMusicEnabled",
-            "true"
-        );
-
-        atualizarBotao();
+        localStorage.setItem(STORAGE_KEYS.enabled, "true");
+        updateMusicButton();
     });
 
-    music.addEventListener("pause", atualizarBotao);
+    music.addEventListener("pause", updateMusicButton);
+    music.addEventListener("timeupdate", savePosition);
 
-    music.addEventListener("timeupdate", salvarPosicao);
-
-    window.addEventListener("pagehide", salvarPosicao);
-    window.addEventListener("beforeunload", salvarPosicao);
+    window.addEventListener("pagehide", savePosition);
+    window.addEventListener("beforeunload", savePosition);
 
     if (musicButton) {
         musicButton.addEventListener("click", (event) => {
             event.stopPropagation();
 
             if (music.paused) {
-                localStorage.setItem(
-                    "wonderlandMusicEnabled",
-                    "true"
-                );
-
-                music.play()
-                    .then(atualizarBotao)
-                    .catch((error) => {
-                        console.error(
-                            "Não foi possível tocar a música.",
-                            error
-                        );
-                    });
+                playMusic();
             } else {
                 music.pause();
+                localStorage.setItem(STORAGE_KEYS.enabled, "false");
+                savePosition();
+            }
+        });
+    }
 
-                localStorage.setItem(
-                    "wonderlandMusicEnabled",
-                    "false"
-                );
+    if (volumeSlider) {
+        volumeSlider.addEventListener("input", () => {
+            const volume = Math.min(
+                Math.max(Number(volumeSlider.value) / 100, 0),
+                1
+            );
 
-                salvarPosicao();
+            music.volume = volume;
+            saveVolume(volume);
+
+            if (volumeValue) {
+                volumeValue.textContent = `${Math.round(volume * 100)}%`;
+            }
+
+            if (volume === 0) {
+                music.muted = true;
+            } else {
+                music.muted = false;
             }
         });
     }
@@ -209,5 +178,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    atualizarBotao();
+    updateMusicButton();
 });

@@ -27,6 +27,11 @@
 .class-skill-title-wrap strong{overflow-wrap:anywhere}
 .class-tab-content,.class-skill-card,.class-path-card{content-visibility:auto;contain-intrinsic-size:1px 220px}
 .class-button,.class-tab,.class-path-selector-button,.class-skill-card{will-change:auto}
+.class-skill-cost{display:inline-flex;align-items:center;width:max-content;max-width:100%;margin-top:8px;padding:5px 9px;border:1px solid rgba(var(--classes-red-rgb),.28);border-radius:999px;background:rgba(var(--classes-red-rgb),.08);color:var(--classes-gold);font-family:"Cinzel",serif;font-size:9px;font-style:normal;letter-spacing:1px;text-transform:uppercase}
+.class-skill-cost-detail{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px;padding-top:13px;border-top:1px solid rgba(var(--classes-red-rgb),.18)}
+.class-skill-cost-detail strong{color:var(--classes-gold);font-family:"Cinzel",serif;font-size:10px;letter-spacing:1.2px;text-transform:uppercase}
+.class-skill-cost-detail span{color:#f0e8d8;font-size:16px}
+.passive-card .class-skill-cost,.class-path-passive .class-skill-cost{margin-top:14px}
 
 @media(max-width:900px){.classes-mist,.classes-particles{display:none!important}.classes-index,.class-view{backdrop-filter:none!important}.class-button:hover,.class-skill-card:hover{transform:none!important}}
-@media(max-width:760px){.rating-star-inline{font-size:16px}.playstyle-row{grid-template-columns:1fr}.class-header>div:last-child{padding-right:0}}
+@media(max-width:760px){.rating-star-inline{font-size:16px}.playstyle-row{grid-template-columns:1fr}.class-header>div:last-child{padding-right:0}.class-skill-cost-detail{align-items:flex-start;flex-direction:column;gap:5px}}

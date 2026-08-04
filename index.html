@@ -1,14 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <title>Wonderland RPG</title>
 
@@ -23,114 +17,78 @@
         href="assets/images/logo.png"
     >
 
-    <!-- Fontes -->
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap"
         rel="stylesheet"
     >
 
-    <!-- CSS -->
-
-    <link
-        rel="stylesheet"
-        href="css/global.css?v=6"
-    >
-
-    <link
-        rel="stylesheet"
-        href="css/home.css?v=6"
-    >
-
+    <link rel="stylesheet" href="css/global.css?v=7">
+    <link rel="stylesheet" href="css/home.css?v=7">
 </head>
 
 <body class="home-page">
+    <div class="home-background" aria-hidden="true"></div>
+    <div class="home-background-light" aria-hidden="true"></div>
+    <div class="home-vignette" aria-hidden="true"></div>
+    <div class="mist-layer" aria-hidden="true"></div>
+    <div id="particles" aria-hidden="true"></div>
 
-    <!-- Fundo -->
-
-    <div
-        class="home-background"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Partículas -->
-
-    <div
-        id="particles"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Névoa -->
-
-    <div
-        class="mist-layer"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Música -->
-
-    <audio
-        id="bgMusic"
-        loop
-        preload="auto"
-    >
-
+    <audio id="bgMusic" loop preload="auto">
         <source
             src="assets/audio/wonderland.mp3"
             type="audio/mpeg"
         >
-
     </audio>
 
-    <!-- Conteúdo -->
+    <main class="home-shell">
+        <section class="home-container" aria-labelledby="homeTitle">
+            <p id="introQuote" class="intro-quote"></p>
 
-    <main class="home-container">
+            <div class="home-logo-wrap" aria-hidden="true">
+                <img
+                    src="assets/images/logo.png"
+                    alt=""
+                    class="home-logo"
+                >
+            </div>
 
-        <p
-            id="introQuote"
-            class="intro-quote"
-        >
-        </p>
+            <span class="home-eyebrow">
+                Arquivos do Primeiro Sonho
+            </span>
 
-        <img
-            src="assets/images/logo.png"
-            alt="Símbolo do RPG Wonderland"
-            class="home-logo"
-        >
+            <h1 id="homeTitle" class="home-title">
+                Wonderland
+            </h1>
 
-        <h1 class="home-title">
+            <div class="home-divider" aria-hidden="true">
+                <span></span>
+                <strong>◆</strong>
+                <span></span>
+            </div>
 
-            Wonderland
+            <p class="home-subtitle">
+                Onde toda história começa com uma escolha.
+                <span>
+                    Explore um mundo antigo, marcado por lendas, magia e destinos ainda não escritos.
+                </span>
+            </p>
 
-        </h1>
+            <button
+                id="enterButton"
+                class="enter-button"
+                type="button"
+            >
+                ✦ Entrar em Wonderland ✦
+            </button>
 
-        <p class="home-subtitle">
-
-            Onde toda história começa com uma escolha.
-
-        </p>
-
-        <button
-            id="enterButton"
-            class="enter-button wl-button gold"
-            type="button"
-        >
-
-            ✦ Entrar ✦
-
-        </button>
-
+            <div class="home-scroll-hint" aria-hidden="true">
+                <span>O Primeiro Sonho aguarda</span>
+                <strong>⌄</strong>
+            </div>
+        </section>
     </main>
-
-    <!-- Wonderland Engine -->
 
     <script src="js/engine/render.js"></script>
     <script src="js/engine/theme.js"></script>
@@ -139,68 +97,63 @@
     <script src="js/engine/particles.js"></script>
     <script src="js/engine/navigation.js"></script>
 
-    <!-- Página -->
-
     <script>
+        (() => {
+            const frases = [
+                "Todo sonho deixa marcas naquele que ousa despertá-lo.",
+                "Antes dos reinos existirem, existia apenas o Primeiro Sonho.",
+                "Nem toda criatura nasce... algumas apenas são lembradas.",
+                "A magia responde apenas àqueles que ousam buscá-la.",
+                "Wonderland observa cada escolha feita por seus aventureiros.",
+                "O impossível é apenas o primeiro desafio."
+            ];
 
-        const frases=[
+            const body = document.body;
+            const quote = document.getElementById("introQuote");
+            const button = document.getElementById("enterButton");
+            const music = document.getElementById("bgMusic");
+            const background = document.querySelector(".home-background");
 
-            "Todo sonho deixa marcas naquele que ousa despertá-lo.",
+            quote.textContent =
+                frases[Math.floor(Math.random() * frases.length)];
 
-            "Antes dos reinos existirem, existia apenas o Primeiro Sonho.",
+            Wonderland.Navigation.create();
+            Wonderland.Particles.start();
 
-            "Nem toda criatura nasce... algumas apenas são lembradas.",
+            const reduceMotion = window.matchMedia(
+                "(prefers-reduced-motion: reduce)"
+            ).matches;
 
-            "A magia responde apenas àqueles que ousam buscá-la.",
+            if (!reduceMotion && background) {
+                window.addEventListener("pointermove", (event) => {
+                    const x = (event.clientX / window.innerWidth - 0.5) * 10;
+                    const y = (event.clientY / window.innerHeight - 0.5) * 8;
 
-            "Wonderland observa cada escolha feita por seus aventureiros.",
+                    background.style.translate = `${x}px ${y}px`;
+                }, { passive: true });
+            }
 
-            "O impossível é apenas o primeiro desafio."
+            button.addEventListener("click", () => {
+                if (button.disabled) {
+                    return;
+                }
 
-        ];
+                button.disabled = true;
+                body.classList.add("is-leaving");
 
-        const quote=document.getElementById("introQuote");
+                localStorage.setItem(
+                    "wonderlandMusicEnabled",
+                    "true"
+                );
 
-        quote.textContent=
+                music.volume = 0.25;
+                music.play().catch(() => {});
 
-            frases[Math.floor(Math.random()*frases.length)];
-
-        Wonderland.Navigation.create();
-
-        Wonderland.Particles.start();
-
-        const music=
-
-            document.getElementById("bgMusic");
-
-        document
-
-        .getElementById("enterButton")
-
-        .onclick=()=>{
-
-            localStorage.setItem(
-
-                "wonderlandMusicEnabled",
-
-                "true"
-
-            );
-
-            music.volume=.25;
-
-            music.play().catch(()=>{});
-
-            Wonderland.Navigation.start(
-
-                "menu.html"
-
-            );
-
-        };
-
+                window.setTimeout(() => {
+                    Wonderland.Navigation.start("menu.html");
+                }, reduceMotion ? 0 : 520);
+            });
+        })();
     </script>
-
 </body>
-
 </html>

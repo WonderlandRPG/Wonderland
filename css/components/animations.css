@@ -4,9 +4,7 @@
    ========================================================= */
 
 @media (max-width: 1020px) {
-    .races-page {
-        overflow-x: clip;
-    }
+    .races-page { overflow-x: clip; }
 
     .races-page .races-topbar,
     .races-page .races-intro,
@@ -20,9 +18,7 @@
         gap: 10px;
     }
 
-    .races-page .races-brand {
-        justify-self: center;
-    }
+    .races-page .races-brand { justify-self: center; }
 
     .races-page .races-intro {
         min-height: auto;
@@ -40,9 +36,7 @@
         margin-right: auto;
     }
 
-    .races-page .races-intro-orbit {
-        display: none;
-    }
+    .races-page .races-intro-orbit { display: none; }
 
     .races-page .races-codex {
         display: flex;
@@ -59,9 +53,7 @@
         border-radius: 22px;
     }
 
-    .races-page .race-index-heading {
-        text-align: center;
-    }
+    .races-page .race-index-heading { text-align: center; }
 
     .races-page .race-index-heading p {
         max-width: 560px;
@@ -77,9 +69,7 @@
         padding-right: 4px;
     }
 
-    .races-page .race-list-button {
-        min-width: 0;
-    }
+    .races-page .race-list-button { min-width: 0; }
 
     .races-page .race-view {
         min-width: 0;
@@ -108,9 +98,7 @@
         object-fit: contain;
     }
 
-    .races-page .race-hero-copy {
-        min-width: 0;
-    }
+    .races-page .race-hero-copy { min-width: 0; }
 
     .races-page .race-hero-copy h2 {
         font-size: clamp(42px, 8vw, 68px);
@@ -125,9 +113,7 @@
         gap: 12px;
     }
 
-    .races-page .race-hero-line {
-        grid-column: 1 / -1;
-    }
+    .races-page .race-hero-line { grid-column: 1 / -1; }
 
     .races-page .attribute-strip {
         grid-template-columns: 1fr;
@@ -158,9 +144,7 @@
         gap: 6px;
     }
 
-    .races-page .race-tabs::-webkit-scrollbar {
-        display: none;
-    }
+    .races-page .race-tabs::-webkit-scrollbar { display: none; }
 
     .races-page .race-tab {
         flex: 0 0 auto;
@@ -176,9 +160,7 @@
         grid-template-columns: 1fr;
     }
 
-    .races-page .race-content {
-        min-width: 0;
-    }
+    .races-page .race-content { min-width: 0; }
 
     .races-page .skill-summary {
         grid-template-columns: 80px minmax(0, 1fr) 48px;
@@ -191,13 +173,8 @@
         filter: saturate(0.72) contrast(1.03) brightness(0.52);
     }
 
-    .races-page .races-background-light {
-        opacity: 0.58;
-    }
-
-    .races-page .races-mist-two {
-        display: none;
-    }
+    .races-page .races-background-light { opacity: 0.58; }
+    .races-page .races-mist-two { display: none; }
 
     .races-page .races-topbar,
     .races-page .races-intro,
@@ -221,13 +198,8 @@
         padding: 0;
     }
 
-    .races-page .topbar-return span:first-child {
-        font-size: 18px;
-    }
-
-    .races-page .races-brand-copy {
-        display: none;
-    }
+    .races-page .topbar-return span:first-child { font-size: 18px; }
+    .races-page .races-brand-copy { display: none; }
 
     .races-page .races-brand-emblem {
         width: 40px;
@@ -260,32 +232,24 @@
     }
 
     .races-page .races-intro-divider,
-    .races-page .races-intro-rune {
-        display: none;
-    }
+    .races-page .races-intro-rune { display: none; }
 
     .races-page .race-index {
         padding: 20px 14px 16px;
         border-radius: 18px;
     }
 
-    .races-page .race-index-heading h2 {
-        font-size: 38px;
-    }
+    .races-page .race-index-heading h2 { font-size: 38px; }
 
     .races-page .race-index-heading p {
         font-size: 17px;
         line-height: 1.4;
     }
 
-    .races-page .race-search {
-        min-height: 50px;
-    }
+    .races-page .race-search { min-height: 50px; }
 
     .races-page .race-index-meta,
-    .races-page .race-index-footer {
-        font-size: 11px;
-    }
+    .races-page .race-index-footer { font-size: 11px; }
 
     .races-page .race-list {
         display: flex;
@@ -298,9 +262,7 @@
         scrollbar-width: none;
     }
 
-    .races-page .race-list::-webkit-scrollbar {
-        display: none;
-    }
+    .races-page .race-list::-webkit-scrollbar { display: none; }
 
     .races-page .race-list-button {
         flex: 0 0 min(76vw, 290px);
@@ -308,9 +270,7 @@
         scroll-snap-align: start;
     }
 
-    .races-page .race-index-footer {
-        display: none;
-    }
+    .races-page .race-index-footer { display: none; }
 
     .races-page .race-hero {
         display: flex;
@@ -385,13 +345,8 @@
         flex: 0 0 38px;
     }
 
-    .races-page .hero-stat-copy strong {
-        font-size: 24px;
-    }
-
-    .races-page .race-hero-line {
-        display: none;
-    }
+    .races-page .hero-stat-copy strong { font-size: 24px; }
+    .races-page .race-hero-line { display: none; }
 
     .races-page .attribute-strip {
         padding: 20px 14px;
@@ -399,26 +354,12 @@
         border-radius: 17px;
     }
 
-    .races-page .attribute-heading h3 {
-        font-size: 24px;
-    }
-
-    .races-page .attribute-heading p {
-        font-size: 16px;
-    }
+    .races-page .attribute-heading h3 { font-size: 24px; }
+    .races-page .attribute-heading p { font-size: 16px; }
 
     .races-page .attribute-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
-    }
-
-    .races-page .attribute-card {
-        min-height: 82px;
-        padding: 14px;
-    }
-
-    .races-page .attribute-card strong {
-        font-size: 24px;
     }
 
     .races-page .race-tabs {
@@ -473,9 +414,7 @@
         line-height: 1.58;
     }
 
-    .races-page .skill-card {
-        border-radius: 15px;
-    }
+    .races-page .skill-card { border-radius: 15px; }
 
     .races-page .skill-summary {
         min-height: 92px;
@@ -516,9 +455,7 @@
         width: calc(100% - 10px);
     }
 
-    .races-page .races-intro {
-        padding: 25px 14px;
-    }
+    .races-page .races-intro { padding: 25px 14px; }
 
     .races-page .races-kicker,
     .races-page .race-eyebrow {
@@ -526,37 +463,18 @@
         letter-spacing: 2px;
     }
 
-    .races-page .race-index {
-        padding-inline: 10px;
-    }
-
-    .races-page .race-list-button {
-        flex-basis: 84vw;
-    }
-
-    .races-page .race-hero {
-        padding-inline: 10px;
-    }
-
-    .races-page .race-art {
-        min-height: 290px;
-    }
-
-    .races-page .race-artwork {
-        height: 280px;
-    }
+    .races-page .race-index { padding-inline: 10px; }
+    .races-page .race-list-button { flex-basis: 84vw; }
+    .races-page .race-hero { padding-inline: 10px; }
+    .races-page .race-art { min-height: 290px; }
+    .races-page .race-artwork { height: 280px; }
 
     .races-page .race-hero-copy h2 {
         font-size: clamp(34px, 13vw, 52px);
     }
 
-    .races-page .hero-stats {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .races-page .hero-stat {
-        padding: 12px 8px;
-    }
+    .races-page .hero-stats { grid-template-columns: 1fr 1fr; }
+    .races-page .hero-stat { padding: 12px 8px; }
 
     .races-page .hero-stat-copy span {
         font-size: 8px;
@@ -567,9 +485,7 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .races-page .race-content {
-        padding-inline: 10px;
-    }
+    .races-page .race-content { padding-inline: 10px; }
 
     .races-page .skill-summary {
         grid-template-columns: 52px minmax(0, 1fr) 34px;
@@ -583,9 +499,7 @@
     }
 
     .races-page .skill-title-wrap strong,
-    .races-page .skill-info h3 {
-        font-size: 18px;
-    }
+    .races-page .skill-info h3 { font-size: 18px; }
 }
 
 @media (hover: none) and (pointer: coarse) {
@@ -613,7 +527,248 @@
         animation-duration: 12s;
     }
 
-    .races-page .race-particle:nth-child(n + 17) {
-        display: none;
+    .races-page .race-particle:nth-child(n + 17) { display: none; }
+}
+
+/* =========================================================
+   ATRIBUTOS PREMIUM — COMPONENTE REUTILIZÁVEL
+   ========================================================= */
+
+:root {
+    --attribute-for: 210, 74, 74;
+    --attribute-def: 78, 139, 214;
+    --attribute-res: 75, 169, 116;
+    --attribute-ini: 221, 173, 73;
+    --attribute-int: 153, 100, 214;
+    --attribute-arc: 70, 190, 201;
+}
+
+.races-page .attribute-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.races-page .attribute-card {
+    --attribute-rgb: var(--race-accent-rgb, 214, 181, 107);
+
+    position: relative;
+    min-width: 0;
+    min-height: 122px;
+    padding: 18px 18px 22px 58px;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-content: center;
+    align-items: center;
+    gap: 7px 12px;
+
+    overflow: hidden;
+    isolation: isolate;
+
+    border: 1px solid rgba(var(--attribute-rgb), 0.2);
+    border-radius: 18px;
+
+    background:
+        radial-gradient(circle at 12% 10%, rgba(var(--attribute-rgb), 0.16), transparent 34%),
+        linear-gradient(145deg, rgba(var(--attribute-rgb), 0.08), rgba(4, 9, 11, 0.94) 52%, rgba(7, 11, 13, 0.98));
+
+    box-shadow:
+        0 18px 34px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+
+    cursor: help;
+    transform: translateZ(0);
+
+    transition:
+        transform 0.24s ease,
+        border-color 0.24s ease,
+        box-shadow 0.24s ease;
+}
+
+.races-page .attribute-card:nth-child(1) { --attribute-rgb: var(--attribute-for); }
+.races-page .attribute-card:nth-child(2) { --attribute-rgb: var(--attribute-def); }
+.races-page .attribute-card:nth-child(3) { --attribute-rgb: var(--attribute-res); }
+.races-page .attribute-card:nth-child(4) { --attribute-rgb: var(--attribute-ini); }
+.races-page .attribute-card:nth-child(5) { --attribute-rgb: var(--attribute-int); }
+.races-page .attribute-card:nth-child(6) { --attribute-rgb: var(--attribute-arc); }
+
+.races-page .attribute-card::before {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+
+    width: 30px;
+    height: 30px;
+
+    display: grid;
+    place-items: center;
+
+    color: rgb(var(--attribute-rgb));
+    border: 1px solid rgba(var(--attribute-rgb), 0.34);
+    border-radius: 10px;
+    background: rgba(var(--attribute-rgb), 0.1);
+
+    box-shadow:
+        0 0 20px rgba(var(--attribute-rgb), 0.14),
+        inset 0 0 12px rgba(var(--attribute-rgb), 0.05);
+
+    font-size: 15px;
+    transform: translateY(-58%);
+}
+
+.races-page .attribute-card:nth-child(1)::before { content: "⚔"; }
+.races-page .attribute-card:nth-child(2)::before { content: "🛡"; }
+.races-page .attribute-card:nth-child(3)::before { content: "♥"; }
+.races-page .attribute-card:nth-child(4)::before { content: "➤"; }
+.races-page .attribute-card:nth-child(5)::before { content: "✦"; }
+.races-page .attribute-card:nth-child(6)::before { content: "◈"; }
+
+.races-page .attribute-card::after {
+    content: "";
+    position: absolute;
+    left: 58px;
+    right: 18px;
+    bottom: 17px;
+    height: 5px;
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgb(var(--attribute-rgb)) 0,
+            rgb(var(--attribute-rgb)) var(--attribute-value, 0%),
+            rgba(255, 255, 255, 0.08) var(--attribute-value, 0%),
+            rgba(255, 255, 255, 0.08) 100%
+        );
+
+    box-shadow: 0 0 15px rgba(var(--attribute-rgb), 0.28);
+    transform-origin: left center;
+    animation: attributeBarReveal 0.85s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.races-page .attribute-card > span {
+    min-width: 0;
+    color: rgba(236, 239, 236, 0.68);
+    font-family: "Cinzel", serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+}
+
+.races-page .attribute-card > span::after {
+    display: block;
+    margin-top: 4px;
+    color: rgba(230, 235, 232, 0.4);
+    font-family: "Cormorant Garamond", serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-transform: none;
+}
+
+.races-page .attribute-card:nth-child(1) > span::after { content: "Força"; }
+.races-page .attribute-card:nth-child(2) > span::after { content: "Defesa"; }
+.races-page .attribute-card:nth-child(3) > span::after { content: "Resistência"; }
+.races-page .attribute-card:nth-child(4) > span::after { content: "Iniciativa"; }
+.races-page .attribute-card:nth-child(5) > span::after { content: "Inteligência"; }
+.races-page .attribute-card:nth-child(6) > span::after { content: "Arcano"; }
+
+.races-page .attribute-card > strong {
+    position: relative;
+    z-index: 2;
+    color: rgb(var(--attribute-rgb));
+    font-family: "Cinzel", serif;
+    font-size: clamp(20px, 2vw, 27px);
+    font-weight: 600;
+    line-height: 1;
+    text-shadow: 0 0 18px rgba(var(--attribute-rgb), 0.34);
+}
+
+.races-page .attribute-card:hover {
+    border-color: rgba(var(--attribute-rgb), 0.56);
+    box-shadow:
+        0 22px 44px rgba(0, 0, 0, 0.42),
+        0 0 26px rgba(var(--attribute-rgb), 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transform: translateY(-3px);
+}
+
+@keyframes attributeBarReveal {
+    from { opacity: 0; transform: scaleX(0); }
+    to { opacity: 1; transform: scaleX(1); }
+}
+
+@media (max-width: 1020px) {
+    .races-page .attribute-card {
+        min-height: 112px;
+        padding: 16px 14px 21px 54px;
+    }
+
+    .races-page .attribute-card::before { left: 14px; }
+
+    .races-page .attribute-card::after {
+        left: 54px;
+        right: 14px;
+        bottom: 15px;
+    }
+}
+
+@media (max-width: 780px) {
+    .races-page .attribute-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .races-page .attribute-card {
+        min-height: 104px;
+        padding: 14px 12px 20px 48px;
+        border-radius: 15px;
+    }
+
+    .races-page .attribute-card::before {
+        left: 11px;
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+        font-size: 13px;
+    }
+
+    .races-page .attribute-card::after {
+        left: 48px;
+        right: 12px;
+        bottom: 13px;
+        height: 4px;
+    }
+
+    .races-page .attribute-card > strong { font-size: 20px; }
+}
+
+@media (max-width: 430px) {
+    .races-page .attribute-grid { grid-template-columns: 1fr; }
+
+    .races-page .attribute-card {
+        min-height: 92px;
+        padding: 13px 13px 18px 50px;
+    }
+
+    .races-page .attribute-card > span::after {
+        margin-top: 2px;
+        font-size: 12px;
+    }
+
+    .races-page .attribute-card::after {
+        left: 50px;
+        right: 13px;
+        bottom: 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .races-page .attribute-card,
+    .races-page .attribute-card::after {
+        animation: none !important;
+        transition: none !important;
     }
 }

@@ -2,76 +2,123 @@
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Classes | Wonderland RPG</title>
 
     <meta
         name="description"
-        content="Conheça todas as classes de Wonderland."
+        content="Explore os caminhos de combate, funções e progressões das classes de Wonderland."
     >
 
-    <link
-        rel="icon"
-        type="image/png"
-        href="assets/images/logo.png"
-    >
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
         rel="stylesheet"
     >
 
     <link rel="stylesheet" href="css/global.css?v=14">
-    <link rel="stylesheet" href="css/classes.css?v=1">
-
+    <link rel="stylesheet" href="css/classes.css?v=2">
 </head>
 
 <body class="classes-page">
-
-    <div class="classes-background"></div>
-    <div id="particles" class="particles"></div>
-    <div class="mist-layer"></div>
+    <div class="classes-background" aria-hidden="true"></div>
+    <div class="classes-vignette" aria-hidden="true"></div>
+    <div class="classes-mist classes-mist-one" aria-hidden="true"></div>
+    <div class="classes-mist classes-mist-two" aria-hidden="true"></div>
+    <div id="particles" class="classes-particles" aria-hidden="true"></div>
 
     <audio id="bgMusic" loop preload="auto">
         <source src="assets/audio/wonderland.mp3" type="audio/mpeg">
     </audio>
 
-    <button id="musicButton" class="music-button" type="button">
-        <span id="musicIcon">♪</span>
-    </button>
+    <header class="classes-topbar">
+        <a href="menu.html" class="classes-topbar-button">
+            <span aria-hidden="true">←</span>
+            <span>Menu</span>
+        </a>
 
-    <a href="menu.html" class="return-button">← Menu</a>
+        <a href="index.html" class="classes-brand" aria-label="Página inicial de Wonderland">
+            <img src="assets/images/logo.png" alt="">
+            <span>Wonderland</span>
+        </a>
 
-    <header class="classes-hero">
-        <img src="assets/images/logo.png" class="classes-logo" alt="Wonderland">
-        <span class="hero-label">Caminhos do Primeiro Sonho</span>
-        <h1>Classes</h1>
-        <p>Escolha o estilo de combate que melhor representa sua jornada em Wonderland.</p>
+        <button
+            id="musicButton"
+            class="classes-topbar-button classes-music-button"
+            type="button"
+            aria-label="Tocar música"
+            title="Tocar música"
+        >
+            <span id="musicIcon" aria-hidden="true">♪</span>
+        </button>
     </header>
 
-    <main class="classes-layout">
-        <aside class="classes-sidebar">
-            <div id="classesList"></div>
+    <section class="classes-intro">
+        <div class="classes-intro-symbol" aria-hidden="true">▲</div>
+
+        <div class="classes-intro-copy">
+            <span class="classes-eyebrow">Caminhos do Primeiro Sonho</span>
+            <h1>Códice das Classes</h1>
+            <p>
+                Cada classe representa uma forma diferente de dominar o combate,
+                proteger aliados, controlar o campo e superar os perigos de Wonderland.
+            </p>
+
+            <div class="classes-intro-tags">
+                <span>Funções de combate</span>
+                <span>Mecânicas próprias</span>
+                <span>Progressão por nível</span>
+            </div>
+        </div>
+
+        <aside class="classes-intro-summary">
+            <article>
+                <span>Foco</span>
+                <strong>Combate</strong>
+                <small>Estilo e estratégia</small>
+            </article>
+            <article>
+                <span>Construção</span>
+                <strong>Build</strong>
+                <small>Atributos e recursos</small>
+            </article>
+            <article>
+                <span>Evolução</span>
+                <strong>Níveis</strong>
+                <small>Habilidades e passivas</small>
+            </article>
+        </aside>
+    </section>
+
+    <main class="classes-codex">
+        <aside class="classes-index" aria-label="Seleção de classes">
+            <header class="classes-index-heading">
+                <span class="classes-eyebrow">Caminhos conhecidos</span>
+                <h2>Classes</h2>
+                <p>Escolha uma classe para consultar seu estilo de combate e progressão.</p>
+            </header>
+
+            <div id="classesList" class="classes-list"></div>
+
+            <footer class="classes-index-footer">
+                <span aria-hidden="true">◆</span>
+                <p>As classes definem como o personagem transforma atributos em ações de combate.</p>
+            </footer>
         </aside>
 
-        <section class="class-panel">
-            <div id="classContent"></div>
+        <section class="class-view" aria-live="polite">
+            <div id="classContent" class="class-content"></div>
         </section>
     </main>
 
     <script src="js/global-audio.js?v=1"></script>
-    <script src="js/classes-data.js?v=1"></script>
-    <script src="js/classes.js?v=1"></script>
-
+    <script src="js/data/classes-data.js?v=2"></script>
+    <script src="js/pages/classes.js?v=2" defer></script>
 </body>
 
 </html>

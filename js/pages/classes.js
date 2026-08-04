@@ -82,6 +82,8 @@ function renderClass() {
             renderClass();
         });
     });
+
+    bindPathTabs();
 }
 
 function renderActiveTab() {
@@ -94,18 +96,23 @@ function renderOverviewTab() {
     const c = currentClass;
 
     return `
-        ${renderEspecializacao()}
-        ${renderAfinidades()}
+        <div class="overview-grid">
+            <article class="class-highlight-card">
+                <span>Especialização</span>
+                <h2>${c.especializacao?.titulo || c.cargo}</h2>
+                <p>${c.especializacao?.descricao || c.descricao}</p>
+            </article>
 
-        <div class="info-grid">
-            <div class="info-card"><h3>Função Principal</h3><p>${c.estilo?.principal || ""}</p></div>
-            <div class="info-card"><h3>Função Secundária</h3><p>${c.estilo?.secundaria || ""}</p></div>
-            <div class="info-card"><h3>Pontos Fortes</h3><p>${c.estilo?.fortes || ""}</p></div>
-            <div class="info-card"><h3>Pontos Fracos</h3><p>${c.estilo?.fracos || ""}</p></div>
-            <div class="info-card"><h3>Atributos Recomendados</h3><p>${c.estilo?.atributos || ""}</p></div>
-            <div class="info-card"><h3>${c.recurso?.nome || "Recurso"}</h3><p>${c.recurso?.descricao || ""}</p></div>
+            <aside class="class-playstyle-card">
+                <div class="playstyle-row"><span>Função principal</span><strong>${c.estilo?.principal || "—"}</strong></div>
+                <div class="playstyle-row"><span>Função secundária</span><strong>${c.estilo?.secundaria || "—"}</strong></div>
+                <div class="playstyle-row"><span>Pontos fortes</span><strong>${c.estilo?.fortes || "—"}</strong></div>
+                <div class="playstyle-row"><span>Pontos fracos</span><strong>${c.estilo?.fracos || "—"}</strong></div>
+                <div class="playstyle-row"><span>Atributos recomendados</span><strong>${c.estilo?.atributos || "—"}</strong></div>
+            </aside>
         </div>
 
+        ${renderResourceCard()}
         ${renderPassivas()}
         ${renderComplexidade()}
         ${renderCuriosidades()}
@@ -113,44 +120,22 @@ function renderOverviewTab() {
 }
 
 function renderSkillsTab() {
-    return `
-        ${renderTabelaProgressao()}
-        ${renderProgressao()}
-    `;
+    return renderProgressao();
 }
 
 function renderPathsTab() {
     return renderCaminhos();
 }
 
-function renderEspecializacao() {
-    const especializacao = currentClass.especializacao;
-    if (!especializacao) return "";
+function renderResourceCard() {
+    const recurso = currentClass.recurso;
+    if (!recurso) return "";
 
     return `
-        <section class="class-highlight-card">
-            <span>Especialização</span>
-            <h2>${especializacao.titulo}</h2>
-            <p>${especializacao.descricao}</p>
-        </section>
-    `;
-}
-
-function renderAfinidades() {
-    const afinidades = currentClass.afinidades;
-    if (!afinidades) return "";
-
-    return `
-        <section class="class-affinities">
-            <h2 class="section-title">Afinidade de Atributos</h2>
-            <div class="class-affinity-grid">
-                ${Object.entries(afinidades).map(([atributo, estrelas]) => `
-                    <article class="class-affinity-card">
-                        <strong>${atributo}</strong>
-                        <span>${estrelas}</span>
-                    </article>
-                `).join("")}
-            </div>
+        <section class="class-resource-card">
+            <span>Recurso da Classe</span>
+            <h2>${recurso.nome}</h2>
+            <p>${recurso.descricao}</p>
         </section>
     `;
 }
@@ -159,33 +144,17 @@ function renderPassivas() {
     if (!currentClass.passivas?.length) return "";
 
     return `
-        <h2 class="section-title">Passiva da Classe</h2>
-        ${currentClass.passivas.map((passiva) => `
-            <article class="passive-card">
-                <h3>${passiva.nome}</h3>
-                <p>${passiva.descricao}</p>
-            </article>
-        `).join("")}
-    `;
-}
-
-function renderTabelaProgressao() {
-    if (!currentClass.tabelaProgressao?.length) return "";
-
-    return `
-        <section class="class-unlock-section">
+        <section class="class-section-block">
             <header class="class-section-heading">
-                <span>Desbloqueios da classe</span>
-                <h2>Progressão de Habilidades</h2>
-                <p>Os níveis que não aparecem na tabela não concedem uma nova habilidade de classe.</p>
+                <span>Características permanentes</span>
+                <h2>Passiva da Classe</h2>
             </header>
-
-            <div class="class-unlock-list">
-                ${currentClass.tabelaProgressao.map(([nivel, desbloqueio]) => `
-                    <div class="class-unlock-row">
-                        <strong>Nível ${nivel}</strong>
-                        <span>${desbloqueio}</span>
-                    </div>
+            <div class="class-passive-grid">
+                ${currentClass.passivas.map((passiva) => `
+                    <article class="passive-card">
+                        <h3>${passiva.nome}</h3>
+                        <p>${passiva.descricao}</p>
+                    </article>
                 `).join("")}
             </div>
         </section>
@@ -198,9 +167,9 @@ function renderProgressao() {
     return `
         <section class="class-progression-section">
             <header class="class-section-heading">
-                <span>Arsenal da classe</span>
-                <h2>Habilidades da Classe</h2>
-                <p>Cada habilidade mantém seus valores completos de dano, custo, alcance, duração e recarga.</p>
+                <span>Arsenal da Classe</span>
+                <h2>Habilidades</h2>
+                <p>As habilidades são apresentadas diretamente por nível, com todos os valores de dano, custo, alcance, duração e recarga.</p>
             </header>
 
             <div class="class-progression-list">
@@ -251,7 +220,7 @@ function renderCaminhos() {
             <header class="class-section-heading">
                 <span>Especializações de nível 50</span>
                 <h2>Caminhos de ${currentClass.nome}</h2>
-                <p>No nível 50, a escolha de Caminho é definitiva. As habilidades originais da classe são preservadas.</p>
+                <p>No nível 50, a escolha é definitiva e as habilidades originais da classe são preservadas.</p>
             </header>
 
             <div class="class-path-selector" role="tablist" aria-label="Caminhos da classe">
@@ -339,12 +308,6 @@ function renderCuriosidades() {
         </section>
     `;
 }
-
-const originalRenderClass = renderClass;
-renderClass = function renderClassWithBindings() {
-    originalRenderClass();
-    bindPathTabs();
-};
 
 createSidebar();
 loadClass(Object.keys(classes)[0]);

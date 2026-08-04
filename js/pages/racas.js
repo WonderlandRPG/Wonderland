@@ -1606,8 +1606,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const amount =
             window.innerWidth <= 780
-                ? 14
-                : 28;
+                ? 20
+                : 40;
 
         const fragment =
             document.createDocumentFragment();

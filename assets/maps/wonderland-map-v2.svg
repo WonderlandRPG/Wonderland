@@ -1,151 +1,214 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="t d">
-<title id="t">Mapa vetorial de Wonderland</title>
-<desc id="d">Mapa interativo em SVG com regiões, cidades, florestas, montanhas, rios e terras neutras.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+<title id="title">Mapa ilustrado de Wonderland</title>
+<desc id="desc">Atlas em estilo de pergaminho com os reinos, cidades, montanhas, florestas, estradas, rios, ruínas, fraturas e territórios neutros de Wonderland.</desc>
 <defs>
   <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
-    <stop stop-color="#d9c18f"/><stop offset="1" stop-color="#9c7445"/>
+    <stop stop-color="#ead7a4"/><stop offset=".48" stop-color="#c8a56f"/><stop offset="1" stop-color="#8a6038"/>
   </linearGradient>
+  <radialGradient id="paperGlow" cx="50%" cy="42%" r="70%">
+    <stop stop-color="#f7e8bc" stop-opacity=".45"/><stop offset="1" stop-color="#4a2d16" stop-opacity=".18"/>
+  </radialGradient>
   <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
-    <stop stop-color="#496d72"/><stop offset="1" stop-color="#223b43"/>
+    <stop stop-color="#557d84"/><stop offset=".55" stop-color="#31565d"/><stop offset="1" stop-color="#1d343b"/>
   </linearGradient>
   <linearGradient id="snow" x1="0" y1="0" x2="0" y2="1">
-    <stop stop-color="#d9e5e6"/><stop offset="1" stop-color="#879ea1"/>
+    <stop stop-color="#eef6f5"/><stop offset=".55" stop-color="#bcced1"/><stop offset="1" stop-color="#789194"/>
   </linearGradient>
-  <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
-    <stop stop-color="#8ca35e"/><stop offset="1" stop-color="#50643d"/>
+  <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+    <stop stop-color="#a9b86c"/><stop offset="1" stop-color="#596b3d"/>
   </linearGradient>
   <linearGradient id="forest" x1="0" y1="0" x2="0" y2="1">
-    <stop stop-color="#6f9258"/><stop offset="1" stop-color="#31513b"/>
+    <stop stop-color="#7da16b"/><stop offset="1" stop-color="#294936"/>
   </linearGradient>
   <linearGradient id="desert" x1="0" y1="0" x2="0" y2="1">
-    <stop stop-color="#c78b4d"/><stop offset="1" stop-color="#88492b"/>
+    <stop stop-color="#dfaa68"/><stop offset=".55" stop-color="#bb6f3e"/><stop offset="1" stop-color="#74371f"/>
   </linearGradient>
-  <pattern id="waves" width="36" height="20" patternUnits="userSpaceOnUse">
-    <path d="M0 10Q9 2 18 10T36 10" fill="none" stroke="#c7dbd7" stroke-opacity=".18"/>
+  <linearGradient id="valdor" x1="0" y1="0" x2="1" y2="1">
+    <stop stop-color="#6f9698"/><stop offset="1" stop-color="#36555a"/>
+  </linearGradient>
+  <pattern id="waves" width="44" height="24" patternUnits="userSpaceOnUse">
+    <path d="M0 12Q11 1 22 12T44 12" fill="none" stroke="#dce9e5" stroke-opacity=".16" stroke-width="1.6"/>
   </pattern>
-  <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
-    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#1d1208" flood-opacity=".45"/>
+  <pattern id="paperNoise" width="18" height="18" patternUnits="userSpaceOnUse">
+    <circle cx="4" cy="5" r="1" fill="#4f2f16" opacity=".08"/><circle cx="14" cy="12" r=".8" fill="#fff7df" opacity=".12"/>
+  </pattern>
+  <filter id="continentShadow" x="-30%" y="-30%" width="160%" height="160%">
+    <feDropShadow dx="0" dy="16" stdDeviation="12" flood-color="#1c1008" flood-opacity=".58"/>
   </filter>
-  <g id="m">
-    <path d="M0 28L18 0l18 28z" fill="#665641" stroke="#342a20" stroke-width="1.5"/>
-    <path d="M18 0l-5 10 5-3 5 6 5-3z" fill="#f0ece3"/>
+  <filter id="softShadow" x="-40%" y="-40%" width="180%" height="180%">
+    <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#1b1109" flood-opacity=".38"/>
+  </filter>
+  <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+    <feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <g id="mountain">
+    <path d="M0 34L22 0l22 34z" fill="#6d604e" stroke="#392d23" stroke-width="1.6"/>
+    <path d="M22 0l-7 12 7-4 6 7 7-4z" fill="#f4efe4"/>
+    <path d="M7 34l8-14 7 14z" fill="#4d4438" opacity=".45"/>
   </g>
-  <g id="tr">
-    <path d="M12 0L3 16h6L0 28h24l-9-12h6z" fill="#31543b" stroke="#203729"/>
-    <rect x="10" y="28" width="4" height="8" fill="#5b4027"/>
+  <g id="tree">
+    <path d="M13 0L3 17h7L0 31h26l-9-14h7z" fill="#2f563c" stroke="#1e3828" stroke-width="1.3"/>
+    <rect x="11" y="31" width="4" height="8" fill="#604228"/>
   </g>
-  <g id="ct">
-    <rect x="2" y="10" width="30" height="18" rx="2" fill="#65523d" stroke="#30261c" stroke-width="1.5"/>
-    <path d="M0 12L8 4l8 8 8-9 10 9" fill="#8a704f" stroke="#30261c" stroke-width="1.5"/>
-    <rect x="14" y="18" width="6" height="10" fill="#30261c"/>
+  <g id="city">
+    <rect x="4" y="13" width="34" height="22" rx="2" fill="#6a5540" stroke="#30231a" stroke-width="1.6"/>
+    <path d="M0 15L10 5l9 10 10-11 13 11" fill="#927653" stroke="#30231a" stroke-width="1.6"/>
+    <rect x="18" y="23" width="7" height="12" fill="#2d2118"/>
+    <rect x="8" y="19" width="5" height="5" fill="#d6b56b" opacity=".7"/>
+  </g>
+  <g id="capital">
+    <circle cx="22" cy="22" r="19" fill="#8b6d3d" stroke="#3a2a1c" stroke-width="2"/>
+    <path d="M10 28V17h5v-6h5v6h5v-9h5v9h5v11z" fill="#d8bd77" stroke="#3a2a1c" stroke-width="1.4"/>
+    <path d="M7 31h30" stroke="#3a2a1c" stroke-width="2"/>
+  </g>
+  <g id="compass">
+    <circle cx="0" cy="0" r="72" fill="rgba(22,35,38,.2)" stroke="#d9c38d" stroke-opacity=".55" stroke-width="2"/>
+    <circle cx="0" cy="0" r="52" fill="none" stroke="#d9c38d" stroke-opacity=".35"/>
+    <path d="M0-58L12-10 0 0-12-10z" fill="#e7d39f"/><path d="M58 0L10 12 0 0 10-12z" fill="#b28e52"/>
+    <path d="M058L-1210 0 0 12 10z" fill="#e7d39f"/><path d="M-58 0L-10-12 0 0-1012z" fill="#b28e52"/>
+    <circle cx="0" cy="0" r="6" fill="#e9d8aa" stroke="#5b4027"/>
   </g>
 </defs>
 
-<rect width="1600" height="1000" fill="#24170d"/>
-<rect x="20" y="20" width="1560" height="960" rx="22" fill="url(#paper)" stroke="#6b4725" stroke-width="10"/>
+<rect width="1600" height="1000" fill="#1d120a"/>
+<rect x="18" y="18" width="1564" height="964" rx="26" fill="url(#paper)" stroke="#5b381d" stroke-width="12"/>
+<rect x="36" y="36" width="1528" height="928" rx="18" fill="url(#paperGlow)"/>
 <rect x="58" y="58" width="1484" height="884" rx="12" fill="url(#sea)"/>
 <rect x="58" y="58" width="1484" height="884" rx="12" fill="url(#waves)"/>
+<rect x="58" y="58" width="1484" height="884" rx="12" fill="url(#paperNoise)" opacity=".25"/>
 
-<!-- CONTINENTE -->
-<path id="continent" d="M520 95C680 58 820 82 930 150c110 68 190 125 305 205 100 70 145 165 100 270-50 115-160 190-290 245-140 58-300 76-440 36-140-40-250-110-315-205-70-105-62-215-12-315 58-118 135-230 242-291z" fill="#7c8050" stroke="#40331f" stroke-width="6" filter="url(#shadow)"/>
-
-<!-- REGIÕES -->
-<path id="region-vinterhold" data-region="vinterhold" d="M340 88H1080v250c-125 25-220-3-325-12-125-10-215 30-305-8-65-28-95-122-110-230z" fill="url(#snow)" stroke="#4d5b5e" stroke-width="4"/>
-<path id="region-valdor" data-region="valdor" d="M260 300c100-55 190-20 250 65 55 75 30 155 3 230-35 95-80 168-145 195-70-55-120-135-135-230-16-105-5-195 27-260z" fill="#55747a" stroke="#3f5559" stroke-width="4"/>
-<path id="region-aurelia" data-region="aurelia" d="M500 320c115-35 245-28 345 30 90 53 145 155 120 260-25 100-120 155-230 145-115-10-200-65-230-155-27-84-35-195-5-280z" fill="url(#green)" stroke="#4a5834" stroke-width="4"/>
-<path id="region-eldoria" data-region="eldoria" d="M835 295c145-30 285 12 410 95 85 58 115 155 70 245-50 100-145 150-280 175-55-58-85-125-95-190-18-100-5-195-105-325z" fill="url(#forest)" stroke="#2e4b35" stroke-width="4"/>
-<path id="region-ashkara" data-region="ashkara" d="M365 680c110-35 220-5 330 60 110 65 230 83 350 55-42 85-150 135-285 145-145 8-270-32-360-105-55-45-75-105-35-155z" fill="url(#desert)" stroke="#704020" stroke-width="4"/>
-<path id="city-elysium" data-region="elysium" d="M450 515c42-35 90-35 130-10 42 28 47 75 18 110-33 42-95 50-135 18-40-30-43-82-13-118z" fill="#9b8260" stroke="#5e4936" stroke-width="4"/>
-
-<!-- RIOS -->
-<g fill="none" stroke="#c1dbd7" stroke-opacity=".7" stroke-width="5">
-  <path d="M760 185c-40 110 0 155-35 245-32 80-5 125-40 210-28 68-15 125-48 205"/>
-  <path d="M1035 330c-55 65-18 120-75 185-40 45-25 95-65 145"/>
-  <path d="M450 350c50 38 72 88 48 140"/>
+<g opacity=".32" fill="none" stroke="#d6e5e0" stroke-width="2">
+  <path d="M90 160c140-55 260-55 380 0s240 55 370 0 260-55 390 0 250 55 330 0"/>
+  <path d="M70 820c160-60 300-55 430 0 130 55 260 55 390 0s260-55 390 0 210 45 270 0"/>
 </g>
 
-<!-- ESTRADAS -->
-<g fill="none" stroke="#4e3b28" stroke-opacity=".58" stroke-width="4" stroke-dasharray="10 8">
-  <path d="M760 255c-55 100-55 210-35 330 15 90-12 175-35 245"/>
-  <path d="M330 520c135 15 255 40 395 70 185 40 350-20 485-90"/>
-  <path d="M480 555c55 18 95 30 135 45"/>
+<!-- massas continentais -->
+<path id="continent" d="M510 103c146-40 286-30 407 33 87 45 149 112 244 170 96 59 179 139 195 235 17 101-38 193-126 260-92 70-207 110-333 137-132 28-275 28-397-17-128-47-239-128-296-238-50-97-38-206 16-310 66-128 168-230 290-270z" fill="#707848" stroke="#40331f" stroke-width="7" filter="url(#continentShadow)"/>
+
+<!-- regiões -->
+<path id="region-vinterhold" data-region="vinterhold" d="M331 88C470 62 606 72 735 96c125 23 240 25 358 9l15 238c-130 22-235-1-350-11-128-11-221 29-312-8-68-28-100-115-115-236z" fill="url(#snow)" stroke="#526266" stroke-width="4"/>
+<path id="region-valdor" data-region="valdor" d="M262 300c102-59 196-26 258 61 58 81 34 160 5 241-35 98-83 173-151 202-75-54-128-136-146-235-20-110-5-205 34-269z" fill="url(#valdor)" stroke="#3d575b" stroke-width="4"/>
+<path id="region-aurelia" data-region="aurelia" d="M497 316c120-38 255-30 359 32 95 57 152 164 126 274-26 106-125 164-240 153-121-11-211-70-242-165-29-89-35-203-3-294z" fill="url(#grass)" stroke="#4a5834" stroke-width="4"/>
+<path id="region-eldoria" data-region="eldoria" d="M830 288c151-36 299 6 432 96 93 63 126 167 76 265-54 106-155 160-300 188-58-61-90-132-101-202-19-108-4-209-107-347z" fill="url(#forest)" stroke="#2e4b35" stroke-width="4"/>
+<path id="region-ashkara" data-region="ashkara" d="M353 681c114-39 230-9 345 59 117 69 242 86 366 56-45 91-158 145-298 155-153 10-286-33-380-110-59-48-80-110-33-160z" fill="url(#desert)" stroke="#704020" stroke-width="4"/>
+<path id="city-elysium" data-region="elysium" d="M446 510c43-37 95-38 137-11 44 29 50 79 20 117-35 44-101 53-144 19-43-32-46-87-13-125z" fill="#a68b65" stroke="#5e4936" stroke-width="4"/>
+
+<!-- limites internos suaves -->
+<g fill="none" stroke="#f5e6b8" stroke-opacity=".2" stroke-width="2">
+  <path d="M488 319c85 25 173 28 272 11"/><path d="M842 329c30 80 74 152 128 225"/><path d="M500 608c45 47 100 92 166 126"/>
 </g>
 
-<!-- MONTANHAS DO NORTE -->
-<g opacity=".96">
-  <use href="#m" x="470" y="115"/><use href="#m" x="530" y="100" transform="scale(1.2)"/>
-  <use href="#m" x="615" y="135"/><use href="#m" x="690" y="92" transform="scale(1.15)"/>
-  <use href="#m" x="770" y="130"/><use href="#m" x="855" y="108"/>
+<!-- rios -->
+<g fill="none" stroke="#d0e3df" stroke-opacity=".78" stroke-width="5" stroke-linecap="round">
+  <path d="M760 182c-42 112 0 158-37 250-33 84-4 131-41 220-29 70-15 129-49 211"/>
+  <path d="M1040 330c-60 67-20 126-80 194-42 48-26 101-67 151"/>
+  <path d="M447 352c52 39 76 91 50 146"/>
+</g>
+<g fill="none" stroke="#e8f4f0" stroke-opacity=".26" stroke-width="9" stroke-linecap="round">
+  <path d="M760 182c-42 112 0 158-37 250-33 84-4 131-41 220-29 70-15 129-49 211"/>
 </g>
 
-<!-- CORDILHEIRA DOS COLOSSOS -->
-<g id="neutral-colossus-range" data-neutral="cordilheira-colossos">
-  <use href="#m" x="970" y="255" transform="scale(1.35)"/>
-  <use href="#m" x="1030" y="300" transform="scale(1.1)"/>
-  <use href="#m" x="1080" y="245" transform="scale(1.45)"/>
-  <use href="#m" x="1145" y="315"/>
+<!-- estradas -->
+<g fill="none" stroke="#4d3926" stroke-opacity=".64" stroke-width="4" stroke-dasharray="11 8" stroke-linecap="round">
+  <path d="M755 248c-57 104-58 218-37 343 16 93-13 181-36 252"/>
+  <path d="M328 522c138 16 260 42 402 73 192 42 363-20 503-93"/>
+  <path d="M479 558c57 19 99 31 141 47"/>
 </g>
 
-<!-- FLORESTAS -->
-<g id="neutral-ancient-forest" data-neutral="floresta-antiga">
-  <use href="#tr" x="310" y="365" transform="scale(1.25)"/>
-  <use href="#tr" x="355" y="390" transform="scale(1.1)"/>
-  <use href="#tr" x="335" y="435"/><use href="#tr" x="390" y="425"/>
-</g>
-<g id="eldoria-forest">
-  <use href="#tr" x="1025" y="410"/><use href="#tr" x="1075" y="430"/><use href="#tr" x="1125" y="405"/>
-  <use href="#tr" x="1175" y="445"/><use href="#tr" x="1010" y="490"/><use href="#tr" x="1090" y="510"/>
-  <use href="#tr" x="1160" y="520"/><use href="#tr" x="1230" y="485"/><use href="#tr" x="1050" y="565"/>
-  <use href="#tr" x="1125" y="585"/><use href="#tr" x="1200" y="565"/>
+<!-- montanhas do norte -->
+<g opacity=".98" filter="url(#softShadow)">
+  <use href="#mountain" x="456" y="115"/><use href="#mountain" x="520" y="96" transform="scale(1.22)"/>
+  <use href="#mountain" x="608" y="132"/><use href="#mountain" x="683" y="88" transform="scale(1.18)"/>
+  <use href="#mountain" x="765" y="126"/><use href="#mountain" x="852" y="104"/>
+  <use href="#mountain" x="930" y="135" transform="scale(.9)"/>
 </g>
 
-<!-- CIDADES -->
-<g opacity=".98">
-  <use href="#ct" x="730" y="515" transform="scale(1.9)"/>
-  <use href="#ct" x="325" y="560" transform="scale(1.5)"/>
-  <use href="#ct" x="1120" y="530" transform="scale(1.45)"/>
-  <use href="#ct" x="720" y="220" transform="scale(1.35)"/>
-  <use href="#ct" x="690" y="820" transform="scale(1.45)"/>
-  <use href="#ct" x="505" y="555" transform="scale(1.15)"/>
+<!-- cordilheira -->
+<g id="neutral-colossus-range" data-neutral="cordilheira-colossos" opacity=".98" filter="url(#softShadow)">
+  <use href="#mountain" x="965" y="250" transform="scale(1.38)"/>
+  <use href="#mountain" x="1034" y="304" transform="scale(1.12)"/>
+  <use href="#mountain" x="1088" y="240" transform="scale(1.48)"/>
+  <use href="#mountain" x="1160" y="310"/>
+  <use href="#mountain" x="1220" y="278" transform="scale(.92)"/>
 </g>
 
-<!-- VULCÃO -->
-<g id="ashkara-volcano" transform="translate(760 745)">
-  <path d="M0 75L50 0l100 75z" fill="#6d4229" stroke="#3f281c" stroke-width="3"/>
-  <path d="M38 18c12-10 25-10 36 0-12 10-24 10-36 0z" fill="#df642f"/>
-  <path d="M51 16c-4-14 5-20 10-32 8 12 4 24 0 32" fill="#ffb548"/>
+<!-- florestas -->
+<g id="neutral-ancient-forest" data-neutral="floresta-antiga" filter="url(#softShadow)">
+  <use href="#tree" x="302" y="360" transform="scale(1.3)"/><use href="#tree" x="350" y="389" transform="scale(1.14)"/>
+  <use href="#tree" x="328" y="438"/><use href="#tree" x="389" y="426"/><use href="#tree" x="370" y="470" transform="scale(.9)"/>
+</g>
+<g id="eldoria-forest" opacity=".98">
+  <use href="#tree" x="1015" y="400"/><use href="#tree" x="1070" y="421"/><use href="#tree" x="1128" y="395"/>
+  <use href="#tree" x="1180" y="438"/><use href="#tree" x="1000" y="485"/><use href="#tree" x="1082" y="505"/>
+  <use href="#tree" x="1158" y="515"/><use href="#tree" x="1238" y="480"/><use href="#tree" x="1040" y="560"/>
+  <use href="#tree" x="1120" y="582"/><use href="#tree" x="1203" y="562"/><use href="#tree" x="1270" y="535" transform="scale(.9)"/>
 </g>
 
-<!-- FRATURAS -->
-<g id="neutral-fractures" data-neutral="fraturas" fill="none">
-  <path d="M1115 705l-12 18 12 13-18 25 14 20" stroke="#9f4fd0" stroke-width="5"/>
-  <path d="M1115 736l20-15m-38 40l-18-8m32 28l20-14" stroke="#c276ee" stroke-width="3"/>
-  <path d="M1185 730l-8 12 8 10-13 18 10 14" stroke="#9f4fd0" stroke-width="4"/>
+<!-- cidades e capitais -->
+<g opacity=".99" filter="url(#softShadow)">
+  <use href="#capital" x="718" y="500" transform="scale(1.55)"/>
+  <use href="#city" x="315" y="557" transform="scale(1.45)"/>
+  <use href="#city" x="1114" y="526" transform="scale(1.4)"/>
+  <use href="#city" x="711" y="213" transform="scale(1.32)"/>
+  <use href="#city" x="684" y="812" transform="scale(1.4)"/>
+  <use href="#city" x="500" y="553" transform="scale(1.13)"/>
 </g>
 
-<!-- RUÍNAS DE ASTERION -->
-<g id="neutral-ruins-asterion" data-neutral="ruinas-asterion" stroke="#5a4631" stroke-width="5" fill="none">
-  <path d="M1035 850v-30h8v30m8 0v-42h8v42m8 0v-26h8v26"/>
-  <path d="M1028 850h56"/>
+<!-- vulcão -->
+<g id="ashkara-volcano" transform="translate(760 742)" filter="url(#softShadow)">
+  <path d="M0 78L52 0l104 78z" fill="#6d4229" stroke="#3f281c" stroke-width="3"/>
+  <path d="M40 19c13-10 26-10 38 0-13 11-25 11-38 0z" fill="#df642f"/>
+  <path d="M54 17c-4-15 5-22 11-35 8 13 4 26 0 35" fill="#ffb548"/>
+  <path d="M80 6c9-18 27-18 34-36" fill="none" stroke="#d8c4aa" stroke-opacity=".5" stroke-width="8" stroke-linecap="round"/>
 </g>
 
-<!-- TERRAS SELVAGENS -->
-<path id="neutral-wildlands" data-neutral="terras-selvagens" d="M260 395c55-48 112-48 165-8-42 95-55 180-115 242-55-52-83-145-50-234z" fill="#5e7041" fill-opacity=".15" stroke="#415233" stroke-width="3" stroke-dasharray="10 8"/>
-
-<!-- MAR DA NÉVOA -->
-<g id="neutral-mist-sea" data-neutral="mar-nevoa">
-  <ellipse cx="1370" cy="230" rx="115" ry="68" fill="#d6e2df" fill-opacity=".12"/>
-  <path d="M1285 230c45-45 130-45 175 0-45 45-130 45-175 0z" fill="none" stroke="#d6e2df" stroke-opacity=".35" stroke-width="3"/>
-  <path d="M1330 230c28-25 60-22 82 0-22 22-54 25-82 0z" fill="none" stroke="#d6e2df" stroke-opacity=".35" stroke-width="2"/>
+<!-- fraturas -->
+<g id="neutral-fractures" data-neutral="fraturas" fill="none" filter="url(#glow)">
+  <path d="M1118 704l-13 19 13 14-19 26 15 22" stroke="#a44ed4" stroke-width="5"/>
+  <path d="M1118 738l21-16m-40 42l-19-8m34 30l21-15" stroke="#cf83ef" stroke-width="3"/>
+  <path d="M1189 729l-9 13 9 10-14 19 11 15" stroke="#a44ed4" stroke-width="4"/>
 </g>
 
-<!-- ILHAS -->
-<g fill="#747950" stroke="#403421" stroke-width="3">
-  <path d="M180 245c40-20 75-5 90 25-25 25-65 30-95 10z"/>
-  <path d="M1450 420c30-25 60-10 75 20-30 25-60 20-80 0z"/>
-  <path d="M1360 760c45-30 90-15 110 20-25 35-75 40-110 10z"/>
-  <path d="M270 805c40-25 75-10 90 20-25 25-60 30-85 10z"/>
+<!-- ruínas -->
+<g id="neutral-ruins-asterion" data-neutral="ruinas-asterion" stroke="#5a4631" stroke-width="5" fill="none" filter="url(#softShadow)">
+  <path d="M1035 852v-31h8v31m8 0v-44h8v44m8 0v-27h8v27"/>
+  <path d="M1027 852h60"/><path d="M1035 808l8-8 8 8 8-12 8 12"/>
+</g>
+
+<!-- terras selvagens -->
+<path id="neutral-wildlands" data-neutral="terras-selvagens" d="M258 394c58-51 117-51 173-8-45 100-58 188-121 253-59-55-88-151-52-245z" fill="#617344" fill-opacity=".22" stroke="#405133" stroke-width="3" stroke-dasharray="10 8"/>
+
+<!-- mar da névoa -->
+<g id="neutral-mist-sea" data-neutral="mar-nevoa" filter="url(#glow)">
+  <ellipse cx="1372" cy="230" rx="122" ry="72" fill="#dce8e5" fill-opacity=".12"/>
+  <path d="M1282 230c48-47 137-47 181 0-46 47-134 47-181 0z" fill="none" stroke="#dce8e5" stroke-opacity=".4" stroke-width="3"/>
+  <path d="M1328 230c30-27 63-24 87 0-24 24-57 27-87 0z" fill="none" stroke="#dce8e5" stroke-opacity=".38" stroke-width="2"/>
+</g>
+
+<!-- ilhas -->
+<g fill="#757b52" stroke="#403421" stroke-width="3" filter="url(#softShadow)">
+  <path d="M176 244c42-22 80-6 95 26-26 26-69 31-100 10z"/>
+  <path d="M1450 419c31-26 64-10 79 21-31 26-64 21-83 0z"/>
+  <path d="M1357 760c47-32 95-16 116 21-26 37-79 42-116 11z"/>
+  <path d="M267 806c42-26 80-10 95 21-26 26-64 31-90 10z"/>
+</g>
+
+<!-- rosa dos ventos -->
+<g transform="translate(1390 790)" opacity=".9">
+  <use href="#compass"/>
+  <text x="0" y="-82" text-anchor="middle" fill="#eadbb7" font-family="Cinzel,serif" font-size="18">N</text>
+  <text x="83" y="6" text-anchor="middle" fill="#eadbb7" font-family="Cinzel,serif" font-size="16">L</text>
+  <text x="0" y="95" text-anchor="middle" fill="#eadbb7" font-family="Cinzel,serif" font-size="16">S</text>
+  <text x="-84" y="6" text-anchor="middle" fill="#eadbb7" font-family="Cinzel,serif" font-size="16">O</text>
+</g>
+
+<!-- cartela -->
+<g transform="translate(92 825)" opacity=".92">
+  <rect width="300" height="82" rx="12" fill="#1d2d30" fill-opacity=".72" stroke="#d3bb82" stroke-opacity=".34"/>
+  <text x="24" y="33" fill="#ead8ae" font-family="Cinzel,serif" font-size="18" letter-spacing="3">WONDERLAND</text>
+  <text x="24" y="58" fill="#c9d2cf" font-family="Cormorant Garamond,serif" font-size="18">Atlas do Primeiro Sonho</text>
 </g>
 
 <rect x="58" y="58" width="1484" height="884" rx="12" fill="none" stroke="#b18b54" stroke-width="4"/>
+<rect x="74" y="74" width="1452" height="852" rx="8" fill="none" stroke="#f1ddb0" stroke-opacity=".18" stroke-width="1.4"/>
 </svg>

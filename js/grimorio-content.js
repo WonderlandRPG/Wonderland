@@ -39,6 +39,51 @@
     return tags.slice(0, 4);
   };
 
+  const extractCost = (descricao) => {
+    const text = String(descricao || "");
+    const patterns = [
+      { regex: /custa\s+(\d+)\s*mana/i, type: "Mana" },
+      { regex: /consome\s+(\d+)\s*mana/i, type: "Mana" },
+      { regex: /gasta\s+(\d+)\s*mana/i, type: "Mana" },
+      { regex: /custa\s+(\d+)\s*energia/i, type: "Energia" },
+      { regex: /consome\s+(\d+)\s*energia/i, type: "Energia" },
+      { regex: /gasta\s+(\d+)\s*energia/i, type: "Energia" },
+      { regex: /custa\s+(\d+)%\s*do\s*hp/i, type: "HP" },
+      { regex: /consome\s+(\d+)%\s*do\s*hp/i, type: "HP" },
+      { regex: /gasta\s+(\d+)%\s*do\s*hp/i, type: "HP" },
+      { regex: /custa\s+(\d+)\s*f[úu]ria/i, type: "Fúria" },
+      { regex: /consome\s+(\d+)\s*f[úu]ria/i, type: "Fúria" },
+      { regex: /gasta\s+(\d+)\s*f[úu]ria/i, type: "Fúria" },
+      { regex: /custa\s+(\d+)\s*reagentes?/i, type: "Reagente" },
+      { regex: /consome\s+(\d+)\s*reagentes?/i, type: "Reagente" },
+      { regex: /gasta\s+(\d+)\s*reagentes?/i, type: "Reagente" }
+    ];
+
+    for (const pattern of patterns) {
+      const match = text.match(pattern.regex);
+      if (match) {
+        const suffix = pattern.type === "HP" ? "% do HP" : pattern.type;
+        return {
+          type: pattern.type,
+          value: Number(match[1]),
+          label: `${match[1]} ${suffix}`
+        };
+      }
+    }
+
+    return {
+      type: "Pendente",
+      value: null,
+      label: "Custo não definido"
+    };
+  };
+
+  const extractCooldown = (descricao, fallback = "Não definida") => {
+    const text = String(descricao || "");
+    const match = text.match(/recarga\s+de\s+(\d+)\s*turnos?/i);
+    return match ? `${match[1]} turnos` : fallback;
+  };
+
   Object.values(classes).forEach((classe) => {
     const atributo = inferAttribute(classe);
 
@@ -52,6 +97,7 @@
         nivel: "Passiva inicial",
         atributo,
         custo: "Sem custo",
+        custoEstruturado: { type: "Sem custo", value: 0, label: "Sem custo" },
         recarga: "Permanente",
         alcance: "Próprio",
         area: "Efeito permanente",
@@ -64,6 +110,7 @@
 
     (classe.progressao || []).forEach((skill, index) => {
       const nivel = String(skill.nivel || "").replace(/[^0-9]/g, "") || "—";
+      const cost = extractCost(skill.descricao);
       records.push({
         id: `${classe.id}-nivel-${nivel}-${slugify(skill.nome || index)}`,
         nome: skill.nome,
@@ -72,14 +119,17 @@
         origem: classe.nome,
         nivel,
         atributo,
-        custo: "Informado na descrição",
-        recarga: "Informada na descrição",
+        custo: cost.label,
+        custoEstruturado: cost,
+        recarga: extractCooldown(skill.descricao),
         alcance: "Conforme descrição",
         area: skill.categoria || "Conforme descrição",
         tags: inferTags(skill.categoria, skill.descricao),
         descricao: skill.descricao,
         efeito: skill.descricao,
-        observacoes: `Habilidade oficial da progressão da classe ${classe.nome}.`
+        observacoes: cost.type === "Pendente"
+          ? `Habilidade oficial da progressão da classe ${classe.nome}. O custo ainda precisa ser definido no balanceamento.`
+          : `Habilidade oficial da progressão da classe ${classe.nome}.`
       });
     });
 
@@ -94,6 +144,7 @@
           nivel: 50,
           atributo,
           custo: "Sem custo",
+          custoEstruturado: { type: "Sem custo", value: 0, label: "Sem custo" },
           recarga: "Permanente",
           alcance: "Próprio",
           area: "Efeito permanente",
@@ -108,6 +159,7 @@
       (caminho.habilidades || []).forEach((skill, index) => {
         const level = unlockLevels[index] || 100;
         const isUltimate = String(skill.tipo || "").toLowerCase() === "ultimate";
+        const cost = extractCost(skill.descricao);
         records.push({
           id: `${classe.id}-caminho-${slugify(caminho.id || pathIndex)}-${slugify(skill.nome || index)}`,
           nome: skill.nome,
@@ -116,14 +168,17 @@
           origem: `${classe.nome} — ${caminho.nome}`,
           nivel: level,
           atributo,
-          custo: "Informado na descrição",
-          recarga: isUltimate ? "Conforme descrição" : "Informada na descrição",
+          custo: cost.label,
+          custoEstruturado: cost,
+          recarga: extractCooldown(skill.descricao, isUltimate ? "Conforme descrição" : "Não definida"),
           alcance: "Conforme descrição",
           area: isUltimate ? "Poder Supremo" : "Conforme descrição",
           tags: [isUltimate ? "Ultimate" : "Caminho", ...inferTags(skill.tipo, skill.descricao)],
           descricao: skill.descricao,
           efeito: skill.descricao,
-          observacoes: `${isUltimate ? "Ultimate" : "Habilidade"} oficial do caminho ${caminho.nome}.`
+          observacoes: cost.type === "Pendente"
+            ? `${isUltimate ? "Ultimate" : "Habilidade"} oficial do caminho ${caminho.nome}. O custo ainda precisa ser definido no balanceamento.`
+            : `${isUltimate ? "Ultimate" : "Habilidade"} oficial do caminho ${caminho.nome}.`
         });
       });
     });

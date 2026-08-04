@@ -1434,18 +1434,41 @@ document.addEventListener("DOMContentLoaded", () => {
                     : "smooth",
             block: "start"
         });
-    }
+    }function renderSelectedRace(race) {
 
-    function renderSelectedRace(race) {
+    const hero = elements.raceHero;
+
+    if (!hero) {
         applyRaceTheme(race);
         renderRaceHero(race);
         renderAttributes(race);
         renderRaceList();
         renderActiveTab();
-
-        document.title =
-            `${race.name} | Raças de Wonderland`;
+        return;
     }
+
+    hero.classList.remove("hero-show");
+    hero.classList.add("hero-hide");
+
+    requestAnimationFrame(() => {
+
+        applyRaceTheme(race);
+
+        renderRaceHero(race);
+
+        renderAttributes(race);
+
+        renderRaceList();
+
+        renderActiveTab();
+
+        hero.classList.remove("hero-hide");
+        hero.classList.add("hero-show");
+
+    });
+
+}
+}
 
     function selectRace(raceId, options = {}) {
         const race =

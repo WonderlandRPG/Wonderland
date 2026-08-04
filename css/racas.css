@@ -1564,6 +1564,9 @@
 .race-artwork {
     position: relative;
     z-index: 2;
+    transition:
+    transform .45s,
+    opacity .45s;
 
     width: min(220px, 90%);
     height: 250px;
@@ -1581,6 +1584,10 @@
         );
 
     animation: raceArtworkFloat 4.6s ease-in-out infinite;
+}
+
+.race-art:hover .race-artwork{
+    transform:scale(1.05);
 }
 
 @keyframes raceArtworkFloat {
@@ -1634,6 +1641,26 @@
     z-index: 3;
 
     min-width: 0;
+    overflow:hidden;
+}
+.race-hero::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+    radial-gradient(circle at top right,
+
+    rgba(var(--race-accent-rgb),.10),
+
+    transparent 55%);
+
+    pointer-events:none;
+
 }
 
 .race-hero-copy h2 {
@@ -1954,6 +1981,7 @@
 
 .attribute-card {
     position: relative;
+    transition:.35s;
 
     min-height: 82px;
 
@@ -1983,6 +2011,11 @@
         background 0.25s ease,
         box-shadow 0.25s ease,
         transform 0.25s ease;
+}
+
+.attribute-card:hover{
+    transform:translateY(-6px);
+    border-color:rgba(var(--race-accent-rgb),.30);
 }
 
 .attribute-card::after {
@@ -2066,6 +2099,7 @@
 
 .race-tab {
     position: relative;
+    transition:.30s;
 
     min-height: 49px;
 
@@ -2099,7 +2133,7 @@
 
 .race-tab:hover {
     color: #f7efdf;
-
+    transform:translateY(-3px);
     border-color:
         rgba(var(--race-accent-rgb), 0.14);
 }
@@ -3324,4 +3358,1066 @@
         animation: none !important;
         transition-duration: 0.01ms !important;
     }
+}/*======================================================
+  OVERVIEW
+======================================================*/
+
+.overview-grid{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:28px;
+
+    margin-top:28px;
+
+}
+
+.lore-card,
+.playstyle-card{
+
+    background:rgba(18,18,18,.55);
+
+    border:1px solid rgba(255,255,255,.07);
+
+    border-radius:22px;
+
+    padding:34px;
+
+    backdrop-filter:blur(18px);
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+.lore-card::before,
+.playstyle-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:3px;
+    height:100%;
+
+    background:var(--race-accent);
+
+}
+
+.card-title{
+
+    font-family:var(--font-title);
+
+    font-size:1.45rem;
+
+    margin-bottom:18px;
+
+}
+
+.lore-card p{
+
+    margin-bottom:18px;
+
+    line-height:1.9;
+
+    opacity:.88;
+
+}
+
+.playstyle-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+.playstyle-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:20px;
+
+    padding-bottom:12px;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+}
+
+.playstyle-row span{
+
+    opacity:.65;
+
+}
+
+.playstyle-row strong{
+
+    color:var(--race-accent);
+
+}
+
+.recommended-tags{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+}
+
+.recommended-tag{
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:rgba(var(--race-accent-rgb),.10);
+
+    border:1px solid rgba(var(--race-accent-rgb),.25);
+
+}/*======================================================
+  MECHANICS
+======================================================*/
+
+.info-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+
+    gap:24px;
+
+    margin-top:30px;
+
+}
+
+.info-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:rgba(17,17,17,.55);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:22px;
+
+    padding:28px;
+
+    transition:.35s;
+
+    backdrop-filter:blur(18px);
+
+}
+
+.info-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:4px;
+    height:100%;
+
+    background:var(--race-accent);
+
+}
+
+.info-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:rgba(var(--race-accent-rgb),.35);
+
+    box-shadow:0 20px 45px rgba(0,0,0,.35);
+
+}
+
+.info-card h3{
+
+    font-size:1.35rem;
+
+    margin-bottom:18px;
+
+    color:var(--race-accent);
+
+}
+
+.info-card p{
+
+    line-height:1.8;
+
+    opacity:.88;
+
+}
+
+.info-card ul{
+
+    margin-top:18px;
+
+    padding-left:22px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.info-card li{
+
+    opacity:.82;
+
+}/*======================================================
+  TRAITS
+======================================================*/
+
+.traits-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+
+    gap:26px;
+
+    margin-top:28px;
+
+}
+
+.trait-card,
+.weakness-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:rgba(16,16,16,.55);
+
+    border-radius:22px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    padding:30px;
+
+    backdrop-filter:blur(18px);
+
+}
+
+.trait-card{
+
+    border-left:4px solid var(--race-accent);
+
+}
+
+.weakness-card{
+
+    border-left:4px solid #b64848;
+
+}
+
+.trait-label{
+
+    display:inline-flex;
+
+    padding:7px 14px;
+
+    border-radius:999px;
+
+    font-size:.72rem;
+
+    letter-spacing:.18em;
+
+    text-transform:uppercase;
+
+    background:rgba(var(--race-accent-rgb),.10);
+
+    margin-bottom:16px;
+
+}
+
+.weakness-card .trait-label{
+
+    background:rgba(182,72,72,.12);
+
+}
+
+.trait-card h3,
+.weakness-card h3{
+
+    margin-bottom:18px;
+
+    font-size:1.5rem;
+
+}
+
+.trait-card p,
+.weakness-card p{
+
+    line-height:1.85;
+
+    opacity:.9;
+
+}/*======================================================
+  PROGRESSION
+======================================================*/
+
+.progression-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
+
+    margin-top:34px;
+
+}
+
+.skill-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    border-radius:24px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:rgba(15,15,15,.55);
+
+    backdrop-filter:blur(18px);
+
+    transition:.35s;
+
+}
+
+.skill-card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:rgba(var(--race-accent-rgb),.35);
+
+    box-shadow:0 18px 40px rgba(0,0,0,.35);
+
+}
+
+.skill-summary{
+
+    display:grid;
+
+    grid-template-columns:90px 1fr 70px;
+
+    align-items:center;
+
+    gap:28px;
+
+    padding:28px;
+
+    cursor:pointer;
+
+    list-style:none;
+
+}
+
+.skill-summary::-webkit-details-marker{
+
+    display:none;
+
+}
+
+.skill-level{
+
+    width:74px;
+
+    height:74px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:rgba(var(--race-accent-rgb),.08);
+
+    border:1px solid rgba(var(--race-accent-rgb),.30);
+
+    font-size:.72rem;
+
+    letter-spacing:.12em;
+
+    text-transform:uppercase;
+
+}
+
+.skill-level strong{
+
+    font-size:1.45rem;
+
+    margin-top:4px;
+
+    color:var(--race-accent);
+
+}
+
+.skill-title-wrap{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.skill-title-wrap small{
+
+    opacity:.55;
+
+    text-transform:uppercase;
+
+    letter-spacing:.18em;
+
+    font-size:.68rem;
+
+}
+
+.skill-title-wrap strong{
+
+    font-size:1.8rem;
+
+    font-family:var(--font-title);
+
+}
+
+.skill-toggle{
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border:1px solid rgba(255,255,255,.10);
+
+    font-size:1.7rem;
+
+    transition:.35s;
+
+}
+
+.skill-card[open] .skill-toggle{
+
+    transform:rotate(45deg);
+
+    color:var(--race-accent);
+
+    border-color:rgba(var(--race-accent-rgb),.35);
+
+}
+
+.skill-body{
+
+    padding:0 34px 34px 152px;
+
+    animation:fadeUp .35s;
+
+}
+
+.skill-body p{
+
+    line-height:1.9;
+
+    opacity:.88;
+
+}
+
+.skill-body ul{
+
+    margin-top:20px;
+
+    padding-left:20px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.skill-body li{
+
+    opacity:.84;
+
+}
+
+.skill-meta{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-top:26px;
+
+}
+
+.skill-meta span{
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:rgba(var(--race-accent-rgb),.08);
+
+    border:1px solid rgba(var(--race-accent-rgb),.25);
+
+    font-size:.78rem;
+
+}/*======================================================
+  PROGRESSION
+======================================================*/
+
+.progression-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
+
+    margin-top:34px;
+
+}
+
+.skill-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    border-radius:24px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    background:rgba(15,15,15,.55);
+
+    backdrop-filter:blur(18px);
+
+    transition:.35s;
+
+}
+
+.skill-card:hover{
+
+    transform:translateY(-5px);
+
+    border-color:rgba(var(--race-accent-rgb),.35);
+
+    box-shadow:0 18px 40px rgba(0,0,0,.35);
+
+}
+
+.skill-summary{
+
+    display:grid;
+
+    grid-template-columns:90px 1fr 70px;
+
+    align-items:center;
+
+    gap:28px;
+
+    padding:28px;
+
+    cursor:pointer;
+
+    list-style:none;
+
+}
+
+.skill-summary::-webkit-details-marker{
+
+    display:none;
+
+}
+
+.skill-level{
+
+    width:74px;
+
+    height:74px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    background:rgba(var(--race-accent-rgb),.08);
+
+    border:1px solid rgba(var(--race-accent-rgb),.30);
+
+    font-size:.72rem;
+
+    letter-spacing:.12em;
+
+    text-transform:uppercase;
+
+}
+
+.skill-level strong{
+
+    font-size:1.45rem;
+
+    margin-top:4px;
+
+    color:var(--race-accent);
+
+}
+
+.skill-title-wrap{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+}
+
+.skill-title-wrap small{
+
+    opacity:.55;
+
+    text-transform:uppercase;
+
+    letter-spacing:.18em;
+
+    font-size:.68rem;
+
+}
+
+.skill-title-wrap strong{
+
+    font-size:1.8rem;
+
+    font-family:var(--font-title);
+
+}
+
+.skill-toggle{
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border:1px solid rgba(255,255,255,.10);
+
+    font-size:1.7rem;
+
+    transition:.35s;
+
+}
+
+.skill-card[open] .skill-toggle{
+
+    transform:rotate(45deg);
+
+    color:var(--race-accent);
+
+    border-color:rgba(var(--race-accent-rgb),.35);
+
+}
+
+.skill-body{
+
+    padding:0 34px 34px 152px;
+
+    animation:fadeUp .35s;
+
+}
+
+.skill-body p{
+
+    line-height:1.9;
+
+    opacity:.88;
+
+}
+
+.skill-body ul{
+
+    margin-top:20px;
+
+    padding-left:20px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.skill-body li{
+
+    opacity:.84;
+
+}
+
+.skill-meta{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-top:26px;
+
+}
+
+.skill-meta span{
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    background:rgba(var(--race-accent-rgb),.08);
+
+    border:1px solid rgba(var(--race-accent-rgb),.25);
+
+    font-size:.78rem;
+
+}/*======================================================
+  CURIOSITIES
+======================================================*/
+
+.curiosity-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+
+    gap:26px;
+
+    margin-top:30px;
+
+}
+
+.curiosity-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+    linear-gradient(
+        180deg,
+        rgba(22,22,22,.62),
+        rgba(12,12,12,.78)
+    );
+
+    border:1px solid rgba(255,255,255,.08);
+
+    border-radius:22px;
+
+    padding:32px;
+
+    backdrop-filter:blur(18px);
+
+    transition:.35s;
+
+}
+
+.curiosity-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+    radial-gradient(circle at top right,
+    rgba(var(--race-accent-rgb),.10),
+    transparent 60%);
+
+    opacity:0;
+
+    transition:.35s;
+
+}
+
+.curiosity-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:rgba(var(--race-accent-rgb),.30);
+
+    box-shadow:0 20px 45px rgba(0,0,0,.35);
+
+}
+
+.curiosity-card:hover::before{
+
+    opacity:1;
+
+}
+
+.curiosity-card::after{
+
+    content:"✦";
+
+    position:absolute;
+
+    top:22px;
+
+    right:22px;
+
+    font-size:1rem;
+
+    color:rgba(var(--race-accent-rgb),.35);
+
+}
+
+.curiosity-card p{
+
+    line-height:1.9;
+
+    opacity:.90;
+
+    position:relative;
+
+    z-index:2;
+
+}/*======================================================
+  SECTION HEADER
+======================================================*/
+
+.section-heading{
+
+    margin-bottom:34px;
+
+}
+
+.section-kicker{
+
+    display:inline-flex;
+
+    margin-bottom:10px;
+
+    font-size:.72rem;
+
+    letter-spacing:.22em;
+
+    text-transform:uppercase;
+
+    color:var(--race-accent);
+
+}
+
+.section-title{
+
+    font-size:2.2rem;
+
+    margin-bottom:14px;
+
+}
+
+.section-lead{
+
+    max-width:760px;
+
+    opacity:.75;
+
+    line-height:1.8;
+
+}.empty-state{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    min-height:180px;
+
+    padding:40px;
+
+    border:1px dashed rgba(255,255,255,.10);
+
+    border-radius:20px;
+
+    opacity:.7;
+
+}.content-enter{
+
+    animation:fadeContent .45s ease;
+
+}
+
+@keyframes fadeContent{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(18px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}/*======================================================
+ HERO TRANSITION
+======================================================*/
+
+.hero-show{
+
+    animation:heroFade .45s ease;
+
+}
+
+.hero-hide{
+
+    opacity:0;
+
+    transform:translateY(16px);
+
+}
+
+@keyframes heroFade{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(18px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+    } /*======================================================
+ PREMIUM CARD EFFECT
+======================================================*/
+
+.info-card,
+.trait-card,
+.weakness-card,
+.curiosity-card,
+.lore-card,
+.playstyle-card,
+.skill-card{
+
+    isolation:isolate;
+
+}
+
+.info-card::after,
+.trait-card::after,
+.weakness-card::after,
+.curiosity-card::after,
+.lore-card::after,
+.playstyle-card::after,
+.skill-card::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:-120%;
+
+    left:-120%;
+
+    width:70%;
+
+    height:300%;
+
+    transform:rotate(25deg);
+
+    background:
+
+    linear-gradient(
+
+        90deg,
+
+        transparent,
+
+        rgba(255,255,255,.07),
+
+        transparent
+
+    );
+
+    transition:1s;
+
+    pointer-events:none;
+
+}
+
+.info-card:hover::after,
+.trait-card:hover::after,
+.weakness-card:hover::after,
+.curiosity-card:hover::after,
+.lore-card:hover::after,
+.playstyle-card:hover::after,
+.skill-card:hover::after{
+
+    left:170%;
+
 }

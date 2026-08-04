@@ -1981,50 +1981,27 @@ cards.forEach((card) => {
        ERRO DE DADOS
        ===================================================== */
 
-    function showDataError() {
-        if (elements.raceList) {
-            elements.raceList.innerHTML = `
-                <div class="empty-state">
-                    Os dados das raças não foram carregados.
-                </div>
-            `;
-        }
+function showDataError() {
 
-        if (elements.raceContent) {
-            elements.raceContent.innerHTML = `
-    <div class="content-enter">
-        ${renderer(race)}
-    </div>
-`;
+    if (elements.raceList) {
 
-elements.raceContent.setAttribute(
-    "aria-labelledby",
-    `${state.activeTab}Tab`
-);
+        elements.raceList.innerHTML = `
+            <div class="empty-state">
+                Os dados das raças não foram carregados.
+            </div>
+        `;
 
-// Accordion Premium
-const cards =
-    elements.raceContent.querySelectorAll(".skill-card");
+    }
 
-cards.forEach((card) => {
+    if (elements.raceContent) {
 
-    card.addEventListener("toggle", () => {
+        elements.raceContent.innerHTML = `
+            <div class="empty-state">
+                Não foi possível carregar as informações desta página.
+            </div>
+        `;
 
-        if (!card.open) {
-            return;
-        }
-
-        cards.forEach((other) => {
-
-            if (other !== card) {
-                other.removeAttribute("open");
-            }
-
-        });
-
-    });
-
-});
+    }
 
 }
 

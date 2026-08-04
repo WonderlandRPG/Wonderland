@@ -1433,8 +1433,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     ? "auto"
                     : "smooth",
             block: "start"
-        });
-    }function renderSelectedRace(race) {
+         });
+
+    }
+
+    function renderSelectedRace(race) {
 
     const hero = elements.raceHero;
 

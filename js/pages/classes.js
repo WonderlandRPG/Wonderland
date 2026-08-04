@@ -2,6 +2,7 @@ const classesList = document.getElementById("classesList");
 const classContent = document.getElementById("classContent");
 
 let currentClass = null;
+let activeTab = "overview";
 
 function createSidebar() {
     classesList.innerHTML = "";
@@ -29,6 +30,8 @@ function loadClass(id) {
     currentClass = classes[id];
     if (!currentClass) return;
 
+    activeTab = "overview";
+
     document.querySelectorAll(".class-button").forEach((button) => {
         button.classList.toggle("active", button.dataset.id === id);
     });
@@ -53,6 +56,44 @@ function renderClass() {
             </div>
         </div>
 
+        <nav class="class-tabs" aria-label="Informações da classe">
+            <button class="class-tab ${activeTab === "overview" ? "active" : ""}" data-tab="overview" type="button">
+                <span aria-hidden="true">✦</span>
+                Visão Geral
+            </button>
+            <button class="class-tab ${activeTab === "skills" ? "active" : ""}" data-tab="skills" type="button">
+                <span aria-hidden="true">⚔</span>
+                Habilidades
+            </button>
+            <button class="class-tab ${activeTab === "paths" ? "active" : ""}" data-tab="paths" type="button">
+                <span aria-hidden="true">▲</span>
+                Caminhos
+            </button>
+        </nav>
+
+        <section class="class-tab-content">
+            ${renderActiveTab()}
+        </section>
+    `;
+
+    classContent.querySelectorAll(".class-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+            activeTab = tab.dataset.tab;
+            renderClass();
+        });
+    });
+}
+
+function renderActiveTab() {
+    if (activeTab === "skills") return renderSkillsTab();
+    if (activeTab === "paths") return renderPathsTab();
+    return renderOverviewTab();
+}
+
+function renderOverviewTab() {
+    const c = currentClass;
+
+    return `
         ${renderEspecializacao()}
         ${renderAfinidades()}
 
@@ -66,12 +107,20 @@ function renderClass() {
         </div>
 
         ${renderPassivas()}
-        ${renderTabelaProgressao()}
-        ${renderProgressao()}
         ${renderComplexidade()}
-        ${renderCaminhos()}
         ${renderCuriosidades()}
     `;
+}
+
+function renderSkillsTab() {
+    return `
+        ${renderTabelaProgressao()}
+        ${renderProgressao()}
+    `;
+}
+
+function renderPathsTab() {
+    return renderCaminhos();
 }
 
 function renderEspecializacao() {
@@ -125,7 +174,12 @@ function renderTabelaProgressao() {
 
     return `
         <section class="class-unlock-section">
-            <h2 class="section-title">Progressão de Habilidades</h2>
+            <header class="class-section-heading">
+                <span>Desbloqueios da classe</span>
+                <h2>Progressão de Habilidades</h2>
+                <p>Os níveis que não aparecem na tabela não concedem uma nova habilidade de classe.</p>
+            </header>
+
             <div class="class-unlock-list">
                 ${currentClass.tabelaProgressao.map(([nivel, desbloqueio]) => `
                     <div class="class-unlock-row">
@@ -134,7 +188,6 @@ function renderTabelaProgressao() {
                     </div>
                 `).join("")}
             </div>
-            <p class="class-note">Os níveis que não aparecem na tabela não concedem uma nova habilidade de classe.</p>
         </section>
     `;
 }
@@ -143,16 +196,30 @@ function renderProgressao() {
     if (!currentClass.progressao?.length) return "";
 
     return `
-        <h2 class="section-title">Habilidades da Classe</h2>
-        <div class="class-skill-grid">
-            ${currentClass.progressao.map((skill) => `
-                <article class="progress-card">
-                    <span>${skill.nivel}</span>
-                    <h3>${skill.nome}</h3>
-                    <p>${skill.descricao}</p>
-                </article>
-            `).join("")}
-        </div>
+        <section class="class-progression-section">
+            <header class="class-section-heading">
+                <span>Arsenal da classe</span>
+                <h2>Habilidades da Classe</h2>
+                <p>Cada habilidade mantém seus valores completos de dano, custo, alcance, duração e recarga.</p>
+            </header>
+
+            <div class="class-progression-list">
+                ${currentClass.progressao.map((skill, index) => `
+                    <article class="class-progression-card">
+                        <div class="class-progression-level">
+                            <span>Nível</span>
+                            <strong>${String(skill.nivel).replace(/[^0-9]/g, "") || index + 1}</strong>
+                        </div>
+
+                        <div class="class-progression-copy">
+                            <span class="class-progression-label">Habilidade da Classe</span>
+                            <h3>${skill.nome}</h3>
+                            <div class="class-progression-description">${skill.descricao}</div>
+                        </div>
+                    </article>
+                `).join("")}
+            </div>
+        </section>
     `;
 }
 
@@ -170,46 +237,94 @@ function renderComplexidade() {
 }
 
 function renderCaminhos() {
-    if (!currentClass.caminhos?.length) return "";
+    if (!currentClass.caminhos?.length) {
+        return `
+            <div class="class-empty-state">
+                <strong>Nenhum Caminho registrado.</strong>
+                <p>Esta classe ainda não possui especializações de nível 50 cadastradas.</p>
+            </div>
+        `;
+    }
 
     return `
         <section class="class-paths-section">
-            <h2 class="section-title">Caminhos de ${currentClass.nome}</h2>
-            <p class="class-paths-intro">No nível 50, a escolha de Caminho é definitiva. As habilidades originais da classe são preservadas.</p>
+            <header class="class-section-heading">
+                <span>Especializações de nível 50</span>
+                <h2>Caminhos de ${currentClass.nome}</h2>
+                <p>No nível 50, a escolha de Caminho é definitiva. As habilidades originais da classe são preservadas.</p>
+            </header>
 
-            <div class="class-paths-grid">
+            <div class="class-path-selector" role="tablist" aria-label="Caminhos da classe">
                 ${currentClass.caminhos.map((caminho, index) => `
-                    <article class="class-path-card">
-                        <header>
-                            <span>Caminho ${index + 1}</span>
-                            <h3>${caminho.nome}</h3>
-                            <div class="class-path-meta">
-                                <strong>${caminho.especializacao}</strong>
-                                <small>Complexidade: ${caminho.complexidade}</small>
-                            </div>
-                        </header>
+                    <button class="class-path-selector-button ${index === 0 ? "active" : ""}" type="button" data-path-index="${index}">
+                        <span>Caminho ${index + 1}</span>
+                        <strong>${caminho.nome}</strong>
+                    </button>
+                `).join("")}
+            </div>
 
-                        <p>${caminho.descricao}</p>
+            <div id="classPathView">
+                ${renderSinglePath(currentClass.caminhos[0], 0)}
+            </div>
+        </section>
+    `;
+}
 
-                        <div class="class-path-passive">
-                            <span>Passiva</span>
-                            <h4>${caminho.passiva.nome}</h4>
-                            <p>${caminho.passiva.descricao}</p>
+function renderSinglePath(caminho, index) {
+    return `
+        <article class="class-path-card">
+            <header class="class-path-header">
+                <span>Caminho ${index + 1}</span>
+                <h3>${caminho.nome}</h3>
+                <div class="class-path-meta">
+                    <strong>${caminho.especializacao}</strong>
+                    <small>Complexidade: ${caminho.complexidade}</small>
+                </div>
+                <p>${caminho.descricao}</p>
+            </header>
+
+            <section class="class-path-passive">
+                <span>Passiva do Caminho</span>
+                <h4>${caminho.passiva.nome}</h4>
+                <div>${caminho.passiva.descricao}</div>
+            </section>
+
+            <div class="class-progression-list class-path-progression">
+                ${caminho.habilidades.map((habilidade, skillIndex) => `
+                    <article class="class-progression-card ${skillIndex === caminho.habilidades.length - 1 ? "ultimate" : ""}">
+                        <div class="class-progression-level">
+                            <span>${skillIndex === caminho.habilidades.length - 1 ? "Ultimate" : "Habilidade"}</span>
+                            <strong>${skillIndex + 1}</strong>
                         </div>
 
-                        <div class="class-path-skills">
-                            ${caminho.habilidades.map((habilidade) => `
-                                <article>
-                                    <h4>${habilidade.nome}</h4>
-                                    <p>${habilidade.descricao}</p>
-                                </article>
-                            `).join("")}
+                        <div class="class-progression-copy">
+                            <span class="class-progression-label">${skillIndex === caminho.habilidades.length - 1 ? "Poder Supremo" : "Habilidade do Caminho"}</span>
+                            <h3>${habilidade.nome}</h3>
+                            <div class="class-progression-description">${habilidade.descricao}</div>
                         </div>
                     </article>
                 `).join("")}
             </div>
-        </section>
+        </article>
     `;
+}
+
+function bindPathTabs() {
+    const pathButtons = classContent.querySelectorAll(".class-path-selector-button");
+    const pathView = classContent.querySelector("#classPathView");
+
+    if (!pathButtons.length || !pathView) return;
+
+    pathButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const index = Number(button.dataset.pathIndex);
+            const caminho = currentClass.caminhos?.[index];
+            if (!caminho) return;
+
+            pathButtons.forEach((item) => item.classList.toggle("active", item === button));
+            pathView.innerHTML = renderSinglePath(caminho, index);
+        });
+    });
 }
 
 function renderCuriosidades() {
@@ -224,6 +339,12 @@ function renderCuriosidades() {
         </section>
     `;
 }
+
+const originalRenderClass = renderClass;
+renderClass = function renderClassWithBindings() {
+    originalRenderClass();
+    bindPathTabs();
+};
 
 createSidebar();
 loadClass(Object.keys(classes)[0]);

@@ -1,269 +1,132 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu | Wonderland RPG</title>
-
-    <meta
-        name="description"
-        content="Explore o universo do RPG Wonderland."
-    >
-
-    <link
-        rel="icon"
-        type="image/png"
-        href="assets/images/logo.png"
-    >
-
-    <!-- Fontes -->
+    <meta name="description" content="Explore o universo do RPG Wonderland.">
+    <link rel="icon" type="image/png" href="assets/images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap"
-        rel="stylesheet"
-    >
-
-    <!-- Estilos -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css?v=14">
-    <link rel="stylesheet" href="css/menu.css?v=8">
+    <link rel="stylesheet" href="css/menu.css?v=10">
 </head>
-
 <body class="menu-page">
+    <div class="menu-background" aria-hidden="true"></div>
+    <div class="menu-light" aria-hidden="true"></div>
+    <div class="menu-vignette" aria-hidden="true"></div>
+    <div class="mist-layer" aria-hidden="true"></div>
+    <div id="particles" aria-hidden="true"></div>
 
-    <!-- Cenário -->
-    <div
-        class="menu-background"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Partículas -->
-    <div
-        id="particles"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Névoa -->
-    <div
-        class="mist-layer"
-        aria-hidden="true"
-    ></div>
-
-    <!-- Música -->
-    <audio
-        id="bgMusic"
-        loop
-        preload="auto"
-    >
-        <source
-            src="assets/audio/wonderland.mp3"
-            type="audio/mpeg"
-        >
-
-        Seu navegador não suporta reprodução de áudio.
+    <audio id="bgMusic" loop preload="auto">
+        <source src="assets/audio/wonderland.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Botão Música -->
-    <button
-        id="musicButton"
-        class="music-button"
-        type="button"
-        aria-label="Tocar música"
-        title="Tocar música"
-    >
-        <span
-            id="musicIcon"
-            aria-hidden="true"
-        >
-            ♪
-        </span>
+    <button id="musicButton" class="music-button" type="button" aria-label="Tocar música" title="Tocar música">
+        <span id="musicIcon" aria-hidden="true">♪</span>
     </button>
 
-    <main class="menu-container">
+    <main class="menu-shell">
+        <section class="menu-hero">
+            <div class="menu-logo-frame" aria-hidden="true">
+                <img src="assets/images/logo.png" alt="">
+            </div>
 
-        <img
-            src="assets/images/logo.png"
-            alt="Símbolo do RPG Wonderland"
-            class="menu-logo"
-        >
+            <span class="menu-label">Portal do Primeiro Sonho</span>
+            <h1>Wonderland</h1>
+            <p>Escolha o seu caminho e atravesse os arquivos, mapas e segredos do mundo.</p>
 
-        <header class="menu-heading">
+            <div class="menu-divider" aria-hidden="true">
+                <span></span><strong>◆</strong><span></span>
+            </div>
+        </section>
 
-            <span class="menu-label">
-                Bem-vindo a
-            </span>
-
-            <h1>
-                Wonderland
-            </h1>
-
-            <p>
-                Escolha um caminho e descubra os segredos do Primeiro Sonho.
-            </p>
-
-        </header>
-
-        <nav
-            class="main-menu"
-            aria-label="Menu principal"
-        >
-
-            <!-- História -->
-            <a
-                href="historia.html"
-                class="menu-link"
-            >
-                <span
-                    class="menu-symbol"
-                    aria-hidden="true"
-                >
-                    ◆
+        <nav class="main-menu" aria-label="Menu principal">
+            <a href="historia.html" class="menu-link">
+                <span class="menu-number">01</span>
+                <span class="menu-icon" aria-hidden="true">✦</span>
+                <span class="menu-copy">
+                    <small>Crônicas do mundo</small>
+                    <strong>História</strong>
+                    <em>Conheça as eras que moldaram Wonderland.</em>
                 </span>
-
-                <span class="menu-link-text">
-                    História
-                </span>
+                <span class="menu-arrow" aria-hidden="true">→</span>
             </a>
 
-            <!-- Mundo -->
-            <a
-                href="mundo.html"
-                class="menu-link"
-            >
-                <span
-                    class="menu-symbol"
-                    aria-hidden="true"
-                >
-                    ◆
+            <a href="mundo.html" class="menu-link">
+                <span class="menu-number">02</span>
+                <span class="menu-icon" aria-hidden="true">◈</span>
+                <span class="menu-copy">
+                    <small>Terras e reinos</small>
+                    <strong>Mundo</strong>
+                    <em>Explore regiões, fronteiras e lugares lendários.</em>
                 </span>
-
-                <span class="menu-link-text">
-                    Mundo
-                </span>
+                <span class="menu-arrow" aria-hidden="true">→</span>
             </a>
 
-            <!-- Raças -->
-            <a
-                href="racas.html"
-                class="menu-link"
-            >
-                <span
-                    class="menu-symbol"
-                    aria-hidden="true"
-                >
-                    ◆
+            <a href="racas.html" class="menu-link featured">
+                <span class="menu-number">03</span>
+                <span class="menu-icon" aria-hidden="true">◆</span>
+                <span class="menu-copy">
+                    <small>Povos conhecidos</small>
+                    <strong>Raças</strong>
+                    <em>Descubra origens, traços e progressões raciais.</em>
                 </span>
-
-                <span class="menu-link-text">
-                    Raças
-                </span>
+                <span class="menu-arrow" aria-hidden="true">→</span>
             </a>
 
-            <!-- Classes -->
-            <a
-                href="classes.html"
-                class="menu-link"
-            >
-                <span
-                    class="menu-symbol"
-                    aria-hidden="true"
-                >
-                    ◆
+            <a href="classes.html" class="menu-link">
+                <span class="menu-number">04</span>
+                <span class="menu-icon" aria-hidden="true">▲</span>
+                <span class="menu-copy">
+                    <small>Caminhos de combate</small>
+                    <strong>Classes</strong>
+                    <em>Escolha como o seu personagem enfrentará o mundo.</em>
                 </span>
-
-                <span class="menu-link-text">
-                    Classes
-                </span>
+                <span class="menu-arrow" aria-hidden="true">→</span>
             </a>
 
-            <!-- Atributos -->
-            <a
-                href="atributos.html"
-                class="menu-link"
-            >
-                <span
-                    class="menu-symbol"
-                    aria-hidden="true"
-                >
-                    ◆
+            <a href="atributos.html" class="menu-link">
+                <span class="menu-number">05</span>
+                <span class="menu-icon" aria-hidden="true">✧</span>
+                <span class="menu-copy">
+                    <small>Fundamentos do personagem</small>
+                    <strong>Atributos</strong>
+                    <em>Entenda os valores que definem cada aventureiro.</em>
                 </span>
-
-                <span class="menu-link-text">
-                    Atributos
-                </span>
+                <span class="menu-arrow" aria-hidden="true">→</span>
             </a>
 
-            <!-- Grimório -->
-            <a
-                href="#"
-                class="menu-link unavailable"
-                aria-disabled="true"
-                tabindex="-1"
-            >
-                <span
-                    class="menu-symbol"
-                    aria-hidden="true"
-                >
-                    ◆
+            <a href="#" class="menu-link unavailable" aria-disabled="true" tabindex="-1">
+                <span class="menu-number">06</span>
+                <span class="menu-icon" aria-hidden="true">✺</span>
+                <span class="menu-copy">
+                    <small>Conhecimento arcano</small>
+                    <strong>Grimório</strong>
+                    <em>Em breve.</em>
                 </span>
-
-                <span class="menu-link-text">
-                    Grimório
-                </span>
-
-                <small>
-                    Em breve
-                </small>
+                <span class="menu-status">Bloqueado</span>
             </a>
 
-            <!-- Minigames -->
-            <a
-                href="#"
-                class="menu-link unavailable"
-                aria-disabled="true"
-                tabindex="-1"
-            >
-                <span
-                    class="menu-symbol"
-                    aria-hidden="true"
-                >
-                    ◆
+            <a href="#" class="menu-link unavailable" aria-disabled="true" tabindex="-1">
+                <span class="menu-number">07</span>
+                <span class="menu-icon" aria-hidden="true">◌</span>
+                <span class="menu-copy">
+                    <small>Desafios paralelos</small>
+                    <strong>Minigames</strong>
+                    <em>Em breve.</em>
                 </span>
-
-                <span class="menu-link-text">
-                    Minigames
-                </span>
-
-                <small>
-                    Em breve
-                </small>
+                <span class="menu-status">Bloqueado</span>
             </a>
-
         </nav>
 
-        <a
-            href="index.html"
-            class="return-link"
-        >
-            ← Voltar à tela inicial
-        </a>
-
+        <footer class="menu-footer">
+            <a href="index.html" class="return-link">← Voltar à tela inicial</a>
+            <span>Wonderland RPG</span>
+        </footer>
     </main>
 
     <script src="js/menu.js?v=8" defer></script>
-
 </body>
-
 </html>

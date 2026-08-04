@@ -1,0 +1,36 @@
+/* Visual inspirado no mockup aprovado para o Códice das Classes */
+.classes-page{background:#030508}
+.classes-intro{display:none}
+.classes-codex{width:min(1720px,calc(100% - 36px));grid-template-columns:300px minmax(0,1fr);gap:22px;margin-top:12px}
+.classes-index,.class-view{background:linear-gradient(180deg,rgba(13,10,24,.96),rgba(3,7,12,.96));border:1px solid rgba(var(--classes-red-rgb),.34);box-shadow:0 24px 70px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.035)}
+.classes-index{top:14px;padding:22px 18px;max-height:calc(100vh - 28px);overflow:hidden}
+.classes-list{max-height:calc(100vh - 210px);overflow:auto;padding-right:5px;scrollbar-width:thin;scrollbar-color:rgba(var(--classes-red-rgb),.55) transparent}
+.class-button{min-height:62px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,.015),rgba(255,255,255,.005));border-color:rgba(255,255,255,.09)}
+.class-button.active{background:linear-gradient(90deg,rgba(var(--classes-red-rgb),.22),rgba(var(--classes-red-rgb),.055));border-color:rgba(var(--classes-red-rgb),.72);box-shadow:0 0 24px rgba(var(--classes-red-rgb),.13),inset 3px 0 0 var(--classes-red)}
+.class-view{padding:18px;border-radius:20px}
+.class-header{grid-template-columns:280px minmax(0,1fr);gap:34px;padding:0 0 22px;border-bottom:0;background:radial-gradient(circle at 75% 5%,rgba(var(--classes-red-rgb),.12),transparent 35%),rgba(5,7,13,.72);border:1px solid rgba(var(--classes-red-rgb),.28);border-radius:18px;padding:18px}
+.class-image{aspect-ratio:1/1.15;border-radius:16px;background:radial-gradient(circle at 50% 45%,rgba(var(--classes-red-rgb),.20),transparent 45%),#080914;border-color:rgba(var(--classes-red-rgb),.52)}
+.class-title{font-size:clamp(46px,5vw,82px)}
+.class-description{font-size:20px}
+.class-tabs{position:relative;top:auto;margin:14px 0 18px;border-radius:14px;background:rgba(5,7,13,.94);border-color:rgba(var(--classes-red-rgb),.28)}
+.class-tab.active{box-shadow:inset 0 -2px 0 var(--classes-red),0 0 22px rgba(var(--classes-red-rgb),.12)}
+.class-affinity-panel{display:grid;grid-template-columns:1fr;gap:12px;margin:14px 0;padding:0;background:none;border:0}
+.class-affinity-copy{display:none}
+.class-affinity-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.class-affinity-card{min-height:84px;padding:12px 14px;border-radius:13px;background:linear-gradient(180deg,rgba(255,255,255,.015),rgba(2,5,9,.86));border-color:rgba(255,255,255,.10)}
+.class-affinity-card.primary{border-color:rgba(var(--classes-red-rgb),.68);box-shadow:0 0 22px rgba(var(--classes-red-rgb),.10),inset 0 0 24px rgba(var(--classes-red-rgb),.04)}
+.class-affinity-card>span{font-size:9px;letter-spacing:1.4px}
+.affinity-stars-row{font-size:22px!important;line-height:1!important;letter-spacing:4px!important;color:var(--classes-red)!important;white-space:nowrap!important;display:block!important}
+.class-skill-list{gap:4px}
+.class-skill-list::before{display:none}
+.class-skill-card{border-radius:13px;background:linear-gradient(90deg,rgba(255,255,255,.012),rgba(255,255,255,.004));border-color:rgba(255,255,255,.10);box-shadow:none}
+.class-skill-card[open]{background:linear-gradient(90deg,rgba(var(--classes-red-rgb),.08),rgba(4,7,12,.94));border-color:rgba(var(--classes-red-rgb),.42)}
+.class-skill-summary{min-height:88px;grid-template-columns:76px minmax(0,1fr) 44px;padding:12px 18px}
+.class-skill-level{width:58px;height:58px;border-color:rgba(var(--classes-red-rgb),.68);background:radial-gradient(circle,rgba(var(--classes-red-rgb),.15),rgba(3,6,10,.94));color:#d6d6df}
+.class-skill-title-wrap strong{font-size:23px}
+.class-skill-toggle{display:none}
+.class-skill-body{padding:0 24px 20px 96px}
+.class-path-header,.class-path-passive{border-color:rgba(var(--classes-red-rgb),.28);background:linear-gradient(180deg,rgba(var(--classes-red-rgb),.06),rgba(3,7,12,.84))}
+.class-path-selector-button.active{border-color:rgba(var(--classes-red-rgb),.72);box-shadow:inset 0 -3px 0 var(--classes-red),0 0 22px rgba(var(--classes-red-rgb),.12)}
+@media(max-width:1100px){.classes-codex{grid-template-columns:1fr}.classes-index{position:relative;max-height:none}.classes-list{max-height:none;grid-template-columns:repeat(2,minmax(0,1fr))}.class-header{grid-template-columns:220px minmax(0,1fr)}}
+@media(max-width:760px){.classes-codex{width:calc(100% - 10px)}.classes-list{grid-template-columns:1fr}.class-header{grid-template-columns:1fr}.class-affinity-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.class-title{text-align:center}.class-skill-summary{grid-template-columns:64px minmax(0,1fr)}.class-skill-body{padding-left:84px}}

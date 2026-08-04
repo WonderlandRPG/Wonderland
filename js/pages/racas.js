@@ -1468,7 +1468,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 }
-}
 
     function selectRace(raceId, options = {}) {
         const race =

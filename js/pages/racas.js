@@ -1201,7 +1201,7 @@ return `
 `;
 
 }
-    }
+    
 
     /* =====================================================
        CURIOSIDADES
@@ -1293,6 +1293,7 @@ return `
         </div>
     `;
 
+
     elements.raceContent.setAttribute(
         "aria-labelledby",
         `${state.activeTab}Tab`
@@ -1300,39 +1301,27 @@ return `
 
     // Accordion Premium
     const cards =
-        elements.raceContent.querySelectorAll(".skill-card");
+    elements.raceContent.querySelectorAll(".skill-card");
 
-    cards.forEach((card) => {
+cards.forEach((card) => {
 
-        card.addEventListener("toggle", () => {
+    card.addEventListener("toggle", () => {
 
-            if (!card.open) {
-                return;
+        if (!card.open) {
+            return;
+        }
+
+        cards.forEach((other) => {
+
+            if (other !== card) {
+                other.removeAttribute("open");
             }
-
-                const cards =
-        elements.raceContent.querySelectorAll(".skill-card");
-
-    cards.forEach((card) => {
-
-        card.addEventListener("toggle", () => {
-
-            if (!card.open) {
-                return;
-            }
-
-            cards.forEach((other) => {
-
-                if (other !== card) {
-                    other.removeAttribute("open");
-                }
-
-            });
 
         });
 
     });
 
+});
 }
 
     /* =====================================================
@@ -2003,36 +1992,41 @@ return `
 
         if (elements.raceContent) {
             elements.raceContent.innerHTML = `
-                <section class="race-empty">
+    <div class="content-enter">
+        ${renderer(race)}
+    </div>
+`;
 
-                    <div class="race-empty-symbol">
-                        ⚠
-                    </div>
+elements.raceContent.setAttribute(
+    "aria-labelledby",
+    `${state.activeTab}Tab`
+);
 
-                    <h2>
-                        Códice indisponível
-                    </h2>
+// Accordion Premium
+const cards =
+    elements.raceContent.querySelectorAll(".skill-card");
 
-                    <p>
-                        Confirme se
-                        <strong>
-                            js/data/racas-data.js
-                        </strong>
-                        está sendo carregado antes de
-                        <strong>
-                            js/pages/racas.js
-                        </strong>.
-                    </p>
+cards.forEach((card) => {
 
-                </section>
-            `;
+    card.addEventListener("toggle", () => {
+
+        if (!card.open) {
+            return;
         }
 
-        if (elements.raceCount) {
-            elements.raceCount.textContent =
-                "0 raças";
-        }
-    }
+        cards.forEach((other) => {
+
+            if (other !== card) {
+                other.removeAttribute("open");
+            }
+
+        });
+
+    });
+
+});
+
+}
 
     /* =====================================================
        VALIDAÇÃO DOS ELEMENTOS

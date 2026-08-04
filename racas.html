@@ -235,35 +235,16 @@
             </section>
 
             <nav class="race-tabs" aria-label="Informações da raça">
-                <button class="race-tab active" data-tab="overview">
-                    <span class="race-tab-icon">✦</span>
-                    Visão Geral
-                </button>
-                <button class="race-tab" data-tab="mechanics">
-                    <span class="race-tab-icon">⚙</span>
-                    Mecânicas
-                </button>
-                <button class="race-tab" data-tab="traits">
-                    <span class="race-tab-icon">◆</span>
-                    Traços
-                </button>
-                <button class="race-tab" data-tab="progression">
-                    <span class="race-tab-icon">▲</span>
-                    Progressão
-                </button>
-                <button class="race-tab" data-tab="curiosities">
-                    <span class="race-tab-icon">❖</span>
-                    Curiosidades
-                </button>
+                <button class="race-tab active" data-tab="overview"><span class="race-tab-icon">✦</span>Visão Geral</button>
+                <button class="race-tab" data-tab="mechanics"><span class="race-tab-icon">⚙</span>Mecânicas</button>
+                <button class="race-tab" data-tab="traits"><span class="race-tab-icon">◆</span>Traços</button>
+                <button class="race-tab" data-tab="progression"><span class="race-tab-icon">▲</span>Progressão</button>
+                <button class="race-tab" data-tab="curiosities"><span class="race-tab-icon">❖</span>Curiosidades</button>
             </nav>
 
             <section id="raceContent" class="race-content">
                 <div class="race-loading">
-                    <div class="race-loading-symbol">
-                        <span></span>
-                        <strong>✦</strong>
-                        <span></span>
-                    </div>
+                    <div class="race-loading-symbol"><span></span><strong>✦</strong><span></span></div>
                     <p>Carregando informações da raça...</p>
                 </div>
             </section>
@@ -271,11 +252,7 @@
     </main>
 
     <div id="raceTransition" class="race-transition" aria-hidden="true">
-        <div class="race-transition-symbol">
-            <span></span>
-            <strong>✦</strong>
-            <span></span>
-        </div>
+        <div class="race-transition-symbol"><span></span><strong>✦</strong><span></span></div>
     </div>
 
     <dialog id="raceModal" class="race-modal">
@@ -285,6 +262,7 @@
         </div>
     </dialog>
 
+    <script src="js/global-audio.js?v=1"></script>
     <script src="js/engine/render.js"></script>
     <script src="js/engine/wonderland.js"></script>
     <script src="js/data/racas-data.js"></script>

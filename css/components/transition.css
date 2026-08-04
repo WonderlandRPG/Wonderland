@@ -1,0 +1,63 @@
+/*=========================================
+WONDERLAND PAGE TRANSITION
+=========================================*/
+
+#wl-transition{
+
+    position:fixed;
+
+    inset:0;
+
+    background:#06060b;
+
+    z-index:999999;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:.45s;
+
+}
+
+#wl-transition.active{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+.transition-logo{
+
+    width:170px;
+
+    opacity:.9;
+
+    animation:
+
+        transitionSpin 1.2s linear infinite;
+
+}
+
+@keyframes transitionSpin{
+
+    from{
+
+        transform:rotate(0deg) scale(.9);
+
+    }
+
+    to{
+
+        transform:rotate(360deg) scale(1);
+
+    }
+
+}

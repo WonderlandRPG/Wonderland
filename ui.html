@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Wonderland UI Studio</title>
+
+    <meta
+        name="description"
+        content="Biblioteca visual e área de testes dos componentes de Wonderland."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/images/logo.png"
+    >
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Base -->
+    <link rel="stylesheet" href="css/global.css?v=16">
+
+    <!-- Componentes -->
+    <link rel="stylesheet" href="css/components/buttons.css?v=1">
+    <link rel="stylesheet" href="css/components/cards.css?v=1">
+    <link rel="stylesheet" href="css/components/panel.css?v=1">
+    <link rel="stylesheet" href="css/components/book.css?v=1">
+    <link rel="stylesheet" href="css/components/tooltip.css?v=1">
+    <link rel="stylesheet" href="css/components/modal.css?v=1">
+    <link rel="stylesheet" href="css/components/scrollbar.css?v=1">
+    <link rel="stylesheet" href="css/components/inputs.css?v=1">
+    <link rel="stylesheet" href="css/components/progress.css?v=1">
+    <link rel="stylesheet" href="css/components/animations.css?v=1">
+    <link rel="stylesheet" href="css/components/transition.css?v=1">
+
+    <!-- Página -->
+    <link rel="stylesheet" href="css/ui.css?v=1">
+</head>
+
+<body class="ui-page">
+
+    <!-- Fundo -->
+    <div
+        class="ui-background"
+        aria-hidden="true"
+    ></div>
+
+    <div
+        class="ui-vignette"
+        aria-hidden="true"
+    ></div>
+
+    <div
+        id="particles"
+        class="ui-particles"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Música -->
+    <audio
+        id="bgMusic"
+        loop
+        preload="auto"
+    >
+        <source
+            src="assets/audio/wonderland.mp3"
+            type="audio/mpeg"
+        >
+    </audio>
+
+    <!-- Barra superior -->
+    <header class="ui-topbar">
+
+        <a
+            href="menu.html"
+            class="ui-back-button wl-link"
+        >
+            <span aria-hidden="true">←</span>
+            <span>Menu</span>
+        </a>
+
+        <a
+            href="index.html"
+            class="ui-brand wl-link"
+            aria-label="Página inicial de Wonderland"
+        >
+            <img
+                src="assets/images/logo.png"
+                alt=""
+            >
+
+            <span>
+                Wonderland UI
+            </span>
+        </a>
+
+        <button
+            id="musicButton"
+            class="ui-music-button"
+            type="button"
+            aria-label="Alternar música"
+            title="Alternar música"
+        >
+            <span
+                id="musicIcon"
+                aria-hidden="true"
+            >
+                ♪
+            </span>
+        </button>
+
+    </header>
+
+    <main class="ui-main">
+
+        <!-- Apresentação -->
+        <section class="ui-hero wl-panel">
+
+            <div class="ui-hero-symbol">
+                ✦
+            </div>
+
+            <div class="ui-hero-copy">
+
+                <span class="ui-eyebrow">
+                    Biblioteca oficial de componentes
+                </span>
+
+                <h1>
+                    Wonderland UI Studio
+                </h1>
+
+                <p>
+                    Uma área de testes para visualizar, comparar e
+                    aprimorar os componentes que serão reutilizados em
+                    todo o universo de Wonderland.
+                </p>
+
+                <div class="ui-hero-tags">
+
+                    <span>Botões</span>
+                    <span>Cards</span>
+                    <span>Painéis</span>
+                    <span>Barras</span>
+                    <span>Modais</span>
+                    <span>Tooltips</span>
+
+                </div>
+
+            </div>
+
+            <aside class="ui-version-card">
+
+                <span>
+                    Interface
+                </span>
+
+                <strong>
+                    v1.0
+                </strong>
+
+                <small>
+                    Fundação visual
+                </small>
+
+            </aside>
+
+        </section>
+
+        <!-- Navegação interna -->
+        <nav
+            class="ui-section-nav"
+            aria-label="Seções da biblioteca visual"
+        >
+
+            <a href="#buttons">
+                Botões
+            </a>
+
+            <a href="#cards">
+                Cards
+            </a>
+
+            <a href="#panels">
+                Painéis
+            </a>
+
+            <a href="#progress">
+                Barras
+            </a>
+
+            <a href="#inputs">
+                Campos
+            </a>
+
+            <a href="#tooltips">
+                Tooltips
+            </a>
+
+            <a href="#modal">
+                Modal
+            </a>
+
+        </nav>
+
+        <!-- Botões -->
+        <section
+            id="buttons"
+            class="ui-showcase wl-panel"
+        >
+
+            <header class="ui-section-heading">
+
+                <span class="ui-eyebrow">
+                    Wonderland UI
+                </span>
+
+                <h2>
+                    Botões
+                </h2>
+
+                <p>
+                    Ações principais, secundárias e destrutivas.
+                </p>
+
+            </header>
+
+            <div class="ui-button-grid">
+
+                <button
+                    class="wl-button wl-button-gold"
+                    type="button"
+                >
+                    Confirmar
+                </button>
+
+                <button
+                    class="wl-button wl-button-ghost"
+                    type="button"
+                >
+                    Voltar
+                </button>
+
+                <button
+                    class="wl-button wl-button-red"
+                    type="button"
+                >
+                    Excluir
+                </button>
+
+                <button
+                    class="wl-button wl-button-blue"
+                    type="button"
+                >
+                    Arcano
+                </button>
+
+                <button
+                    class="wl-button wl-button-green"
+                    type="button"
+                >
+                    Restaurar
+                </button>
+
+                <button
+                    class="wl-button wl-button-gold"
+                    type="button"
+                    disabled
+                >
+                    Indisponível
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- Cards -->
+        <section
+            id="cards"
+            class="ui-showcase wl-panel"
+        >
+
+            <header class="ui-section-heading">
+
+                <span class="ui-eyebrow">
+                    Conteúdo colecionável
+                </span>
+
+                <h2>
+                    Cards
+                </h2>
+
+                <p>
+                    Base visual para raças, classes, itens, criaturas,
+                    dungeons e conquistas.
+                </p>
+
+            </header>
+
+            <div class="ui-card-grid">
+
+                <article class="wl-card">
+
+                    <div class="wl-card-image">
+
+                        <img
+                            src="assets/images/logo.png"
+                            alt="Símbolo de Wonderland"
+                        >
+
+                    </div>
+
+                    <div class="wl-card-body">
+
+                        <span class="wl-card-subtitle">
+                            Raça ancestral
+                        </span>
+
+                        <h3 class="wl-card-title">
+                            Draconato
+                        </h3>
+
+                        <p class="wl-card-text">
+                            Herdeiros de antigas linhagens dracônicas,
+                            capazes de dominar forças elementais.
+                        </p>
+
+                    </div>
+
+                </article>
+
+                <article class="wl-card wl-card-rare">
+
+                    <div class="wl-card-image">
+
+                        <img
+                            src="assets/images/logo.png"
+                            alt="Símbolo de Wonderland"
+                        >
+
+                    </div>
+
+                    <div class="wl-card-body">
+
+                        <span class="wl-card-subtitle">
+                            Item raro
+                        </span>
+
+                        <h3 class="wl-card-title">
+                            Fragmento Arcano
+                        </h3>
+
+                        <p class="wl-card-text">
+                            Um cristal que conserva resíduos de magia
+                            das primeiras eras.
+                        </p>
+
+                    </div>
+
+                </article>
+
+                <article class="wl-card wl-card-legendary">
+
+                    <div class="wl-card-image">
+
+                        <img
+                            src="assets/images/logo.png"
+                            alt="Símbolo de Wonderland"
+                        >
+
+                    </div>
+
+                    <div class="wl-card-body">
+
+                        <span class="wl-card-subtitle">
+                            Relíquia lendária
+                        </span>
+
+                        <h3 class="wl-card-title">
+                            Coração do Primeiro Sonho
+                        </h3>
+
+                        <p class="wl-card-text">
+                            Um artefato envolto em histórias que ninguém
+                            conseguiu confirmar completamente.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- Painéis -->
+        <section
+            id="panels"
+            class="ui-showcase wl-panel"
+        >
+
+            <header class="ui-section-heading">
+
+                <span class="ui-eyebrow">
+                    Estruturas da interface
+                </span>
+
+                <h2>
+                    Painéis
+                </h2>
+
+            </header>
+
+            <div class="ui-panel-grid">
+
+                <article class="wl-window">
+
+                    <header class="wl-window-header">
+
+                        <div>
+
+                            <span class="wl-window-eyebrow">
+                                Personagem
+                            </span>
+
+                            <h3>
+                                Colten
+                            </h3>
+
+                        </div>
+
+                        <button
+                            class="wl-window-action"
+                            type="button"
+                            aria-label="Configurações"
+                        >
+                            ⚙
+                        </button>
+
+                    </header>
+
+                    <div class="wl-window-content">
+
+                        <p>
+                            Este painel poderá ser reutilizado na ficha,
+                            no inventário, no Grimório e no painel
+                            administrativo.
+                        </p>
+
+                    </div>
+
+                </article>
+
+                <article class="wl-window wl-window-accent">
+
+                    <header class="wl-window-header">
+
+                        <div>
+
+                            <span class="wl-window-eyebrow">
+                                Missão
+                            </span>
+
+                            <h3>
+                                Ecos do Primeiro Sonho
+                            </h3>
+
+                        </div>
+
+                        <span class="wl-window-badge">
+                            Épica
+                        </span>
+
+                    </header>
+
+                    <div class="wl-window-content">
+
+                        <p>
+                            Investigue os sinais de uma Fratura que surgiu
+                            além das ruínas do antigo reino.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+        <!-- Barras -->
+        <section
+            id="progress"
+            class="ui-showcase wl-panel"
+        >
+
+            <header class="ui-section-heading">
+
+                <span class="ui-eyebrow">
+                    Status e recursos
+                </span>
+
+                <h2>
+                    Barras de progresso
+                </h2>
+
+            </header>
+
+            <div class="ui-progress-list">
+
+                <div class="wl-progress">
+
+                    <div class="wl-progress-heading">
+
+                        <span>
+                            HP
+                        </span>
+
+                        <strong>
+                            750 / 1.000
+                        </strong>
+
+                    </div>
+
+                    <div class="wl-progress-track">
+
+                        <span
+                            class="wl-progress-value wl-progress-health"
+                            style="width: 75%;"
+                        ></span>
+
+                    </div>
+
+                </div>
+
+                <div class="wl-progress">
+
+                    <div class="wl-progress-heading">
+
+                        <span>
+                            Mana
+                        </span>
+
+                        <strong>
+                            420 / 600
+                        </strong>
+
+                    </div>
+
+                    <div class="wl-progress-track">
+
+                        <span
+                            class="wl-progress-value wl-progress-mana"
+                            style="width: 70%;"
+                        ></span>
+
+                    </div>
+
+                </div>
+
+                <div class="wl-progress">
+
+                    <div class="wl-progress-heading">
+
+                        <span>
+                            Experiência
+                        </span>
+
+                        <strong>
+                            62%
+                        </strong>
+
+                    </div>
+
+                    <div class="wl-progress-track">
+
+                        <span
+                            class="wl-progress-value wl-progress-experience"
+                            style="width: 62%;"
+                        ></span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Campos -->
+        <section
+            id="inputs"
+            class="ui-showcase wl-panel"
+        >
+
+            <header class="ui-section-heading">
+
+                <span class="ui-eyebrow">
+                    Formulários
+                </span>
+
+                <h2>
+                    Campos
+                </h2>
+
+            </header>
+
+            <div class="ui-input-grid">
+
+                <label class="wl-field">
+
+                    <span>
+                        Nome do personagem
+                    </span>
+
+                    <input
+                        type="text"
+                        placeholder="Digite um nome"
+                    >
+
+                </label>
+
+                <label class="wl-field">
+
+                    <span>
+                        Raça
+                    </span>
+
+                    <select>
+                        <option>Humano</option>
+                        <option>Elfo</option>
+                        <option>Draconato</option>
+                        <option>Kitsune</option>
+                    </select>
+
+                </label>
+
+                <label class="wl-field wl-field-full">
+
+                    <span>
+                        História
+                    </span>
+
+                    <textarea
+                        rows="5"
+                        placeholder="Escreva a história do personagem..."
+                    ></textarea>
+
+                </label>
+
+            </div>
+
+        </section>
+
+        <!-- Tooltips -->
+        <section
+            id="tooltips"
+            class="ui-showcase wl-panel"
+        >
+
+            <header class="ui-section-heading">
+
+                <span class="ui-eyebrow">
+                    Informações rápidas
+                </span>
+
+                <h2>
+                    Tooltips
+                </h2>
+
+                <p>
+                    Passe o mouse nos elementos abaixo.
+                </p>
+
+            </header>
+
+            <div class="ui-tooltip-grid">
+
+                <button
+                    class="wl-tooltip-target"
+                    type="button"
+                    data-tooltip="Aumenta o dano de ataques físicos e habilidades baseadas em força."
+                >
+                    FOR
+                </button>
+
+                <button
+                    class="wl-tooltip-target"
+                    type="button"
+                    data-tooltip="Define a ordem dos turnos durante o combate."
+                >
+                    INI
+                </button>
+
+                <button
+                    class="wl-tooltip-target"
+                    type="button"
+                    data-tooltip="Fortalece curas, escudos, buffs, debuffs e invocações."
+                >
+                    ARC
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- Modal -->
+        <section
+            id="modal"
+            class="ui-showcase wl-panel"
+        >
+
+            <header class="ui-section-heading">
+
+                <span class="ui-eyebrow">
+                    Janelas de confirmação
+                </span>
+
+                <h2>
+                    Modal
+                </h2>
+
+            </header>
+
+            <button
+                id="openModalButton"
+                class="wl-button wl-button-gold"
+                type="button"
+            >
+                Abrir demonstração
+            </button>
+
+        </section>
+
+    </main>
+
+    <!-- Modal demonstrativo -->
+    <div
+        id="demoModal"
+        class="wl-modal"
+        aria-hidden="true"
+    >
+
+        <div
+            class="wl-modal-backdrop"
+            data-close-modal
+        ></div>
+
+        <section
+            class="wl-modal-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="demoModalTitle"
+        >
+
+            <button
+                class="wl-modal-close"
+                type="button"
+                aria-label="Fechar"
+                data-close-modal
+            >
+                ×
+            </button>
+
+            <span class="wl-modal-eyebrow">
+                Confirmação
+            </span>
+
+            <h2 id="demoModalTitle">
+                Finalizar personagem?
+            </h2>
+
+            <p>
+                Confira todas as escolhas antes de concluir a criação.
+            </p>
+
+            <div class="wl-modal-actions">
+
+                <button
+                    class="wl-button wl-button-ghost"
+                    type="button"
+                    data-close-modal
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    class="wl-button wl-button-gold"
+                    type="button"
+                    data-close-modal
+                >
+                    Confirmar
+                </button>
+
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- Engine -->
+    <script src="js/engine/navigation.js?v=1"></script>
+    <script src="js/engine/particles.js?v=1"></script>
+
+    <!-- Componentes -->
+    <script src="js/ui/button.js?v=1"></script>
+    <script src="js/ui/card.js?v=1"></script>
+    <script src="js/ui/panel.js?v=1"></script>
+    <script src="js/ui/modal.js?v=1"></script>
+    <script src="js/ui/tooltip.js?v=1"></script>
+    <script src="js/ui/tabs.js?v=1"></script>
+    <script src="js/ui/book.js?v=1"></script>
+    <script src="js/ui/progress.js?v=1"></script>
+
+    <!-- Página -->
+    <script src="js/ui.js?v=1"></script>
+
+</body>
+
+</html>

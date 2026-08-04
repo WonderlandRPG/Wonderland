@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Grimório | Wonderland RPG</title>
+
+    <meta
+        name="description"
+        content="Enciclopédia oficial das mecânicas de Wonderland."
+    >
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="assets/images/logo.png"
+    >
+
+    <!-- Fontes -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- ========================= -->
+    <!-- CSS -->
+    <!-- ========================= -->
+
+    <link
+        rel="stylesheet"
+        href="css/global.css?v=15"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/grimorio.css?v=3"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/grimorio-theme.css?v=1"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/grimorio-effects.css?v=2"
+    >
+
+    <!-- NOVO -->
+    <link
+        rel="stylesheet"
+        href="css/grimorio-core.css?v=1"
+    >
+
+</head>
+
+<body class="grimorio-page">
+
+    <!-- Fundo -->
+
+    <div class="grimorio-background"></div>
+
+    <!-- Névoa -->
+
+    <div class="mist-layer"></div>
+
+    <!-- Partículas -->
+
+    <div
+        id="particles"
+        aria-hidden="true"
+    ></div>
+
+    <!-- Música -->
+
+    <audio
+        id="bgMusic"
+        loop
+        preload="auto"
+    >
+
+        <source
+            src="assets/audio/wonderland.mp3"
+            type="audio/mpeg"
+        >
+
+    </audio>
+
+    <!-- Botão Música -->
+
+    <button
+        id="musicButton"
+        class="music-button"
+        type="button"
+        aria-label="Alternar música"
+        title="Alternar música"
+    >
+
+        <span
+            id="musicIcon"
+            aria-hidden="true"
+        >
+            ♪
+        </span>
+
+    </button>
+
+    <!-- Voltar -->
+
+    <a
+        href="menu.html"
+        class="return-button"
+    >
+
+        ← Menu
+
+    </a>
+
+    <!-- Cabeçalho -->
+
+    <header class="grimorio-hero">
+
+        <img
+            src="assets/images/logo.png"
+            class="grimorio-logo"
+            alt="Wonderland RPG"
+        >
+
+        <span class="hero-label">
+
+            Biblioteca Arcana
+
+        </span>
+
+        <h1>
+
+            Grimório
+
+        </h1>
+
+        <p>
+
+            Toda magia, mecânica, efeito e conhecimento de Wonderland encontra-se registrado neste tomo ancestral.
+
+        </p>
+
+    </header>
+
+    <!-- Layout -->
+
+    <main class="grimorio-layout">
+
+        <!-- Categorias -->
+
+        <aside class="grimorio-sidebar">
+
+            <div id="categoryList"></div>
+
+        </aside>
+
+        <!-- Lista -->
+
+        <section class="grimorio-content">
+
+            <div class="search-box">
+
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="Pesquisar termo..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+            <div id="termList"></div>
+
+        </section>
+
+        <!-- Painel -->
+
+        <section class="grimorio-panel">
+
+            <div
+                id="termContent"
+                class="term-page"
+            >
+
+                <div class="grimorio-placeholder">
+
+                    <h2>
+
+                        ✦ Grimório de Wonderland ✦
+
+                    </h2>
+
+                    <p>
+
+                        Escolha uma categoria ao lado para começar a explorar os conhecimentos registrados neste tomo.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ========================= -->
+    <!-- WONDERLAND ENGINE -->
+    <!-- ========================= -->
+
+    <script src="js/engine/render.js?v=1"></script>
+    <script src="js/engine/theme.js?v=1"></script>
+    <script src="js/engine/effects.js?v=1"></script>
+    <script src="js/engine/search.js?v=1"></script>
+    <script src="js/engine/particles.js?v=1"></script>
+
+    <!-- ========================= -->
+    <!-- GRIMÓRIO -->
+    <!-- ========================= -->
+
+    <script src="js/grimorio-data.js?v=2"></script>
+    <script src="js/grimorio-render.js?v=1"></script>
+    <script src="js/grimorio-search.js?v=1"></script>
+    <script src="js/grimorio-effects.js?v=1"></script>
+    <script src="js/grimorio.js?v=3"></script>
+
+</body>
+
+</html>

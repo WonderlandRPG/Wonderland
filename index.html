@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -23,6 +24,7 @@
     >
 
     <!-- Fontes -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <link
@@ -36,45 +38,67 @@
         rel="stylesheet"
     >
 
-    <!-- Estilos -->
-    <link rel="stylesheet" href="css/global.css?v=5">
-    <link rel="stylesheet" href="css/home.css?v=5">
+    <!-- CSS -->
+
+    <link
+        rel="stylesheet"
+        href="css/global.css?v=6"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/home.css?v=6"
+    >
+
 </head>
 
 <body class="home-page">
 
-    <!-- Cenário de fundo -->
+    <!-- Fundo -->
+
     <div
         class="home-background"
         aria-hidden="true"
     ></div>
 
     <!-- Partículas -->
+
     <div
         id="particles"
         aria-hidden="true"
     ></div>
 
     <!-- Névoa -->
+
     <div
         class="mist-layer"
         aria-hidden="true"
     ></div>
 
-    <!-- Trilha sonora -->
+    <!-- Música -->
+
     <audio
         id="bgMusic"
         loop
         preload="auto"
     >
+
         <source
             src="assets/audio/wonderland.mp3"
             type="audio/mpeg"
         >
+
     </audio>
 
-    <!-- Conteúdo principal -->
+    <!-- Conteúdo -->
+
     <main class="home-container">
+
+        <p
+            id="introQuote"
+            class="intro-quote"
+        >
+        </p>
 
         <img
             src="assets/images/logo.png"
@@ -83,60 +107,98 @@
         >
 
         <h1 class="home-title">
+
             Wonderland
+
         </h1>
 
         <p class="home-subtitle">
+
             Onde toda história começa com uma escolha.
+
         </p>
 
         <button
             id="enterButton"
-            class="enter-button"
+            class="enter-button wl-button gold"
             type="button"
         >
-            Entrar
+
+            ✦ Entrar ✦
+
         </button>
 
     </main>
 
+    <!-- Wonderland Engine -->
+
+    <script src="js/engine/render.js"></script>
+    <script src="js/engine/theme.js"></script>
+    <script src="js/engine/effects.js"></script>
+    <script src="js/engine/search.js"></script>
+    <script src="js/engine/particles.js"></script>
+    <script src="js/engine/navigation.js"></script>
+
+    <!-- Página -->
+
     <script>
-        const enterButton = document.getElementById("enterButton");
-        const backgroundMusic = document.getElementById("bgMusic");
 
-        function irParaMenu() {
-            window.location.href = "./menu.html";
-        }
+        const frases=[
 
-        enterButton.addEventListener("click", () => {
-            enterButton.disabled = true;
-            enterButton.textContent = "ENTRANDO...";
+            "Todo sonho deixa marcas naquele que ousa despertá-lo.",
+
+            "Antes dos reinos existirem, existia apenas o Primeiro Sonho.",
+
+            "Nem toda criatura nasce... algumas apenas são lembradas.",
+
+            "A magia responde apenas àqueles que ousam buscá-la.",
+
+            "Wonderland observa cada escolha feita por seus aventureiros.",
+
+            "O impossível é apenas o primeiro desafio."
+
+        ];
+
+        const quote=document.getElementById("introQuote");
+
+        quote.textContent=
+
+            frases[Math.floor(Math.random()*frases.length)];
+
+        Wonderland.Navigation.create();
+
+        Wonderland.Particles.start();
+
+        const music=
+
+            document.getElementById("bgMusic");
+
+        document
+
+        .getElementById("enterButton")
+
+        .onclick=()=>{
 
             localStorage.setItem(
+
                 "wonderlandMusicEnabled",
+
                 "true"
+
             );
 
-            if (backgroundMusic) {
-                backgroundMusic.volume = 0.25;
+            music.volume=.25;
 
-                backgroundMusic
-                    .play()
-                    .then(() => {
-                        console.log("Música iniciada.");
-                    })
-                    .catch((error) => {
-                        console.error(
-                            "O arquivo de música não pôde ser reproduzido:",
-                            error
-                        );
-                    });
-            }
+            music.play().catch(()=>{});
 
-            document.body.classList.add("fade-out");
+            Wonderland.Navigation.start(
 
-            window.setTimeout(irParaMenu, 900);
-        });
+                "menu.html"
+
+            );
+
+        };
+
     </script>
 
 </body>

@@ -1,0 +1,15 @@
+.class-stars{width:max-content;min-height:54px;margin:16px 0 22px;padding:9px 13px 10px;display:grid;gap:7px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(2,7,9,.82));border:1px solid rgba(var(--classes-red-rgb),.28);border-radius:14px;box-shadow:inset 0 0 24px rgba(var(--classes-red-rgb),.035),0 12px 28px rgba(0,0,0,.18)}
+.rating-label{color:var(--classes-muted);font-family:"Cinzel",serif;font-size:7px;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+.rating-stars-row,.affinity-stars-row{display:flex;align-items:center;gap:6px}
+.rating-star{width:18px;height:18px;display:grid;place-items:center;font-family:Arial,sans-serif;font-size:12px;line-height:1;border-radius:5px;transition:transform .2s ease,box-shadow .2s ease}
+.rating-star.filled{color:var(--classes-gold);background:rgba(var(--classes-red-rgb),.14);border:1px solid rgba(var(--classes-red-rgb),.34);box-shadow:inset 0 0 10px rgba(var(--classes-red-rgb),.12),0 0 10px rgba(var(--classes-red-rgb),.08)}
+.rating-star.empty{color:rgba(255,255,255,.13);background:rgba(255,255,255,.018);border:1px solid rgba(255,255,255,.055)}
+.class-affinity-card{min-height:72px;padding:12px 14px;display:grid;align-content:center;gap:9px;background:linear-gradient(135deg,rgba(255,255,255,.018),rgba(2,8,10,.82));border:1px solid rgba(255,255,255,.07);border-radius:15px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);transition:border-color .22s ease,transform .22s ease,box-shadow .22s ease}
+.class-affinity-card:hover{transform:translateY(-2px);border-color:rgba(var(--classes-red-rgb),.28)}
+.class-affinity-card.primary{border-color:rgba(var(--classes-red-rgb),.5);background:radial-gradient(circle at 90% 0,rgba(var(--classes-red-rgb),.12),transparent 45%),rgba(2,8,10,.88);box-shadow:inset 0 0 24px rgba(var(--classes-red-rgb),.035),0 0 20px rgba(var(--classes-red-rgb),.06)}
+.class-affinity-card>span{color:var(--classes-muted);font-family:"Cinzel",serif;font-size:8px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase}
+.class-affinity-card.primary>span{color:var(--classes-gold)}
+.class-affinity-card strong{font-weight:400}
+.class-affinity-card .rating-star{width:17px;height:17px;font-size:11px}
+.class-affinity-card.primary .rating-star.filled{box-shadow:inset 0 0 10px rgba(var(--classes-red-rgb),.18),0 0 12px rgba(var(--classes-red-rgb),.12)}
+@media(max-width:760px){.class-stars{margin-inline:auto}.rating-star{width:17px;height:17px}.class-affinity-card{min-height:66px;padding:11px 12px}.rating-stars-row,.affinity-stars-row{gap:4px}}

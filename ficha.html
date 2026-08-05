@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
-  <link rel="stylesheet" href="css/character-sheet.css?v=3">
+  <link rel="stylesheet" href="css/character-sheet.css?v=4">
 </head>
 <body class="character-sheet-page">
   <div class="character-sheet-background" aria-hidden="true"></div>
@@ -27,7 +27,7 @@
     <section id="sheetContent" hidden>
       <section class="character-sheet-hero">
         <div class="character-sheet-portrait-wrap">
-          <div class="character-sheet-portrait"><img id="sheetImage" src="assets/images/logo.png" alt=""></div>
+          <div id="sheetRankEmblem" class="character-sheet-rank-emblem" aria-label="Rank atual"></div>
           <button id="changeCharacterImage" class="wl-button wl-button-ghost character-image-button" type="button">Alterar foto</button>
           <p id="characterImageMessage" class="character-image-message" role="status"></p>
         </div>
@@ -35,7 +35,7 @@
           <span class="character-sheet-eyebrow">Ficha do aventureiro</span>
           <h1 id="sheetName">Personagem</h1>
           <p id="sheetSummary"></p>
-          <div class="character-sheet-badges"><span id="sheetLevel"></span><span id="sheetRace"></span><span id="sheetClass"></span></div>
+          <div class="character-sheet-badges"><span id="sheetLevel"></span><span id="sheetRace"></span><span id="sheetClass"></span><span id="sheetRank"></span></div>
         </div>
         <div class="character-sheet-resources">
           <article class="resource-card resource-hp"><span>HP</span><strong id="sheetHp"></strong><div class="resource-bar"><i id="sheetHpBar"></i></div></article>
@@ -109,11 +109,12 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js?v=2"></script>
-  <script src="js/account-store.js?v=6"></script>
+  <script src="js/account-store.js?v=7"></script>
   <script src="js/data/racas-data.js?v=1"></script>
   <script src="js/data/classes-all.js?v=2"></script>
   <script src="js/data/skill-costs.js?v=4"></script>
   <script src="js/data/mana-system.js?v=2"></script>
-  <script src="js/pages/character-sheet.js?v=6" defer></script>
+  <script src="js/data/rank-system.js?v=1"></script>
+  <script src="js/pages/character-sheet.js?v=7" defer></script>
 </body>
 </html>

@@ -11,12 +11,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
-  <link rel="stylesheet" href="css/admin.css?v=1">
+  <link rel="stylesheet" href="css/admin.css?v=3">
 </head>
 <body class="admin-page">
   <div class="admin-background" aria-hidden="true"></div>
   <header class="admin-topbar">
-    <a href="menu.html" class="wl-button wl-button-ghost">← Menu</a>
+    <a href="personagens.html" class="wl-button wl-button-ghost">← Personagens</a>
     <a href="index.html" class="admin-brand"><img src="assets/images/logo.png" alt=""><span>Wonderland</span></a>
     <button id="adminLogout" class="wl-button wl-button-red" type="button">Sair</button>
   </header>
@@ -52,7 +52,7 @@
     <section class="admin-workspace">
       <header><span>Área de trabalho</span><h2 id="adminModuleTitle">Visão geral</h2></header>
       <div id="adminModuleContent" class="admin-module-content">
-        <p>Escolha um módulo acima para começar. Nesta primeira versão, o painel valida o acesso administrativo e consulta os dados reais do Supabase.</p>
+        <p>Escolha um módulo acima para abrir a lista de registros e editar seus detalhes.</p>
       </div>
     </section>
   </main>
@@ -60,6 +60,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js?v=2"></script>
   <script src="js/account-store.js?v=4"></script>
-  <script src="js/pages/admin.js?v=1" defer></script>
+  <script src="js/data/racas-data.js?v=1"></script>
+  <script src="js/data/classes-all.js?v=2"></script>
+  <script src="js/pages/admin.js?v=3" defer></script>
 </body>
 </html>

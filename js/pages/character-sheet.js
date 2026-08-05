@@ -90,6 +90,7 @@
     const cls=(window.WONDERLAND_CLASSES||{})[character.class_id];
     const finalAttrs=getFinalAttributes(data.attributes);
     const mana=window.WONDERLAND_MANA_SYSTEM?.breakdown({intValue:finalAttrs.INT,race})||{total:Number(character.mana_current||0),base:0,racial:0,intelligence:0,rule:""};
+    const currentMana=Math.min(Math.max(0,Number(character.mana_current||0)),mana.total);
     const localSkills=officialSkills(cls,race,Number(character.level||1));
     const databaseSkillKeys=new Set(data.skills.map(item=>item.skill_key));
     const skills=localSkills.filter(skill=>!databaseSkillKeys.size||databaseSkillKeys.has(skill.id||skill.nome));
@@ -102,7 +103,7 @@
     document.getElementById("sheetRace").textContent=race?.name||character.race_id;
     document.getElementById("sheetClass").textContent=cls?.nome||character.class_id;
     document.getElementById("sheetHp").textContent=String(character.hp_current||0);
-    document.getElementById("sheetMana").textContent=String(mana.total);
+    document.getElementById("sheetMana").textContent=`${currentMana} / ${mana.total}`;
     document.getElementById("sheetExperience").textContent=String(character.experience||0);
     document.getElementById("sheetStory").textContent=character.story||"Nenhuma história foi registrada.";
     document.getElementById("sheetBuild").textContent=`Perfil ${character.distribution_profile||"manual"}. Atributo principal: ${cls?.estilo?.atributos||cls?.primary_attribute||"não definido"}. Mana máxima: ${mana.total} (${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT).`;

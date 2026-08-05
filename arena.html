@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
-  <link rel="stylesheet" href="css/arena.css?v=4">
+  <link rel="stylesheet" href="css/arena.css?v=5">
 </head>
 <body class="arena-page">
   <div class="arena-background" aria-hidden="true"></div>
@@ -62,9 +62,7 @@
         </aside>
 
         <section class="arena-map-panel">
-          <div class="arena-map-viewport">
-            <div id="arenaGrid" class="arena-grid" role="grid" aria-label="Mapa tático da Arena"></div>
-          </div>
+          <div class="arena-map-viewport"><div id="arenaGrid" class="arena-grid" role="grid" aria-label="Mapa tático da Arena"></div></div>
           <div id="arenaRangeLegend" class="arena-range-legend"><span><i class="move"></i>Movimento</span><span><i class="range"></i>Alcance</span><span><i class="target"></i>Alvo</span></div>
         </section>
 
@@ -75,7 +73,7 @@
       </section>
 
       <section class="arena-skill-panel">
-        <div class="arena-section-heading"><span>Arsenal</span><h2>Ataques e habilidades</h2><p>Passe o mouse para ver custo, escala, alcance e recarga. Clique para preparar a ação.</p></div>
+        <div class="arena-section-heading"><span>Arsenal</span><h2>Ataques e habilidades</h2><p>Os botões estão separados por ação. Passe o mouse para abrir a ficha completa da habilidade.</p></div>
         <div id="arenaSkillCards" class="arena-skill-cards"></div>
       </section>
     </section>
@@ -88,7 +86,7 @@
         <article><span>03</span><h3>Três ações por turno</h3><p>É possível realizar <strong>1 ataque básico</strong>, <strong>1 habilidade racial</strong> e <strong>1 habilidade de classe</strong> durante o mesmo turno, desde que haja Mana, alcance e a habilidade não esteja em recarga.</p></article>
         <article><span>04</span><h3>Defender primeiro</h3><p>A ação Defender só pode ser escolhida antes de qualquer movimento, ataque ou habilidade. Ela bloqueia 100% do próximo dano e entra em recarga por 5 turnos.</p></article>
         <article><span>05</span><h3>Alcance das armas</h3><p>Armas mágicas como cajados, varinhas, cetros, orbes, grimórios e focos arcanos atacam a <strong>7 casas</strong>. Lanças atacam a <strong>3 casas</strong>. Armas físicas comuns e ataques desarmados atingem a <strong>1 casa</strong>.</p></article>
-        <article><span>06</span><h3>Recargas visíveis</h3><p>Ao usar uma habilidade, o card mostra quantos turnos faltam para ela ficar disponível novamente.</p></article>
+        <article><span>06</span><h3>Recargas visíveis</h3><p>Ao usar uma habilidade, o botão mostra quantos turnos faltam para ela ficar disponível novamente.</p></article>
       </div>
     </section>
   </main>
@@ -98,8 +96,9 @@
   <script src="js/account-store.js?v=9"></script>
   <script src="js/data/racas-data.js?v=1"></script>
   <script src="js/data/classes-all.js?v=2"></script>
+  <script src="js/data/skill-costs.js?v=4"></script>
   <script src="js/data/mana-system.js?v=2"></script>
   <script src="js/data/defense-system.js?v=1"></script>
-  <script src="js/pages/arena.js?v=4" defer></script>
+  <script src="js/pages/arena.js?v=5" defer></script>
 </body>
 </html>

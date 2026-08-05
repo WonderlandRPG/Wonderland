@@ -15,38 +15,21 @@
   };
 
   const MISSION_REWARDS={
-    E:{xp:500,wg:100},
-    D:{xp:1000,wg:250},
-    C:{xp:2000,wg:600},
-    B:{xp:4000,wg:1500},
-    A:{xp:8000,wg:4000},
-    S:{xp:15000,wg:10000},
-    EX:{xp:30000,wg:25000}
+    E:{xp:500,wg:100},D:{xp:1000,wg:250},C:{xp:2000,wg:600},B:{xp:4000,wg:1500},A:{xp:8000,wg:4000},S:{xp:15000,wg:10000},EX:{xp:30000,wg:25000}
+  };
+
+  const DUNGEON_REWARDS={
+    E:{level:"1–20",xp:2500,wg:500},D:{level:"21–35",xp:6000,wg:1500},C:{level:"36–50",xp:12000,wg:3500},B:{level:"51–70",xp:25000,wg:8000},A:{level:"71–90",xp:45000,wg:20000},S:{level:"91–100",xp:80000,wg:50000}
   };
 
   const CURRENCY={code:"WG",name:"Wonderland Gold"};
-
   function clampLevel(level){return Math.max(1,Math.min(100,Number(level)||1))}
   function totalForLevel(level){return XP_TOTAL_BY_LEVEL[clampLevel(level)]??0}
   function nextLevelTotal(level){const current=clampLevel(level);return current>=100?XP_TOTAL_BY_LEVEL[100]:XP_TOTAL_BY_LEVEL[current+1]}
-  function levelFromTotalXp(totalXp){
-    const xp=Math.max(0,Number(totalXp)||0);
-    let level=1;
-    for(let current=2;current<=100;current+=1){if(xp>=XP_TOTAL_BY_LEVEL[current])level=current;else break}
-    return level;
-  }
-  function progress(totalXp,explicitLevel){
-    const xp=Math.max(0,Number(totalXp)||0);
-    const level=explicitLevel?clampLevel(explicitLevel):levelFromTotalXp(xp);
-    const currentFloor=totalForLevel(level);
-    const nextTotal=nextLevelTotal(level);
-    const span=Math.max(0,nextTotal-currentFloor);
-    const intoLevel=Math.max(0,xp-currentFloor);
-    const percent=level>=100?100:Math.max(0,Math.min(100,span?intoLevel/span*100:0));
-    return{level,totalXp:xp,currentFloor,nextTotal,span,intoLevel,percent};
-  }
+  function levelFromTotalXp(totalXp){const xp=Math.max(0,Number(totalXp)||0);let level=1;for(let current=2;current<=100;current+=1){if(xp>=XP_TOTAL_BY_LEVEL[current])level=current;else break}return level}
+  function progress(totalXp,explicitLevel){const xp=Math.max(0,Number(totalXp)||0);const level=explicitLevel?clampLevel(explicitLevel):levelFromTotalXp(xp);const currentFloor=totalForLevel(level);const nextTotal=nextLevelTotal(level);const span=Math.max(0,nextTotal-currentFloor);const intoLevel=Math.max(0,xp-currentFloor);const percent=level>=100?100:Math.max(0,Math.min(100,span?intoLevel/span*100:0));return{level,totalXp:xp,currentFloor,nextTotal,span,intoLevel,percent}}
   function rewardForRank(rank){return MISSION_REWARDS[String(rank||"E").toUpperCase()]||MISSION_REWARDS.E}
+  function dungeonRewardForRank(rank){return DUNGEON_REWARDS[String(rank||"E").toUpperCase()]||DUNGEON_REWARDS.E}
   function formatNumber(value){return new Intl.NumberFormat("pt-BR").format(Number(value)||0)}
-
-  window.WONDERLAND_PROGRESSION={XP_TOTAL_BY_LEVEL,MISSION_REWARDS,CURRENCY,clampLevel,totalForLevel,nextLevelTotal,levelFromTotalXp,progress,rewardForRank,formatNumber};
+  window.WONDERLAND_PROGRESSION={XP_TOTAL_BY_LEVEL,MISSION_REWARDS,DUNGEON_REWARDS,CURRENCY,clampLevel,totalForLevel,nextLevelTotal,levelFromTotalXp,progress,rewardForRank,dungeonRewardForRank,formatNumber};
 })();

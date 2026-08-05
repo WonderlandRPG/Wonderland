@@ -41,6 +41,14 @@
     return{character,attributes:attributesResult.data||null,inventory:inventoryResult.data||[],equipment:equipmentResult.data||[],skills:skillsResult.data||[]}
   }
 
+  async function updateCharacterImage(characterId,imageUrl){
+    const user=await current();if(!user)throw new Error("Sessão expirada. Entre novamente.");
+    const normalized=String(imageUrl||"").trim()||null;
+    const {data,error}=await client.from("characters").update({image_url:normalized}).eq("id",characterId).eq("user_id",user.id).select("id,image_url").single();
+    if(error)throw error;
+    return data;
+  }
+
   async function createCharacter(character){
     const user=await current();if(!user)throw new Error("Sessão expirada. Entre novamente.");
     const {data:created,error:createError}=await client.from("characters").insert({user_id:user.id,name:character.name,story:character.story||"",race_id:character.raceId,class_id:character.classId,path_id:character.pathId||null,level:1,experience:0,hp_current:Number(character.hpCurrent||0),mana_current:Number(character.manaCurrent||0),distribution_profile:character.attributeProfile==="custom"?"manual":character.attributeProfile||"manual",image_url:character.image||null}).select("id").single();
@@ -52,5 +60,5 @@
   }
 
   const isAdmin=user=>user?.role==="admin";
-  window.WONDERLAND_ACCOUNT={client,getSession,current,register,login,logout,getCharacters,getCharacterSheet,createCharacter,isAdmin};
+  window.WONDERLAND_ACCOUNT={client,getSession,current,register,login,logout,getCharacters,getCharacterSheet,updateCharacterImage,createCharacter,isAdmin};
 })();

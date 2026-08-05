@@ -5,6 +5,12 @@
   const loading=document.getElementById("sheetLoading");
   const content=document.getElementById("sheetContent");
   const logout=document.getElementById("sheetLogout");
+  const changeImageButton=document.getElementById("changeCharacterImage");
+  const imageDialog=document.getElementById("characterImageDialog");
+  const imageForm=document.getElementById("characterImageForm");
+  const imageUrlInput=document.getElementById("characterImageUrl");
+  const imageMessage=document.getElementById("characterImageMessage");
+  const cancelImageButton=document.getElementById("cancelCharacterImage");
   const params=new URLSearchParams(window.location.search);
   const characterId=params.get("id");
   const attrs=["FOR","DEF","RES","INI","INT","ARC"];
@@ -54,15 +60,7 @@
     return values.map((skill,index)=>{
       const name=textValue(skill?.name||skill?.nome||skill?.title)||`Traço racial ${index+1}`;
       const description=textValue(skill?.description||skill?.descricao||skill?.content||skill?.effect||skill?.efeito||skill);
-      return{
-        ...skill,
-        nome:name,
-        descricao:description,
-        nivel:progression?parseLevel(skill?.level||skill?.nivel):1,
-        tipo:textValue(skill?.category||skill?.categoria||skill?.tipo||skill?.label)||(progression?"Habilidade racial":"Traço racial"),
-        passive:!progression,
-        source:"Raça"
-      };
+      return{...skill,nome:name,descricao:description,nivel:progression?parseLevel(skill?.level||skill?.nivel):1,tipo:textValue(skill?.category||skill?.categoria||skill?.tipo||skill?.label)||(progression?"Habilidade racial":"Traço racial"),passive:!progression,source:"Raça"};
     });
   }
   function officialSkills(cls,race,level){
@@ -86,16 +84,7 @@
   function setBar(id,current,max){const el=document.getElementById(id);if(el)el.style.width=`${Math.max(0,Math.min(100,max>0?current/max*100:0))}%`}
   function renderDerived(target,finalAttrs,mana,character,race){
     const hpMax=Number(race?.stats?.hp||character.hp_current||0)+Math.floor(finalAttrs.RES/5)*10;
-    const rows=[
-      ["HP máximo",hpMax,"HP racial + RES"],
-      ["Mana máxima",mana.total,`${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT`],
-      ["Ataque físico",Math.round(finalAttrs.FOR),"FOR"],
-      ["Ataque mágico",Math.round(finalAttrs.INT),"INT"],
-      ["Defesa física",Math.round(finalAttrs.DEF),"DEF"],
-      ["Resistência",Math.round(finalAttrs.RES),"RES"],
-      ["Iniciativa",Math.round(finalAttrs.INI),"INI"],
-      ["Poder de suporte",Math.round(finalAttrs.ARC),"ARC"]
-    ];
+    const rows=[["HP máximo",hpMax,"HP racial + RES"],["Mana máxima",mana.total,`${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT`],["Ataque físico",Math.round(finalAttrs.FOR),"FOR"],["Ataque mágico",Math.round(finalAttrs.INT),"INT"],["Defesa física",Math.round(finalAttrs.DEF),"DEF"],["Resistência",Math.round(finalAttrs.RES),"RES"],["Iniciativa",Math.round(finalAttrs.INI),"INI"],["Poder de suporte",Math.round(finalAttrs.ARC),"ARC"]];
     target.innerHTML=rows.map(([label,value,note])=>`<article class="character-sheet-derived-row"><span>${esc(label)}</span><small>${esc(note)}</small><strong>${esc(value)}</strong></article>`).join("");
     return hpMax;
   }
@@ -110,12 +99,19 @@
     const localSkills=officialSkills(cls,race,Number(character.level||1));
     const databaseSkillKeys=new Set(data.skills.map(item=>item.skill_key));
     const skills=localSkills.filter(skill=>!databaseSkillKeys.size||databaseSkillKeys.has(skill.id||skill.nome));
+    const fallbackPortrait=race?.artwork||race?.image||"assets/images/logo.png";
+    let portrait=character.image_url||fallbackPortrait;
 
-    const portrait=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
-    document.getElementById("sheetImage").src=portrait;
-    document.getElementById("sheetImage").alt=character.name;
-    document.getElementById("equipmentCharacterImage").src=portrait;
-    document.getElementById("equipmentCharacterImage").alt=`Equipamentos de ${character.name}`;
+    const applyPortrait=url=>{
+      portrait=url||fallbackPortrait;
+      const mainImage=document.getElementById("sheetImage");
+      const equipmentImage=document.getElementById("equipmentCharacterImage");
+      mainImage.src=portrait;mainImage.alt=character.name;
+      equipmentImage.src=portrait;equipmentImage.alt=`Equipamentos de ${character.name}`;
+    };
+    applyPortrait(portrait);
+    imageUrlInput.value=character.image_url||"";
+
     document.getElementById("sheetName").textContent=character.name;
     document.getElementById("sheetSummary").textContent=`${race?.name||character.race_id} • ${cls?.nome||character.class_id}`;
     document.getElementById("sheetLevel").textContent=`Nível ${character.level}`;
@@ -129,9 +125,7 @@
     document.getElementById("sheetHp").textContent=`${currentHp} / ${hpMax}`;
     document.getElementById("sheetMana").textContent=String(mana.total);
     document.getElementById("sheetExperience").textContent=`${currentExp} / ${requiredExp}`;
-    setBar("sheetHpBar",currentHp,hpMax);
-    setBar("sheetManaBar",mana.total,mana.total);
-    setBar("sheetExpBar",currentExp,requiredExp);
+    setBar("sheetHpBar",currentHp,hpMax);setBar("sheetManaBar",mana.total,mana.total);setBar("sheetExpBar",currentExp,requiredExp);
 
     document.getElementById("sheetStory").textContent=character.story||"Nenhuma história foi registrada.";
     document.getElementById("sheetBuild").textContent=`Perfil ${character.distribution_profile||"manual"}. Atributo principal: ${cls?.estilo?.atributos||cls?.primary_attribute||"não definido"}. Mana máxima: ${mana.total} (${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT).`;
@@ -140,30 +134,34 @@
     document.getElementById("sheetSkills").innerHTML=skills.length?skills.map(skill=>{
       const cost=window.WONDERLAND_SKILL_COSTS?.infer(cls,skill,skill.nivel,{passive:Boolean(skill.passive),ultimate:Boolean(skill.ultimate),path:Boolean(skill.path)})||{label:"—"};
       const effect=finalEffect(skill.descricao,skill.tipo||skill.categoria,finalAttrs);
-      const effectHtml=effect
-        ?`<div class="character-sheet-skill-damage"><strong>${esc(effect.label)}:</strong> <b>${esc(effect.total)}</b><small>${esc(effect.details)}</small></div>`
-        :`<div class="character-sheet-skill-damage"><strong>Tipo:</strong> ${esc(skill.passive?"Passiva":skill.tipo||skill.categoria||"Utilidade")}</div>`;
+      const effectHtml=effect?`<div class="character-sheet-skill-damage"><strong>${esc(effect.label)}:</strong> <b>${esc(effect.total)}</b><small>${esc(effect.details)}</small></div>`:`<div class="character-sheet-skill-damage"><strong>Tipo:</strong> ${esc(skill.passive?"Passiva":skill.tipo||skill.categoria||"Utilidade")}</div>`;
       return `<article class="character-sheet-skill"><header><div><small>${esc(skill.source||"Habilidade")} • Nível ${esc(skill.nivel||1)}</small><h3>${esc(skill.nome)}</h3></div></header><p>${esc(skill.descricao||"")}</p><div class="character-sheet-skill-meta"><span>${esc(skill.tipo||skill.categoria||"Habilidade")}</span><span>${esc(cost.label)}</span></div>${effectHtml}</article>`
     }).join(""):'<div class="character-sheet-empty">Nenhuma habilidade liberada neste nível.</div>';
     renderItems(document.getElementById("sheetInventory"),data.inventory,"O inventário está vazio.");
     renderItems(document.getElementById("sheetEquipment"),data.equipment,"Nenhum equipamento foi equipado.");
 
     const equipmentMap=new Map(data.equipment.map(item=>[item.slot,item]));
-    document.querySelectorAll("[data-equipment-slot]").forEach(button=>{
-      const item=equipmentMap.get(button.dataset.equipmentSlot);
-      button.textContent=item?(item.metadata?.name||item.item_key):button.textContent;
-      button.classList.toggle("equipped",Boolean(item));
-      if(item)button.title=`Equipado: ${item.metadata?.name||item.item_key}`;
+    document.querySelectorAll("[data-equipment-slot]").forEach(button=>{const item=equipmentMap.get(button.dataset.equipmentSlot);button.textContent=item?(item.metadata?.name||item.item_key):button.textContent;button.classList.toggle("equipped",Boolean(item));if(item)button.title=`Equipado: ${item.metadata?.name||item.item_key}`});
+
+    changeImageButton?.addEventListener("click",()=>{imageMessage.textContent="";imageUrlInput.value=character.image_url||"";imageDialog.showModal()});
+    cancelImageButton?.addEventListener("click",()=>imageDialog.close());
+    imageForm?.addEventListener("submit",async event=>{
+      event.preventDefault();
+      const value=imageUrlInput.value.trim();
+      const submit=imageForm.querySelector('button[type="submit"]');
+      submit.disabled=true;imageMessage.textContent="Salvando foto...";
+      try{
+        const updated=await account.updateCharacterImage(characterId,value);
+        character.image_url=updated.image_url;
+        applyPortrait(updated.image_url||fallbackPortrait);
+        imageDialog.close();imageMessage.textContent="Foto atualizada com sucesso.";
+      }catch(error){imageMessage.textContent=error.message||"Não foi possível atualizar a foto."}
+      finally{submit.disabled=false}
     });
 
     loading.hidden=true;content.hidden=false;
-  }catch(error){
-    console.error(error);loading.textContent=error.message||"Não foi possível carregar a ficha.";
-  }
+  }catch(error){console.error(error);loading.textContent=error.message||"Não foi possível carregar a ficha."}
 
-  document.querySelectorAll("[data-sheet-tab]").forEach(button=>button.addEventListener("click",()=>{
-    document.querySelectorAll("[data-sheet-tab]").forEach(item=>item.classList.toggle("active",item===button));
-    document.querySelectorAll("[data-sheet-panel]").forEach(panel=>panel.classList.toggle("active",panel.dataset.sheetPanel===button.dataset.sheetTab));
-  }));
+  document.querySelectorAll("[data-sheet-tab]").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll("[data-sheet-tab]").forEach(item=>item.classList.toggle("active",item===button));document.querySelectorAll("[data-sheet-panel]").forEach(panel=>panel.classList.toggle("active",panel.dataset.sheetPanel===button.dataset.sheetTab))}));
   logout?.addEventListener("click",async()=>{await account.logout();window.location.assign("conta.html")});
 })();

@@ -1,36 +1,42 @@
-body.character-sheet-page{--sheet-glow:color-mix(in srgb,var(--sheet-rank-color) 38%,transparent)}
-.character-sheet-topbar{padding:12px 24px;border-bottom:1px solid color-mix(in srgb,var(--sheet-rank-color) 24%,transparent);background:linear-gradient(180deg,rgba(5,7,10,.96),rgba(5,7,10,.9));box-shadow:0 14px 34px rgba(0,0,0,.34),0 0 28px color-mix(in srgb,var(--sheet-rank-color) 7%,transparent)}
+body.character-sheet-page{--sheet-glow:color-mix(in srgb,var(--sheet-rank-color) 44%,transparent)}
+.character-sheet-topbar{padding:12px 24px;border-bottom:1px solid color-mix(in srgb,var(--sheet-rank-color) 28%,transparent);background:linear-gradient(180deg,rgba(5,7,10,.97),rgba(5,7,10,.91));box-shadow:0 14px 34px rgba(0,0,0,.34),0 0 34px color-mix(in srgb,var(--sheet-rank-color) 10%,transparent)}
 .character-sheet-topbar .wl-button{min-width:150px;justify-content:center;border-radius:12px;letter-spacing:1.2px;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,background .2s ease}
-.character-sheet-topbar .wl-button:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--sheet-rank-color) 65%,#fff);box-shadow:0 0 22px color-mix(in srgb,var(--sheet-rank-color) 16%,transparent)}
-.character-sheet-brand{padding:8px 18px;border:1px solid color-mix(in srgb,var(--sheet-rank-color) 18%,transparent);border-radius:999px;background:rgba(255,255,255,.018);box-shadow:inset 0 0 18px rgba(255,255,255,.02)}
+.character-sheet-topbar .wl-button:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--sheet-rank-color) 72%,#fff);box-shadow:0 0 28px color-mix(in srgb,var(--sheet-rank-color) 24%,transparent)}
+.character-sheet-brand{padding:8px 18px;border:1px solid color-mix(in srgb,var(--sheet-rank-color) 22%,transparent);border-radius:999px;background:rgba(255,255,255,.018);box-shadow:inset 0 0 18px rgba(255,255,255,.02),0 0 18px color-mix(in srgb,var(--sheet-rank-color) 8%,transparent)}
 .character-sheet-brand img{width:30px;height:30px}
 .character-sheet-hero{position:relative;overflow:hidden;grid-template-columns:230px minmax(0,1fr) minmax(330px,390px);gap:30px;padding:30px}
-.character-sheet-hero::before{content:"";position:absolute;inset:-35%;pointer-events:none;background:conic-gradient(from 210deg,transparent 0 65%,color-mix(in srgb,var(--sheet-rank-color) 10%,transparent) 72%,transparent 80%);animation:sheetHeroSweep 12s linear infinite}
+.character-sheet-hero::before{content:"";position:absolute;inset:-38%;pointer-events:none;background:conic-gradient(from 210deg,transparent 0 58%,color-mix(in srgb,var(--sheet-rank-color) 10%,transparent) 66%,color-mix(in srgb,var(--sheet-rank-accent) 16%,transparent) 72%,transparent 82%);animation:sheetHeroSweep 10s linear infinite}
+.character-sheet-hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 37% 48%,color-mix(in srgb,var(--sheet-rank-color) 16%,transparent),transparent 31%),radial-gradient(circle at 65% 18%,color-mix(in srgb,var(--sheet-rank-accent) 11%,transparent),transparent 26%);animation:sheetAuraBreath 4.8s ease-in-out infinite}
 .character-sheet-hero>*{position:relative;z-index:1}
 .character-sheet-portrait-wrap{justify-content:center}
-.character-sheet-portrait{min-height:260px;border-width:2px;box-shadow:0 0 30px color-mix(in srgb,var(--sheet-rank-color) 18%,transparent),0 18px 40px rgba(0,0,0,.42);animation:sheetPortraitPulse 3.2s ease-in-out infinite}
-.character-sheet-portrait::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 28%,color-mix(in srgb,var(--sheet-rank-accent) 22%,transparent) 48%,transparent 68%);transform:translateX(-120%);animation:sheetPortraitShine 4.6s ease-in-out infinite}
-.character-sheet-rank-overlay{width:82px;height:82px;animation:sheetRankPulse 2.3s ease-in-out infinite}
+.character-sheet-portrait{min-height:260px;border-width:2px;box-shadow:0 0 32px color-mix(in srgb,var(--sheet-rank-color) 24%,transparent),0 18px 40px rgba(0,0,0,.42);animation:sheetPortraitPulse 2.8s ease-in-out infinite}
+.character-sheet-portrait::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(112deg,transparent 22%,color-mix(in srgb,var(--sheet-rank-accent) 34%,transparent) 48%,transparent 73%);transform:translateX(-135%);animation:sheetPortraitShine 3.8s cubic-bezier(.4,0,.2,1) infinite}
+.character-sheet-rank-overlay{width:82px;height:82px;animation:sheetRankPulse 1.9s ease-in-out infinite}
 .character-sheet-identity{justify-content:center;padding:18px 0}
 .character-sheet-eyebrow{display:inline-flex;align-items:center;gap:12px;margin-bottom:14px;font-size:11px;letter-spacing:2.8px}
 .character-sheet-eyebrow::before{content:"";width:42px;height:1px;background:linear-gradient(90deg,transparent,var(--sheet-rank-accent))}
-.character-sheet-identity h1{margin:0 0 12px;font-size:clamp(46px,6vw,78px);line-height:.96;letter-spacing:1px;background:linear-gradient(100deg,#fff0cf 0%,var(--sheet-rank-accent) 46%,#fff 76%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 0 20px color-mix(in srgb,var(--sheet-rank-color) 18%,transparent))}
+.character-sheet-identity h1{margin:0 0 12px;font-size:clamp(46px,6vw,78px);line-height:.96;letter-spacing:1px;background:linear-gradient(100deg,#fff0cf 0%,var(--sheet-rank-accent) 46%,#fff 76%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 0 28px color-mix(in srgb,var(--sheet-rank-color) 26%,transparent));animation:sheetNameGlow 3.6s ease-in-out infinite}
 .character-sheet-identity #sheetSummary{display:none!important}
-.character-sheet-badges{display:grid!important}
+.character-sheet-badges{display:grid!important;visibility:visible!important;opacity:1!important}
 .character-sheet-badges #sheetLevel,.character-sheet-badges #sheetRank{display:none!important}
+.character-sheet-badges #sheetRace,.character-sheet-badges #sheetClass{display:grid!important;visibility:visible!important;opacity:1!important}
 .character-image-button{border-color:color-mix(in srgb,var(--sheet-rank-color) 42%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--sheet-rank-color) 10%,rgba(255,255,255,.025)),rgba(0,0,0,.14));box-shadow:inset 0 0 18px color-mix(in srgb,var(--sheet-rank-color) 5%,transparent)}
 .character-sheet-resources{grid-template-columns:1fr 1fr;align-content:center}
 .resource-exp,.resource-wg{grid-column:1/-1}
 .resource-card{position:relative;overflow:hidden;min-height:88px;padding:17px 18px;background:linear-gradient(145deg,color-mix(in srgb,var(--sheet-rank-color) 6%,rgba(255,255,255,.028)),rgba(0,0,0,.12));box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
 .resource-card::after{content:"";position:absolute;inset:auto -25% -70% 35%;height:120px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--sheet-rank-color) 12%,transparent),transparent 68%);pointer-events:none}
+.resource-wg::before{content:"WG";position:absolute;right:18px;top:50%;transform:translateY(-50%);font:700 54px "Cinzel",serif;letter-spacing:-4px;color:rgba(214,181,107,.08);pointer-events:none;z-index:0}
+.resource-wg>*{position:relative;z-index:1}
 .character-sheet-tabs{gap:12px;margin:20px 0 26px}
 .character-sheet-tabs button{position:relative;overflow:hidden;padding:16px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.024),rgba(255,255,255,.012));transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease,color .2s ease}
 .character-sheet-tabs button:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--sheet-rank-color) 46%,transparent);color:#fff0cf}
 .character-sheet-tabs button.active::after{content:"";position:absolute;left:18%;right:18%;bottom:0;height:2px;border-radius:999px;background:linear-gradient(90deg,transparent,var(--sheet-rank-accent),transparent);box-shadow:0 0 14px var(--sheet-rank-color)}
-@keyframes sheetPortraitPulse{0%,100%{box-shadow:0 0 24px color-mix(in srgb,var(--sheet-rank-color) 15%,transparent),0 18px 40px rgba(0,0,0,.42)}50%{box-shadow:0 0 42px color-mix(in srgb,var(--sheet-rank-color) 34%,transparent),0 18px 44px rgba(0,0,0,.48)}}
-@keyframes sheetRankPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 10px color-mix(in srgb,var(--sheet-rank-color) 34%,transparent))}50%{transform:scale(1.08);filter:drop-shadow(0 0 22px color-mix(in srgb,var(--sheet-rank-color) 72%,transparent))}}
-@keyframes sheetPortraitShine{0%,62%,100%{transform:translateX(-120%)}78%{transform:translateX(120%)}}
+@keyframes sheetPortraitPulse{0%,100%{box-shadow:0 0 28px color-mix(in srgb,var(--sheet-rank-color) 20%,transparent),0 18px 40px rgba(0,0,0,.42)}50%{box-shadow:0 0 58px color-mix(in srgb,var(--sheet-rank-color) 48%,transparent),0 18px 48px rgba(0,0,0,.5)}}
+@keyframes sheetRankPulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 12px color-mix(in srgb,var(--sheet-rank-color) 40%,transparent))}50%{transform:scale(1.12);filter:drop-shadow(0 0 30px color-mix(in srgb,var(--sheet-rank-color) 88%,transparent))}}
+@keyframes sheetPortraitShine{0%,58%,100%{transform:translateX(-135%)}78%{transform:translateX(135%)}}
 @keyframes sheetHeroSweep{to{transform:rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){.character-sheet-hero::before,.character-sheet-portrait,.character-sheet-portrait::after,.character-sheet-rank-overlay{animation:none}}
+@keyframes sheetAuraBreath{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.035)}}
+@keyframes sheetNameGlow{0%,100%{filter:drop-shadow(0 0 20px color-mix(in srgb,var(--sheet-rank-color) 20%,transparent))}50%{filter:drop-shadow(0 0 40px color-mix(in srgb,var(--sheet-rank-color) 50%,transparent))}}
+@media(prefers-reduced-motion:reduce){.character-sheet-hero::before,.character-sheet-hero::after,.character-sheet-portrait,.character-sheet-portrait::after,.character-sheet-rank-overlay,.character-sheet-identity h1{animation:none}}
 @media(max-width:1050px){.character-sheet-hero{grid-template-columns:210px 1fr}.character-sheet-resources{grid-column:1/-1;grid-template-columns:repeat(4,1fr)}.resource-exp,.resource-wg{grid-column:auto}}
 @media(max-width:760px){.character-sheet-topbar{grid-template-columns:1fr auto}.character-sheet-brand{display:none}.character-sheet-topbar .wl-button{min-width:0}.character-sheet-hero{grid-template-columns:1fr;padding:20px}.character-sheet-portrait-wrap{width:min(100%,320px);margin:0 auto}.character-sheet-identity{text-align:center;align-items:center}.character-sheet-eyebrow::before{display:none}.character-sheet-resources{grid-template-columns:1fr 1fr}.resource-exp,.resource-wg{grid-column:1/-1}}

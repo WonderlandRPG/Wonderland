@@ -30,6 +30,7 @@
     const race=raceMap[character.race_id];
     const cls=classMap[character.class_id];
     const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante"};
+    const portrait=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
     const article=document.createElement("article");
     article.className="character-card wl-card";
     article.innerHTML=`
@@ -38,7 +39,11 @@
       <span class="wl-card-corner wl-card-corner-top-right"></span>
       <span class="wl-card-corner wl-card-corner-bottom-left"></span>
       <span class="wl-card-corner wl-card-corner-bottom-right"></span>
-      <div class="wl-card-image character-rank-cover">${rankSystem?.emblemHtml(rank.id)||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`}<small>Rank ${esc(rank.id)} — ${esc(rank.title)}</small></div>
+      <div class="wl-card-image character-photo-cover">
+        <img src="${esc(portrait)}" alt="${esc(character.name||"Personagem")}">
+        <span class="wl-card-shine"></span>
+        <div class="character-rank-overlay" title="Rank ${esc(rank.id)} — ${esc(rank.title)}">${rankSystem?.emblemHtml(rank.id)||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`}</div>
+      </div>
       <div class="wl-card-body">
         <span class="wl-card-subtitle">Nível ${esc(character.level||1)} • ${esc(race?.name||character.race_id||"Raça não definida")}</span>
         <h2 class="wl-card-title">${esc(character.name||"Sem nome")}</h2>

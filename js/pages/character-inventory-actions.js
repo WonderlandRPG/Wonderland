@@ -32,14 +32,14 @@
 
     inventory.querySelectorAll("[data-equip-inventory]").forEach(button=>button.addEventListener("click",async()=>{
       button.disabled=true;button.textContent="Equipando...";
-      try{const {error}=await client.rpc("equip_inventory_item",{p_character_id:characterId,p_inventory_id:button.dataset.equipInventory});if(error)throw error;await refresh()}catch(error){alert(error.message||"Não foi possível equipar o item.");button.disabled=false;button.textContent="Equipar"}
+      try{const {error}=await client.rpc("equip_inventory_item",{p_character_id:characterId,p_inventory_id:button.dataset.equipInventory});if(error)throw error;await refresh();window.dispatchEvent(new CustomEvent("wonderland:equipment-updated"))}catch(error){alert(error.message||"Não foi possível equipar o item.");button.disabled=false;button.textContent="Equipar"}
     }));
     equipment.querySelectorAll("[data-unequip-slot]").forEach(button=>button.addEventListener("click",async()=>{
       button.disabled=true;button.textContent="Removendo...";
-      try{const {error}=await client.rpc("unequip_character_slot",{p_character_id:characterId,p_slot:button.dataset.unequipSlot});if(error)throw error;await refresh()}catch(error){alert(error.message||"Não foi possível remover o item.");button.disabled=false;button.textContent="Remover"}
+      try{const {error}=await client.rpc("unequip_character_slot",{p_character_id:characterId,p_slot:button.dataset.unequipSlot});if(error)throw error;await refresh();window.dispatchEvent(new CustomEvent("wonderland:equipment-updated"))}catch(error){alert(error.message||"Não foi possível remover o item.");button.disabled=false;button.textContent="Remover"}
     }));
   }
 
   let attempts=0;
-  const timer=setInterval(()=>{attempts++;const content=document.getElementById("sheetContent");if(content&&!content.hidden){clearInterval(timer);refresh().catch(console.error)}else if(attempts>80)clearInterval(timer)},150);
+  const timer=setInterval(()=>{attempts++;const content=document.getElementById("sheetContent");if(content&&!content.hidden){clearInterval(timer);refresh().then(()=>window.dispatchEvent(new CustomEvent("wonderland:equipment-updated"))).catch(console.error)}else if(attempts>80)clearInterval(timer)},150);
 })();

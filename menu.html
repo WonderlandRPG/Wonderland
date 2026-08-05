@@ -18,25 +18,10 @@
     <div class="menu-vignette" aria-hidden="true"></div>
     <div class="mist-layer" aria-hidden="true"></div>
     <div id="particles" aria-hidden="true"></div>
-
-    <audio id="bgMusic" loop preload="auto">
-        <source src="assets/audio/wonderland.mp3" type="audio/mpeg">
-    </audio>
-
-    <div class="music-controls" aria-label="Controles de música">
-        <button id="musicButton" class="music-button" type="button" aria-label="Tocar música" title="Tocar música"><span id="musicIcon" aria-hidden="true">♪</span></button>
-        <label class="volume-control" for="volumeSlider"><span aria-hidden="true">🔊</span><input id="volumeSlider" type="range" min="0" max="100" step="1" value="25" aria-label="Volume da música"><output id="volumeValue" for="volumeSlider">25%</output></label>
-    </div>
-
+    <audio id="bgMusic" loop preload="auto"><source src="assets/audio/wonderland.mp3" type="audio/mpeg"></audio>
+    <div class="music-controls" aria-label="Controles de música"><button id="musicButton" class="music-button" type="button" aria-label="Tocar música" title="Tocar música"><span id="musicIcon" aria-hidden="true">♪</span></button><label class="volume-control" for="volumeSlider"><span aria-hidden="true">🔊</span><input id="volumeSlider" type="range" min="0" max="100" step="1" value="25" aria-label="Volume da música"><output id="volumeValue" for="volumeSlider">25%</output></label></div>
     <main class="menu-shell">
-        <section class="menu-hero">
-            <div class="menu-logo-frame" aria-hidden="true"><img src="assets/images/logo.png" alt=""></div>
-            <span class="menu-label">Portal do Primeiro Sonho</span>
-            <h1>Wonderland</h1>
-            <p>Escolha o seu caminho e atravesse os arquivos, mapas e segredos do mundo.</p>
-            <div class="menu-divider" aria-hidden="true"><span></span><strong>◆</strong><span></span></div>
-        </section>
-
+        <section class="menu-hero"><div class="menu-logo-frame" aria-hidden="true"><img src="assets/images/logo.png" alt=""></div><span class="menu-label">Portal do Primeiro Sonho</span><h1>Wonderland</h1><p>Escolha o seu caminho e atravesse os arquivos, mapas e segredos do mundo.</p><div class="menu-divider" aria-hidden="true"><span></span><strong>◆</strong><span></span></div></section>
         <nav class="main-menu" aria-label="Menu principal">
             <a href="conta.html" class="menu-link featured"><span class="menu-number">00</span><span class="menu-icon" aria-hidden="true">♙</span><span class="menu-copy"><small>Área do jogador</small><strong>Minha Conta</strong><em>Entre, crie personagens e consulte suas fichas.</em></span><span class="menu-arrow" aria-hidden="true">→</span></a>
             <a href="historia.html" class="menu-link"><span class="menu-number">01</span><span class="menu-icon" aria-hidden="true">✦</span><span class="menu-copy"><small>Crônicas do mundo</small><strong>História</strong><em>Conheça as eras que moldaram Wonderland.</em></span><span class="menu-arrow" aria-hidden="true">→</span></a>
@@ -46,13 +31,11 @@
             <a href="atributos.html" class="menu-link"><span class="menu-number">05</span><span class="menu-icon" aria-hidden="true">✧</span><span class="menu-copy"><small>Fundamentos do personagem</small><strong>Atributos</strong><em>Entenda os valores que definem cada aventureiro.</em></span><span class="menu-arrow" aria-hidden="true">→</span></a>
             <a href="grimorio.html" class="menu-link"><span class="menu-number">06</span><span class="menu-icon" aria-hidden="true">✺</span><span class="menu-copy"><small>Conhecimento arcano</small><strong>Grimório</strong><em>Consulte habilidades, passivas, efeitos e poderes supremos.</em></span><span class="menu-arrow" aria-hidden="true">→</span></a>
             <a href="ranks.html" class="menu-link"><span class="menu-number">07</span><span class="menu-icon" aria-hidden="true">S</span><span class="menu-copy"><small>Prestígio da Guilda</small><strong>Ranks</strong><em>Conheça os graus, acessos e Provas da Guilda.</em></span><span class="menu-arrow" aria-hidden="true">→</span></a>
-            <a href="#" class="menu-link unavailable" aria-disabled="true" tabindex="-1"><span class="menu-number">08</span><span class="menu-icon" aria-hidden="true">◌</span><span class="menu-copy"><small>Desafios paralelos</small><strong>Minigames</strong><em>Em breve.</em></span><span class="menu-status">Bloqueado</span></a>
+            <a href="loja.html" class="menu-link featured"><span class="menu-number">08</span><span class="menu-icon" aria-hidden="true">WG</span><span class="menu-copy"><small>Mercado dos aventureiros</small><strong>Loja</strong><em>Compre equipamentos e envie para o inventário dos seus personagens.</em></span><span class="menu-arrow" aria-hidden="true">→</span></a>
+            <a href="#" class="menu-link unavailable" aria-disabled="true" tabindex="-1"><span class="menu-number">09</span><span class="menu-icon" aria-hidden="true">◌</span><span class="menu-copy"><small>Desafios paralelos</small><strong>Minigames</strong><em>Em breve.</em></span><span class="menu-status">Bloqueado</span></a>
         </nav>
-
         <footer class="menu-footer"><a href="index.html" class="return-link">← Voltar à tela inicial</a><span>Wonderland RPG</span></footer>
     </main>
-
-    <script src="js/global-audio.js?v=1"></script>
-    <script src="js/pages/menu.js?v=9" defer></script>
+    <script src="js/global-audio.js?v=1"></script><script src="js/pages/menu.js?v=9" defer></script>
 </body>
 </html>

@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
-  <link rel="stylesheet" href="css/admin.css?v=4">
+  <link rel="stylesheet" href="css/admin.css?v=5">
 </head>
 <body class="admin-page">
   <div class="admin-background" aria-hidden="true"></div>
@@ -40,20 +40,23 @@
       <article><span>Itens</span><strong id="statItems">—</strong></article>
     </section>
 
-    <section class="admin-grid">
-      <article class="admin-card"><span class="admin-card-icon">◆</span><div><small>Conteúdo do jogo</small><h2>Raças</h2><p>Crie, edite, ative e balanceie raças e atributos raciais.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="races">Abrir módulo</button></article>
-      <article class="admin-card"><span class="admin-card-icon">▲</span><div><small>Conteúdo do jogo</small><h2>Classes</h2><p>Gerencie classes, caminhos, funções e atributos principais.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="classes">Abrir módulo</button></article>
-      <article class="admin-card"><span class="admin-card-icon">✺</span><div><small>Combate</small><h2>Habilidades</h2><p>Edite custo de Mana, recarga, alcance, nível e efeitos.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="skills">Abrir módulo</button></article>
-      <article class="admin-card"><span class="admin-card-icon">◇</span><div><small>Economia</small><h2>Itens</h2><p>Gerencie equipamentos, consumíveis, raridades e valores.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="items">Abrir módulo</button></article>
-      <article class="admin-card"><span class="admin-card-icon">♙</span><div><small>Jogadores</small><h2>Usuários</h2><p>Consulte contas, bloqueios e edite os personagens vinculados.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="users">Abrir módulo</button></article>
-      <article class="admin-card"><span class="admin-card-icon">⚖</span><div><small>Sistema</small><h2>Balanceamento</h2><p>Altere valores globais do jogo sem editar o código.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="settings">Abrir módulo</button></article>
-    </section>
+    <section class="admin-console">
+      <nav class="admin-module-nav" aria-label="Módulos administrativos">
+        <button type="button" data-admin-module="races"><span>◆</span><strong>Raças</strong><small>Origens e atributos</small></button>
+        <button type="button" data-admin-module="classes"><span>▲</span><strong>Classes</strong><small>Caminhos e funções</small></button>
+        <button type="button" data-admin-module="skills"><span>✺</span><strong>Habilidades</strong><small>Custos e efeitos</small></button>
+        <button type="button" data-admin-module="items"><span>◇</span><strong>Itens</strong><small>Equipamentos e economia</small></button>
+        <button type="button" data-admin-module="users"><span>♙</span><strong>Usuários</strong><small>Contas e personagens</small></button>
+        <button type="button" data-admin-module="settings"><span>⚖</span><strong>Balanceamento</strong><small>Valores globais</small></button>
+        <button type="button" data-admin-module="xp"><span>✦</span><strong>XP & WG</strong><small>Missões e dungeons</small></button>
+      </nav>
 
-    <section class="admin-workspace">
-      <header><span>Área de trabalho</span><h2 id="adminModuleTitle">Visão geral</h2></header>
-      <div id="adminModuleContent" class="admin-module-content">
-        <p>Escolha um módulo acima para abrir a lista de registros e editar seus detalhes.</p>
-      </div>
+      <section class="admin-workspace">
+        <header><span>Área de trabalho</span><h2 id="adminModuleTitle">Visão geral</h2></header>
+        <div id="adminModuleContent" class="admin-module-content">
+          <p>Escolha um módulo ao lado para abrir seus registros e ferramentas.</p>
+        </div>
+      </section>
     </section>
   </main>
 
@@ -63,7 +66,8 @@
   <script src="js/data/racas-data.js?v=1"></script>
   <script src="js/data/classes-all.js?v=2"></script>
   <script src="js/data/skill-costs.js?v=4"></script>
-  <script src="js/data/rank-system.js?v=1"></script>
-  <script src="js/pages/admin.js?v=5" defer></script>
+  <script src="js/data/rank-system.js?v=2"></script>
+  <script src="js/data/progression-system.js?v=2"></script>
+  <script src="js/pages/admin.js?v=6" defer></script>
 </body>
 </html>

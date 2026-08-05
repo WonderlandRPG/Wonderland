@@ -266,8 +266,24 @@
     <script src="js/engine/render.js"></script>
     <script src="js/engine/wonderland.js"></script>
     <script src="js/data/racas-data.js?v=2"></script>
-    <script src="js/data/mana-system.js?v=1"></script>
-    <script src="js/pages/racas.js?v=23" defer></script>
+    <script src="js/data/mana-system.js?v=2"></script>
+    <script src="js/pages/racas.js?v=24" defer></script>
+    <script>
+      window.addEventListener("load", () => {
+        const manaElement = document.getElementById("raceMana");
+        if (!manaElement) return;
+        const updateMana = () => {
+          const raceId = new URLSearchParams(window.location.search).get("race") || localStorage.getItem("wonderlandSelectedRace");
+          const race = (window.WONDERLAND_RACES || []).find(item => item.id === raceId) || (window.WONDERLAND_RACES || [])[0];
+          const system = window.WONDERLAND_MANA_SYSTEM;
+          const base = Number(system?.BASE_MANA || 100);
+          const racial = Number(system?.racialMana?.(race) || 0);
+          manaElement.textContent = racial > 0 ? `${base} + ${racial}` : String(base);
+        };
+        updateMana();
+        document.getElementById("raceList")?.addEventListener("click", () => window.setTimeout(updateMana, 0));
+      });
+    </script>
 </body>
 
 </html>

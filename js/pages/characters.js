@@ -25,6 +25,11 @@
   const classMap=window.WONDERLAND_CLASSES||{};
 
   function esc(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;")}
+  function hexToRgb(hex){
+    const clean=String(hex||"#d6b56b").replace("#","").trim();
+    const value=clean.length===3?clean.split("").map(char=>char+char).join(""):clean.padEnd(6,"0").slice(0,6);
+    return `${parseInt(value.slice(0,2),16)||214}, ${parseInt(value.slice(2,4),16)||181}, ${parseInt(value.slice(4,6),16)||107}`;
+  }
 
   function characterCard(character){
     const race=raceMap[character.race_id];
@@ -33,21 +38,21 @@
     const portrait=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
     const article=document.createElement("article");
     article.className=`character-card wl-card character-card-rank-${String(rank.id).toLowerCase()}`;
-    article.dataset.rank=rank.id;
     article.style.setProperty("--rank-color",rank.color||"#d6b56b");
+    article.style.setProperty("--wl-card-primary",hexToRgb(rank.color));
+    article.style.setProperty("--wl-card-secondary",hexToRgb(rank.color));
     article.innerHTML=`
       <div class="wl-card-frame"></div>
       <span class="wl-card-corner wl-card-corner-top-left"></span>
       <span class="wl-card-corner wl-card-corner-top-right"></span>
       <span class="wl-card-corner wl-card-corner-bottom-left"></span>
       <span class="wl-card-corner wl-card-corner-bottom-right"></span>
-      <span class="character-rank-sheen" aria-hidden="true"></span>
       <div class="wl-card-image character-photo-cover">
         <img src="${esc(portrait)}" alt="${esc(character.name||"Personagem")}">
         <span class="wl-card-shine"></span>
-        <div class="character-rank-overlay" title="Rank ${esc(rank.id)} — ${esc(rank.title)}">${rankSystem?.emblemHtml(rank.id)||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`}</div>
+        <div class="character-rank-overlay" title="Rank ${esc(rank.id)} — ${esc(rank.title)}">${rankSystem?.emblemHtml(rank.id,{compact:true})||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`}</div>
       </div>
-      <div class="wl-card-body character-card-body-centered">
+      <div class="wl-card-body character-card-body">
         <span class="wl-card-subtitle">Nível ${esc(character.level||1)} • ${esc(race?.name||character.race_id||"Raça não definida")}</span>
         <h2 class="wl-card-title">${esc(character.name||"Sem nome")}</h2>
         <p class="wl-card-text">${esc(cls?.nome||character.class_id||"Classe não definida")}</p>

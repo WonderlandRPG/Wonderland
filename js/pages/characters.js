@@ -2,6 +2,7 @@
 
 (async function(){
   const account=window.WONDERLAND_ACCOUNT;
+  const rankSystem=window.WONDERLAND_RANK_SYSTEM;
   const greeting=document.getElementById("charactersGreeting");
   const capacity=document.getElementById("characterCapacity");
   const grid=document.getElementById("charactersGrid");
@@ -9,17 +10,10 @@
   const logout=document.getElementById("logoutButton");
   const adminPanelButton=document.getElementById("adminPanelButton");
 
-  if(!account){
-    window.location.replace("conta.html");
-    return;
-  }
+  if(!account){window.location.replace("conta.html");return}
 
   let user;
-  try{
-    user=await account.current();
-  }catch(error){
-    console.error(error);
-  }
+  try{user=await account.current()}catch(error){console.error(error)}
   if(!user){window.location.replace("conta.html");return}
 
   if(adminPanelButton&&account.isAdmin(user))adminPanelButton.hidden=false;
@@ -35,6 +29,7 @@
   function characterCard(character){
     const race=raceMap[character.race_id];
     const cls=classMap[character.class_id];
+    const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante"};
     const article=document.createElement("article");
     article.className="character-card wl-card";
     article.innerHTML=`
@@ -43,12 +38,12 @@
       <span class="wl-card-corner wl-card-corner-top-right"></span>
       <span class="wl-card-corner wl-card-corner-bottom-left"></span>
       <span class="wl-card-corner wl-card-corner-bottom-right"></span>
-      <div class="wl-card-image"><img src="${esc(character.image_url||race?.artwork||race?.image||"assets/images/logo.png")}" alt="${esc(character.name||"Personagem")}"><span class="wl-card-shine"></span></div>
+      <div class="wl-card-image character-rank-cover">${rankSystem?.emblemHtml(rank.id)||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`}<small>Rank ${esc(rank.id)} — ${esc(rank.title)}</small></div>
       <div class="wl-card-body">
         <span class="wl-card-subtitle">Nível ${esc(character.level||1)} • ${esc(race?.name||character.race_id||"Raça não definida")}</span>
         <h2 class="wl-card-title">${esc(character.name||"Sem nome")}</h2>
         <p class="wl-card-text">${esc(cls?.nome||character.class_id||"Classe não definida")}</p>
-        <div class="wl-card-meta"><span class="wl-card-stars">✦</span><a class="wl-button wl-button-gold" href="ficha.html?id=${encodeURIComponent(character.id)}">Abrir ficha</a></div>
+        <div class="wl-card-meta"><span class="wl-card-stars">Rank ${esc(rank.id)}</span><a class="wl-button wl-button-gold" href="ficha.html?id=${encodeURIComponent(character.id)}">Abrir ficha</a></div>
       </div>`;
     return article;
   }
@@ -71,8 +66,5 @@
     grid.innerHTML=`<article class="character-empty-card locked"><span class="character-empty-symbol">!</span><h2>Não foi possível carregar</h2><p>${esc(error.message||"Tente novamente em instantes.")}</p></article>`;
   }
 
-  logout?.addEventListener("click",async()=>{
-    logout.disabled=true;
-    try{await account.logout()}finally{window.location.assign("conta.html")}
-  });
+  logout?.addEventListener("click",async()=>{logout.disabled=true;try{await account.logout()}finally{window.location.assign("conta.html")}});
 })();

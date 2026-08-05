@@ -7,6 +7,7 @@
   const grid=document.getElementById("charactersGrid");
   const template=document.getElementById("emptyCharacterTemplate");
   const logout=document.getElementById("logoutButton");
+  const adminPanelButton=document.getElementById("adminPanelButton");
 
   if(!account){
     window.location.replace("conta.html");
@@ -20,6 +21,8 @@
     console.error(error);
   }
   if(!user){window.location.replace("conta.html");return}
+
+  if(adminPanelButton&&account.isAdmin(user))adminPanelButton.hidden=false;
 
   greeting.textContent=`Bem-vindo, ${user.name}. Gerencie suas fichas, inventários e progressões.`;
   grid.innerHTML='<article class="character-empty-card locked"><span class="character-empty-symbol">✦</span><h2>Carregando personagens</h2><p>Consultando o Salão dos Aventureiros...</p></article>';

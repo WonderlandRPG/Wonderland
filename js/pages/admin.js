@@ -17,6 +17,9 @@
 
   greeting.textContent=`Bem-vindo, ${user.name}. Gerencie o conteúdo e o balanceamento do Wonderland.`;
 
+  const classSource=window.WONDERLAND_CLASSES||{};
+  const raceSource=Array.isArray(window.WONDERLAND_RACES)?window.WONDERLAND_RACES:[];
+
   const modules={
     races:{title:"Raças",table:"races",id:"id",fields:["id","name","description","tagline","archetype","difficulty","base_hp","base_mana","icon","artwork_url","is_active","sort_order"]},
     classes:{title:"Classes",table:"classes",id:"id",fields:["id","name","description","role","specialization","difficulty","primary_attribute","secondary_attribute","strengths","weaknesses","resource_name","resource_description","icon","artwork_url","is_active","sort_order"]},
@@ -58,7 +61,7 @@
     return `<label class="admin-field"><span>${label}</span><input type="${type}" name="${field}" value="${esc(value??"")}" ${readonly.has(field)?"readonly":""}></label>`;
   }
 
-  function normalizeValue(field,input,existing){
+  function normalizeValue(field,input){
     if(booleans.has(field))return input.checked;
     if(numbers.has(field))return input.value===""?null:Number(input.value);
     if(field==="value"||field==="default_value"){
@@ -66,24 +69,48 @@
       if(raw==="")return null;
       try{return JSON.parse(raw)}catch{return raw}
     }
-    if(input.value==="")return null;
-    return input.value;
+    return input.value===""?null:input.value;
   }
 
   async function loadRows(module){
-    const {data,error}=await client.from(module.table).select(module.fields.join(",")).order(module.id,{ascending:true}).limit(200);
+    const {data,error}=await client.from(module.table).select(module.fields.join(",")).order(module.id,{ascending:true}).limit(500);
     if(error)throw error;
     return data||[];
   }
 
-  function renderTable(module,rows){
-    if(!rows.length)return '<div class="admin-empty">Nenhum registro encontrado neste módulo.</div>';
-    const previewFields=module.fields.slice(0,Math.min(6,module.fields.length));
-    return `<div class="admin-table-wrap"><table class="admin-table"><thead><tr>${previewFields.map(field=>`<th>${esc(labels[field]||field)}</th>`).join("")}<th>Ações</th></tr></thead><tbody>${rows.map((row,index)=>`<tr>${previewFields.map(field=>`<td>${format(row[field])}</td>`).join("")}<td><button class="wl-button wl-button-gold admin-edit-button" type="button" data-edit-index="${index}">Editar</button></td></tr>`).join("")}</tbody></table></div>`;
+  async function loadRelated(moduleKey,row){
+    if(moduleKey==="classes"){
+      const {data,error}=await client.from("skills").select("id,name,description,category,unlock_level,mana_cost,cooldown_turns,is_passive,is_ultimate,is_active,class_path_id").eq("class_id",row.id).order("unlock_level",{ascending:true});
+      if(error)throw error;
+      return data||[];
+    }
+    if(moduleKey==="races"){
+      const {data,error}=await client.from("skills").select("id,name,description,category,unlock_level,mana_cost,cooldown_turns,is_passive,is_ultimate,is_active").eq("race_id",row.id).order("unlock_level",{ascending:true});
+      if(error)throw error;
+      return data||[];
+    }
+    if(moduleKey==="users"){
+      const {data,error}=await client.from("characters").select("id,name,race_id,class_id,level,experience,created_at").eq("user_id",row.id).order("created_at",{ascending:true});
+      if(error)throw error;
+      return data||[];
+    }
+    return[];
   }
 
-  function renderEditor(module,row,index){
-    return `<section class="admin-editor"><header><div><span>Editor</span><h3>${row?`Editar ${esc(row.name||row.label||row.username||row[module.id])}`:`Novo registro`}</h3></div><button type="button" class="wl-button wl-button-ghost" data-close-editor>Fechar</button></header><form id="adminEditForm" class="admin-edit-form" data-edit-index="${index??""}">${module.fields.map(field=>inputFor(field,row?.[field])).join("")}<div class="admin-form-actions"><button type="submit" class="wl-button wl-button-green">Salvar alterações</button></div><p id="adminFormMessage" class="admin-form-message"></p></form></section>`;
+  function renderRecordList(module,rows){
+    if(!rows.length)return '<div class="admin-empty">Nenhum registro encontrado neste módulo.</div>';
+    return `<aside class="admin-record-list">${rows.map((row,index)=>`<button type="button" class="admin-record-button" data-record-index="${index}"><small>${esc(row[module.id])}</small><strong>${esc(row.name||row.label||row.username||row.display_name||row[module.id])}</strong><span>${esc(row.role||row.category||row.source_type||row.item_type||"")}</span></button>`).join("")}</aside>`;
+  }
+
+  function renderEditor(module,row,index,related,moduleKey){
+    const relatedTitle=moduleKey==="classes"?"Habilidades da classe":moduleKey==="races"?"Habilidades raciais":moduleKey==="users"?"Personagens da conta":"";
+    const relatedHtml=relatedTitle?`<section class="admin-related"><header><span>Conteúdo vinculado</span><h3>${relatedTitle}</h3></header>${related.length?related.map((item,relatedIndex)=>`<article class="admin-related-card"><div><small>${esc(item.category||`Nível ${item.level||item.unlock_level||1}`)}</small><h4>${esc(item.name)}</h4><p>${esc(item.description||"")}</p></div><div class="admin-related-meta">${item.unlock_level!==undefined?`<span>Nível ${esc(item.unlock_level)}</span>`:""}${item.mana_cost!==undefined?`<span>Mana ${esc(item.mana_cost)}</span>`:""}${item.cooldown_turns!==undefined&&item.cooldown_turns!==null?`<span>Recarga ${esc(item.cooldown_turns)}</span>`:""}</div><button type="button" class="wl-button wl-button-gold" data-related-edit="${relatedIndex}">Editar</button></article>`).join(""):"<div class='admin-empty'>Nenhum conteúdo vinculado encontrado.</div>"}</section>`:"";
+    return `<section class="admin-editor admin-editor-detail"><header><div><span>Editor</span><h3>${esc(row.name||row.label||row.username||row[module.id])}</h3></div></header><form id="adminEditForm" class="admin-edit-form" data-edit-index="${index}">${module.fields.map(field=>inputFor(field,row?.[field])).join("")}<div class="admin-form-actions"><button type="submit" class="wl-button wl-button-green">Salvar alterações</button></div><p id="adminFormMessage" class="admin-form-message"></p></form>${relatedHtml}</section>`;
+  }
+
+  function renderRelatedEditor(item,index){
+    const fields=["name","description","category","unlock_level","mana_cost","cooldown_turns","is_passive","is_ultimate","is_active"];
+    return `<section class="admin-related-editor"><header><div><span>Editar habilidade</span><h3>${esc(item.name)}</h3></div><button type="button" class="wl-button wl-button-ghost" data-close-related>Fechar</button></header><form id="adminRelatedForm" data-related-index="${index}" class="admin-edit-form">${fields.map(field=>inputFor(field,item[field])).join("")}<div class="admin-form-actions"><button type="submit" class="wl-button wl-button-green">Salvar habilidade</button></div><p id="adminRelatedMessage" class="admin-form-message"></p></form></section>`;
   }
 
   async function openModule(key){
@@ -92,32 +119,59 @@
     moduleContent.innerHTML='<div class="admin-loading">Consultando o Supabase...</div>';
     try{
       const rows=await loadRows(module);
-      moduleContent.innerHTML=`<div class="admin-module-toolbar"><p>${rows.length} registro(s) encontrados.</p></div>${renderTable(module,rows)}<div id="adminEditorHost"></div>`;
-      const editorHost=document.getElementById("adminEditorHost");
-      moduleContent.querySelectorAll("[data-edit-index]").forEach(button=>button.addEventListener("click",()=>{
-        const index=Number(button.dataset.editIndex);editorHost.innerHTML=renderEditor(module,rows[index],index);bindEditor(module,rows,index,editorHost);
+      moduleContent.innerHTML=`<div class="admin-browser">${renderRecordList(module,rows)}<div id="adminDetailPane" class="admin-detail-pane"><div class="admin-empty">Selecione um registro à esquerda para ver e editar todas as informações.</div></div></div>`;
+      const detailPane=document.getElementById("adminDetailPane");
+      moduleContent.querySelectorAll("[data-record-index]").forEach(button=>button.addEventListener("click",async()=>{
+        moduleContent.querySelectorAll("[data-record-index]").forEach(item=>item.classList.toggle("active",item===button));
+        const index=Number(button.dataset.recordIndex),row=rows[index];
+        detailPane.innerHTML='<div class="admin-loading">Carregando detalhes...</div>';
+        try{
+          const related=await loadRelated(key,row);
+          detailPane.innerHTML=renderEditor(module,row,index,related,key);
+          bindEditor(module,rows,index,detailPane,key,related);
+        }catch(error){detailPane.innerHTML=`<div class="admin-error">${esc(error.message||"Falha ao carregar detalhes.")}</div>`}
       }));
+      if(rows.length)moduleContent.querySelector("[data-record-index='0']")?.click();
     }catch(error){console.error(error);moduleContent.innerHTML=`<div class="admin-error">${esc(error.message||"Não foi possível carregar este módulo.")}</div>`}
   }
 
-  function bindEditor(module,rows,index,host){
-    host.querySelector("[data-close-editor]")?.addEventListener("click",()=>host.innerHTML="");
+  function bindEditor(module,rows,index,host,moduleKey,related){
     const form=host.querySelector("#adminEditForm");
     form?.addEventListener("submit",async event=>{
       event.preventDefault();
       const message=form.querySelector("#adminFormMessage");
-      const row=rows[index];
-      const payload={};
-      module.fields.forEach(field=>{if(readonly.has(field))return;const input=form.elements.namedItem(field);if(input)payload[field]=normalizeValue(field,input,row)});
+      const row=rows[index],payload={};
+      module.fields.forEach(field=>{if(readonly.has(field))return;const input=form.elements.namedItem(field);if(input)payload[field]=normalizeValue(field,input)});
       message.textContent="Salvando...";
       try{
         const {error}=await client.from(module.table).update(payload).eq(module.id,row[module.id]);
         if(error)throw error;
         message.textContent="Alterações salvas com sucesso.";
         await refreshStats();
-        window.setTimeout(()=>openModule(Object.keys(modules).find(key=>modules[key]===module)),300);
       }catch(error){console.error(error);message.textContent=error.message||"Não foi possível salvar."}
     });
+
+    host.querySelectorAll("[data-related-edit]").forEach(button=>button.addEventListener("click",()=>{
+      const relatedIndex=Number(button.dataset.relatedEdit),item=related[relatedIndex];
+      let editor=host.querySelector(".admin-related-editor-host");
+      if(!editor){editor=document.createElement("div");editor.className="admin-related-editor-host";host.appendChild(editor)}
+      editor.innerHTML=renderRelatedEditor(item,relatedIndex);
+      editor.querySelector("[data-close-related]")?.addEventListener("click",()=>editor.remove());
+      const relatedForm=editor.querySelector("#adminRelatedForm");
+      relatedForm?.addEventListener("submit",async event=>{
+        event.preventDefault();
+        const message=relatedForm.querySelector("#adminRelatedMessage"),payload={};
+        ["name","description","category","unlock_level","mana_cost","cooldown_turns","is_passive","is_ultimate","is_active"].forEach(field=>{const input=relatedForm.elements.namedItem(field);if(input)payload[field]=normalizeValue(field,input)});
+        message.textContent="Salvando...";
+        try{
+          const {error}=await client.from("skills").update(payload).eq("id",item.id);
+          if(error)throw error;
+          Object.assign(item,payload);
+          message.textContent="Habilidade atualizada com sucesso.";
+          await refreshStats();
+        }catch(error){console.error(error);message.textContent=error.message||"Não foi possível salvar a habilidade."}
+      });
+    }));
   }
 
   document.querySelectorAll("[data-admin-module]").forEach(button=>button.addEventListener("click",()=>openModule(button.dataset.adminModule)));

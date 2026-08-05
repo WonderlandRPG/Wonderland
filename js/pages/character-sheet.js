@@ -95,7 +95,7 @@
     const character=data.character;
     const race=(window.WONDERLAND_RACES||[]).find(item=>item.id===character.race_id);
     const cls=(window.WONDERLAND_CLASSES||{})[character.class_id];
-    const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante"};
+    const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante",color:"#9d744f",accent:"#9d744f",secondary:"#6d4b32"};
     const finalAttrs=getFinalAttributes(data.attributes);
     const mana=window.WONDERLAND_MANA_SYSTEM?.breakdown({intValue:finalAttrs.INT,race})||{total:Number(character.mana_current||0),base:0,racial:0,intelligence:0,rule:""};
     const localSkills=officialSkills(cls,race,Number(character.level||1));
@@ -103,6 +103,11 @@
     const skills=localSkills.filter(skill=>!databaseSkillKeys.size||databaseSkillKeys.has(skill.id||skill.nome));
     const fallbackPortrait=race?.artwork||race?.image||"assets/images/logo.png";
     let portrait=character.image_url||fallbackPortrait;
+
+    document.body.dataset.rank=String(rank.id||"E").toLowerCase();
+    document.body.style.setProperty("--sheet-rank-color",rank.color||"#9d744f");
+    document.body.style.setProperty("--sheet-rank-accent",rank.accent||rank.color||"#9d744f");
+    document.body.style.setProperty("--sheet-rank-secondary",rank.secondary||rank.color||"#6d4b32");
 
     const rankTarget=document.getElementById("sheetRankEmblem");
     if(rankTarget)rankTarget.innerHTML=rankSystem?.emblemHtml(rank.id)||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`;

@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
   <link rel="stylesheet" href="css/arena.css?v=6">
   <link rel="stylesheet" href="css/arena-combat-polish.css?v=1">
+  <link rel="stylesheet" href="css/arena-passives.css?v=1">
 </head>
 <body class="arena-page">
   <div class="arena-background" aria-hidden="true"></div>
@@ -30,7 +31,7 @@
 
     <section id="arenaSetup" class="arena-setup-view">
       <section class="arena-setup-panel">
-        <div class="arena-section-heading"><span>Preparação</span><h2>Montar confronto</h2><p>Escolha o personagem. A raça e a classe do Boneco de Teste serão sorteadas ao iniciar.</p></div>
+        <div class="arena-section-heading"><span>Preparação</span><h2>Montar confronto</h2><p>Escolha o personagem. A raça, a classe e o Caminho do Boneco de Teste serão sorteados ao iniciar.</p></div>
         <div class="arena-setup-grid">
           <label><span>Personagem</span><select id="arenaCharacter"><option value="">Carregando personagens...</option></select></label>
           <label><span>Monstro</span><select id="arenaMonster"><option value="training-dummy">Boneco de Teste — perfil aleatório</option></select></label>
@@ -38,7 +39,7 @@
         <div class="arena-preview-grid">
           <article class="arena-preview-card player"><img id="setupPlayerImage" src="assets/images/logo.png" alt=""><div><small>Desafiante</small><h3 id="setupPlayerName">Selecione um personagem</h3><p id="setupPlayerSummary">—</p></div><div id="setupPlayerStats" class="arena-preview-stats"></div></article>
           <div class="arena-versus">VS</div>
-          <article class="arena-preview-card enemy"><div class="arena-enemy-emblem">✦</div><div><small>Alvo de treinamento</small><h3 id="setupEnemyName">Boneco de Teste</h3><p id="setupEnemySummary">Raça e classe sorteadas ao começar</p></div><div id="setupEnemyStats" class="arena-preview-stats"></div></article>
+          <article class="arena-preview-card enemy"><div class="arena-enemy-emblem">✦</div><div><small>Alvo de treinamento</small><h3 id="setupEnemyName">Boneco de Teste</h3><p id="setupEnemySummary">Raça, classe e Caminho sorteados ao começar</p></div><div id="setupEnemyStats" class="arena-preview-stats"></div></article>
         </div>
         <button id="arenaStart" class="wl-button wl-button-gold arena-start" type="button">Começar teste</button>
         <p id="arenaMessage" class="arena-message"></p>
@@ -59,7 +60,7 @@
           <button id="arenaDefend" class="wl-button wl-button-ghost" type="button">Defender próximo dano</button>
           <button id="arenaEndTurn" class="wl-button wl-button-gold" type="button">Encerrar turno</button>
           <button id="arenaReset" class="wl-button wl-button-red" type="button">Sair do teste</button>
-          <p class="arena-help">Habilidades de transformação, postura e fortalecimento são ativadas no próprio usuário. Ataques exigem um alvo válido.</p>
+          <p class="arena-help">O Boneco usa ataque básico, habilidade racial e habilidade de classe quando houver alcance, Mana e recarga disponível.</p>
         </aside>
 
         <section class="arena-map-panel">
@@ -74,7 +75,7 @@
       </section>
 
       <section class="arena-skill-panel">
-        <div class="arena-section-heading"><span>Arsenal</span><h2>Ataques e habilidades</h2><p>Os botões estão separados por ação. Passe o mouse para abrir a ficha completa da habilidade.</p></div>
+        <div class="arena-section-heading"><span>Arsenal</span><h2>Ataques e habilidades</h2><p>Todas as habilidades liberadas da classe, da raça e do Caminho aparecem aqui.</p></div>
         <div id="arenaSkillCards" class="arena-skill-cards"></div>
       </section>
     </section>
@@ -86,8 +87,8 @@
         <article><span>02</span><h3>Movimentação por INI</h3><p>O personagem recebe <strong>1 casa de movimento a cada 25 pontos de INI</strong>, com mínimo de 1 e máximo de 8 casas por turno.</p></article>
         <article><span>03</span><h3>Três ações por turno</h3><p>É possível realizar <strong>1 ataque básico</strong>, <strong>1 habilidade racial</strong> e <strong>1 habilidade de classe</strong> durante o mesmo turno.</p></article>
         <article><span>04</span><h3>Defender primeiro</h3><p>A ação Defender só pode ser escolhida antes de qualquer movimento, ataque ou habilidade. Ela bloqueia 100% do próximo dano e entra em recarga por 5 turnos.</p></article>
-        <article><span>05</span><h3>Alcance das armas</h3><p>Armas mágicas atacam a <strong>7 casas</strong>, lanças a <strong>3 casas</strong> e armas físicas comuns a <strong>1 casa</strong>.</p></article>
-        <article><span>06</span><h3>Resultados</h3><p>Vitória, derrota e empate recebem telas próprias. Se ambos perderem a ação da mesma rodada, o combate termina empatado.</p></article>
+        <article><span>05</span><h3>Passivas ativas</h3><p>Passivas de raça, classe e Caminho são carregadas no início e seus modificadores reconhecidos entram nos cálculos do combate.</p></article>
+        <article><span>06</span><h3>IA completa</h3><p>O Boneco avalia distância, vida, Mana, cura, escudo, alcance e recargas antes de escolher suas três ações.</p></article>
       </div>
     </section>
   </main>
@@ -113,6 +114,6 @@
   <script src="js/data/skill-costs.js?v=4"></script>
   <script src="js/data/mana-system.js?v=2"></script>
   <script src="js/data/defense-system.js?v=1"></script>
-  <script src="js/pages/arena.js?v=7" defer></script>
+  <script src="js/pages/arena.js?v=8" defer></script>
 </body>
 </html>

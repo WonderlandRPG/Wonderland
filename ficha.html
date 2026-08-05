@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
-  <link rel="stylesheet" href="css/character-sheet.css?v=1">
+  <link rel="stylesheet" href="css/character-sheet.css?v=2">
 </head>
 <body class="character-sheet-page">
   <div class="character-sheet-background" aria-hidden="true"></div>
@@ -34,24 +34,33 @@
           <div class="character-sheet-badges"><span id="sheetLevel"></span><span id="sheetRace"></span><span id="sheetClass"></span></div>
         </div>
         <div class="character-sheet-resources">
-          <article><span>HP atual</span><strong id="sheetHp"></strong></article>
-          <article><span>Mana máxima</span><strong id="sheetMana"></strong></article>
-          <article><span>Experiência</span><strong id="sheetExperience"></strong></article>
+          <article class="resource-card resource-hp"><span>HP</span><strong id="sheetHp"></strong><div class="resource-bar"><i id="sheetHpBar"></i></div></article>
+          <article class="resource-card resource-mana"><span>Mana</span><strong id="sheetMana"></strong><div class="resource-bar"><i id="sheetManaBar"></i></div></article>
+          <article class="resource-card resource-exp"><span>Experiência</span><strong id="sheetExperience"></strong><div class="resource-bar"><i id="sheetExpBar"></i></div></article>
         </div>
       </section>
 
       <nav class="character-sheet-tabs" aria-label="Seções da ficha">
         <button class="active" type="button" data-sheet-tab="overview">Visão geral</button>
         <button type="button" data-sheet-tab="skills">Habilidades</button>
-        <button type="button" data-sheet-tab="inventory">Inventário</button>
+        <button type="button" data-sheet-tab="inventory">Inventário e equipamentos</button>
       </nav>
 
       <section class="character-sheet-panel active" data-sheet-panel="overview">
-        <div class="character-sheet-grid">
+        <div class="character-sheet-dashboard">
+          <section class="character-sheet-card character-sheet-attributes-panel">
+            <span>Atributos</span><h2>Valores finais</h2>
+            <div id="sheetAttributes" class="character-sheet-attributes"></div>
+          </section>
+          <section class="character-sheet-card character-sheet-derived-panel">
+            <span>Fórmulas</span><h2>Valores derivados</h2>
+            <div id="sheetDerived" class="character-sheet-derived"></div>
+          </section>
+        </div>
+        <div class="character-sheet-grid character-sheet-lore-grid">
           <article class="character-sheet-card"><span>História</span><h2>Origem do personagem</h2><p id="sheetStory"></p></article>
           <article class="character-sheet-card"><span>Build</span><h2>Perfil de atributos</h2><p id="sheetBuild"></p></article>
         </div>
-        <section class="character-sheet-card"><span>Atributos</span><h2>Valores finais</h2><div id="sheetAttributes" class="character-sheet-attributes"></div></section>
       </section>
 
       <section class="character-sheet-panel" data-sheet-panel="skills">
@@ -62,9 +71,22 @@
       </section>
 
       <section class="character-sheet-panel" data-sheet-panel="inventory">
-        <div class="character-sheet-grid">
-          <section class="character-sheet-card"><span>Inventário</span><h2>Itens carregados</h2><div id="sheetInventory" class="character-sheet-inventory"></div></section>
+        <div class="character-equipment-layout">
+          <section class="character-sheet-card equipment-visual-panel">
+            <span>Equipamentos</span><h2>Visual do personagem</h2>
+            <div class="equipment-silhouette">
+              <img id="equipmentCharacterImage" src="assets/images/logo.png" alt="">
+              <button type="button" data-equipment-slot="head">Cabeça</button>
+              <button type="button" data-equipment-slot="chest">Peitoral</button>
+              <button type="button" data-equipment-slot="hands">Mãos</button>
+              <button type="button" data-equipment-slot="legs">Pernas</button>
+              <button type="button" data-equipment-slot="feet">Pés</button>
+              <button type="button" data-equipment-slot="main_hand">Arma</button>
+              <button type="button" data-equipment-slot="off_hand">Secundária</button>
+            </div>
+          </section>
           <section class="character-sheet-card"><span>Equipamentos</span><h2>Itens equipados</h2><div id="sheetEquipment" class="character-sheet-inventory"></div></section>
+          <section class="character-sheet-card inventory-panel"><span>Inventário</span><h2>Itens carregados</h2><div id="sheetInventory" class="character-sheet-inventory"></div></section>
         </div>
       </section>
     </section>
@@ -77,6 +99,6 @@
   <script src="js/data/classes-all.js?v=2"></script>
   <script src="js/data/skill-costs.js?v=4"></script>
   <script src="js/data/mana-system.js?v=1"></script>
-  <script src="js/pages/character-sheet.js?v=3" defer></script>
+  <script src="js/pages/character-sheet.js?v=4" defer></script>
 </body>
 </html>

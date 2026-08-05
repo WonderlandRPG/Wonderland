@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Loja | Wonderland RPG</title>
+  <meta name="description" content="Compre equipamentos com Wonderland Gold.">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css?v=15">
+  <link rel="stylesheet" href="css/components/buttons.css?v=1">
+  <link rel="stylesheet" href="css/shop.css?v=1">
+</head>
+<body class="shop-page">
+  <div class="shop-background" aria-hidden="true"></div>
+  <header class="shop-topbar">
+    <a href="menu.html" class="wl-button wl-button-ghost">← Menu</a>
+    <a href="index.html" class="shop-brand"><img src="assets/images/logo.png" alt=""><span>Wonderland</span></a>
+    <a href="personagens.html" class="wl-button wl-button-gold">Meus personagens</a>
+  </header>
+  <main class="shop-shell">
+    <section class="shop-hero">
+      <div><span>Mercado dos aventureiros</span><h1>Loja de Wonderland</h1><p>Equipamentos para os 13 espaços oficiais. Compre com WG e envie diretamente ao inventário de um personagem.</p></div>
+      <div class="shop-currency"><small>Moeda oficial</small><strong>WG</strong><span>Wonderland Gold</span></div>
+    </section>
+    <section class="shop-toolbar">
+      <label><span>Procurar item</span><input id="shopSearch" type="search" placeholder="Nome ou atributo..."></label>
+      <label><span>Slot</span><select id="shopSlot"><option value="all">Todos os slots</option></select></label>
+      <label><span>Raridade</span><select id="shopRarity"><option value="all">Todas</option></select></label>
+      <div class="shop-count"><span>Itens disponíveis</span><strong id="shopCount">0</strong></div>
+    </section>
+    <section id="shopStatus" class="shop-status">Carregando catálogo...</section>
+    <section id="shopGrid" class="shop-grid" aria-live="polite"></section>
+  </main>
+
+  <dialog id="shopDialog" class="shop-dialog">
+    <form id="shopPurchaseForm" method="dialog">
+      <header><span>Confirmar aquisição</span><h2 id="shopDialogTitle">Comprar item</h2><p id="shopDialogDescription"></p></header>
+      <label><span>Enviar para</span><select id="shopCharacter" required></select></label>
+      <div id="shopCharacterBalance" class="shop-balance"></div>
+      <div class="shop-dialog-actions"><button id="shopCancel" class="wl-button wl-button-ghost" type="button">Cancelar</button><button id="shopConfirm" class="wl-button wl-button-gold" type="submit">Comprar</button></div>
+      <p id="shopDialogMessage" class="shop-dialog-message"></p>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js?v=2"></script>
+  <script src="js/account-store.js?v=9"></script>
+  <script src="js/data/shop-items.js?v=1"></script>
+  <script src="js/pages/shop.js?v=1" defer></script>
+</body>
+</html>

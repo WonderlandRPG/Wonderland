@@ -12,14 +12,17 @@
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
   <link rel="stylesheet" href="css/components/cards.css?v=1">
-  <link rel="stylesheet" href="css/characters.css?v=1">
+  <link rel="stylesheet" href="css/characters.css?v=2">
 </head>
 <body class="characters-page">
   <div class="characters-background" aria-hidden="true"></div>
   <header class="characters-topbar">
     <a href="menu.html" class="wl-button wl-button-ghost">← Menu</a>
     <a href="index.html" class="characters-brand"><img src="assets/images/logo.png" alt=""><span>Wonderland</span></a>
-    <button id="logoutButton" class="wl-button wl-button-red" type="button">Sair</button>
+    <div class="characters-topbar-actions">
+      <a id="adminPanelButton" href="admin.html" class="wl-button wl-button-gold" hidden>Painel ADM</a>
+      <button id="logoutButton" class="wl-button wl-button-red" type="button">Sair</button>
+    </div>
   </header>
 
   <main class="characters-shell">
@@ -45,10 +48,10 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-client.js?v=1"></script>
+  <script src="js/supabase-client.js?v=2"></script>
   <script src="js/account-store.js?v=4"></script>
   <script src="js/data/racas-data.js?v=1"></script>
   <script src="js/data/classes-all.js?v=2"></script>
-  <script src="js/pages/characters.js?v=2" defer></script>
+  <script src="js/pages/characters.js?v=3" defer></script>
 </body>
 </html>

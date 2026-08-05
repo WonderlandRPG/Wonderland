@@ -33,6 +33,7 @@
     const portrait=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
     const article=document.createElement("article");
     article.className=`character-card wl-card character-card-rank-${String(rank.id).toLowerCase()}`;
+    article.dataset.rank=rank.id;
     article.style.setProperty("--rank-color",rank.color||"#d6b56b");
     article.innerHTML=`
       <div class="wl-card-frame"></div>
@@ -40,16 +41,17 @@
       <span class="wl-card-corner wl-card-corner-top-right"></span>
       <span class="wl-card-corner wl-card-corner-bottom-left"></span>
       <span class="wl-card-corner wl-card-corner-bottom-right"></span>
+      <span class="character-rank-sheen" aria-hidden="true"></span>
       <div class="wl-card-image character-photo-cover">
         <img src="${esc(portrait)}" alt="${esc(character.name||"Personagem")}">
         <span class="wl-card-shine"></span>
         <div class="character-rank-overlay" title="Rank ${esc(rank.id)} — ${esc(rank.title)}">${rankSystem?.emblemHtml(rank.id)||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`}</div>
       </div>
-      <div class="wl-card-body">
+      <div class="wl-card-body character-card-body-centered">
         <span class="wl-card-subtitle">Nível ${esc(character.level||1)} • ${esc(race?.name||character.race_id||"Raça não definida")}</span>
         <h2 class="wl-card-title">${esc(character.name||"Sem nome")}</h2>
         <p class="wl-card-text">${esc(cls?.nome||character.class_id||"Classe não definida")}</p>
-        <div class="wl-card-meta"><span class="wl-card-stars">Rank ${esc(rank.id)}</span><a class="wl-button wl-button-gold" href="ficha.html?id=${encodeURIComponent(character.id)}">Abrir ficha</a></div>
+        <div class="wl-card-meta character-card-actions"><a class="wl-button wl-button-gold" href="ficha.html?id=${encodeURIComponent(character.id)}">Abrir ficha</a></div>
       </div>`;
     return article;
   }

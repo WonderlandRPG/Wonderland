@@ -110,7 +110,9 @@
 
     const applyPortrait=url=>{
       portrait=url||fallbackPortrait;
+      const mainImage=document.getElementById("sheetImage");
       const equipmentImage=document.getElementById("equipmentCharacterImage");
+      mainImage.src=portrait;mainImage.alt=character.name;
       equipmentImage.src=portrait;equipmentImage.alt=`Equipamentos de ${character.name}`;
     };
     applyPortrait(portrait);

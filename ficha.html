@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
-  <link rel="stylesheet" href="css/character-sheet.css?v=6">
+  <link rel="stylesheet" href="css/character-sheet.css?v=7">
 </head>
 <body class="character-sheet-page">
   <div class="character-sheet-background" aria-hidden="true"></div>
@@ -34,6 +34,7 @@
           <article class="resource-card resource-hp"><span>HP</span><strong id="sheetHp"></strong><div class="resource-bar"><i id="sheetHpBar"></i></div></article>
           <article class="resource-card resource-mana"><span>Mana máxima</span><strong id="sheetMana"></strong><div class="resource-bar"><i id="sheetManaBar"></i></div></article>
           <article class="resource-card resource-exp"><span>Experiência total</span><strong id="sheetExperience"></strong><div class="resource-bar"><i id="sheetExpBar"></i></div></article>
+          <article class="resource-card resource-wg"><span>Wonderland Gold</span><strong id="sheetWg">0 WG</strong><small>Saldo disponível</small></article>
         </div>
       </section>
       <nav class="character-sheet-tabs" aria-label="Seções da ficha"><button class="active" type="button" data-sheet-tab="overview">Visão geral</button><button type="button" data-sheet-tab="skills">Habilidades</button><button type="button" data-sheet-tab="inventory">Inventário e equipamentos</button></nav>
@@ -45,13 +46,13 @@
   <dialog id="characterImageDialog" class="character-image-dialog"><form id="characterImageForm" method="dialog" class="character-image-form"><header><span>Retrato do personagem</span><h2>Alterar foto</h2><p>Cole o link direto de uma imagem. Deixe vazio para voltar à imagem padrão da raça.</p></header><label><span>URL da imagem</span><input id="characterImageUrl" type="url" placeholder="https://exemplo.com/personagem.png"></label><div class="character-image-actions"><button id="cancelCharacterImage" class="wl-button wl-button-ghost" type="button">Cancelar</button><button class="wl-button wl-button-gold" type="submit">Salvar foto</button></div></form></dialog>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js?v=2"></script>
-  <script src="js/account-store.js?v=7"></script>
+  <script src="js/account-store.js?v=8"></script>
   <script src="js/data/racas-data.js?v=1"></script>
   <script src="js/data/classes-all.js?v=2"></script>
   <script src="js/data/skill-costs.js?v=4"></script>
   <script src="js/data/mana-system.js?v=2"></script>
   <script src="js/data/rank-system.js?v=2"></script>
   <script src="js/data/progression-system.js?v=2"></script>
-  <script src="js/pages/character-sheet.js?v=10" defer></script>
+  <script src="js/pages/character-sheet.js?v=11" defer></script>
 </body>
 </html>

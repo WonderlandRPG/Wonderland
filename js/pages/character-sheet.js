@@ -2,6 +2,7 @@
 
 (async function(){
   const account=window.WONDERLAND_ACCOUNT;
+  const rankSystem=window.WONDERLAND_RANK_SYSTEM;
   const loading=document.getElementById("sheetLoading");
   const content=document.getElementById("sheetContent");
   const logout=document.getElementById("sheetLogout");
@@ -94,6 +95,7 @@
     const character=data.character;
     const race=(window.WONDERLAND_RACES||[]).find(item=>item.id===character.race_id);
     const cls=(window.WONDERLAND_CLASSES||{})[character.class_id];
+    const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante"};
     const finalAttrs=getFinalAttributes(data.attributes);
     const mana=window.WONDERLAND_MANA_SYSTEM?.breakdown({intValue:finalAttrs.INT,race})||{total:Number(character.mana_current||0),base:0,racial:0,intelligence:0,rule:""};
     const localSkills=officialSkills(cls,race,Number(character.level||1));
@@ -102,11 +104,13 @@
     const fallbackPortrait=race?.artwork||race?.image||"assets/images/logo.png";
     let portrait=character.image_url||fallbackPortrait;
 
+    const rankTarget=document.getElementById("sheetRankEmblem");
+    if(rankTarget)rankTarget.innerHTML=rankSystem?.emblemHtml(rank.id)||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`;
+    document.getElementById("sheetRank").textContent=`Rank ${rank.id}`;
+
     const applyPortrait=url=>{
       portrait=url||fallbackPortrait;
-      const mainImage=document.getElementById("sheetImage");
       const equipmentImage=document.getElementById("equipmentCharacterImage");
-      mainImage.src=portrait;mainImage.alt=character.name;
       equipmentImage.src=portrait;equipmentImage.alt=`Equipamentos de ${character.name}`;
     };
     applyPortrait(portrait);

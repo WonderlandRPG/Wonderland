@@ -24,15 +24,16 @@
   const raceMap=Object.fromEntries((window.WONDERLAND_RACES||[]).map(race=>[race.id,race]));
   const classMap=window.WONDERLAND_CLASSES||{};
 
-  function esc(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+  function esc(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;")}
 
   function characterCard(character){
     const race=raceMap[character.race_id];
     const cls=classMap[character.class_id];
-    const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante"};
+    const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante",color:"#9d744f"};
     const portrait=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
     const article=document.createElement("article");
-    article.className="character-card wl-card";
+    article.className=`character-card wl-card character-card-rank-${String(rank.id).toLowerCase()}`;
+    article.style.setProperty("--rank-color",rank.color||"#d6b56b");
     article.innerHTML=`
       <div class="wl-card-frame"></div>
       <span class="wl-card-corner wl-card-corner-top-left"></span>

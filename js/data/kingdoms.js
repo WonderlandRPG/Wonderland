@@ -1,11 +1,10 @@
 "use strict";
 (function(){
   window.WONDERLAND_KINGDOMS=[
-    {id:"aurion",name:"Aurion"},
-    {id:"drakhar",name:"Drakhar"},
-    {id:"elyndor",name:"Elyndor"},
-    {id:"morvhan",name:"Morvhan"},
-    {id:"nyxara",name:"Nyxara"},
-    {id:"valedorn",name:"Valedorn"}
+    {id:"eldoria",name:"Eldoria"},
+    {id:"ashkara",name:"Ashkara"},
+    {id:"aurelia",name:"Aurélia"},
+    {id:"valdor",name:"Valdor"},
+    {id:"vinterhold",name:"Vinterhold"}
   ];
 })();

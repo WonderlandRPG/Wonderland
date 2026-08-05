@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Administrativo | Wonderland RPG</title>
+  <meta name="description" content="Painel administrativo do Wonderland RPG.">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css?v=15">
+  <link rel="stylesheet" href="css/components/buttons.css?v=1">
+  <link rel="stylesheet" href="css/admin.css?v=1">
+</head>
+<body class="admin-page">
+  <div class="admin-background" aria-hidden="true"></div>
+  <header class="admin-topbar">
+    <a href="menu.html" class="wl-button wl-button-ghost">← Menu</a>
+    <a href="index.html" class="admin-brand"><img src="assets/images/logo.png" alt=""><span>Wonderland</span></a>
+    <button id="adminLogout" class="wl-button wl-button-red" type="button">Sair</button>
+  </header>
+
+  <main class="admin-shell">
+    <section class="admin-hero">
+      <div>
+        <span class="admin-eyebrow">Centro de comando</span>
+        <h1>Painel Administrativo</h1>
+        <p id="adminGreeting">Carregando sua conta...</p>
+      </div>
+      <div class="admin-status"><span>Status</span><strong>Conectado ao Supabase</strong></div>
+    </section>
+
+    <section class="admin-stats" aria-label="Resumo do servidor">
+      <article><span>Usuários</span><strong id="statUsers">—</strong></article>
+      <article><span>Personagens</span><strong id="statCharacters">—</strong></article>
+      <article><span>Raças</span><strong id="statRaces">—</strong></article>
+      <article><span>Classes</span><strong id="statClasses">—</strong></article>
+      <article><span>Habilidades</span><strong id="statSkills">—</strong></article>
+      <article><span>Itens</span><strong id="statItems">—</strong></article>
+    </section>
+
+    <section class="admin-grid">
+      <article class="admin-card"><span class="admin-card-icon">◆</span><div><small>Conteúdo do jogo</small><h2>Raças</h2><p>Crie, edite, ative e balanceie raças e atributos raciais.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="races">Abrir módulo</button></article>
+      <article class="admin-card"><span class="admin-card-icon">▲</span><div><small>Conteúdo do jogo</small><h2>Classes</h2><p>Gerencie classes, caminhos, funções e atributos principais.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="classes">Abrir módulo</button></article>
+      <article class="admin-card"><span class="admin-card-icon">✺</span><div><small>Combate</small><h2>Habilidades</h2><p>Edite custo de Mana, recarga, alcance, nível e efeitos.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="skills">Abrir módulo</button></article>
+      <article class="admin-card"><span class="admin-card-icon">◇</span><div><small>Economia</small><h2>Itens</h2><p>Gerencie equipamentos, consumíveis, raridades e valores.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="items">Abrir módulo</button></article>
+      <article class="admin-card"><span class="admin-card-icon">♙</span><div><small>Jogadores</small><h2>Usuários</h2><p>Consulte contas, cargos, bloqueios e personagens vinculados.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="users">Abrir módulo</button></article>
+      <article class="admin-card"><span class="admin-card-icon">⚖</span><div><small>Sistema</small><h2>Balanceamento</h2><p>Altere valores globais do jogo sem editar o código.</p></div><button type="button" class="wl-button wl-button-gold" data-admin-module="settings">Abrir módulo</button></article>
+    </section>
+
+    <section class="admin-workspace">
+      <header><span>Área de trabalho</span><h2 id="adminModuleTitle">Visão geral</h2></header>
+      <div id="adminModuleContent" class="admin-module-content">
+        <p>Escolha um módulo acima para começar. Nesta primeira versão, o painel valida o acesso administrativo e consulta os dados reais do Supabase.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js?v=2"></script>
+  <script src="js/account-store.js?v=4"></script>
+  <script src="js/pages/admin.js?v=1" defer></script>
+</body>
+</html>

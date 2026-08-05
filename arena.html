@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arena de Testes | Wonderland RPG</title>
-  <meta name="description" content="Arena administrativa para testar cálculos de combate do Wonderland RPG.">
+  <meta name="description" content="Arena tática administrativa do Wonderland RPG.">
   <link rel="icon" type="image/png" href="assets/images/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
-  <link rel="stylesheet" href="css/arena.css?v=2">
+  <link rel="stylesheet" href="css/arena.css?v=3">
 </head>
 <body class="arena-page">
   <div class="arena-background" aria-hidden="true"></div>
@@ -20,69 +20,75 @@
     <a href="index.html" class="arena-brand"><img src="assets/images/logo.png" alt=""><span>Wonderland</span></a>
     <a href="personagens.html" class="wl-button wl-button-gold">Personagens</a>
   </header>
+
   <main class="arena-shell">
     <section class="arena-hero">
-      <div><span>Laboratório de combate</span><h1>Arena de Testes</h1><p>Teste dano, defesa, resistência, Mana e efeitos antes de liberar conteúdos para os jogadores.</p></div>
-      <div class="arena-status"><small>Modo</small><strong>Administrador</strong><span>Resultados não alteram a ficha real</span></div>
+      <div><span>Laboratório tático</span><h1>Arena de Testes</h1><p>Selecione os combatentes, entre no mapa e teste movimentação, alcance, dano, Mana e inteligência dos inimigos.</p></div>
+      <div class="arena-status"><small>Modo</small><strong>Administrador</strong><span>Nenhum resultado altera a ficha real</span></div>
     </section>
-    <section class="arena-layout">
-      <aside class="arena-control-panel">
-        <div class="arena-section-heading"><span>Configuração</span><h2>Montar combate</h2></div>
-        <label><span>Personagem</span><select id="arenaCharacter"><option value="">Carregando personagens...</option></select></label>
-        <label><span>Habilidade</span><select id="arenaSkill"><option value="basic">Ataque básico</option></select></label>
-        <div class="arena-field-grid">
-          <label><span>Tipo de dano</span><select id="arenaDamageType"><option value="physical">Físico</option><option value="magical">Mágico</option><option value="true">Verdadeiro</option></select></label>
-          <label><span>Escala (%)</span><input id="arenaScale" type="number" min="0" step="5" value="100"></label>
+
+    <section id="arenaSetup" class="arena-setup-view">
+      <section class="arena-setup-panel">
+        <div class="arena-section-heading"><span>Preparação</span><h2>Montar confronto</h2><p>Escolha o personagem e o inimigo antes de iniciar o teste.</p></div>
+        <div class="arena-setup-grid">
+          <label><span>Personagem</span><select id="arenaCharacter"><option value="">Carregando personagens...</option></select></label>
+          <label><span>Monstro</span><select id="arenaMonster"><option value="training-dummy">Boneco de Teste</option></select></label>
         </div>
-        <div class="arena-field-grid">
-          <label><span>DEF do alvo</span><input id="arenaEnemyDef" type="number" min="0" value="50"></label>
-          <label><span>RES do alvo</span><input id="arenaEnemyRes" type="number" min="0" value="50"></label>
+        <div class="arena-preview-grid">
+          <article class="arena-preview-card player"><img id="setupPlayerImage" src="assets/images/logo.png" alt=""><div><small>Desafiante</small><h3 id="setupPlayerName">Selecione um personagem</h3><p id="setupPlayerSummary">—</p></div><div id="setupPlayerStats" class="arena-preview-stats"></div></article>
+          <div class="arena-versus">VS</div>
+          <article class="arena-preview-card enemy"><div class="arena-enemy-emblem">✦</div><div><small>Alvo de treinamento</small><h3 id="setupEnemyName">Boneco de Teste</h3><p id="setupEnemySummary">Perfil adaptativo</p></div><div id="setupEnemyStats" class="arena-preview-stats"></div></article>
         </div>
-        <div class="arena-field-grid">
-          <label><span>HP do alvo</span><input id="arenaEnemyHp" type="number" min="1" value="1000"></label>
-          <label><span>Turnos</span><input id="arenaTurns" type="number" min="1" max="20" value="1"></label>
-        </div>
-        <button id="arenaRun" class="wl-button wl-button-gold arena-run" type="button">Executar teste</button>
+        <button id="arenaStart" class="wl-button wl-button-gold arena-start" type="button">Começar teste</button>
         <p id="arenaMessage" class="arena-message"></p>
-      </aside>
-      <section class="arena-stage">
-        <div class="arena-fighter arena-player">
-          <div class="arena-portrait"><img id="arenaPlayerImage" src="assets/images/logo.png" alt="Personagem"></div>
-          <div><small>Desafiante</small><h2 id="arenaPlayerName">Selecione um personagem</h2><p id="arenaPlayerClass">—</p></div>
-          <div id="arenaPlayerStats" class="arena-stat-list"></div>
-        </div>
-        <div class="arena-versus">VS</div>
-        <div class="arena-fighter arena-enemy">
-          <div class="arena-enemy-emblem">✦</div>
-          <div><small>Alvo de treinamento</small><h2 id="arenaEnemyName">Boneco de Teste</h2><p id="arenaEnemyProfile">Atributos adaptados ao oponente</p></div>
-          <div class="arena-stat-list arena-enemy-core"><span>HP <strong id="arenaEnemyHpView">1000</strong></span><span>DEF <strong id="arenaEnemyDefView">50</strong></span><span>RES <strong id="arenaEnemyResView">50</strong></span></div>
-          <div id="arenaEnemyStats" class="arena-stat-list arena-enemy-full"></div>
-        </div>
-      </section>
-      <section class="arena-results">
-        <div class="arena-section-heading"><span>Relatório</span><h2>Resultado do teste</h2></div>
-        <div id="arenaResultCards" class="arena-result-grid">
-          <article><span>Dano bruto</span><strong>0</strong></article>
-          <article><span>Redução</span><strong>0%</strong></article>
-          <article><span>Dano final</span><strong>0</strong></article>
-          <article><span>HP restante</span><strong>0</strong></article>
-        </div>
-        <div id="arenaCombatLog" class="arena-combat-log"><p>Configure o combate e execute o primeiro teste.</p></div>
       </section>
     </section>
+
+    <section id="arenaBattle" class="arena-battle-view" hidden>
+      <section class="arena-battle-topbar">
+        <article class="arena-combatant-card player"><img id="battlePlayerImage" src="assets/images/logo.png" alt=""><div><small>Jogador</small><h2 id="battlePlayerName">Personagem</h2><p id="battlePlayerTurn">Aguardando...</p></div><div class="arena-bars"><span>HP <strong id="battlePlayerHpText">0 / 0</strong></span><div class="arena-bar hp"><i id="battlePlayerHpBar"></i></div><span>Mana <strong id="battlePlayerManaText">0 / 0</strong></span><div class="arena-bar mana"><i id="battlePlayerManaBar"></i></div></div></article>
+        <div class="arena-turn-center"><span>Turno atual</span><strong id="arenaTurnLabel">—</strong><div id="arenaTimer" class="arena-timer">60</div><small id="arenaMovementInfo">Movimentos: 0</small></div>
+        <article class="arena-combatant-card enemy"><div class="arena-enemy-emblem">✦</div><div><small>Monstro</small><h2 id="battleEnemyName">Boneco de Teste</h2><p id="battleEnemyTurn">IA instantânea</p></div><div class="arena-bars"><span>HP <strong id="battleEnemyHpText">0 / 0</strong></span><div class="arena-bar hp"><i id="battleEnemyHpBar"></i></div><span>Mana <strong id="battleEnemyManaText">0 / 0</strong></span><div class="arena-bar mana"><i id="battleEnemyManaBar"></i></div></div></article>
+      </section>
+
+      <section class="arena-battle-layout">
+        <aside class="arena-side-panel">
+          <div class="arena-section-heading"><span>Ações</span><h2>Seu turno</h2></div>
+          <div class="arena-action-summary"><span>Ataque básico <strong id="actionBasicState">Disponível</strong></span><span>Habilidade racial <strong id="actionRaceState">Disponível</strong></span><span>Habilidade de classe <strong id="actionClassState">Disponível</strong></span></div>
+          <button id="arenaDefend" class="wl-button wl-button-ghost" type="button">Defender próximo dano</button>
+          <button id="arenaEndTurn" class="wl-button wl-button-gold" type="button">Encerrar turno</button>
+          <button id="arenaReset" class="wl-button wl-button-red" type="button">Sair do teste</button>
+          <p class="arena-help">Clique em uma casa destacada para se mover. Selecione uma ação abaixo do mapa e depois clique no alvo.</p>
+        </aside>
+
+        <section class="arena-map-panel">
+          <div id="arenaGrid" class="arena-grid" role="grid" aria-label="Mapa tático da Arena"></div>
+          <div id="arenaRangeLegend" class="arena-range-legend"><span><i class="move"></i>Movimento</span><span><i class="range"></i>Alcance</span><span><i class="target"></i>Alvo</span></div>
+        </section>
+
+        <aside class="arena-log-panel">
+          <div class="arena-section-heading"><span>Registro</span><h2>Combate</h2></div>
+          <div id="arenaCombatLog" class="arena-combat-log"><p>O combate ainda não começou.</p></div>
+        </aside>
+      </section>
+
+      <section class="arena-skill-panel">
+        <div class="arena-section-heading"><span>Arsenal</span><h2>Ataques e habilidades</h2><p>Passe o mouse para ver custo, escala e alcance. Clique para preparar a ação.</p></div>
+        <div id="arenaSkillCards" class="arena-skill-cards"></div>
+      </section>
+    </section>
+
     <section class="arena-rules">
-      <header class="arena-section-heading"><span>Regras oficiais</span><h2>Como funciona o combate em Wonderland</h2><p>Estas regras valem para PvP, missões, dungeons e demais confrontos realizados pelo site.</p></header>
+      <header class="arena-section-heading"><span>Regras oficiais</span><h2>Movimentação e combate</h2></header>
       <div class="arena-rules-grid">
-        <article><span>01</span><h3>Combate por turnos</h3><p>Cada participante age em seu próprio turno. Jogadores possuem <strong>1 minuto</strong> para concluir suas ações. NPCs executam suas decisões instantaneamente.</p></article>
-        <article><span>02</span><h3>Limite de tempo</h3><p>O cronômetro é usado tanto no PvP quanto no PvE. Caso o tempo de um jogador chegue a zero antes da confirmação da ação, ele perde o combate.</p></article>
-        <article><span>03</span><h3>Ações do turno</h3><p>Em um turno normal, o personagem pode realizar <strong>1 ataque básico</strong>, usar <strong>1 habilidade racial</strong> e usar <strong>1 habilidade de classe</strong>.</p></article>
-        <article><span>04</span><h3>Ataque básico</h3><p>O atributo usado depende da arma equipada. Espadas, machados e armas corporais causam dano físico baseado em <strong>FOR</strong>. Cajados, focos arcanos e armas mágicas causam dano mágico baseado em <strong>INT</strong>.</p></article>
-        <article><span>05</span><h3>Defender</h3><p>O jogador pode abrir mão de todas as outras ações do turno para entrar em defesa. Assim, bloqueia <strong>100% do próximo dano recebido na rodada</strong>. Depois disso, a ação entra em recarga por <strong>5 turnos</strong>.</p></article>
-        <article><span>06</span><h3>Cálculo automático</h3><p>Ao atacar, receber dano, curar, defender ou usar habilidades, o site calcula automaticamente dano, redução, cura, Mana gasta, HP restante, buffs, debuffs e duração dos efeitos.</p></article>
+        <article><span>01</span><h3>Turnos de 1 minuto</h3><p>Jogadores possuem 60 segundos para concluir o turno. NPCs agem imediatamente. Se o tempo chegar a zero, o jogador perde o combate.</p></article>
+        <article><span>02</span><h3>Movimentação por INI</h3><p>O personagem recebe <strong>1 casa de movimento a cada 25 pontos de INI</strong>, com mínimo de 1 e máximo de 8 casas por turno.</p></article>
+        <article><span>03</span><h3>Ações do turno</h3><p>É possível realizar 1 ataque básico, 1 habilidade racial e 1 habilidade de classe durante o mesmo turno, desde que haja Mana e alcance.</p></article>
+        <article><span>04</span><h3>Defender</h3><p>O jogador pode abrir mão de todas as ações para bloquear 100% do próximo dano da rodada. A defesa entra em recarga por 5 turnos.</p></article>
       </div>
-      <div class="arena-rules-note"><strong>Importante:</strong> toda alteração de HP e Mana será mostrada visualmente durante o combate. O jogador não precisará calcular nada manualmente.</div>
     </section>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js?v=2"></script>
   <script src="js/account-store.js?v=9"></script>
@@ -90,6 +96,6 @@
   <script src="js/data/classes-all.js?v=2"></script>
   <script src="js/data/mana-system.js?v=2"></script>
   <script src="js/data/defense-system.js?v=1"></script>
-  <script src="js/pages/arena.js?v=2" defer></script>
+  <script src="js/pages/arena.js?v=3" defer></script>
 </body>
 </html>

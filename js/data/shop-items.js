@@ -62,6 +62,22 @@
   add("main_hand","Tomo Místico",{INT:10,RES:5},415);
   add("off_hand","Escudo Gigante",{DEF:15},500,{twoHanded:true,icon:"🛡"});
 
+  items.push({
+    id:"anel-dos-administradores",
+    name:"Anel dos Administradores",
+    slot:"ring_1",
+    rarity:"Mítico",
+    stats:{FOR:100,DEF:100,RES:100,INI:100,INT:100,ARC:100},
+    price:55000000,
+    twoHanded:false,
+    occupiesBoth:false,
+    icon:"💍",
+    image:"https://i.pinimg.com/1200x/6d/11/14/6d11147899a0a5756ca43d953b319631.jpg",
+    description:"Item administrativo de teste, deliberadamente fora dos padrões normais de balanceamento do RPG.",
+    testItem:true,
+    active:true
+  });
+
   window.WONDERLAND_SHOP_ITEMS=items;
   window.WONDERLAND_ITEM_SLOTS={head:"Cabeça",chest:"Peitoral",hands:"Mãos",legs:"Pernas",feet:"Pés",cape:"Capa",necklace:"Colar",ring_1:"Anel I",ring_2:"Anel II",earring_1:"Brinco I",earring_2:"Brinco II",main_hand:"Arma principal",off_hand:"Arma secundária"};
 })();

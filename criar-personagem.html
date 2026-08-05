@@ -40,6 +40,8 @@
         <header><span>Etapa 1</span><h2>Identidade do personagem</h2></header>
         <label class="character-create-field"><span>Nome do personagem</span><input id="characterName" type="text" minlength="3" maxlength="28" required placeholder="Digite o nome"></label>
         <label class="character-create-field"><span>Breve história</span><textarea id="characterStory" rows="7" maxlength="700" placeholder="Conte quem é esse personagem..."></textarea></label>
+        <label class="character-create-field"><span>Imagem do personagem</span><input id="characterImage" type="url" inputmode="url" placeholder="Cole o link direto de uma imagem (opcional)"></label>
+        <small class="character-create-image-note">Use um link direto que termine em .png, .jpg, .jpeg ou .webp. Se deixar vazio, será usada a imagem padrão da raça.</small>
       </section>
 
       <section class="character-create-step" data-step="2">
@@ -91,6 +93,6 @@
   <script src="js/data/racas-data.js?v=1"></script>
   <script src="js/data/classes-all.js?v=2"></script>
   <script src="js/data/mana-system.js?v=1"></script>
-  <script src="js/pages/character-create.js?v=4" defer></script>
+  <script src="js/pages/character-create.js?v=5" defer></script>
 </body>
 </html>

@@ -82,6 +82,29 @@
   function renderItems(target,items,emptyText){
     target.innerHTML=items.length?items.map(item=>`<article class="character-sheet-item"><div><strong>${esc(item.metadata?.name||item.item_key)}</strong><small>${esc(item.slot||item.metadata?.rarity||"")}</small></div><span>${item.quantity?`x${esc(item.quantity)}`:"Equipado"}</span></article>`).join(""):`<div class="character-sheet-empty">${esc(emptyText)}</div>`
   }
+  function expRequired(level){return Math.max(100,Math.round(240+Math.pow(Number(level||1),1.65)*300))}
+  function setBar(id,current,max){const el=document.getElementById(id);if(el)el.style.width=`${Math.max(0,Math.min(100,max>0?current/max*100:0))}%`}
+  function renderDerived(target,finalAttrs,mana,character,race){
+    const hpMax=Number(race?.stats?.hp||character.hp_current||0)+Math.floor(finalAttrs.RES/5)*10;
+    const physical=Math.round(finalAttrs.FOR);
+    const magical=Math.round(finalAttrs.INT);
+    const defense=Math.round(finalAttrs.DEF);
+    const resistance=Math.round(finalAttrs.RES);
+    const initiative=Math.round(finalAttrs.INI);
+    const support=Math.round(finalAttrs.ARC);
+    const rows=[
+      ["HP máximo",hpMax,"HP racial + RES"],
+      ["Mana máxima",mana.total,`${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT`],
+      ["Ataque físico",physical,"FOR"],
+      ["Ataque mágico",magical,"INT"],
+      ["Defesa física",defense,"DEF"],
+      ["Resistência",resistance,"RES"],
+      ["Iniciativa",initiative,"INI"],
+      ["Poder de suporte",support,"ARC"]
+    ];
+    target.innerHTML=rows.map(([label,value,note])=>`<article class="character-sheet-derived-row"><span>${esc(label)}</span><small>${esc(note)}</small><strong>${esc(value)}</strong></article>`).join("");
+    return hpMax;
+  }
 
   try{
     const data=await account.getCharacterSheet(characterId);
@@ -95,19 +118,31 @@
     const databaseSkillKeys=new Set(data.skills.map(item=>item.skill_key));
     const skills=localSkills.filter(skill=>!databaseSkillKeys.size||databaseSkillKeys.has(skill.id||skill.nome));
 
-    document.getElementById("sheetImage").src=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
+    const portrait=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
+    document.getElementById("sheetImage").src=portrait;
     document.getElementById("sheetImage").alt=character.name;
+    document.getElementById("equipmentCharacterImage").src=portrait;
+    document.getElementById("equipmentCharacterImage").alt=`Equipamentos de ${character.name}`;
     document.getElementById("sheetName").textContent=character.name;
     document.getElementById("sheetSummary").textContent=`${race?.name||character.race_id} • ${cls?.nome||character.class_id}`;
     document.getElementById("sheetLevel").textContent=`Nível ${character.level}`;
     document.getElementById("sheetRace").textContent=race?.name||character.race_id;
     document.getElementById("sheetClass").textContent=cls?.nome||character.class_id;
-    document.getElementById("sheetHp").textContent=String(character.hp_current||0);
+
+    const hpMax=renderDerived(document.getElementById("sheetDerived"),finalAttrs,mana,character,race);
+    const currentHp=Math.min(Math.max(0,Number(character.hp_current||0)),hpMax);
+    const requiredExp=expRequired(character.level);
+    const currentExp=Math.max(0,Number(character.experience||0));
+    document.getElementById("sheetHp").textContent=`${currentHp} / ${hpMax}`;
     document.getElementById("sheetMana").textContent=`${currentMana} / ${mana.total}`;
-    document.getElementById("sheetExperience").textContent=String(character.experience||0);
+    document.getElementById("sheetExperience").textContent=`${currentExp} / ${requiredExp}`;
+    setBar("sheetHpBar",currentHp,hpMax);
+    setBar("sheetManaBar",currentMana,mana.total);
+    setBar("sheetExpBar",currentExp,requiredExp);
+
     document.getElementById("sheetStory").textContent=character.story||"Nenhuma história foi registrada.";
     document.getElementById("sheetBuild").textContent=`Perfil ${character.distribution_profile||"manual"}. Atributo principal: ${cls?.estilo?.atributos||cls?.primary_attribute||"não definido"}. Mana máxima: ${mana.total} (${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT).`;
-    document.getElementById("sheetAttributes").innerHTML=attrs.map(attr=>`<article class="character-sheet-attribute"><span>${attr}</span><strong>${finalAttrs[attr]}</strong><small>${attrNames[attr]}</small></article>`).join("");
+    document.getElementById("sheetAttributes").innerHTML=attrs.map(attr=>`<article class="character-sheet-attribute"><span>${attr}</span><small>${attrNames[attr]}</small><strong>${finalAttrs[attr]}</strong></article>`).join("");
     document.getElementById("sheetSkillsSummary").textContent=`${skills.length} habilidade(s) disponíveis no nível ${character.level}. Os valores abaixo já usam os atributos finais atuais.`;
     document.getElementById("sheetSkills").innerHTML=skills.length?skills.map(skill=>{
       const cost=window.WONDERLAND_SKILL_COSTS?.infer(cls,skill,skill.nivel,{passive:Boolean(skill.passive),ultimate:Boolean(skill.ultimate),path:Boolean(skill.path)})||{label:"—"};
@@ -119,6 +154,14 @@
     }).join(""):'<div class="character-sheet-empty">Nenhuma habilidade liberada neste nível.</div>';
     renderItems(document.getElementById("sheetInventory"),data.inventory,"O inventário está vazio.");
     renderItems(document.getElementById("sheetEquipment"),data.equipment,"Nenhum equipamento foi equipado.");
+
+    const equipmentMap=new Map(data.equipment.map(item=>[item.slot,item]));
+    document.querySelectorAll("[data-equipment-slot]").forEach(button=>{
+      const item=equipmentMap.get(button.dataset.equipmentSlot);
+      button.textContent=item?(item.metadata?.name||item.item_key):button.textContent;
+      button.classList.toggle("equipped",Boolean(item));
+      if(item)button.title=`Equipado: ${item.metadata?.name||item.item_key}`;
+    });
 
     loading.hidden=true;content.hidden=false;
   }catch(error){

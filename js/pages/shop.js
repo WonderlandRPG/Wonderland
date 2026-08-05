@@ -49,12 +49,13 @@
     grid.innerHTML=filtered.length?filtered.map(item=>{
       const color=rarityColors[item.rarity]||rarityColors.Comum;
       const handText=item.twoHanded?"Arma de duas mãos — ocupa os dois slots":item.occupiesBoth?"Conjunto duplo — ocupa os dois slots de arma":"";
-      return `<article class="shop-item-card" style="--rarity:${color}">
+      const cardDescription=item.description||`Equipamento ${String(item.rarity||"comum").toLowerCase()} do mercado de Wonderland.`;
+      return `<article class="shop-item-card${item.testItem?" shop-item-card-test":""}" style="--rarity:${color}">
         <div class="shop-item-visual">${item.image?`<img src="${esc(item.image)}" alt="${esc(item.name)}">`:`<span class="shop-item-icon" aria-hidden="true">${esc(item.icon||"◆")}</span>`}</div>
         <div class="shop-item-body">
           <div class="shop-item-kicker"><span>${esc(item.rarity)}</span><span>${esc(slots[item.slot]||item.slot)}</span></div>
           <h2>${esc(item.name)}</h2>
-          <p class="shop-item-slot">Equipamento comum do mercado de Wonderland.</p>
+          <p class="shop-item-slot">${esc(cardDescription)}</p>
           <div class="shop-item-stats">${statsText(item).map(stat=>`<span>${esc(stat)}</span>`).join("")}</div>
           <div class="shop-item-warning">${esc(handText)}</div>
           <div class="shop-item-footer"><div class="shop-item-price"><small>Preço</small><strong>${format(item.price)} WG</strong></div><button type="button" class="wl-button wl-button-gold" data-buy-item="${esc(item.id)}">Comprar</button></div>

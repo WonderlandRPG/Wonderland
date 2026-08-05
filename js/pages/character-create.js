@@ -18,7 +18,7 @@
 
   const $=id=>document.getElementById(id);
   const form=$("characterCreateForm"),nameInput=$("characterName"),storyInput=$("characterStory"),raceSelect=$("characterRace"),classSelect=$("characterClass"),racePreview=$("racePreview"),classPreview=$("classPreview"),allocator=$("attributeAllocator"),remaining=$("remainingPoints"),review=$("characterReview"),message=$("characterCreateMessage"),prev=$("previousStep"),next=$("nextStep"),finish=$("finishCharacter"),reset=$("resetAttributes"),classAttributeGuide=$("classAttributeGuide"),autoDistributionMessage=$("autoDistributionMessage");
-  const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+  const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
   const selectedRace=()=>races.find(r=>r.id===raceSelect.value)||races[0];
   const selectedClass=()=>classes[classSelect.value]||Object.values(classes)[0];
   const racialBonus=a=>Number(selectedRace()?.stats?.attributes?.[a]||0);
@@ -57,7 +57,9 @@
     const cls=selectedClass(),{primary,secondary}=parseClassAttributes(cls),role=String(cls?.cargo||"").toLowerCase();
     const weights=Object.fromEntries(attrs.map(attr=>[attr,1]));
     if(profile==="aggressive"){
-      weights[primary]+=5;weights[secondary]+=2;weights.INI+=2;(primary==="INT"||primary==="ARC"?weights.INT:weights.FOR)+=1.5;weights.DEF=.65;weights.RES=.75;
+      weights[primary]+=5;weights[secondary]+=2;weights.INI+=2;
+      if(primary==="INT"||primary==="ARC")weights.INT+=1.5;else weights.FOR+=1.5;
+      weights.DEF=.65;weights.RES=.75;
     }else if(profile==="defensive"){
       weights.DEF+=4;weights.RES+=4;weights[primary]+=2;weights[secondary]+=1.5;if(role.includes("suporte")||role.includes("tanque"))weights.ARC+=1;
     }else{

@@ -1,106 +1,126 @@
-/* Identity block refinement — follows the annotated layout */
+/* Identity block refinement — larger title and separated race/class presentation */
 .character-sheet-identity{
   position:relative;
   display:grid;
   align-content:center;
   justify-items:start;
   min-width:0;
-  padding:18px 22px 18px 10px;
+  padding:18px 28px 18px 16px;
 }
 .character-sheet-eyebrow{
   position:relative;
   display:inline-flex;
   align-items:center;
-  gap:12px;
-  margin:0 0 14px;
-  color:#f2eadb;
-  font:600 11px "Cinzel",serif;
-  letter-spacing:2.1px;
+  gap:14px;
+  margin:0 0 16px;
+  color:#fff4df;
+  font:700 clamp(12px,1.15vw,16px) "Cinzel",serif;
+  letter-spacing:2.7px;
+  line-height:1;
   text-transform:uppercase;
-  opacity:.9;
+  opacity:.96;
+  text-shadow:0 0 14px color-mix(in srgb,var(--sheet-rank-color) 24%,transparent);
 }
 .character-sheet-eyebrow::before{
   content:"";
-  width:34px;
+  width:44px;
   height:1px;
   background:linear-gradient(90deg,transparent,var(--sheet-rank-accent));
-  box-shadow:0 0 12px color-mix(in srgb,var(--sheet-rank-color) 35%,transparent);
+  box-shadow:0 0 14px color-mix(in srgb,var(--sheet-rank-color) 42%,transparent);
 }
 .character-sheet-identity h1{
   position:relative;
   margin:0;
   max-width:100%;
-  color:#fff0cf;
-  font:700 clamp(46px,6vw,82px) "Cinzel",serif;
-  line-height:.94;
-  letter-spacing:-2.4px;
-  background:linear-gradient(90deg,#fff7dc 0%,var(--sheet-rank-accent) 44%,var(--sheet-rank-color) 100%);
+  font:700 clamp(64px,7.6vw,112px) "Cinzel",serif;
+  line-height:.86;
+  letter-spacing:-3.6px;
+  background:linear-gradient(90deg,#fff7dc 0%,var(--sheet-rank-accent) 42%,var(--sheet-rank-color) 100%);
   -webkit-background-clip:text;
   background-clip:text;
   color:transparent;
-  text-shadow:0 0 28px color-mix(in srgb,var(--sheet-rank-color) 20%,transparent);
+  text-shadow:0 0 34px color-mix(in srgb,var(--sheet-rank-color) 24%,transparent);
 }
 .character-sheet-identity h1::after{
   content:"";
   display:block;
-  width:min(100%,520px);
+  width:min(100%,620px);
   height:1px;
-  margin-top:16px;
-  background:linear-gradient(90deg,var(--sheet-rank-color),color-mix(in srgb,var(--sheet-rank-accent) 60%,transparent),transparent);
-  box-shadow:0 0 16px color-mix(in srgb,var(--sheet-rank-color) 25%,transparent);
+  margin-top:20px;
+  background:linear-gradient(90deg,var(--sheet-rank-color),color-mix(in srgb,var(--sheet-rank-accent) 65%,transparent),transparent);
+  box-shadow:0 0 18px color-mix(in srgb,var(--sheet-rank-color) 28%,transparent);
 }
 .character-sheet-identity #sheetSummary{
   display:none!important;
 }
 .character-sheet-badges{
   display:grid;
-  grid-template-columns:minmax(150px,auto) minmax(150px,auto);
-  gap:12px 16px;
-  width:min(100%,460px);
-  margin:18px 0 0;
+  grid-template-columns:minmax(220px,1fr);
+  gap:12px;
+  width:min(100%,520px);
+  margin:20px 0 0;
 }
 .character-sheet-badges span{
   position:relative;
-  display:flex;
+  display:grid;
+  grid-template-columns:82px 1fr;
   align-items:center;
-  justify-content:flex-start;
-  min-height:44px;
-  padding:10px 14px 10px 42px;
-  border:1px solid color-mix(in srgb,var(--sheet-rank-color) 34%,transparent);
+  min-height:54px;
+  padding:10px 16px;
   border-radius:12px;
-  background:linear-gradient(135deg,color-mix(in srgb,var(--sheet-rank-color) 8%,rgba(255,255,255,.025)),rgba(7,9,13,.72));
+  background:linear-gradient(135deg,rgba(255,255,255,.025),rgba(7,9,13,.74));
   color:#f3eadb;
-  font:600 14px "Cinzel",serif;
-  letter-spacing:.6px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 0 16px color-mix(in srgb,var(--sheet-rank-color) 7%,transparent);
+  font:600 clamp(18px,1.8vw,24px) "Cormorant Garamond",serif;
+  letter-spacing:.2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 0 18px rgba(0,0,0,.2);
 }
 .character-sheet-badges span::before{
-  position:absolute;
-  left:14px;
-  top:50%;
-  transform:translateY(-50%);
-  color:var(--sheet-rank-accent);
-  font:700 9px "Cinzel",serif;
-  letter-spacing:1px;
-  opacity:.8;
+  position:static;
+  transform:none;
+  font:700 10px "Cinzel",serif;
+  letter-spacing:1.7px;
+  opacity:.88;
 }
 .character-sheet-badges #sheetLevel,
 .character-sheet-badges #sheetRank{
   display:none!important;
 }
-.character-sheet-badges #sheetRace::before{content:"RAÇA"}
-.character-sheet-badges #sheetClass::before{content:"CLASSE"}
-.character-sheet-badges #sheetRace{border-left:3px solid var(--sheet-rank-color)}
-.character-sheet-badges #sheetClass{border-left:3px solid var(--sheet-rank-accent)}
-
-@media(max-width:980px){
-  .character-sheet-identity{padding:10px 4px 6px}
-  .character-sheet-identity h1{font-size:clamp(42px,10vw,68px)}
-  .character-sheet-badges{grid-template-columns:1fr;max-width:430px}
+.character-sheet-badges #sheetRace{
+  border:1px solid color-mix(in srgb,#d6b56b 46%,transparent);
+  border-left:4px solid #d6b56b;
+  background:linear-gradient(135deg,rgba(214,181,107,.1),rgba(7,9,13,.76));
+  color:#f6e8bd;
+  text-shadow:0 0 14px rgba(214,181,107,.18);
 }
-@media(max-width:620px){
-  .character-sheet-eyebrow{font-size:9px;letter-spacing:1.5px}
-  .character-sheet-eyebrow::before{width:22px}
-  .character-sheet-identity h1{font-size:clamp(36px,14vw,56px);letter-spacing:-1.5px}
-  .character-sheet-badges{width:100%}
+.character-sheet-badges #sheetRace::before{
+  content:"RAÇA";
+  color:#d6b56b;
+}
+.character-sheet-badges #sheetClass{
+  border:1px solid color-mix(in srgb,var(--sheet-rank-accent) 42%,transparent);
+  border-left:4px solid var(--sheet-rank-accent);
+  background:linear-gradient(135deg,color-mix(in srgb,var(--sheet-rank-color) 10%,transparent),rgba(7,9,13,.76));
+  color:color-mix(in srgb,var(--sheet-rank-accent) 78%,#fff0cf);
+  text-shadow:0 0 14px color-mix(in srgb,var(--sheet-rank-color) 20%,transparent);
+}
+.character-sheet-badges #sheetClass::before{
+  content:"CLASSE";
+  color:var(--sheet-rank-accent);
+}
+
+@media(max-width:1100px){
+  .character-sheet-identity{padding:14px 10px}
+  .character-sheet-identity h1{font-size:clamp(58px,8.6vw,94px)}
+  .character-sheet-badges{max-width:460px}
+}
+@media(max-width:760px){
+  .character-sheet-eyebrow{font-size:11px;letter-spacing:2px}
+  .character-sheet-eyebrow::before{width:30px}
+  .character-sheet-identity h1{font-size:clamp(48px,13vw,76px);letter-spacing:-2.2px}
+  .character-sheet-badges{width:100%;max-width:none}
+  .character-sheet-badges span{grid-template-columns:70px 1fr;font-size:20px}
+}
+@media(max-width:520px){
+  .character-sheet-identity h1{font-size:clamp(42px,16vw,64px)}
+  .character-sheet-badges span{grid-template-columns:64px 1fr;min-height:50px;padding:9px 12px}
 }

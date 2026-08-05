@@ -6,6 +6,7 @@
 
   const normalizeEmail=value=>String(value||"").trim().toLowerCase();
   const profileFrom=(user,profile)=>({id:user.id,email:user.email,name:profile?.display_name||profile?.username||user.user_metadata?.display_name||user.user_metadata?.username||"Aventureiro",username:profile?.username||user.user_metadata?.username||"Aventureiro",role:profile?.role||"player",avatarUrl:profile?.avatar_url||null,isBanned:Boolean(profile?.is_banned)});
+  const withDefaultRank=row=>row?{...row,rank:String(row.rank||"E").toUpperCase()}:row;
 
   async function getSession(){const {data,error}=await client.auth.getSession();if(error)throw error;return data.session||null}
   async function current(){
@@ -23,13 +24,15 @@
 
   async function getCharacters(){
     const user=await current();if(!user)return[];
-    const {data,error}=await client.from("characters").select("id,name,story,race_id,class_id,path_id,rank,level,experience,hp_current,mana_current,distribution_profile,image_url,created_at").eq("user_id",user.id).order("created_at",{ascending:true});
-    if(error)throw error;return data||[]
+    const fields="id,name,story,race_id,class_id,path_id,level,experience,hp_current,mana_current,distribution_profile,image_url,created_at";
+    const {data,error}=await client.from("characters").select(fields).eq("user_id",user.id).order("created_at",{ascending:true});
+    if(error)throw error;return(data||[]).map(withDefaultRank)
   }
 
   async function getCharacterSheet(characterId){
     const user=await current();if(!user)throw new Error("Sessão expirada. Entre novamente.");
-    const {data:character,error:characterError}=await client.from("characters").select("id,user_id,name,story,race_id,class_id,path_id,rank,level,experience,hp_current,mana_current,distribution_profile,image_url,created_at").eq("id",characterId).eq("user_id",user.id).maybeSingle();
+    const fields="id,user_id,name,story,race_id,class_id,path_id,level,experience,hp_current,mana_current,distribution_profile,image_url,created_at";
+    const {data:character,error:characterError}=await client.from("characters").select(fields).eq("id",characterId).eq("user_id",user.id).maybeSingle();
     if(characterError)throw characterError;if(!character)throw new Error("Personagem não encontrado.");
     const [attributesResult,inventoryResult,equipmentResult,skillsResult]=await Promise.all([
       client.from("character_attributes").select("*").eq("character_id",characterId).maybeSingle(),
@@ -38,7 +41,7 @@
       client.from("character_skills").select("id,skill_key,source_type,unlocked_level,is_equipped,slot_position,unlocked_at").eq("character_id",characterId).order("unlocked_level",{ascending:true})
     ]);
     for(const result of [attributesResult,inventoryResult,equipmentResult,skillsResult])if(result.error)throw result.error;
-    return{character,attributes:attributesResult.data||null,inventory:inventoryResult.data||[],equipment:equipmentResult.data||[],skills:skillsResult.data||[]}
+    return{character:withDefaultRank(character),attributes:attributesResult.data||null,inventory:inventoryResult.data||[],equipment:equipmentResult.data||[],skills:skillsResult.data||[]}
   }
 
   async function updateCharacterImage(characterId,imageUrl){
@@ -51,7 +54,8 @@
 
   async function createCharacter(character){
     const user=await current();if(!user)throw new Error("Sessão expirada. Entre novamente.");
-    const {data:created,error:createError}=await client.from("characters").insert({user_id:user.id,name:character.name,story:character.story||"",race_id:character.raceId,class_id:character.classId,path_id:character.pathId||null,rank:"E",level:1,experience:0,hp_current:Number(character.hpCurrent||0),mana_current:Number(character.manaCurrent||0),distribution_profile:character.attributeProfile==="custom"?"manual":character.attributeProfile||"manual",image_url:character.image||null}).select("id").single();
+    const payload={user_id:user.id,name:character.name,story:character.story||"",race_id:character.raceId,class_id:character.classId,path_id:character.pathId||null,level:1,experience:0,hp_current:Number(character.hpCurrent||0),mana_current:Number(character.manaCurrent||0),distribution_profile:character.attributeProfile==="custom"?"manual":character.attributeProfile||"manual",image_url:character.image||null};
+    const {data:created,error:createError}=await client.from("characters").insert(payload).select("id").single();
     if(createError)throw createError;
     const a=character.allocatedAttributes||{},r=character.racialAttributes||{},b=character.baseAttributes||{};
     const {error:attributeError}=await client.from("character_attributes").insert({character_id:created.id,base_for:Number(b.FOR||20),base_def:Number(b.DEF||20),base_res:Number(b.RES||20),base_ini:Number(b.INI||20),base_int:Number(b.INT||20),base_arc:Number(b.ARC||20),allocated_for:Number(a.FOR||0),allocated_def:Number(a.DEF||0),allocated_res:Number(a.RES||0),allocated_ini:Number(a.INI||0),allocated_int:Number(a.INT||0),allocated_arc:Number(a.ARC||0),racial_for:Number(r.FOR||0),racial_def:Number(r.DEF||0),racial_res:Number(r.RES||0),racial_ini:Number(r.INI||0),racial_int:Number(r.INT||0),racial_arc:Number(r.ARC||0)});

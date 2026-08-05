@@ -15,7 +15,5 @@
         window.addEventListener("storage",event=>{if(event.key!==STORAGE_KEYS.volume)return;const next=event.newValue===null?DEFAULT_VOLUME:clampVolume(event.newValue);music.volume=next;music.muted=next===0});
         const originalPlay=music.play.bind(music);music.play=(...args)=>{const stored=localStorage.getItem(STORAGE_KEYS.volume);const current=stored===null?DEFAULT_VOLUME:clampVolume(stored);music.volume=current;music.muted=current===0;return originalPlay(...args)};
     }
-    function loadSiteHeader(){if(document.querySelector(".site-header")||document.querySelector('script[src*="site-header.js"]'))return;const script=document.createElement("script");script.src="js/site-header.js?v=3";script.defer=true;document.body.appendChild(script)}
-    const start=()=>{syncAudioState();window.setTimeout(loadSiteHeader,0)};
-    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
+    if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",syncAudioState,{once:true});else syncAudioState();
 })();

@@ -15,15 +15,16 @@ body.characters-page{min-height:100vh;background:#05080c;color:#eee9dc;overflow-
 .characters-capacity strong{display:block;margin-top:6px;color:#f3dfb4;font-family:"Cinzel",serif;font-size:25px}
 .characters-grid{margin-top:28px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
 
-/* O card continua usando integralmente a estrutura oficial de css/components/cards.css. */
 .character-card{--rank-glow-strength:.12;--rank-aura-size:18px;min-height:520px;animation:characterRankAura 4.2s ease-in-out infinite}
 .character-card:hover,.character-card:focus-within{transform:perspective(1200px) rotateX(var(--wl-card-tilt-x)) rotateY(var(--wl-card-tilt-y)) translateY(-4px) scale(1.01)}
-.character-photo-cover{height:290px;flex-basis:290px}
-.character-photo-cover>img{width:100%;height:100%;object-fit:cover}
-.character-card-body{text-align:center;align-items:center;padding:26px 26px 28px}
-.character-card-body .wl-card-subtitle,.character-card-body .wl-card-title,.character-card-body .wl-card-text{width:100%;text-align:center}
-.character-card-body .wl-card-title{margin-bottom:12px}
-.character-card-body .wl-card-text{margin:0 auto;color:#c9c1b4;font-size:19px}
+.character-card .wl-card-frame{position:absolute;inset:8px;z-index:10}
+.character-card .wl-card-corner{position:absolute;z-index:11}
+.character-card .wl-card-image{position:relative;z-index:2;width:100%;height:290px;flex:0 0 290px;margin:0;border-radius:0;overflow:hidden}
+.character-card .wl-card-image>img{display:block;width:100%;height:100%;object-fit:cover}
+.character-card .wl-card-body{position:relative;z-index:5;flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 26px 28px}
+.character-card .wl-card-subtitle,.character-card .wl-card-title,.character-card .wl-card-text{width:100%;text-align:center}
+.character-card .wl-card-title{margin-bottom:12px}
+.character-card .wl-card-text{margin:0 auto;color:#c9c1b4;font-size:19px}
 .character-card-actions{width:100%;justify-content:center;margin-top:auto;padding-top:18px}
 .character-card-actions .wl-button{min-width:150px}
 

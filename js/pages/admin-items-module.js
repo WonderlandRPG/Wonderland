@@ -31,10 +31,10 @@
       base_value:Number(row.price_wg||0),
       price:Number(row.price_wg||0),
       required_level:Number(row.required_level||1),
-      icon_url:row.icon||"",
-      icon:row.icon||"",
-      artwork_url:row.image_url||"",
-      image:row.image_url||null,
+      icon_url:row.icon_url||row.icon||"",
+      icon:row.icon_url||row.icon||"",
+      artwork_url:row.artwork_url||row.image_url||"",
+      image:row.artwork_url||row.image_url||null,
       is_active:row.is_active!==false,
       active:row.is_active!==false,
       stats:{...(row.stats||{})},
@@ -47,7 +47,7 @@
   async function loadItems(){
     if(state.loaded||!client)return;
     try{
-      const {data,error}=await client.from("items").select("item_key,name,description,slot,rarity,price_wg,required_level,stats,icon,image_url,two_handed,occupies_both_hands,is_active").order("name");
+      const {data,error}=await client.from("items").select("item_key,name,description,slot,rarity,price_wg,required_level,stats,icon_url,artwork_url,two_handed,occupies_both_hands,is_active").order("name");
       if(error)throw error;
       if(Array.isArray(data)&&data.length)state.items=data.map(normalizeRow);
     }catch(error){console.warn("Não foi possível carregar itens persistidos do Supabase.",error)}finally{state.loaded=true}
@@ -107,7 +107,7 @@
       item.name=String(fd.get("name")||"").trim();item.rarity=String(fd.get("rarity")||"Comum").trim();item.slot=String(fd.get("slot")||"").trim();item.base_value=Math.max(0,Number(fd.get("base_value")||0));item.price=item.base_value;item.required_level=Math.max(1,Number(fd.get("required_level")||1));item.icon_url=String(fd.get("icon_url")||"").trim();item.icon=item.icon_url;item.artwork_url=normalizedImage;item.image=normalizedImage||null;item.description=String(fd.get("description")||"").trim();item.two_handed=form.elements.two_handed.checked;item.occupies_both_hands=form.elements.occupies_both_hands.checked||item.two_handed;item.is_active=form.elements.is_active.checked;item.active=item.is_active;item.stats={};["FOR","DEF","RES","INI","INT","ARC"].forEach(attr=>{const value=Math.max(0,Number(fd.get(`stat_${attr}`)||0));if(value)item.stats[attr]=value});
       if(!client){message.textContent="Supabase indisponível. Nada foi salvo.";return}
       submit.disabled=true;message.textContent="Salvando no Supabase...";
-      const payload={item_key:item.id,name:item.name,description:item.description,slot:item.slot,rarity:item.rarity,price_wg:item.base_value,required_level:item.required_level,stats:item.stats,icon:item.icon_url||null,image_url:item.artwork_url||null,two_handed:item.two_handed,occupies_both_hands:item.occupies_both_hands,is_active:item.is_active};
+      const payload={item_key:item.id,name:item.name,description:item.description,slot:item.slot,rarity:item.rarity,price_wg:item.base_value,required_level:item.required_level,stats:item.stats,icon_url:item.icon_url||null,artwork_url:item.artwork_url||null,two_handed:item.two_handed,occupies_both_hands:item.occupies_both_hands,is_active:item.is_active};
       try{
         const {error}=await client.from("items").upsert(payload,{onConflict:"item_key"});if(error)throw error;
         const shopItem=(window.WONDERLAND_SHOP_ITEMS||[]).find(entry=>entry.id===item.id);

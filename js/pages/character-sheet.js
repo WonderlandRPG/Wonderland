@@ -24,35 +24,17 @@
   if(!user){window.location.replace("conta.html");return}
 
   function parseLevel(value){const match=String(value||"").match(/(\d+)/);return Number(match?.[1]||1)}
-  function stripHtml(value){
-    const text=String(value??"");
-    if(!text.includes("<"))return text.trim();
-    const template=document.createElement("template");
-    template.innerHTML=text;
-    return (template.content.textContent||"").replace(/\s+/g," ").trim();
-  }
-  function textValue(value){
-    if(value===null||value===undefined)return"";
-    if(typeof value==="string"||typeof value==="number")return stripHtml(value);
-    if(Array.isArray(value))return value.map(textValue).filter(Boolean).join(" • ");
-    if(typeof value==="object")return textValue(value.description||value.descricao||value.text||value.nome||value.name||"");
-    return stripHtml(value)
-  }
+  function stripHtml(value){const text=String(value??"");if(!text.includes("<"))return text.trim();const template=document.createElement("template");template.innerHTML=text;return(template.content.textContent||"").replace(/\s+/g," ").trim()}
+  function textValue(value){if(value===null||value===undefined)return"";if(typeof value==="string"||typeof value==="number")return stripHtml(value);if(Array.isArray(value))return value.map(textValue).filter(Boolean).join(" • ");if(typeof value==="object")return textValue(value.description||value.descricao||value.text||value.nome||value.name||"");return stripHtml(value)}
   function getFinalAttributes(row){return Object.fromEntries(attrs.map(attr=>{const key=attr.toLowerCase();return[attr,Number(row?.[`base_${key}`]||20)+Number(row?.[`allocated_${key}`]||0)+Number(row?.[`racial_${key}`]||0)]}))}
   function classifyEffect(description,category){const source=`${description||""} ${category||""}`.toLowerCase();if(source.includes("cura")||source.includes("restaura")||source.includes("recupera"))return"Cura final";if(source.includes("escudo")||source.includes("proteção")||source.includes("protecao"))return"Escudo final";if(source.includes("dano"))return"Dano final";return"Efeito calculado"}
-  function finalEffect(description,category,finalAttrs){
-    const source=stripHtml(description);
-    const matches=[...source.matchAll(/(\d+(?:[.,]\d+)?)%\s+(?:do|de|da)\s+(?:seu\s+)?(FOR|DEF|RES|INI|INT|ARC)/gi)];
-    if(!matches.length)return null;
-    const values=matches.map(match=>{const percent=Number(match[1].replace(",","."));const attr=match[2].toUpperCase();const base=Number(finalAttrs[attr]||0);return{percent,attr,base,total:Math.round(base*(percent/100))}});
-    const total=values.reduce((sum,item)=>sum+item.total,0);
-    return{label:classifyEffect(source,category),total,details:values.map(item=>`${item.percent}% de ${item.attr} (${item.base}) = ${item.total}`).join(" + ")}
-  }
+  function finalEffect(description,category,finalAttrs){const source=stripHtml(description);const matches=[...source.matchAll(/(\d+(?:[.,]\d+)?)%\s+(?:do|de|da)\s+(?:seu\s+)?(FOR|DEF|RES|INI|INT|ARC)/gi)];if(!matches.length)return null;const values=matches.map(match=>{const percent=Number(match[1].replace(",","."));const attr=match[2].toUpperCase();const base=Number(finalAttrs[attr]||0);return{percent,attr,base,total:Math.round(base*(percent/100))}});return{label:classifyEffect(source,category),total:values.reduce((sum,item)=>sum+item.total,0),details:values.map(item=>`${item.percent}% de ${item.attr} (${item.base}) = ${item.total}`).join(" + ")}}
   function racialEntries(collection,{progression=false}={}){const values=Array.isArray(collection)?collection:Object.values(collection||{});return values.map((skill,index)=>{const name=textValue(skill?.name||skill?.nome||skill?.title)||`Traço racial ${index+1}`;const description=textValue(skill?.description||skill?.descricao||skill?.content||skill?.effect||skill?.efeito||skill);return{...skill,nome:name,descricao:description,nivel:progression?parseLevel(skill?.level||skill?.nivel):1,tipo:textValue(skill?.category||skill?.categoria||skill?.tipo||skill?.label)||(progression?"Habilidade racial":"Traço racial"),passive:!progression,source:"Raça"}})}
   function officialSkills(cls,race,level){const list=[];(cls?.passivas||[]).forEach(skill=>list.push({...skill,nome:textValue(skill.nome),descricao:textValue(skill.descricao),nivel:1,tipo:"Passiva",passive:true,source:"Classe"}));(cls?.progressao||[]).forEach(skill=>{const unlock=parseLevel(skill.nivel);if(unlock<=level)list.push({...skill,nome:textValue(skill.nome),descricao:textValue(skill.descricao),nivel:unlock,tipo:textValue(skill.categoria)||"Habilidade",source:"Classe"})});if(level>=50){(cls?.caminhos||[]).forEach(path=>{if(path.passiva)list.push({...path.passiva,nome:textValue(path.passiva.nome),descricao:textValue(path.passiva.descricao),nivel:50,tipo:"Passiva do caminho",passive:true,source:textValue(path.nome),path:true});(path.habilidades||[]).forEach((skill,index)=>{const unlock=[60,70,80,90,100][index]||100;if(unlock<=level)list.push({...skill,nome:textValue(skill.nome),descricao:textValue(skill.descricao),nivel:unlock,tipo:textValue(skill.tipo)||"Habilidade",ultimate:String(skill.tipo||"").toLowerCase()==="ultimate",source:textValue(path.nome),path:true})})})}racialEntries(race?.traits||race?.passives||race?.tracos||race?.passivas).forEach(skill=>list.push(skill));racialEntries(race?.progression||race?.progressao,{progression:true}).forEach(skill=>{if(skill.nivel<=level)list.push(skill)});return list.filter(skill=>skill.nome&&skill.descricao)}
   function renderItems(target,items,emptyText){target.innerHTML=items.length?items.map(item=>`<article class="character-sheet-item"><div><strong>${esc(item.metadata?.name||item.item_key)}</strong><small>${esc(item.slot||item.metadata?.rarity||"")}</small></div><span>${item.quantity?`x${esc(item.quantity)}`:"Equipado"}</span></article>`).join(""):`<div class="character-sheet-empty">${esc(emptyText)}</div>`}
   function setBar(id,current,max){const el=document.getElementById(id);if(el)el.style.width=`${Math.max(0,Math.min(100,max>0?current/max*100:0))}%`}
   function renderDerived(target,finalAttrs,mana,character,race){const hpMax=Number(race?.stats?.hp||character.hp_current||0)+Math.floor(finalAttrs.RES/5)*10;const rows=[["HP máximo",hpMax,"HP racial + RES"],["Mana máxima",mana.total,`${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT`],["Ataque físico",Math.round(finalAttrs.FOR),"FOR"],["Ataque mágico",Math.round(finalAttrs.INT),"INT"],["Defesa física",Math.round(finalAttrs.DEF),"DEF"],["Resistência",Math.round(finalAttrs.RES),"RES"],["Iniciativa",Math.round(finalAttrs.INI),"INI"],["Poder de suporte",Math.round(finalAttrs.ARC),"ARC"]];target.innerHTML=rows.map(([label,value,note])=>`<article class="character-sheet-derived-row"><span>${esc(label)}</span><small>${esc(note)}</small><strong>${esc(value)}</strong></article>`).join("");return hpMax}
+  function renderRankParticles(rankId){const layer=document.getElementById("rankEffectLayer");if(!layer)return;const counts={e:8,d:10,c:12,b:13,a:14,s:15,ex:18};const count=counts[rankId]||10;layer.innerHTML=Array.from({length:count},(_,index)=>{const x=(index*37+11)%96;const y=(index*53+7)%110;const size=6+(index%5)*3;const duration=10+(index%6)*1.8;const delay=-(index%9)*1.15;const drift=`${((index%2?1:-1)*(18+(index%4)*11))}px`;return `<span class="rank-particle" style="--x:${x}%;--y:${y}%;--size:${size}px;--duration:${duration}s;--delay:${delay}s;--drift:${drift}"></span>`}).join("")}
 
   try{
     const data=await account.getCharacterSheet(characterId);
@@ -68,24 +50,27 @@
     const fallbackPortrait=race?.artwork||race?.image||"assets/images/logo.png";
     let portrait=character.image_url||fallbackPortrait;
 
-    document.body.dataset.rank=String(rank.id||"E").toLowerCase();
+    const rankId=String(rank.id||"E").toLowerCase();
+    document.body.dataset.rank=rankId;
     document.body.style.setProperty("--sheet-rank-color",rank.color||"#9d744f");
     document.body.style.setProperty("--sheet-rank-accent",rank.accent||rank.color||"#9d744f");
     document.body.style.setProperty("--sheet-rank-secondary",rank.secondary||rank.color||"#6d4b32");
+    renderRankParticles(rankId);
 
     const rankTarget=document.getElementById("sheetRankEmblem");
     if(rankTarget)rankTarget.innerHTML=rankSystem?.emblemHtml(rank.id)||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`;
     document.getElementById("sheetRank").textContent=`Rank ${rank.id}`;
 
     const applyPortrait=url=>{portrait=url||fallbackPortrait;const mainImage=document.getElementById("sheetImage");const equipmentImage=document.getElementById("equipmentCharacterImage");mainImage.src=portrait;mainImage.alt=character.name;equipmentImage.src=portrait;equipmentImage.alt=`Equipamentos de ${character.name}`};
-    applyPortrait(portrait);
-    imageUrlInput.value=character.image_url||"";
+    applyPortrait(portrait);imageUrlInput.value=character.image_url||"";
 
+    const selectedPath=cls?.caminhos?.find(path=>String(path.id||path.nome||"").toLowerCase()===String(character.class_path_id||"").toLowerCase());
+    const classLabel=selectedPath?`${cls?.nome||character.class_id} — ${selectedPath.nome}`:(cls?.nome||character.class_id);
     document.getElementById("sheetName").textContent=character.name;
-    document.getElementById("sheetSummary").textContent=`${race?.name||character.race_id} • ${cls?.nome||character.class_id}`;
-    document.getElementById("sheetLevel").textContent=`Nível ${character.level}`;
+    document.getElementById("sheetSummary").textContent=`${race?.name||character.race_id} • ${classLabel}`;
+    document.getElementById("sheetLevel").textContent=String(character.level);
     document.getElementById("sheetRace").textContent=race?.name||character.race_id;
-    document.getElementById("sheetClass").textContent=cls?.nome||character.class_id;
+    document.getElementById("sheetClass").textContent=classLabel;
 
     const hpMax=renderDerived(document.getElementById("sheetDerived"),finalAttrs,mana,character,race);
     const currentHp=Math.min(Math.max(0,Number(character.hp_current||0)),hpMax);

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arena de Testes | Wonderland RPG</title>
+  <meta name="description" content="Arena administrativa para testar cálculos de combate do Wonderland RPG.">
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css?v=15">
+  <link rel="stylesheet" href="css/components/buttons.css?v=1">
+  <link rel="stylesheet" href="css/arena.css?v=1">
+</head>
+<body class="arena-page">
+  <div class="arena-background" aria-hidden="true"></div>
+  <header class="arena-topbar">
+    <a href="admin.html" class="wl-button wl-button-ghost">← Painel ADM</a>
+    <a href="index.html" class="arena-brand"><img src="assets/images/logo.png" alt=""><span>Wonderland</span></a>
+    <a href="personagens.html" class="wl-button wl-button-gold">Personagens</a>
+  </header>
+  <main class="arena-shell">
+    <section class="arena-hero">
+      <div><span>Laboratório de combate</span><h1>Arena de Testes</h1><p>Teste dano, defesa, resistência, Mana e efeitos antes de liberar conteúdos para os jogadores.</p></div>
+      <div class="arena-status"><small>Modo</small><strong>Administrador</strong><span>Resultados não alteram a ficha real</span></div>
+    </section>
+    <section class="arena-layout">
+      <aside class="arena-control-panel">
+        <div class="arena-section-heading"><span>Configuração</span><h2>Montar combate</h2></div>
+        <label><span>Personagem</span><select id="arenaCharacter"><option value="">Carregando personagens...</option></select></label>
+        <label><span>Habilidade</span><select id="arenaSkill"><option value="basic">Ataque básico</option></select></label>
+        <div class="arena-field-grid">
+          <label><span>Tipo de dano</span><select id="arenaDamageType"><option value="physical">Físico</option><option value="magical">Mágico</option><option value="true">Verdadeiro</option></select></label>
+          <label><span>Escala (%)</span><input id="arenaScale" type="number" min="0" step="5" value="100"></label>
+        </div>
+        <div class="arena-field-grid">
+          <label><span>DEF do alvo</span><input id="arenaEnemyDef" type="number" min="0" value="50"></label>
+          <label><span>RES do alvo</span><input id="arenaEnemyRes" type="number" min="0" value="50"></label>
+        </div>
+        <div class="arena-field-grid">
+          <label><span>HP do alvo</span><input id="arenaEnemyHp" type="number" min="1" value="1000"></label>
+          <label><span>Turnos</span><input id="arenaTurns" type="number" min="1" max="20" value="1"></label>
+        </div>
+        <button id="arenaRun" class="wl-button wl-button-gold arena-run" type="button">Executar teste</button>
+        <p id="arenaMessage" class="arena-message"></p>
+      </aside>
+      <section class="arena-stage">
+        <div class="arena-fighter arena-player">
+          <div class="arena-portrait"><img id="arenaPlayerImage" src="assets/images/logo.png" alt="Personagem"></div>
+          <div><small>Desafiante</small><h2 id="arenaPlayerName">Selecione um personagem</h2><p id="arenaPlayerClass">—</p></div>
+          <div id="arenaPlayerStats" class="arena-stat-list"></div>
+        </div>
+        <div class="arena-versus">VS</div>
+        <div class="arena-fighter arena-enemy">
+          <div class="arena-enemy-emblem">✦</div>
+          <div><small>Alvo de treinamento</small><h2>Autômato da Arena</h2><p>Defesas configuráveis</p></div>
+          <div class="arena-stat-list"><span>HP <strong id="arenaEnemyHpView">1000</strong></span><span>DEF <strong id="arenaEnemyDefView">50</strong></span><span>RES <strong id="arenaEnemyResView">50</strong></span></div>
+        </div>
+      </section>
+      <section class="arena-results">
+        <div class="arena-section-heading"><span>Relatório</span><h2>Resultado do teste</h2></div>
+        <div id="arenaResultCards" class="arena-result-grid">
+          <article><span>Dano bruto</span><strong>0</strong></article>
+          <article><span>Redução</span><strong>0%</strong></article>
+          <article><span>Dano final</span><strong>0</strong></article>
+          <article><span>HP restante</span><strong>0</strong></article>
+        </div>
+        <div id="arenaCombatLog" class="arena-combat-log"><p>Configure o combate e execute o primeiro teste.</p></div>
+      </section>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-client.js?v=2"></script>
+  <script src="js/account-store.js?v=9"></script>
+  <script src="js/data/racas-data.js?v=1"></script>
+  <script src="js/data/classes-all.js?v=2"></script>
+  <script src="js/data/mana-system.js?v=2"></script>
+  <script src="js/data/defense-system.js?v=1"></script>
+  <script src="js/pages/arena.js?v=1" defer></script>
+</body>
+</html>

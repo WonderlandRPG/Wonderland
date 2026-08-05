@@ -30,10 +30,19 @@
     const value=clean.length===3?clean.split("").map(char=>char+char).join(""):clean.padEnd(6,"0").slice(0,6);
     return `${parseInt(value.slice(0,2),16)||214}, ${parseInt(value.slice(2,4),16)||181}, ${parseInt(value.slice(4,6),16)||107}`;
   }
+  function classPathName(character,cls){
+    const pathId=character.class_path_id||character.path_id||character.class_path||"";
+    if(!pathId)return"";
+    const paths=Array.isArray(cls?.caminhos)?cls.caminhos:Array.isArray(cls?.paths)?cls.paths:[];
+    const path=paths.find(item=>String(item.id||item.nome||item.name).toLowerCase()===String(pathId).toLowerCase());
+    return path?.nome||path?.name||String(pathId);
+  }
 
   function characterCard(character){
     const race=raceMap[character.race_id];
     const cls=classMap[character.class_id];
+    const pathName=classPathName(character,cls);
+    const classLabel=`${cls?.nome||character.class_id||"Classe não definida"}${pathName?` — ${pathName}`:""}`;
     const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante",color:"#9d744f"};
     const portrait=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
     const rgb=hexToRgb(rank.color);
@@ -53,9 +62,12 @@
         <div class="character-rank-overlay" title="Rank ${esc(rank.id)} — ${esc(rank.title)}">${rankSystem?.emblemHtml(rank.id,{compact:true})||`<span class="rank-emblem"><span>${esc(rank.id)}</span></span>`}</div>
       </div>
       <div class="wl-card-body character-card-body">
-        <span class="wl-card-subtitle">Nível ${esc(character.level||1)} • ${esc(race?.name||character.race_id||"Raça não definida")}</span>
         <h2 class="wl-card-title">${esc(character.name||"Sem nome")}</h2>
-        <p class="wl-card-text">${esc(cls?.nome||character.class_id||"Classe não definida")}</p>
+        <div class="character-card-info">
+          <p class="character-card-race"><span>Raça</span><strong>${esc(race?.name||character.race_id||"Não definida")}</strong></p>
+          <p class="character-card-class"><span>Classe</span><strong>${esc(classLabel)}</strong></p>
+          <p class="character-card-level"><span>Nível</span><strong>${esc(character.level||1)}</strong></p>
+        </div>
         <div class="wl-card-meta character-card-actions"><a class="wl-button wl-button-gold" href="ficha.html?id=${encodeURIComponent(character.id)}">Abrir ficha</a></div>
       </div>`;
     return article;

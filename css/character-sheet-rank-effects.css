@@ -1,0 +1,38 @@
+/* Efeitos ambientais exclusivos por Rank */
+.rank-effect-layer{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.rank-particle{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);opacity:0;animation:rankParticleFloat var(--duration) linear infinite;animation-delay:var(--delay);filter:drop-shadow(0 0 10px currentColor)}
+.rank-particle::before{content:"";position:absolute;inset:0;background:currentColor}
+body[data-rank="e"] .rank-particle{color:#9d744f}
+body[data-rank="e"] .rank-particle::before{border-radius:50%;box-shadow:0 0 0 1px rgba(157,116,79,.25),0 0 14px rgba(157,116,79,.35)}
+body[data-rank="d"] .rank-particle{color:#7c8fa4}
+body[data-rank="d"] .rank-particle::before{clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);background:linear-gradient(135deg,#d9e2ea,#6e8091)}
+body[data-rank="c"] .rank-particle{color:#42b7a5}
+body[data-rank="c"] .rank-particle::before{border-radius:50% 0 50% 50%;transform:rotate(45deg);background:linear-gradient(135deg,#86f0dc,#1f8f80)}
+body[data-rank="b"] .rank-particle{color:#4f86ff}
+body[data-rank="b"] .rank-particle::before{clip-path:polygon(50% 0,64% 36%,100% 50%,64% 64%,50% 100%,36% 64%,0 50%,36% 36%);background:linear-gradient(135deg,#b9d2ff,#3a6fe8)}
+body[data-rank="a"] .rank-particle{color:#d8b45e}
+body[data-rank="a"] .rank-particle::before{clip-path:polygon(50% 0,60% 35%,100% 50%,60% 65%,50% 100%,40% 65%,0 50%,40% 35%);background:linear-gradient(135deg,#fff0a8,#c28b28)}
+body[data-rank="s"] .rank-particle{color:#d7424f}
+body[data-rank="s"] .rank-particle::before{clip-path:polygon(50% 0,61% 30%,88% 12%,70% 39%,100% 50%,70% 61%,88% 88%,61% 70%,50% 100%,39% 70%,12% 88%,30% 61%,0 50%,30% 39%,12% 12%,39% 30%);background:linear-gradient(135deg,#ff9a9f,#a50f22)}
+body[data-rank="ex"] .rank-particle{color:#6fe7ff}
+body[data-rank="ex"] .rank-particle::before{clip-path:polygon(50% 0,78% 24%,100% 50%,76% 78%,50% 100%,24% 76%,0 50%,22% 22%);background:linear-gradient(135deg,#f8f7ff 0%,#6fe7ff 42%,#b86cff 100%);box-shadow:0 0 18px rgba(111,231,255,.9)}
+body[data-rank="e"] .rank-effect-layer{background:radial-gradient(circle at 50% 28%,rgba(157,116,79,.08),transparent 42%)}
+body[data-rank="d"] .rank-effect-layer{background:linear-gradient(120deg,transparent 0 45%,rgba(125,143,164,.06) 52%,transparent 60%)}
+body[data-rank="c"] .rank-effect-layer{background:radial-gradient(circle at 18% 70%,rgba(66,183,165,.08),transparent 34%),radial-gradient(circle at 82% 22%,rgba(66,183,165,.05),transparent 28%)}
+body[data-rank="b"] .rank-effect-layer{background:linear-gradient(115deg,transparent 0 48%,rgba(79,134,255,.08) 52%,transparent 57%);animation:rankWaveShift 8s ease-in-out infinite}
+body[data-rank="a"] .rank-effect-layer{background:radial-gradient(circle at 50% 15%,rgba(216,180,94,.13),transparent 30%);animation:rankAuraPulse 5s ease-in-out infinite}
+body[data-rank="s"] .rank-effect-layer{background:radial-gradient(circle at 50% 45%,rgba(215,66,79,.13),transparent 34%),linear-gradient(180deg,rgba(215,66,79,.05),transparent 35%);animation:rankAuraPulse 3.8s ease-in-out infinite}
+body[data-rank="ex"] .rank-effect-layer{background:radial-gradient(circle at 50% 20%,rgba(111,231,255,.13),transparent 30%),radial-gradient(circle at 75% 55%,rgba(184,108,255,.09),transparent 28%);animation:rankPrismBreath 4.5s ease-in-out infinite}
+.character-sheet-identity{justify-items:center;text-align:center}
+.character-sheet-badges{justify-items:stretch;margin-inline:auto;width:min(100%,560px)}
+.character-sheet-badges span{grid-template-columns:88px 1fr;text-align:left}
+.character-sheet-badges #sheetLevel{display:grid!important}
+.character-sheet-badges #sheetLevel::before{content:"NÍVEL";color:var(--sheet-rank-accent)}
+.character-sheet-badges #sheetRank{display:none!important}
+.character-sheet-identity h1::after{margin-left:auto;margin-right:auto}
+@keyframes rankParticleFloat{0%{transform:translate3d(0,18vh,0) rotate(0deg) scale(.65);opacity:0}12%{opacity:.78}55%{transform:translate3d(var(--drift),-8vh,0) rotate(190deg) scale(1)}88%{opacity:.55}100%{transform:translate3d(calc(var(--drift)*1.4),-42vh,0) rotate(360deg) scale(.72);opacity:0}}
+@keyframes rankWaveShift{0%,100%{transform:translateX(-1.5%)}50%{transform:translateX(1.5%)}}
+@keyframes rankAuraPulse{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes rankPrismBreath{0%,100%{filter:hue-rotate(0deg) saturate(1)}50%{filter:hue-rotate(18deg) saturate(1.18)}}
+@media(prefers-reduced-motion:reduce){.rank-particle,.rank-effect-layer{animation:none!important}.rank-particle{display:none}}
+@media(max-width:760px){.rank-particle:nth-child(n+9){display:none}.character-sheet-badges{width:100%}.character-sheet-badges span{grid-template-columns:72px 1fr}}

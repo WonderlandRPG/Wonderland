@@ -27,15 +27,15 @@
     const raceHp=Number(race?.stats?.hp||data.character?.hp_current||0);
     const hpBonus=Math.floor(Math.max(0,attrs.RES||0)/5)*10;
     const hpMax=raceHp+hpBonus;
-    const hpCurrent=Math.min(Math.max(0,Number(data.character?.hp_current||0)),hpMax);
+    const hpCurrent=hpMax;
     const mana=manaSystem?.breakdown({intValue:attrs.INT||0,race})||{total:Number(data.character?.mana_current||0),base:0,racial:0,intelligence:0};
     const hp=document.getElementById("sheetHp");
     const manaTarget=document.getElementById("sheetMana");
     const hpBar=document.getElementById("sheetHpBar");
     const manaBar=document.getElementById("sheetManaBar");
     if(hp)hp.textContent=`${hpCurrent} / ${hpMax}`;
-    if(manaTarget)manaTarget.textContent=String(mana.total);
-    if(hpBar)hpBar.style.width=`${hpMax>0?Math.max(0,Math.min(100,hpCurrent/hpMax*100)):0}%`;
+    if(manaTarget)manaTarget.textContent=`${mana.total} / ${mana.total}`;
+    if(hpBar)hpBar.style.width="100%";
     if(manaBar)manaBar.style.width="100%";
     upsertDerived("HP máximo",hpMax,`HP racial + ${hpBonus} de RES`,"hp-max");
     upsertDerived("Mana máxima",mana.total,`${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT`,"mana-max");

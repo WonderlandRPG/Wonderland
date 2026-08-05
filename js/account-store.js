@@ -23,13 +23,13 @@
 
   async function getCharacters(){
     const user=await current();if(!user)return[];
-    const {data,error}=await client.from("characters").select("id,name,story,race_id,class_id,path_id,level,experience,hp_current,mana_current,distribution_profile,image_url,created_at").eq("user_id",user.id).order("created_at",{ascending:true});
+    const {data,error}=await client.from("characters").select("id,name,story,race_id,class_id,path_id,rank,level,experience,hp_current,mana_current,distribution_profile,image_url,created_at").eq("user_id",user.id).order("created_at",{ascending:true});
     if(error)throw error;return data||[]
   }
 
   async function getCharacterSheet(characterId){
     const user=await current();if(!user)throw new Error("Sessão expirada. Entre novamente.");
-    const {data:character,error:characterError}=await client.from("characters").select("id,user_id,name,story,race_id,class_id,path_id,level,experience,hp_current,mana_current,distribution_profile,image_url,created_at").eq("id",characterId).eq("user_id",user.id).maybeSingle();
+    const {data:character,error:characterError}=await client.from("characters").select("id,user_id,name,story,race_id,class_id,path_id,rank,level,experience,hp_current,mana_current,distribution_profile,image_url,created_at").eq("id",characterId).eq("user_id",user.id).maybeSingle();
     if(characterError)throw characterError;if(!character)throw new Error("Personagem não encontrado.");
     const [attributesResult,inventoryResult,equipmentResult,skillsResult]=await Promise.all([
       client.from("character_attributes").select("*").eq("character_id",characterId).maybeSingle(),
@@ -51,7 +51,7 @@
 
   async function createCharacter(character){
     const user=await current();if(!user)throw new Error("Sessão expirada. Entre novamente.");
-    const {data:created,error:createError}=await client.from("characters").insert({user_id:user.id,name:character.name,story:character.story||"",race_id:character.raceId,class_id:character.classId,path_id:character.pathId||null,level:1,experience:0,hp_current:Number(character.hpCurrent||0),mana_current:Number(character.manaCurrent||0),distribution_profile:character.attributeProfile==="custom"?"manual":character.attributeProfile||"manual",image_url:character.image||null}).select("id").single();
+    const {data:created,error:createError}=await client.from("characters").insert({user_id:user.id,name:character.name,story:character.story||"",race_id:character.raceId,class_id:character.classId,path_id:character.pathId||null,rank:"E",level:1,experience:0,hp_current:Number(character.hpCurrent||0),mana_current:Number(character.manaCurrent||0),distribution_profile:character.attributeProfile==="custom"?"manual":character.attributeProfile||"manual",image_url:character.image||null}).select("id").single();
     if(createError)throw createError;
     const a=character.allocatedAttributes||{},r=character.racialAttributes||{},b=character.baseAttributes||{};
     const {error:attributeError}=await client.from("character_attributes").insert({character_id:created.id,base_for:Number(b.FOR||20),base_def:Number(b.DEF||20),base_res:Number(b.RES||20),base_ini:Number(b.INI||20),base_int:Number(b.INT||20),base_arc:Number(b.ARC||20),allocated_for:Number(a.FOR||0),allocated_def:Number(a.DEF||0),allocated_res:Number(a.RES||0),allocated_ini:Number(a.INI||0),allocated_int:Number(a.INT||0),allocated_arc:Number(a.ARC||0),racial_for:Number(r.FOR||0),racial_def:Number(r.DEF||0),racial_res:Number(r.RES||0),racial_ini:Number(r.INI||0),racial_int:Number(r.INT||0),racial_arc:Number(r.ARC||0)});

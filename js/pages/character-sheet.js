@@ -52,14 +52,14 @@
   function racialEntries(collection,{progression=false}={}){
     const values=Array.isArray(collection)?collection:Object.values(collection||{});
     return values.map((skill,index)=>{
-      const name=textValue(skill?.name||skill?.nome)||`Traço racial ${index+1}`;
-      const description=textValue(skill?.description||skill?.descricao||skill?.effect||skill?.efeito||skill);
+      const name=textValue(skill?.name||skill?.nome||skill?.title)||`Traço racial ${index+1}`;
+      const description=textValue(skill?.description||skill?.descricao||skill?.content||skill?.effect||skill?.efeito||skill);
       return{
         ...skill,
         nome:name,
         descricao:description,
         nivel:progression?parseLevel(skill?.level||skill?.nivel):1,
-        tipo:textValue(skill?.category||skill?.categoria||skill?.tipo)||(progression?"Habilidade racial":"Traço racial"),
+        tipo:textValue(skill?.category||skill?.categoria||skill?.tipo||skill?.label)||(progression?"Habilidade racial":"Traço racial"),
         passive:!progression,
         source:"Raça"
       };
@@ -89,6 +89,7 @@
     const race=(window.WONDERLAND_RACES||[]).find(item=>item.id===character.race_id);
     const cls=(window.WONDERLAND_CLASSES||{})[character.class_id];
     const finalAttrs=getFinalAttributes(data.attributes);
+    const mana=window.WONDERLAND_MANA_SYSTEM?.breakdown({intValue:finalAttrs.INT,race})||{total:Number(character.mana_current||0),base:0,racial:0,intelligence:0,rule:""};
     const localSkills=officialSkills(cls,race,Number(character.level||1));
     const databaseSkillKeys=new Set(data.skills.map(item=>item.skill_key));
     const skills=localSkills.filter(skill=>!databaseSkillKeys.size||databaseSkillKeys.has(skill.id||skill.nome));
@@ -101,10 +102,10 @@
     document.getElementById("sheetRace").textContent=race?.name||character.race_id;
     document.getElementById("sheetClass").textContent=cls?.nome||character.class_id;
     document.getElementById("sheetHp").textContent=String(character.hp_current||0);
-    document.getElementById("sheetMana").textContent=String(character.mana_current||0);
+    document.getElementById("sheetMana").textContent=String(mana.total);
     document.getElementById("sheetExperience").textContent=String(character.experience||0);
     document.getElementById("sheetStory").textContent=character.story||"Nenhuma história foi registrada.";
-    document.getElementById("sheetBuild").textContent=`Perfil ${character.distribution_profile||"manual"}. Atributo principal: ${cls?.estilo?.atributos||cls?.primary_attribute||"não definido"}.`;
+    document.getElementById("sheetBuild").textContent=`Perfil ${character.distribution_profile||"manual"}. Atributo principal: ${cls?.estilo?.atributos||cls?.primary_attribute||"não definido"}. Mana máxima: ${mana.total} (${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT).`;
     document.getElementById("sheetAttributes").innerHTML=attrs.map(attr=>`<article class="character-sheet-attribute"><span>${attr}</span><strong>${finalAttrs[attr]}</strong><small>${attrNames[attr]}</small></article>`).join("");
     document.getElementById("sheetSkillsSummary").textContent=`${skills.length} habilidade(s) disponíveis no nível ${character.level}. Os valores abaixo já usam os atributos finais atuais.`;
     document.getElementById("sheetSkills").innerHTML=skills.length?skills.map(skill=>{

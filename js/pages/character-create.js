@@ -18,7 +18,7 @@
   let step=1,activeProfile="";
 
   const $=id=>document.getElementById(id);
-  const form=$("characterCreateForm"),nameInput=$("characterName"),storyInput=$("characterStory"),raceSelect=$("characterRace"),classSelect=$("characterClass"),racePreview=$("racePreview"),classPreview=$("classPreview"),allocator=$("attributeAllocator"),remaining=$("remainingPoints"),review=$("characterReview"),message=$("characterCreateMessage"),prev=$("previousStep"),next=$("nextStep"),finish=$("finishCharacter"),reset=$("resetAttributes"),classAttributeGuide=$("classAttributeGuide"),autoDistributionMessage=$("autoDistributionMessage");
+  const form=$("characterCreateForm"),nameInput=$("characterName"),storyInput=$("characterStory"),imageInput=$("characterImage"),raceSelect=$("characterRace"),classSelect=$("characterClass"),racePreview=$("racePreview"),classPreview=$("classPreview"),allocator=$("attributeAllocator"),remaining=$("remainingPoints"),review=$("characterReview"),message=$("characterCreateMessage"),prev=$("previousStep"),next=$("nextStep"),finish=$("finishCharacter"),reset=$("resetAttributes"),classAttributeGuide=$("classAttributeGuide"),autoDistributionMessage=$("autoDistributionMessage");
   const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
   const selectedRace=()=>races.find(r=>r.id===raceSelect.value)||races[0];
   const selectedClass=()=>classes[classSelect.value]||Object.values(classes)[0];
@@ -100,7 +100,7 @@
 
   function renderReview(){
     const race=selectedRace(),cls=selectedClass(),{primary,secondary}=parseClassAttributes(cls),mana=manaBreakdown();
-    review.innerHTML=`<article class="review-card"><h3>Identidade</h3><div class="review-list"><div class="review-row"><span>Nome</span><strong>${esc(nameInput.value||"Não definido")}</strong></div><div class="review-row"><span>Raça</span><strong>${esc(race?.name||"—")}</strong></div><div class="review-row"><span>Classe</span><strong>${esc(cls?.nome||"—")}</strong></div><div class="review-row"><span>Principal</span><strong>${primary}</strong></div><div class="review-row"><span>Secundário</span><strong>${secondary}</strong></div><div class="review-row"><span>Mana máxima</span><strong>${mana.total}</strong></div><div class="review-row"><span>Pontos</span><strong>${usedPoints()} / ${freeTotal}</strong></div></div></article><article class="review-card"><h3>Atributos finais</h3><div class="review-list">${attrs.map(a=>`<div class="review-row"><span>${a} — ${attrNames[a]}</span><strong>${finalValue(a)}</strong></div>`).join("")}<div class="review-row"><span>Mana por INT</span><strong>+${mana.intelligence}</strong></div><div class="review-row"><span>Mana racial</span><strong>+${mana.racial}</strong></div></div></article>`;
+    review.innerHTML=`<article class="review-card"><h3>Identidade</h3><div class="review-list"><div class="review-row"><span>Nome</span><strong>${esc(nameInput.value||"Não definido")}</strong></div><div class="review-row"><span>Raça</span><strong>${esc(race?.name||"—")}</strong></div><div class="review-row"><span>Classe</span><strong>${esc(cls?.nome||"—")}</strong></div><div class="review-row"><span>Principal</span><strong>${primary}</strong></div><div class="review-row"><span>Secundário</span><strong>${secondary}</strong></div><div class="review-row"><span>Mana máxima</span><strong>${mana.total}</strong></div><div class="review-row"><span>Imagem</span><strong>${imageInput?.value.trim()?"Personalizada":"Padrão da raça"}</strong></div><div class="review-row"><span>Pontos</span><strong>${usedPoints()} / ${freeTotal}</strong></div></div></article><article class="review-card"><h3>Atributos finais</h3><div class="review-list">${attrs.map(a=>`<div class="review-row"><span>${a} — ${attrNames[a]}</span><strong>${finalValue(a)}</strong></div>`).join("")}<div class="review-row"><span>Mana por INT</span><strong>+${mana.intelligence}</strong></div><div class="review-row"><span>Mana racial</span><strong>+${mana.racial}</strong></div></div></article>`;
   }
 
   function showStep(value){
@@ -113,6 +113,9 @@
   function validateStep(){
     message.textContent="";
     if(step===1&&nameInput.value.trim().length<3){message.textContent="O nome precisa ter pelo menos 3 caracteres.";nameInput.focus();return false}
+    if(step===1&&imageInput?.value.trim()){
+      try{const url=new URL(imageInput.value.trim());if(!/^https?:$/.test(url.protocol))throw new Error()}catch{message.textContent="Use um link de imagem válido começando com http:// ou https://.";imageInput.focus();return false}
+    }
     if(step===2&&(!raceSelect.value||!classSelect.value)){message.textContent="Escolha uma raça e uma classe.";return false}
     if(step===3&&usedPoints()!==freeTotal){message.textContent=`Distribua todos os ${freeTotal} pontos antes de continuar.`;return false}
     return true;
@@ -124,7 +127,7 @@
 
   allocator.addEventListener("click",event=>{const button=event.target.closest("[data-attr]");if(!button)return;const attr=button.dataset.attr,delta=Number(button.dataset.delta);if(delta>0&&usedPoints()>=freeTotal||delta<0&&allocation[attr]<=0)return;allocation[attr]+=delta;activeProfile="";document.querySelectorAll("[data-auto-profile]").forEach(item=>item.classList.remove("active"));autoDistributionMessage.textContent="Distribuição personalizada em andamento.";renderAllocator();renderReview()});
   document.querySelectorAll("[data-auto-profile]").forEach(button=>button.addEventListener("click",()=>applyAutoDistribution(button.dataset.autoProfile)));
-  raceSelect.addEventListener("change",renderChoicePreview);classSelect.addEventListener("change",renderChoicePreview);nameInput.addEventListener("input",renderReview);
+  raceSelect.addEventListener("change",renderChoicePreview);classSelect.addEventListener("change",renderChoicePreview);nameInput.addEventListener("input",renderReview);imageInput?.addEventListener("input",renderReview);
   next.addEventListener("click",()=>{if(validateStep())showStep(step+1)});prev.addEventListener("click",()=>showStep(step-1));
   reset.addEventListener("click",()=>{attrs.forEach(a=>allocation[a]=0);activeProfile="";document.querySelectorAll("[data-auto-profile]").forEach(item=>item.classList.remove("active"));autoDistributionMessage.textContent="Distribuição redefinida.";renderAllocator();renderReview()});
   document.querySelectorAll("[data-step-target]").forEach(btn=>btn.addEventListener("click",()=>{const target=Number(btn.dataset.stepTarget);if(target<=step||validateStep())showStep(target)}));
@@ -136,7 +139,7 @@
     try{
       await account.createCharacter({
         name:nameInput.value.trim(),story:storyInput.value.trim(),raceId:race.id,classId:cls.id,
-        image:race.artwork||race.image||"assets/images/logo.png",attributeProfile:activeProfile||"custom",
+        image:imageInput?.value.trim()||race.artwork||race.image||"assets/images/logo.png",attributeProfile:activeProfile||"custom",
         baseAttributes:Object.fromEntries(attrs.map(a=>[a,base])),allocatedAttributes:{...allocation},racialAttributes:Object.fromEntries(attrs.map(a=>[a,racialBonus(a)])),
         hpCurrent:Number(race.stats?.hp||0),manaCurrent:mana.total
       });

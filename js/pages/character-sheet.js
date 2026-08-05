@@ -3,6 +3,7 @@
 (async function(){
   const account=window.WONDERLAND_ACCOUNT;
   const rankSystem=window.WONDERLAND_RANK_SYSTEM;
+  const progression=window.WONDERLAND_PROGRESSION;
   const loading=document.getElementById("sheetLoading");
   const content=document.getElementById("sheetContent");
   const logout=document.getElementById("sheetLogout");
@@ -67,7 +68,7 @@
   function officialSkills(cls,race,level){
     const list=[];
     (cls?.passivas||[]).forEach(skill=>list.push({...skill,nivel:1,tipo:"Passiva",passive:true,source:"Classe"}));
-    (cls?.progressao||[]).forEach(skill=>{const unlock=parseLevel(skill.nivel);if(unlock<=level)list.push({...skill,nivel:unlock,tipo:skill.categoria||"Habilidade",source:"Classe"})});
+    (cls?.progressao||[]).forEach(skill=>{const unlock=parseLevel(skill.nivel);if(unlock<=level)list.push({...skill,nivel:unlock,tipo:skill.categoria||"Habilidade",source:"Classe")});
     if(level>=50){
       (cls?.caminhos||[]).forEach(path=>{
         if(path.passiva)list.push({...path.passiva,nivel:50,tipo:"Passiva do caminho",passive:true,source:path.nome,path:true});
@@ -81,7 +82,6 @@
   function renderItems(target,items,emptyText){
     target.innerHTML=items.length?items.map(item=>`<article class="character-sheet-item"><div><strong>${esc(item.metadata?.name||item.item_key)}</strong><small>${esc(item.slot||item.metadata?.rarity||"")}</small></div><span>${item.quantity?`x${esc(item.quantity)}`:"Equipado"}</span></article>`).join(""):`<div class="character-sheet-empty">${esc(emptyText)}</div>`
   }
-  function expRequired(level){return Math.max(100,Math.round(240+Math.pow(Number(level||1),1.65)*300))}
   function setBar(id,current,max){const el=document.getElementById(id);if(el)el.style.width=`${Math.max(0,Math.min(100,max>0?current/max*100:0))}%`}
   function renderDerived(target,finalAttrs,mana,character,race){
     const hpMax=Number(race?.stats?.hp||character.hp_current||0)+Math.floor(finalAttrs.RES/5)*10;
@@ -131,12 +131,13 @@
 
     const hpMax=renderDerived(document.getElementById("sheetDerived"),finalAttrs,mana,character,race);
     const currentHp=Math.min(Math.max(0,Number(character.hp_current||0)),hpMax);
-    const requiredExp=expRequired(character.level);
     const currentExp=Math.max(0,Number(character.experience||0));
+    const xpProgress=progression?.progress(currentExp,character.level)||{nextTotal:currentExp,intoLevel:0,span:0,percent:0,level:Number(character.level||1)};
+    const format=progression?.formatNumber||((value)=>String(value));
     document.getElementById("sheetHp").textContent=`${currentHp} / ${hpMax}`;
     document.getElementById("sheetMana").textContent=String(mana.total);
-    document.getElementById("sheetExperience").textContent=`${currentExp} / ${requiredExp}`;
-    setBar("sheetHpBar",currentHp,hpMax);setBar("sheetManaBar",mana.total,mana.total);setBar("sheetExpBar",currentExp,requiredExp);
+    document.getElementById("sheetExperience").textContent=Number(character.level)>=100?`${format(currentExp)} XP • Nível máximo`:`${format(currentExp)} / ${format(xpProgress.nextTotal)} XP`;
+    setBar("sheetHpBar",currentHp,hpMax);setBar("sheetManaBar",mana.total,mana.total);setBar("sheetExpBar",xpProgress.intoLevel,xpProgress.span||1);
 
     document.getElementById("sheetStory").textContent=character.story||"Nenhuma história foi registrada.";
     document.getElementById("sheetBuild").textContent=`Perfil ${character.distribution_profile||"manual"}. Atributo principal: ${cls?.estilo?.atributos||cls?.primary_attribute||"não definido"}. Mana máxima: ${mana.total} (${mana.base} base + ${mana.racial} racial + ${mana.intelligence} por INT).`;

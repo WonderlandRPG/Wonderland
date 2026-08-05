@@ -36,11 +36,11 @@
     const cls=classMap[character.class_id];
     const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante",color:"#9d744f"};
     const portrait=character.image_url||race?.artwork||race?.image||"assets/images/logo.png";
+    const rgb=hexToRgb(rank.color);
     const article=document.createElement("article");
-    article.className=`character-card wl-card character-card-rank-${String(rank.id).toLowerCase()}`;
+    article.className=`character-card character-card-rank-${String(rank.id).toLowerCase()}`;
     article.style.setProperty("--rank-color",rank.color||"#d6b56b");
-    article.style.setProperty("--wl-card-primary",hexToRgb(rank.color));
-    article.style.setProperty("--wl-card-secondary",hexToRgb(rank.color));
+    article.style.setProperty("--rank-rgb",rgb);
     article.innerHTML=`
       <div class="wl-card-frame"></div>
       <span class="wl-card-corner wl-card-corner-top-left"></span>

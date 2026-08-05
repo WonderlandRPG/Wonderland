@@ -10,6 +10,7 @@
 
   const races=Array.isArray(window.WONDERLAND_RACES)?window.WONDERLAND_RACES:[];
   const classes=window.WONDERLAND_CLASSES||{};
+  const manaSystem=window.WONDERLAND_MANA_SYSTEM;
   const attrs=["FOR","DEF","RES","INI","INT","ARC"];
   const attrNames={FOR:"Força",DEF:"Defesa",RES:"Resistência",INI:"Iniciativa",INT:"Inteligência",ARC:"Arcano"};
   const base=20,freeTotal=100;
@@ -24,6 +25,7 @@
   const racialBonus=a=>Number(selectedRace()?.stats?.attributes?.[a]||0);
   const usedPoints=()=>attrs.reduce((sum,a)=>sum+allocation[a],0);
   const finalValue=a=>base+allocation[a]+racialBonus(a);
+  const manaBreakdown=()=>manaSystem?.breakdown({intValue:finalValue("INT"),race:selectedRace()})||{base:100,racial:0,intelligence:0,total:100,rule:""};
 
   function parseClassAttributes(cls){
     const source=String(cls?.estilo?.atributos||"").toUpperCase();
@@ -79,12 +81,13 @@
 
   function renderClassAttributeGuide(){
     const cls=selectedClass(),{primary,secondary}=parseClassAttributes(cls);
-    classAttributeGuide.innerHTML=`<div class="class-attribute-guide-icon" aria-hidden="true">${esc(cls?.icone||"✦")}</div><div><span>Atributo principal da classe escolhida</span><h3>${primary} — ${attrNames[primary]}</h3><p><strong>${esc(cls?.nome||"Classe")}</strong> utiliza ${primary} como principal e ${secondary} como secundário.</p></div><div class="class-attribute-guide-values"><span>Principal<strong>${primary}</strong></span><span>Secundário<strong>${secondary}</strong></span></div>`;
+    classAttributeGuide.innerHTML=`<div class="class-attribute-guide-icon" aria-hidden="true">${esc(cls?.icone||"✦")}</div><div><span>Atributo principal da classe escolhida</span><h3>${primary} — ${attrNames[primary]}</h3><p><strong>${esc(cls?.nome||"Classe")}</strong> utiliza ${primary} como principal e ${secondary} como secundário. INT também aumenta a Mana máxima.</p></div><div class="class-attribute-guide-values"><span>Principal<strong>${primary}</strong></span><span>Secundário<strong>${secondary}</strong></span></div>`;
   }
 
   function renderChoicePreview(){
     const race=selectedRace(),cls=selectedClass();
-    racePreview.innerHTML=race?`<h3>${esc(race.name)}</h3><p>${esc(race.tagline||race.archetype||"")}</p><div class="character-choice-stats"><span>HP ${esc(race.stats?.hp||0)}</span><span>Mana ${esc(race.stats?.mana||"Sem bônus")}</span>${attrs.map(a=>`<span>${a} +${racialBonus(a)}</span>`).join("")}</div>`:"";
+    const mana=manaBreakdown();
+    racePreview.innerHTML=race?`<h3>${esc(race.name)}</h3><p>${esc(race.tagline||race.archetype||"")}</p><div class="character-choice-stats"><span>HP ${esc(race.stats?.hp||0)}</span><span>Mana racial +${esc(mana.racial)}</span><span>Mana inicial ${esc(mana.total)}</span>${attrs.map(a=>`<span>${a} +${racialBonus(a)}</span>`).join("")}</div>`:"";
     classPreview.innerHTML=cls?`<h3>${esc(cls.nome)}</h3><p>${esc(cls.descricao||"")}</p><div class="character-choice-stats"><span>${esc(cls.cargo||"")}</span><span>${esc(cls.estilo?.atributos||"")}</span></div>`:"";
     renderClassAttributeGuide();if(activeProfile)applyAutoDistribution(activeProfile);else{renderAllocator();renderReview()}
   }
@@ -96,8 +99,8 @@
   }
 
   function renderReview(){
-    const race=selectedRace(),cls=selectedClass(),{primary,secondary}=parseClassAttributes(cls);
-    review.innerHTML=`<article class="review-card"><h3>Identidade</h3><div class="review-list"><div class="review-row"><span>Nome</span><strong>${esc(nameInput.value||"Não definido")}</strong></div><div class="review-row"><span>Raça</span><strong>${esc(race?.name||"—")}</strong></div><div class="review-row"><span>Classe</span><strong>${esc(cls?.nome||"—")}</strong></div><div class="review-row"><span>Principal</span><strong>${primary}</strong></div><div class="review-row"><span>Secundário</span><strong>${secondary}</strong></div><div class="review-row"><span>Pontos</span><strong>${usedPoints()} / ${freeTotal}</strong></div></div></article><article class="review-card"><h3>Atributos finais</h3><div class="review-list">${attrs.map(a=>`<div class="review-row"><span>${a} — ${attrNames[a]}</span><strong>${finalValue(a)}</strong></div>`).join("")}</div></article>`;
+    const race=selectedRace(),cls=selectedClass(),{primary,secondary}=parseClassAttributes(cls),mana=manaBreakdown();
+    review.innerHTML=`<article class="review-card"><h3>Identidade</h3><div class="review-list"><div class="review-row"><span>Nome</span><strong>${esc(nameInput.value||"Não definido")}</strong></div><div class="review-row"><span>Raça</span><strong>${esc(race?.name||"—")}</strong></div><div class="review-row"><span>Classe</span><strong>${esc(cls?.nome||"—")}</strong></div><div class="review-row"><span>Principal</span><strong>${primary}</strong></div><div class="review-row"><span>Secundário</span><strong>${secondary}</strong></div><div class="review-row"><span>Mana máxima</span><strong>${mana.total}</strong></div><div class="review-row"><span>Pontos</span><strong>${usedPoints()} / ${freeTotal}</strong></div></div></article><article class="review-card"><h3>Atributos finais</h3><div class="review-list">${attrs.map(a=>`<div class="review-row"><span>${a} — ${attrNames[a]}</span><strong>${finalValue(a)}</strong></div>`).join("")}<div class="review-row"><span>Mana por INT</span><strong>+${mana.intelligence}</strong></div><div class="review-row"><span>Mana racial</span><strong>+${mana.racial}</strong></div></div></article>`;
   }
 
   function showStep(value){
@@ -129,13 +132,13 @@
   form.addEventListener("submit",async event=>{
     event.preventDefault();if(!validateStep())return;
     finish.disabled=true;message.textContent="Salvando personagem no banco de dados...";
-    const race=selectedRace(),cls=selectedClass();
+    const race=selectedRace(),cls=selectedClass(),mana=manaBreakdown();
     try{
       await account.createCharacter({
         name:nameInput.value.trim(),story:storyInput.value.trim(),raceId:race.id,classId:cls.id,
         image:race.artwork||race.image||"assets/images/logo.png",attributeProfile:activeProfile||"custom",
         baseAttributes:Object.fromEntries(attrs.map(a=>[a,base])),allocatedAttributes:{...allocation},racialAttributes:Object.fromEntries(attrs.map(a=>[a,racialBonus(a)])),
-        hpCurrent:Number(race.stats?.hp||0),manaCurrent:0
+        hpCurrent:Number(race.stats?.hp||0),manaCurrent:mana.total
       });
       message.textContent="Personagem criado com sucesso.";window.location.assign("personagens.html");
     }catch(error){message.textContent=error.message||"Não foi possível criar o personagem.";finish.disabled=false}

@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=15">
   <link rel="stylesheet" href="css/components/buttons.css?v=1">
-  <link rel="stylesheet" href="css/arena.css?v=1">
+  <link rel="stylesheet" href="css/arena.css?v=2">
 </head>
 <body class="arena-page">
   <div class="arena-background" aria-hidden="true"></div>
@@ -54,8 +54,9 @@
         <div class="arena-versus">VS</div>
         <div class="arena-fighter arena-enemy">
           <div class="arena-enemy-emblem">✦</div>
-          <div><small>Alvo de treinamento</small><h2>Autômato da Arena</h2><p>Defesas configuráveis</p></div>
-          <div class="arena-stat-list"><span>HP <strong id="arenaEnemyHpView">1000</strong></span><span>DEF <strong id="arenaEnemyDefView">50</strong></span><span>RES <strong id="arenaEnemyResView">50</strong></span></div>
+          <div><small>Alvo de treinamento</small><h2 id="arenaEnemyName">Boneco de Teste</h2><p id="arenaEnemyProfile">Atributos adaptados ao oponente</p></div>
+          <div class="arena-stat-list arena-enemy-core"><span>HP <strong id="arenaEnemyHpView">1000</strong></span><span>DEF <strong id="arenaEnemyDefView">50</strong></span><span>RES <strong id="arenaEnemyResView">50</strong></span></div>
+          <div id="arenaEnemyStats" class="arena-stat-list arena-enemy-full"></div>
         </div>
       </section>
       <section class="arena-results">
@@ -69,6 +70,18 @@
         <div id="arenaCombatLog" class="arena-combat-log"><p>Configure o combate e execute o primeiro teste.</p></div>
       </section>
     </section>
+    <section class="arena-rules">
+      <header class="arena-section-heading"><span>Regras oficiais</span><h2>Como funciona o combate em Wonderland</h2><p>Estas regras valem para PvP, missões, dungeons e demais confrontos realizados pelo site.</p></header>
+      <div class="arena-rules-grid">
+        <article><span>01</span><h3>Combate por turnos</h3><p>Cada participante age em seu próprio turno. Jogadores possuem <strong>1 minuto</strong> para concluir suas ações. NPCs executam suas decisões instantaneamente.</p></article>
+        <article><span>02</span><h3>Limite de tempo</h3><p>O cronômetro é usado tanto no PvP quanto no PvE. Caso o tempo de um jogador chegue a zero antes da confirmação da ação, ele perde o combate.</p></article>
+        <article><span>03</span><h3>Ações do turno</h3><p>Em um turno normal, o personagem pode realizar <strong>1 ataque básico</strong>, usar <strong>1 habilidade racial</strong> e usar <strong>1 habilidade de classe</strong>.</p></article>
+        <article><span>04</span><h3>Ataque básico</h3><p>O atributo usado depende da arma equipada. Espadas, machados e armas corporais causam dano físico baseado em <strong>FOR</strong>. Cajados, focos arcanos e armas mágicas causam dano mágico baseado em <strong>INT</strong>.</p></article>
+        <article><span>05</span><h3>Defender</h3><p>O jogador pode abrir mão de todas as outras ações do turno para entrar em defesa. Assim, bloqueia <strong>100% do próximo dano recebido na rodada</strong>. Depois disso, a ação entra em recarga por <strong>5 turnos</strong>.</p></article>
+        <article><span>06</span><h3>Cálculo automático</h3><p>Ao atacar, receber dano, curar, defender ou usar habilidades, o site calcula automaticamente dano, redução, cura, Mana gasta, HP restante, buffs, debuffs e duração dos efeitos.</p></article>
+      </div>
+      <div class="arena-rules-note"><strong>Importante:</strong> toda alteração de HP e Mana será mostrada visualmente durante o combate. O jogador não precisará calcular nada manualmente.</div>
+    </section>
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js?v=2"></script>
@@ -77,6 +90,6 @@
   <script src="js/data/classes-all.js?v=2"></script>
   <script src="js/data/mana-system.js?v=2"></script>
   <script src="js/data/defense-system.js?v=1"></script>
-  <script src="js/pages/arena.js?v=1" defer></script>
+  <script src="js/pages/arena.js?v=2" defer></script>
 </body>
 </html>

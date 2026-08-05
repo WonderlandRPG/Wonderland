@@ -8,6 +8,7 @@
   const registerForm=document.getElementById("registerForm");
   const loginMessage=document.getElementById("loginMessage");
   const registerMessage=document.getElementById("registerMessage");
+  const adminAccess=document.getElementById("adminAccountAccess");
 
   if(!account){
     loginMessage.textContent="Não foi possível conectar ao servidor.";
@@ -15,7 +16,15 @@
   }
 
   try{
-    if(await account.current()){
+    const currentUser=await account.current();
+    if(currentUser){
+      if(account.isAdmin(currentUser)&&adminAccess){
+        adminAccess.hidden=false;
+        document.querySelector(".account-tabs")?.setAttribute("hidden","");
+        loginForm?.setAttribute("hidden","");
+        registerForm?.setAttribute("hidden","");
+        return;
+      }
       window.location.replace("personagens.html");
       return;
     }
@@ -50,8 +59,9 @@
         email:document.getElementById("loginEmail").value,
         password:document.getElementById("loginPassword").value
       });
-      loginMessage.textContent="Acesso confirmado. Abrindo seus personagens...";
-      window.location.assign("personagens.html");
+      const currentUser=await account.current();
+      loginMessage.textContent="Acesso confirmado.";
+      window.location.assign(account.isAdmin(currentUser)?"conta.html":"personagens.html");
     }catch(error){
       loginMessage.textContent=error.message||"Não foi possível entrar.";
       setBusy(loginForm,false);

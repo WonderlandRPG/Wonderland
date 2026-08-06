@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#05070d" />
+    <base href="/Wonderland/" />
+    <title>Wonderland — Site em reconstrução</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #05070d;
+        color: #f7f7f2;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        overflow: hidden;
+        background: #05070d;
+      }
+
+      .page {
+        position: relative;
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        isolation: isolate;
+        padding: 32px 20px;
+      }
+
+      .page::before {
+        position: absolute;
+        z-index: -3;
+        inset: 0;
+        background:
+          linear-gradient(180deg, rgba(3, 5, 10, 0.38), rgba(3, 5, 10, 0.92)),
+          url("public/images/hero-background.png") center / cover no-repeat;
+        content: "";
+        transform: scale(1.02);
+      }
+
+      .page::after {
+        position: absolute;
+        z-index: -2;
+        inset: 0;
+        background:
+          radial-gradient(circle at 50% 32%, rgba(87, 224, 173, 0.2), transparent 28%),
+          linear-gradient(rgba(87, 224, 173, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(87, 224, 173, 0.035) 1px, transparent 1px);
+        background-size:
+          auto,
+          42px 42px,
+          42px 42px;
+        content: "";
+        mask-image: linear-gradient(to bottom, black, transparent 88%);
+      }
+
+      .card {
+        width: min(680px, 100%);
+        padding: clamp(34px, 7vw, 64px) clamp(24px, 7vw, 68px);
+        border: 1px solid rgba(121, 235, 194, 0.22);
+        border-radius: 24px;
+        background: linear-gradient(145deg, rgba(10, 15, 26, 0.92), rgba(5, 8, 15, 0.78));
+        box-shadow:
+          0 30px 90px rgba(0, 0, 0, 0.55),
+          inset 0 1px rgba(255, 255, 255, 0.045);
+        text-align: center;
+        backdrop-filter: blur(14px);
+      }
+
+      .logo {
+        width: clamp(92px, 18vw, 132px);
+        height: auto;
+        margin-bottom: 28px;
+        filter: drop-shadow(0 0 28px rgba(87, 224, 173, 0.22));
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0 0 18px;
+        color: #79ebc2;
+        font-size: 0.72rem;
+        font-weight: 750;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      .status::before {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: #79ebc2;
+        box-shadow: 0 0 16px rgba(121, 235, 194, 0.88);
+        content: "";
+      }
+
+      h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2.25rem, 7vw, 4.4rem);
+        font-weight: 500;
+        line-height: 0.98;
+        letter-spacing: -0.045em;
+        text-wrap: balance;
+      }
+
+      .divider {
+        width: 72px;
+        height: 1px;
+        margin: 28px auto;
+        background: linear-gradient(90deg, transparent, #79ebc2, transparent);
+      }
+
+      .message {
+        max-width: 470px;
+        margin: 0 auto;
+        color: #c8ced8;
+        font-size: clamp(1rem, 2.5vw, 1.12rem);
+        line-height: 1.75;
+        text-wrap: balance;
+      }
+
+      .message strong {
+        color: #f7f7f2;
+        font-weight: 650;
+      }
+
+      footer {
+        position: absolute;
+        right: 20px;
+        bottom: 18px;
+        left: 20px;
+        color: rgba(218, 223, 231, 0.52);
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      @media (max-height: 650px) {
+        body {
+          overflow: auto;
+        }
+
+        .page {
+          padding-block: 24px 56px;
+        }
+
+        .card {
+          padding-block: 26px;
+        }
+
+        .logo {
+          width: 78px;
+          margin-bottom: 18px;
+        }
+
+        .divider {
+          margin-block: 18px;
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .status::before {
+          animation: pulse 2.4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+          50% {
+            opacity: 0.48;
+            transform: scale(0.82);
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="card" aria-labelledby="maintenance-title">
+        <img
+          class="logo"
+          src="public/brand/wonderland-logo.png"
+          alt="Wonderland"
+          width="1250"
+          height="1250"
+        />
+        <p class="status">Reino temporariamente fechado</p>
+        <h1 id="maintenance-title">Site em reconstrução</h1>
+        <div class="divider" aria-hidden="true"></div>
+        <p class="message">
+          Estamos preparando uma nova experiência.<br />
+          <strong>Em breve, os portões de Wonderland se abrirão novamente.</strong>
+        </p>
+      </section>
+      <footer>Wonderland RPG · 2026</footer>
+    </main>
+  </body>
+</html>

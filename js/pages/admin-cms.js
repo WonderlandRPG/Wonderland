@@ -24,7 +24,7 @@
     const categories=[...new Set(state.rows.map(row=>row.category))];
     const row=selected();
     moduleTitle.textContent="Balanceamento";
-    moduleContent.innerHTML=`<section class="admin-cms-toolbar"><div><span>Editor central</span><h3>Configurações globais do Wonderland</h3><p>Altere regras numéricas sem editar arquivos ou publicar código.</p></div><label><span>Categoria</span><select id="adminBalanceFilter"><option value="all">Todas</option>${categories.map(value=>`<option value="${esc(value)}" ${state.filter===value?"selected":""}>${esc(categoryNames[value]||value)}</option>`).join("")}</select></label></section><section class="admin-browser admin-cms-browser"><aside class="admin-record-list">${filtered().map(item=>`<button type="button" class="admin-record-button ${item.key===state.selected?"active":""}" data-balance-key="${esc(item.key)}"><small>${esc(categoryNames[item.category]||item.category)}</small><strong>${esc(item.label)}</strong><span>${esc(item.description||"")}</span></button>`).join("")||'<div class="admin-empty">Nenhuma configuração encontrada.</div>'}</aside><div class="admin-detail-pane">${row?editor(row):'<div class="admin-empty">Selecione uma configuração.</div>'}</div></section>`;
+    moduleContent.innerHTML=`<section class="admin-cms-toolbar"><div><span>Engine de regras</span><h3>Configurações globais do Wonderland</h3><p>Altere números usados por todas as páginas e sistemas.</p></div><label><span>Categoria</span><select id="adminBalanceFilter"><option value="all">Todas</option>${categories.map(value=>`<option value="${esc(value)}" ${state.filter===value?"selected":""}>${esc(categoryNames[value]||value)}</option>`).join("")}</select></label></section><section class="admin-browser admin-cms-browser"><aside class="admin-record-list">${filtered().map(item=>`<button type="button" class="admin-record-button ${item.key===state.selected?"active":""}" data-balance-key="${esc(item.key)}"><small>${esc(categoryNames[item.category]||item.category)}</small><strong>${esc(item.label)}</strong><span>${esc(item.description||"")}</span></button>`).join("")||'<div class="admin-empty">Nenhuma configuração encontrada.</div>'}</aside><div class="admin-detail-pane">${row?editor(row):'<div class="admin-empty">Selecione uma configuração.</div>'}</div></section>`;
     bind();
   }
 
@@ -42,6 +42,27 @@
     try{return JSON.parse(value)}catch{return value}
   }
 
+  async function saveDirect(row,value){
+    const lookup=await client.from("game_balance").select("*").eq("key",row.key).limit(1);
+    if(lookup.error)throw lookup.error;
+    const payload={...row,value};
+    delete payload.updated_at;
+    delete payload.created_at;
+    const response=lookup.data?.length
+      ?await client.from("game_balance").update({value}).eq("key",row.key).select("*").limit(1)
+      :await client.from("game_balance").insert(payload).select("*").limit(1);
+    if(response.error)throw response.error;
+    return response.data?.[0]||{...row,value};
+  }
+
+  async function saveBalance(row,value){
+    const rpc=await client.rpc("admin_save_balance",{p_key:row.key,p_value:value});
+    if(!rpc.error)return Array.isArray(rpc.data)?rpc.data[0]:rpc.data;
+    const message=String(rpc.error.message||"");
+    if(/ON CONFLICT|unique or exclusion constraint/i.test(message))return saveDirect(row,value);
+    throw rpc.error;
+  }
+
   function bind(){
     document.getElementById("adminBalanceFilter")?.addEventListener("change",event=>{state.filter=event.target.value;const available=filtered();if(!available.some(row=>row.key===state.selected))state.selected=available[0]?.key||null;render()});
     moduleContent.querySelectorAll("[data-balance-key]").forEach(button=>button.addEventListener("click",()=>{state.selected=button.dataset.balanceKey;render()}));
@@ -56,11 +77,9 @@
         submit.disabled=true;
         message.textContent="Salvando no banco...";
         const value=parseValue(form.elements.value.value);
-        const {data,error}=await client.rpc("admin_save_balance",{p_key:row.key,p_value:value});
-        if(error)throw error;
-        const saved=Array.isArray(data)?data[0]:data;
-        if(saved)Object.assign(row,saved);
-        message.textContent="Configuração salva com sucesso.";
+        const saved=await saveBalance(row,value);
+        if(saved)Object.assign(row,saved);else row.value=value;
+        message.textContent="Configuração salva e sincronizada.";
       }catch(error){
         console.error(error);
         message.textContent=error.message||"Não foi possível salvar esta configuração.";

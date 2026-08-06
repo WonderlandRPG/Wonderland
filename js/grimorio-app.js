@@ -1,7 +1,10 @@
 "use strict";
 
-(function () {
-  const data = Array.isArray(window.WONDERLAND_GRIMORIO) ? window.WONDERLAND_GRIMORIO : [];
+(async function () {
+  const ready = window.WONDERLAND_GRIMORIO_READY;
+  const resolved = ready ? await ready : window.WONDERLAND_GRIMORIO;
+  const data = Array.isArray(resolved) ? resolved : [];
+
   const categoryList = document.getElementById("categoryList");
   const termList = document.getElementById("termList");
   const termContent = document.getElementById("termContent");
@@ -23,9 +26,17 @@
 
   function matches(item) {
     const inCategory = activeCategory === "Todas" || item.categoria === activeCategory;
-    const haystack = [item.nome, item.categoria, item.origemTipo, item.origem, item.atributo, ...(item.tags || []), item.descricao, item.efeito]
-      .join(" ")
-      .toLocaleLowerCase("pt-BR");
+    const haystack = [
+      item.nome,
+      item.categoria,
+      item.origemTipo,
+      item.origem,
+      item.atributo,
+      ...(item.tags || []),
+      item.descricao,
+      item.efeito
+    ].join(" ").toLocaleLowerCase("pt-BR");
+
     return inCategory && haystack.includes(search.toLocaleLowerCase("pt-BR"));
   }
 

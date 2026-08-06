@@ -1,1 +1,0 @@
-window.WONDERLAND_CLASSES = window.WONDERLAND_CLASSES || {};

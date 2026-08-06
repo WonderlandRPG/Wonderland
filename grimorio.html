@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório | Wonderland RPG</title>
     <meta name="description" content="Enciclopédia oficial das habilidades e mecânicas de Wonderland.">
-    <link rel="icon" type="image/png" href="assets/images/logo.png">
+    <link rel="icon" href="assets/images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -36,7 +36,7 @@
         <img src="assets/images/logo.png" class="grimorio-logo" alt="Wonderland RPG">
         <span class="hero-label">Biblioteca do Primeiro Sonho</span>
         <h1>Grimório</h1>
-        <p>Consulte habilidades físicas, mágicas, raciais, passivas e supremas. Esta página foi preparada para futuramente usar o mesmo banco de dados das fichas e do painel administrativo.</p>
+        <p>Consulte habilidades físicas, mágicas, raciais, passivas e supremas. Os registros são sincronizados com o painel administrativo.</p>
     </header>
 
     <main class="grimorio-layout">
@@ -47,7 +47,7 @@
         </section>
         <section class="grimorio-panel">
             <div id="termContent" class="term-page">
-                <div class="grimorio-placeholder"><h2>✦ Grimório de Wonderland ✦</h2><p>Escolha um registro para consultar seus detalhes.</p></div>
+                <div class="grimorio-placeholder"><h2>✦ Grimório de Wonderland ✦</h2><p>Sincronizando registros do painel administrativo...</p></div>
             </div>
         </section>
     </main>
@@ -64,9 +64,13 @@
     <script src="js/engine/effects.js?v=1"></script>
     <script src="js/engine/search.js?v=1"></script>
     <script src="js/engine/particles.js?v=1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js?v=2"></script>
+    <script src="js/data/racas-data.js?v=2"></script>
     <script src="js/data/classes-all.js?v=2"></script>
-    <script src="js/data/skill-costs.js?v=3"></script>
-    <script src="js/grimorio-content.js?v=3"></script>
-    <script src="js/grimorio-app.js?v=3" defer></script>
+    <script src="js/data/skill-costs.js?v=4"></script>
+    <script src="js/data/content-store.js?v=4"></script>
+    <script src="js/grimorio-content.js?v=4"></script>
+    <script src="js/grimorio-app.js?v=4" defer></script>
 </body>
 </html>

@@ -88,7 +88,7 @@
         <article><span>03</span><h3>Três ações por turno</h3><p>É possível realizar <strong>1 ataque básico</strong>, <strong>1 habilidade racial</strong> e <strong>1 habilidade de classe</strong> durante o mesmo turno.</p></article>
         <article><span>04</span><h3>Defender primeiro</h3><p>A ação Defender só pode ser escolhida antes de qualquer movimento, ataque ou habilidade. Ela bloqueia 100% do próximo dano e entra em recarga por 5 turnos.</p></article>
         <article><span>05</span><h3>Passivas ativas</h3><p>Passivas de raça, classe e Caminho são carregadas no início e seus modificadores reconhecidos entram nos cálculos do combate.</p></article>
-        <article><span>06</span><h3>IA completa</h3><p>O Boneco avalia distância, vida, Mana, cura, escudo, alcance e recargas antes de escolher suas três ações.</p></article>
+        <article><span>06</span><h3>Multiplicadores oficiais</h3><p>Dano, cura e escudos usam escalas como <strong>1x FOR</strong>, <strong>1,5x INT</strong> e <strong>2x ARC</strong>. Buffs, reduções e chances continuam usando porcentagem.</p></article>
       </div>
     </section>
   </main>
@@ -114,7 +114,10 @@
   <script src="js/data/skill-costs.js?v=4"></script>
   <script src="js/data/mana-system.js?v=2"></script>
   <script src="js/data/defense-system.js?v=1"></script>
+  <script src="js/data/scaling-system.js?v=2"></script>
   <script src="js/data/content-store.js?v=4"></script>
-  <script src="js/pages/arena.js?v=9" defer></script>
+  <script src="js/data/content-runtime-sync.js?v=1"></script>
+  <script src="js/pages/arena-scaling-bridge.js?v=1"></script>
+  <script type="module" src="js/pages/arena-bootstrap.js?v=1"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 "use strict";
 
 (function () {
-  const ATTRIBUTES = ["FOR", "DEF", "RES", "INI", "INT", "ARC"];
+  const scaling = window.WONDERLAND_SCALING;
 
   const slugify = (value) => String(value || "registro")
     .normalize("NFD")
@@ -29,22 +29,13 @@
     return tags.slice(0, 4);
   };
 
-  function formatScale(description, row) {
-    let result = String(description || "");
-    const percent = Number(row?.scale_percent);
-    const attribute = String(row?.scale_attribute || "").toUpperCase();
-
-    if (!row?._cms || !Number.isFinite(percent) || percent <= 0 || !ATTRIBUTES.includes(attribute)) {
-      return result;
-    }
-
-    const value = Number.isInteger(percent) ? percent : percent.toLocaleString("pt-BR");
-    const replacement = `${value}% de ${attribute}`;
-    const pattern = new RegExp(`\\d+(?:[.,]\\d+)?%\\s+(?:do|de|da)\\s+(?:seu\\s+)?${attribute}`, "i");
-
-    return pattern.test(result)
-      ? result.replace(pattern, replacement)
-      : `${result}${result ? " " : ""}Escala: ${replacement}.`;
+  function formattedDescription(row) {
+    if (!scaling) return String(row?.description || "");
+    const normalized = scaling.normalizeSkill(row || {});
+    const description = scaling.normalizeDescription(normalized.description || "");
+    const hasScale = scaling.parseTerms(description).length > 0;
+    if (hasScale || Number(normalized.scale_multiplier || 0) <= 0) return description;
+    return `${description}${description ? " " : ""}Escala principal: ${scaling.describe(normalized.scale_multiplier, normalized.scale_attribute)}.`;
   }
 
   function originInfo(data, row) {
@@ -101,6 +92,7 @@
 
   async function buildRecords() {
     const store = window.WONDERLAND_CONTENT_STORE;
+    if (window.WONDERLAND_CONTENT_READY) await window.WONDERLAND_CONTENT_READY;
     const data = store
       ? await store.load({ force: true })
       : { races: [], classes: [], paths: [], skills: [], passives: [], mechanics: [] };
@@ -109,7 +101,7 @@
 
     (data.passives || []).forEach((passive, index) => {
       const origin = originInfo(data, passive);
-      const description = String(passive.description || "");
+      const description = scaling ? scaling.normalizeDescription(passive.description || "") : String(passive.description || "");
       records.push({
         id: passive.passive_key || `passiva-${index}-${slugify(passive.name)}`,
         nome: passive.name || "Passiva",
@@ -132,7 +124,7 @@
 
     (data.skills || []).forEach((skill, index) => {
       const origin = originInfo(data, skill);
-      const description = formatScale(skill.description, skill);
+      const description = formattedDescription(skill);
       const cost = costFor(skill);
       const category = skill.is_ultimate
         ? "Ultimate"
@@ -162,7 +154,7 @@
 
     (data.mechanics || []).forEach((mechanic, index) => {
       const origin = originInfo(data, mechanic);
-      const description = String(mechanic.description || "");
+      const description = scaling ? scaling.normalizeDescription(mechanic.description || "") : String(mechanic.description || "");
       records.push({
         id: mechanic.mechanic_key || `mecanica-${index}-${slugify(mechanic.name)}`,
         nome: mechanic.name || "Mecânica",

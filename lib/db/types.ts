@@ -2,9 +2,29 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 type ContentStatus = "draft" | "published" | "archived";
 
+export type UserRole = "player" | "moderator" | "admin" | "founder";
+
 export interface Database {
   public: {
     Tables: {
+      v2_profiles: {
+        Row: {
+          user_id: string;
+          display_name: string;
+          avatar_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          display_name?: string;
+          avatar_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_profiles"]["Insert"]>;
+        Relationships: [];
+      };
       v2_content: {
         Row: {
           id: string;
@@ -70,13 +90,13 @@ export interface Database {
       v2_user_roles: {
         Row: {
           user_id: string;
-          role: "player" | "moderator" | "admin" | "founder";
+          role: UserRole;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           user_id: string;
-          role?: "player" | "moderator" | "admin" | "founder";
+          role?: UserRole;
           created_at?: string;
           updated_at?: string;
         };
@@ -93,6 +113,10 @@ export interface Database {
       v2_publish_content: {
         Args: { p_content_id: string };
         Returns: Database["public"]["Tables"]["v2_content"]["Row"];
+      };
+      v2_publish_setting: {
+        Args: { p_setting_key: string };
+        Returns: Database["public"]["Tables"]["v2_game_settings"]["Row"];
       };
     };
     Enums: Record<string, never>;

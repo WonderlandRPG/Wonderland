@@ -4,6 +4,8 @@ import { SectionHeading } from "@/components/section-heading";
 import { SiteHeader } from "@/components/site-header";
 import { contentCatalog } from "@/lib/game/catalog";
 
+export const dynamic = "force-dynamic";
+
 const foundations = [
   {
     index: "01",
@@ -48,13 +50,13 @@ export default function Home() {
             organizado, seguro e inteiramente controlável pelo painel.
           </p>
           <div className="hero__actions">
-            <a className="button button--primary" href="#fundacao">
-              Explorar a fundação
-              <span aria-hidden="true">↘</span>
-            </a>
-            <Link className="button button--ghost" href="/admin">
-              Ver central ADM
+            <Link className="button button--primary" href="/cadastro">
+              Criar minha conta
+              <span aria-hidden="true">→</span>
             </Link>
+            <a className="button button--ghost" href="#fundacao">
+              Explorar a fundação
+            </a>
           </div>
         </div>
 
@@ -157,12 +159,12 @@ export default function Home() {
             <span className="eyebrow">Primeira operação</span>
             <h2>A central de comando já tem uma nova base.</h2>
             <p>
-              O próximo passo será conectar o Supabase e ativar contas, funções e permissões
-              administrativas.
+              Contas, sessões e permissões já estão conectadas ao Supabase. A próxima operação será
+              ativar a criação de personagens.
             </p>
           </div>
-          <Link className="button button--primary" href="/admin">
-            Abrir central ADM
+          <Link className="button button--primary" href="/cadastro">
+            Criar conta
             <span aria-hidden="true">→</span>
           </Link>
         </div>

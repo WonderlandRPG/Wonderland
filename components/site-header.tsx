@@ -1,16 +1,22 @@
 import Link from "next/link";
 
 import { BrandMark } from "@/components/brand-mark";
+import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const account = await getCurrentAccount();
+
   return (
     <header className="site-header">
       <BrandMark inverse />
       <nav className="site-header__nav" aria-label="Navegação principal">
         <a href="#fundacao">Fundação</a>
         <a href="#sistemas">Sistemas</a>
-        <Link className="button button--small button--glass" href="/admin">
-          Painel ADM
+        {account && isAdministrativeRole(account.role) ? (
+          <Link href="/admin">Painel ADM</Link>
+        ) : null}
+        <Link className="button button--small button--glass" href={account ? "/perfil" : "/entrar"}>
+          {account ? "Minha conta" : "Entrar"}
         </Link>
       </nav>
     </header>

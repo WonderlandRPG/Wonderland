@@ -1,18 +1,27 @@
 import Link from "next/link";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { requireAdministrativeAccount, roleLabels } from "@/lib/auth/account";
 import { getAdminOverview } from "@/lib/content/overview";
 
 export const metadata = {
   title: "Central de Comando",
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPage() {
+  const account = await requireAdministrativeAccount();
   const overview = await getAdminOverview();
+  const initials = account.displayName
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 
   return (
     <main className="admin-shell">
-      <AdminSidebar />
+      <AdminSidebar account={account} />
 
       <section className="admin-workspace">
         <header className="admin-topbar">
@@ -27,13 +36,13 @@ export default async function AdminPage() {
               <span className="signal-dot" />
               {overview.configured ? "Supabase conectado" : "Supabase aguardando conexão"}
             </span>
-            <button className="admin-profile" type="button" disabled>
-              <span>CH</span>
+            <Link className="admin-profile" href="/perfil">
+              <span>{initials || "W"}</span>
               <span>
-                <strong>Fundador</strong>
-                <small>Configuração inicial</small>
+                <strong>{account.displayName}</strong>
+                <small>{roleLabels[account.role]}</small>
               </span>
-            </button>
+            </Link>
           </div>
         </header>
 
@@ -126,13 +135,13 @@ export default async function AdminPage() {
             <div className="admin-setup__index">NEXT</div>
             <div>
               <span className="eyebrow">Próxima etapa</span>
-              <h2>Conectar autenticação e permissões.</h2>
+              <h2>Autenticação e permissões ativadas.</h2>
               <p>
-                Aplicaremos a migração v2 no Supabase, definiremos os fundadores e ativaremos o
-                primeiro editor real do painel.
+                Contas, sessões e funções agora protegem esta central. O próximo passo será ativar a
+                criação de personagens e o primeiro editor real do painel.
               </p>
             </div>
-            <span className="admin-setup__status">Aguardando configuração</span>
+            <span className="admin-setup__status">Núcleo protegido</span>
           </section>
         </div>
       </section>

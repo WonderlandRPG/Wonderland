@@ -1,6 +1,7 @@
-import Link from "next/link";
-
+import { SignOutButton } from "@/components/account/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
+import type { CurrentAccount } from "@/lib/auth/account";
+import { roleLabels } from "@/lib/auth/account";
 
 const navigation = [
   { label: "Visão geral", glyph: "01", active: true },
@@ -10,7 +11,7 @@ const navigation = [
   { label: "Histórico", glyph: "05", active: false },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ account }: { account: CurrentAccount }) {
   return (
     <aside className="admin-sidebar">
       <div className="admin-sidebar__brand">
@@ -37,10 +38,10 @@ export function AdminSidebar() {
       <div className="admin-sidebar__footer">
         <span className="signal-dot" />
         <div>
-          <strong>Fundação ativa</strong>
-          <small>Ambiente de desenvolvimento</small>
+          <strong>{account.displayName}</strong>
+          <small>{roleLabels[account.role]}</small>
         </div>
-        <Link href="/">Sair</Link>
+        <SignOutButton compact />
       </div>
     </aside>
   );

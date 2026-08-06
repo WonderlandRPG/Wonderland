@@ -56,11 +56,22 @@
   function searchableText(row){return normalize([row.name,row.id,row.skill_key,row.passive_key,row.mechanic_key,row.class_id,row.race_id,row.class_path_id,row.source_type,row.description,state.classes.find(c=>c.id===row.class_id)?.name,state.races.find(r=>r.id===row.race_id)?.name,state.paths.find(p=>p.id===row.class_path_id)?.name].filter(Boolean).join(" "))}
   function visibleRows(){const q=normalize(state.search);return q?state.rows.filter(row=>searchableText(row).includes(q)):state.rows}
 
+  function renderResults(){
+    const key=keys[state.module];
+    const rows=visibleRows();
+    const list=document.getElementById("cmsList");
+    const counter=document.getElementById("cmsResultCount");
+    if(counter)counter.textContent=`${rows.length} de ${state.rows.length} registro(s)`;
+    if(!list)return;
+    list.innerHTML=rows.map(r=>`<button class="admin-record-button ${String(r[key])===String(state.selected)?"active":""}" data-id="${esc(r[key])}"><small>${esc(r.source_type||r.class_id||r.id||r[key])}${r._local?" • local":""}</small><strong>${esc(r.name||r.skill_key||r.passive_key||r.mechanic_key)}</strong></button>`).join("")||'<div class="admin-empty">Nenhum registro encontrado com essa pesquisa.</div>';
+    list.querySelectorAll("[data-id]").forEach(button=>button.addEventListener("click",()=>{state.selected=button.dataset.id;render()}));
+  }
+
   function render(){
     title.textContent=labels[state.module];
     const key=keys[state.module],selected=state.rows.find(r=>String(r[key])===String(state.selected));
     const rows=visibleRows();
-    host.innerHTML=`<section class="admin-cms-hero"><div><span>Biblioteca viva</span><h3>${labels[state.module]}</h3><p>Edite o conteúdo do RPG sem tocar no código. Registros locais podem ser importados para o banco.</p></div><div class="admin-cms-actions"><button id="cmsImport" class="wl-button wl-button-ghost" type="button">Importar conteúdo atual</button><button id="cmsCreate" class="wl-button wl-button-gold" type="button">Criar novo</button></div></section><section class="admin-cms-toolbar"><input id="cmsSearch" type="search" value="${esc(state.search)}" placeholder="Pesquisar por nome, classe, raça ou chave..."><span>${rows.length} de ${state.rows.length} registro(s)</span></section><section class="admin-browser admin-cms-browser"><aside class="admin-record-list" id="cmsList">${rows.map(r=>`<button class="admin-record-button ${String(r[key])===String(state.selected)?"active":""}" data-id="${esc(r[key])}"><small>${esc(r.source_type||r.class_id||r.id||r[key])}${r._local?" • local":""}</small><strong>${esc(r.name||r.skill_key||r.passive_key||r.mechanic_key)}</strong></button>`).join("")||'<div class="admin-empty">Nenhum registro encontrado com essa pesquisa.</div>'}</aside><div class="admin-detail-pane">${editor(selected)}</div></section>`;
+    host.innerHTML=`<section class="admin-cms-hero"><div><span>Biblioteca viva</span><h3>${labels[state.module]}</h3><p>Edite o conteúdo do RPG sem tocar no código. Registros locais podem ser importados para o banco.</p></div><div class="admin-cms-actions"><button id="cmsImport" class="wl-button wl-button-ghost" type="button">Importar conteúdo atual</button><button id="cmsCreate" class="wl-button wl-button-gold" type="button">Criar novo</button></div></section><section class="admin-cms-toolbar"><input id="cmsSearch" type="search" value="${esc(state.search)}" placeholder="Pesquisar por nome, classe, raça ou chave..."><span id="cmsResultCount">${rows.length} de ${state.rows.length} registro(s)</span></section><section class="admin-browser admin-cms-browser"><aside class="admin-record-list" id="cmsList">${rows.map(r=>`<button class="admin-record-button ${String(r[key])===String(state.selected)?"active":""}" data-id="${esc(r[key])}"><small>${esc(r.source_type||r.class_id||r.id||r[key])}${r._local?" • local":""}</small><strong>${esc(r.name||r.skill_key||r.passive_key||r.mechanic_key)}</strong></button>`).join("")||'<div class="admin-empty">Nenhum registro encontrado com essa pesquisa.</div>'}</aside><div class="admin-detail-pane">${editor(selected)}</div></section>`;
     bind();
   }
 
@@ -68,29 +79,18 @@
 
   function bind(){
     host.querySelectorAll("[data-id]").forEach(b=>b.addEventListener("click",()=>{state.selected=b.dataset.id;render()}));
-    document.getElementById("cmsSearch")?.addEventListener("input",e=>{state.search=e.target.value;render()});
+    document.getElementById("cmsSearch")?.addEventListener("input",e=>{state.search=e.target.value;renderResults()});
     document.getElementById("cmsImport")?.addEventListener("click",async()=>{const btn=document.getElementById("cmsImport");btn.disabled=true;btn.textContent="Importando...";await bootstrapLocal();await load(state.module)});
-    document.getElementById("cmsCreate")?.addEventListener("click",()=>{const key=keys[state.module],row={[key]:`novo-${Date.now()}`,name:"Novo registro",is_active:true};if(state.module==="paths")row.class_id=state.classes[0]?.id||"";if(["skills","passives"].includes(state.module)){row.source_type="class";row.class_id=state.classes[0]?.id||"";row.effect_schema=[]}if(state.module==="mechanics"){row.source_type="global";row.gain_schema=[];row.spend_schema=[];row.effect_schema=[]}state.rows.unshift(row);state.selected=row[key];state.search="";render()});
+    document.getElementById("cmsCreate")?.addEventListener("click",()=>{const key=keys[state.module],row={[key]:`novo-${Date.now()}`,name:"Novo registro",is_active:true};if(state.module==="paths")row.class_id=state.classes[0]?.id||"";if(["skills","passives"].includes(state.module)){row.source_type="class";row.class_id=state.classes[0]?.id||"";row.effect_schema=[]}if(state.module==="mechanics"){row.source_type="global";row.gain_schema=[];row.spend_schema=[];row.effect_schema=[]}state.rows.unshift(row);state.selected=row[key];render()});
     const form=document.getElementById("cmsForm");if(!form)return;const key=keys[state.module],row=state.rows.find(r=>String(r[key])===String(state.selected)),msg=document.getElementById("cmsMessage");
-    form.addEventListener("submit",async e=>{e.preventDefault();try{const payload=readForm(form,row),table=tables[state.module],isNew=String(row[key]||"").startsWith("novo-")||row._local;msg.textContent="Salvando...";let response;if(isNew)response=await client.from(table).insert(payload).select("*").single();else response=await client.from(table).update(payload).eq(key,row[key]).select("*").single();if(response.error)throw response.error;msg.textContent="Salvo com sucesso.";await load(state.module)}catch(error){console.error(error);msg.textContent=error.message||"Não foi possível salvar."}});
-    document.getElementById("cmsDelete")?.addEventListener("click",async()=>{if(!confirm("Excluir este registro?"))return;if(row._local||String(row[key]||"").startsWith("novo-")){state.rows=state.rows.filter(item=>item!==row);state.selected=state.rows[0]?.[key]||null;render();return}const {error}=await client.from(tables[state.module]).delete().eq(key,row[key]);if(error){msg.textContent=error.message;return}await load(state.module)});
+    form.addEventListener("submit",async e=>{e.preventDefault();try{const payload=readForm(form,row),isTemp=String(row[key]||"").startsWith("novo-")||row._local;let response;if(isTemp){response=await client.from(tables[state.module]).insert(payload).select("*").single()}else{response=await client.from(tables[state.module]).update(payload).eq(key,row[key]).select("*").single()}if(response.error)throw response.error;msg.textContent="Salvo com sucesso.";await load(state.module)}catch(error){console.error(error);msg.textContent=error.message||"Não foi possível salvar."}});
+    document.getElementById("cmsDelete")?.addEventListener("click",async()=>{if(!confirm("Excluir este registro?"))return;if(row._local||String(row[key]).startsWith("novo-")){state.rows=state.rows.filter(item=>item!==row);state.selected=state.rows[0]?.[key]||null;render();return}const {error}=await client.from(tables[state.module]).delete().eq(key,row[key]);if(error){msg.textContent=error.message;return}await load(state.module)});
   }
 
-  async function load(module){
-    state.module=module;state.search="";
-    const data=store?await store.load():null;
-    state.classes=data?.classes||[];state.races=data?.races||[];state.paths=data?.paths||[];
-    const table=tables[module],key=keys[module];
-    const {data:dbRows,error}=await client.from(table).select("*").order(key);
-    if(error){host.innerHTML=`<div class="admin-error">${esc(error.message)}</div>`;return}
-    const localRows=data?.[module]||[];
-    const dbKeys=new Set((dbRows||[]).map(r=>String(r[key]||r.skill_key||r.passive_key)));
-    const extras=localRows.filter(r=>!dbKeys.has(String(r[key]||r.skill_key||r.passive_key))).map(r=>({...r,_local:true}));
-    state.rows=[...(dbRows||[]),...extras];state.selected=state.rows[0]?.[key]||null;render();
-  }
+  async function load(module){state.module=module;state.search="";const data=store?await store.load():{races:[],classes:[],paths:[],skills:[],passives:[],mechanics:[]};state.classes=data.classes||[];state.races=data.races||[];state.paths=data.paths||[];const source=data[module]||[];const table=tables[module],{data:db,error}=await client.from(table).select("*");if(error){state.rows=source;state.source="local"}else{const dbRows=db||[],used=new Set(dbRows.map(row=>row[keys[module]]||row.skill_key||row.passive_key));state.rows=[...dbRows,...source.filter(row=>!used.has(row[keys[module]]||row.skill_key||row.passive_key)).map(row=>({...row,_local:true}))];state.source="mixed"}state.selected=state.rows[0]?.[keys[module]]||null;render()}
 
   document.querySelector('[data-admin-module="races"]')?.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();load("races")},true);
   document.querySelector('[data-admin-module="classes"]')?.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();load("classes")},true);
   document.querySelector('[data-admin-module="skills"]')?.addEventListener("click",e=>{e.preventDefault();e.stopImmediatePropagation();load("skills")},true);
-  const nav=document.querySelector(".admin-module-nav");if(nav&&!nav.querySelector('[data-admin-module="paths"]')){const insert=(key,label,sub)=>{const b=document.createElement("button");b.type="button";b.dataset.adminModule=key;b.innerHTML=`<span>✦</span><strong>${label}</strong><small>${sub}</small>`;nav.insertBefore(b,nav.querySelector('[data-admin-module="items"]'));b.addEventListener("click",()=>load(key))};insert("paths","Caminhos","Especializações de classe");insert("passives","Passivas","Regras permanentes");insert("mechanics","Mecânicas","Recursos e gatilhos")}
+  const nav=document.querySelector(".admin-module-nav");if(nav){const add=(key,label,sub)=>{if(nav.querySelector(`[data-admin-module="${key}"]`))return;const button=document.createElement("button");button.type="button";button.dataset.adminModule=key;button.innerHTML=`<span>✦</span><strong>${label}</strong><small>${sub}</small>`;nav.insertBefore(button,nav.querySelector('[data-admin-module="items"]'));button.addEventListener("click",()=>load(key))};add("paths","Caminhos","Especializações de classe");add("passives","Passivas","Regras permanentes");add("mechanics","Mecânicas","Recursos e gatilhos")}
 })();

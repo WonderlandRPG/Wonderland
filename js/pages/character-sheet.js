@@ -18,6 +18,7 @@
   const attrs=["FOR","DEF","RES","INI","INT","ARC"];
   const attrNames={FOR:"Força",DEF:"Defesa",RES:"Resistência",INI:"Iniciativa",INT:"Inteligência",ARC:"Arcano"};
   const esc=value=>String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#039;");
+  const finiteNumber=(value,fallback=0)=>{const parsed=Number(value);return Number.isFinite(parsed)?parsed:fallback};
 
   if(!account||!characterId){window.location.replace("personagens.html");return}
   const user=await account.current().catch(()=>null);
@@ -26,7 +27,8 @@
   function parseLevel(value){const match=String(value||"").match(/(\d+)/);return Number(match?.[1]||1)}
   function stripHtml(value){const text=String(value??"");if(!text.includes("<"))return text.trim();const template=document.createElement("template");template.innerHTML=text;return(template.content.textContent||"").replace(/\s+/g," ").trim()}
   function textValue(value){if(value===null||value===undefined)return"";if(typeof value==="string"||typeof value==="number")return stripHtml(value);if(Array.isArray(value))return value.map(textValue).filter(Boolean).join(" • ");if(typeof value==="object")return textValue(value.description||value.descricao||value.text||value.nome||value.name||"");return stripHtml(value)}
-  function getFinalAttributes(row){return Object.fromEntries(attrs.map(attr=>{const key=attr.toLowerCase();return[attr,Number(row?.[`base_${key}`]||20)+Number(row?.[`allocated_${key}`]||0)+Number(row?.[`racial_${key}`]||0)]}))}
+  function getFinalAttributes(row){return Object.fromEntries(attrs.map(attr=>{const key=attr.toLowerCase();const base=finiteNumber(row?.[`base_${key}`],20);const allocated=finiteNumber(row?.[`allocated_${key}`],0);const racial=finiteNumber(row?.[`racial_${key}`],0);return[attr,base+allocated+racial]}))}
+  function safeManaBreakdown(value,character){const safe=window.WONDERLAND_MANA_SYSTEM?.safeMana||((amount)=>Math.max(0,Math.round(finiteNumber(amount,0))));const fallback=safe(character?.mana_current)||100;return{base:safe(value?.base)||100,racial:safe(value?.racial),intelligence:safe(value?.intelligence),total:safe(value?.total)||fallback,rule:String(value?.rule||"")}}
   function classifyEffect(description,category){const source=`${description||""} ${category||""}`.toLowerCase();if(source.includes("cura")||source.includes("restaura")||source.includes("recupera"))return"Cura final";if(source.includes("escudo")||source.includes("proteção")||source.includes("protecao"))return"Escudo final";if(source.includes("dano"))return"Dano final";return"Efeito calculado"}
   function finalEffect(description,category,finalAttrs){const source=stripHtml(description);const matches=[...source.matchAll(/(\d+(?:[.,]\d+)?)%\s+(?:do|de|da)\s+(?:seu\s+)?(FOR|DEF|RES|INI|INT|ARC)/gi)];if(!matches.length)return null;const values=matches.map(match=>{const percent=Number(match[1].replace(",","."));const attr=match[2].toUpperCase();const base=Number(finalAttrs[attr]||0);return{percent,attr,base,total:Math.round(base*(percent/100))}});return{label:classifyEffect(source,category),total:values.reduce((sum,item)=>sum+item.total,0),details:values.map(item=>`${item.percent}% de ${item.attr} (${item.base}) = ${item.total}`).join(" + ")}}
   function racialEntries(collection,{progression=false}={}){const values=Array.isArray(collection)?collection:Object.values(collection||{});return values.map((skill,index)=>{const name=textValue(skill?.name||skill?.nome||skill?.title)||`Traço racial ${index+1}`;const description=textValue(skill?.description||skill?.descricao||skill?.content||skill?.effect||skill?.efeito||skill);return{...skill,nome:name,descricao:description,nivel:progression?parseLevel(skill?.level||skill?.nivel):1,tipo:textValue(skill?.category||skill?.categoria||skill?.tipo||skill?.label)||(progression?"Habilidade racial":"Traço racial"),passive:!progression,source:"Raça"}})}
@@ -43,7 +45,7 @@
     const cls=(window.WONDERLAND_CLASSES||{})[character.class_id];
     const rank=rankSystem?.fromCharacter(character)||{id:"E",title:"Iniciante",color:"#9d744f",accent:"#9d744f",secondary:"#6d4b32"};
     const finalAttrs=getFinalAttributes(data.attributes);
-    const mana=window.WONDERLAND_MANA_SYSTEM?.breakdown({intValue:finalAttrs.INT,race})||{total:Number(character.mana_current||0),base:0,racial:0,intelligence:0,rule:""};
+    const mana=safeManaBreakdown(window.WONDERLAND_MANA_SYSTEM?.breakdown({intValue:finalAttrs.INT,race}),character);
     const localSkills=officialSkills(cls,race,Number(character.level||1));
     const databaseSkillKeys=new Set((data.skills||[]).map(item=>item.skill_key));
     const skills=localSkills.filter(skill=>!databaseSkillKeys.size||databaseSkillKeys.has(skill.id||skill.nome));

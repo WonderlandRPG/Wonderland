@@ -362,14 +362,29 @@
     return payload;
   }
 
-  async function savePayload(payload, module = state.module) {
+  async function persistByNaturalKey(payload, module = state.module, { onlyIfMissing = false } = {}) {
     const config = moduleConfig(module);
     const keyValue = payload[config.key];
     if (!keyValue) throw new Error(`A chave ${config.key} é obrigatória.`);
-    const { data, error } = await client.from(config.table).upsert(payload, { onConflict: config.key, ignoreDuplicates: false }).select("*").single();
+
+    const lookup = await client.from(config.table).select("*").eq(config.key, keyValue).limit(1);
+    if (lookup.error) throw lookup.error;
+
+    const existing = lookup.data?.[0] || null;
+    if (existing && onlyIfMissing) return existing;
+
+    const query = existing
+      ? client.from(config.table).update(payload).eq(existing.id !== undefined && existing.id !== null ? "id" : config.key, existing.id ?? keyValue)
+      : client.from(config.table).insert(payload);
+    const { data, error } = await query.select("*").limit(1);
     if (error) throw error;
+
     store.invalidate?.();
-    return data;
+    return data?.[0] || existing || payload;
+  }
+
+  async function savePayload(payload, module = state.module) {
+    return persistByNaturalKey(payload, module);
   }
 
   async function importMissing() {
@@ -389,8 +404,10 @@
         return clean;
       }).filter((row) => row[config.key]);
       if (!payload.length) continue;
-      const { error } = await client.from(config.table).upsert(payload, { onConflict: config.key, ignoreDuplicates: true });
-      if (error) throw error;
+      for (let index = 0; index < payload.length; index += 8) {
+        const chunk = payload.slice(index, index + 8);
+        await Promise.all(chunk.map((row) => persistByNaturalKey(row, module, { onlyIfMissing: true })));
+      }
     }
     store.invalidate?.();
   }

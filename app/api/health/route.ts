@@ -1,6 +1,8 @@
+import { getSupabasePublicEnv } from "@/lib/config/env";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function GET() {
+  const { url, anonKey } = getSupabasePublicEnv();
   const supabase = await createServerSupabaseClient();
 
   if (!supabase) {
@@ -9,6 +11,10 @@ export async function GET() {
         status: "degraded",
         application: "wonderland-v2",
         supabase: "pending",
+        configuration: {
+          url: Boolean(url),
+          publishableKey: Boolean(anonKey),
+        },
       },
       { status: 503 },
     );

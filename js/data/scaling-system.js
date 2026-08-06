@@ -31,7 +31,7 @@
   }
 
   function formatMultiplier(value, options = {}) {
-    const number = toNumber(value, 1);
+    const number = toNumber(value, 0);
     const prefix = options.signed && number > 0 ? "+" : "";
     return `${prefix}${formatNumber(number)}x`;
   }
@@ -60,12 +60,11 @@
 
   function isDirectScaleContext(source, index, length) {
     const context = sentenceContext(source, index, length);
-    const directWords = /causa|dano|cura|curar|recupera|restaura|regenera|escudo|barreira|absorve|equivalente|valor igual|pontos de vida|hp/;
+    const directWords = /causa|dano|cura|curar|recupera|restaura|regenera|escudo|barreira|absorve|equivalente|valor igual|pontos de vida|hp|ataque|ataca|atinge|golpeia|dispara|projétil|projetil/;
     const modifierWords = /aumenta|reduz|diminui|eleva|amplifica|fortalece|enfraquece|recebe bônus|recebe bonus|ganha bônus|ganha bonus/;
 
-    if (directWords.test(context)) return true;
-    if (modifierWords.test(context)) return false;
-    return false;
+    if (modifierWords.test(context) && !directWords.test(context)) return false;
+    return directWords.test(context);
   }
 
   function parseTerms(value, options = {}) {
@@ -145,14 +144,14 @@
       return legacyPercent / 100;
     }
 
-    return parseFirst(description)?.multiplier || 1;
+    return parseFirst(description)?.multiplier || 0;
   }
 
-  function attributeFromSkill(skill, description = "", fallback = "FOR") {
+  function attributeFromSkill(skill, description = "", fallback = null) {
     return normalizeAttribute(skill?.scale_attribute)
       || parseFirst(description)?.attribute
       || normalizeAttribute(fallback)
-      || "FOR";
+      || null;
   }
 
   function normalizeSkill(skill) {
@@ -172,7 +171,7 @@
   }
 
   function calculate(multiplier, attributeValue) {
-    return Math.round(toNumber(attributeValue) * toNumber(multiplier, 1));
+    return Math.round(toNumber(attributeValue) * toNumber(multiplier, 0));
   }
 
   function calculateTerms(description, attributes = {}) {
@@ -193,8 +192,10 @@
   }
 
   function describe(multiplier, attribute, options = {}) {
-    const normalizedAttribute = normalizeAttribute(attribute) || "FOR";
-    return `${formatMultiplier(multiplier, options)} ${normalizedAttribute}`;
+    const normalizedAttribute = normalizeAttribute(attribute);
+    return normalizedAttribute
+      ? `${formatMultiplier(multiplier, options)} ${normalizedAttribute}`
+      : formatMultiplier(multiplier, options);
   }
 
   window.WONDERLAND_SCALING = Object.freeze({

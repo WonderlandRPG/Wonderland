@@ -5,8 +5,10 @@
   if(!client){console.error("Cliente Supabase indisponível.");return}
 
   const normalizeEmail=value=>String(value||"").trim().toLowerCase();
+  const progression=()=>window.WONDERLAND_PROGRESSION;
+  const deriveLevel=xp=>progression()?.levelFromTotalXp?progression().levelFromTotalXp(Number(xp)||0):1;
   const profileFrom=(user,profile)=>({id:user.id,email:user.email,name:profile?.display_name||profile?.username||user.user_metadata?.display_name||user.user_metadata?.username||"Aventureiro",username:profile?.username||user.user_metadata?.username||"Aventureiro",role:profile?.role||"player",avatarUrl:profile?.avatar_url||null,isBanned:Boolean(profile?.is_banned)});
-  const withDefaults=row=>row?{...row,guild_rank:String(row.guild_rank||row.rank||"E").toUpperCase(),rank:String(row.guild_rank||row.rank||"E").toUpperCase(),wg:Number(row.wg||0),kingdom_id:row.kingdom_id||null}:row;
+  const withDefaults=row=>row?{...row,guild_rank:String(row.guild_rank||row.rank||"E").toUpperCase(),rank:String(row.guild_rank||row.rank||"E").toUpperCase(),wg:Number(row.wg||0),kingdom_id:row.kingdom_id||null,level:deriveLevel(row.experience)}:row;
 
   async function getSession(){const {data,error}=await client.auth.getSession();if(error)throw error;return data.session||null}
   async function current(){

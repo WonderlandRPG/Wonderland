@@ -57,6 +57,26 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_content"]["Insert"]>;
         Relationships: [];
       };
+      v2_content_revisions: {
+        Row: {
+          id: number;
+          content_id: string;
+          revision: number;
+          snapshot: Json;
+          edited_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          content_id: string;
+          revision: number;
+          snapshot: Json;
+          edited_by?: string | null;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_content_revisions"]["Insert"]>;
+        Relationships: [];
+      };
       v2_game_settings: {
         Row: {
           key: string;

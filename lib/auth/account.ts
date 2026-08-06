@@ -3,28 +3,12 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 
-import type { UserRole } from "@/lib/db/types";
+import { isAdministrativeRole } from "@/lib/auth/roles";
+import type { CurrentAccount } from "@/lib/auth/roles";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export interface CurrentAccount {
-  id: string;
-  email: string;
-  displayName: string;
-  avatarUrl: string | null;
-  role: UserRole;
-  createdAt: string;
-}
-
-export const roleLabels: Record<UserRole, string> = {
-  player: "Jogador",
-  moderator: "Moderador",
-  admin: "Administrador",
-  founder: "Fundador",
-};
-
-export function isAdministrativeRole(role: UserRole) {
-  return role === "admin" || role === "founder";
-}
+export type { CurrentAccount } from "@/lib/auth/roles";
+export { isAdministrativeRole, roleLabels } from "@/lib/auth/roles";
 
 export const getCurrentAccount = cache(async (): Promise<CurrentAccount | null> => {
   const supabase = await createServerSupabaseClient();

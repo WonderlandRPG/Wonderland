@@ -11,6 +11,15 @@
     `([+\\-]?\\d+(?:[.,]\\d+)?)\\s*[x×]\\s*(?:(?:do|de|da)\\s+)?(?:(?:seu|sua)\\s+)?${ATTRIBUTE_PATTERN}`,
     "gi"
   );
+  const DIRECT_WORDS = [
+    "causa", "dano", "cura", "curar", "recupera", "restaura", "regenera",
+    "escudo", "barreira", "absorve", "equivalente", "valor igual", "pontos de vida",
+    "hp", "ataque", "ataca", "atinge", "golpeia", "dispara", "projétil", "projetil"
+  ];
+  const MODIFIER_WORDS = [
+    "aumenta", "reduz", "diminui", "eleva", "amplifica", "fortalece", "enfraquece",
+    "recebe bônus", "recebe bonus", "ganha bônus", "ganha bonus"
+  ];
 
   const toNumber = (value, fallback = 0) => {
     const parsed = Number(String(value ?? "").replace(",", "."));
@@ -41,7 +50,7 @@
     return ATTRIBUTES.includes(attribute) ? attribute : null;
   }
 
-  function sentenceContext(source, index, length) {
+  function sentenceBounds(source, index, length) {
     const start = Math.max(
       source.lastIndexOf(".", index - 1),
       source.lastIndexOf("!", index - 1),
@@ -54,17 +63,27 @@
       .map((token) => source.indexOf(token, index + length))
       .filter((position) => position >= 0);
     const end = nextStops.length ? Math.min(...nextStops) : source.length;
+    return { start, end };
+  }
 
-    return source.slice(start, end).toLowerCase();
+  function lastKeywordIndex(source, words) {
+    return words.reduce((last, word) => Math.max(last, source.lastIndexOf(word)), -1);
+  }
+
+  function containsKeyword(source, words) {
+    return words.some((word) => source.includes(word));
   }
 
   function isDirectScaleContext(source, index, length) {
-    const context = sentenceContext(source, index, length);
-    const directWords = /causa|dano|cura|curar|recupera|restaura|regenera|escudo|barreira|absorve|equivalente|valor igual|pontos de vida|hp|ataque|ataca|atinge|golpeia|dispara|projétil|projetil/;
-    const modifierWords = /aumenta|reduz|diminui|eleva|amplifica|fortalece|enfraquece|recebe bônus|recebe bonus|ganha bônus|ganha bonus/;
+    const bounds = sentenceBounds(source, index, length);
+    const context = source.slice(bounds.start, bounds.end).toLowerCase();
+    const prefix = source.slice(bounds.start, index).toLowerCase();
+    const lastDirect = lastKeywordIndex(prefix, DIRECT_WORDS);
+    const lastModifier = lastKeywordIndex(prefix, MODIFIER_WORDS);
 
-    if (modifierWords.test(context) && !directWords.test(context)) return false;
-    return directWords.test(context);
+    if (lastModifier > lastDirect) return false;
+    if (lastDirect >= 0) return true;
+    return containsKeyword(context, DIRECT_WORDS) && !containsKeyword(prefix, MODIFIER_WORDS);
   }
 
   function parseTerms(value, options = {}) {

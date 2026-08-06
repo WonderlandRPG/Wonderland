@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Administrativo | Wonderland RPG</title>
-  <meta name="description" content="Painel administrativo do Wonderland RPG.">
+  <title>Centro de Comando | Wonderland RPG</title>
+  <meta name="description" content="Centro administrativo e tecnológico do Wonderland RPG.">
   <link rel="icon" type="image/png" href="assets/images/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,29 +15,68 @@
   <link rel="stylesheet" href="css/admin-items.css?v=4">
   <link rel="stylesheet" href="css/admin-rework.css?v=1">
   <link rel="stylesheet" href="css/admin-content-studio.css?v=2">
+  <link rel="stylesheet" href="css/admin-tech.css?v=1">
 </head>
 <body class="admin-page">
   <div class="admin-background" aria-hidden="true"></div>
+  <div class="admin-tech-orbit" aria-hidden="true"></div>
+
   <header class="admin-topbar">
     <a href="personagens.html" class="wl-button wl-button-ghost">← Personagens</a>
-    <a href="index.html" class="admin-brand"><img src="assets/images/logo.png" alt=""><span>Wonderland</span></a>
-    <div style="display:flex;gap:10px;justify-content:flex-end"><a href="arena.html" class="wl-button wl-button-gold">Arena de Testes</a><button id="adminLogout" class="wl-button wl-button-red" type="button">Sair</button></div>
+    <a href="index.html" class="admin-brand" aria-label="Voltar ao Wonderland">
+      <img src="assets/images/logo.png" alt="">
+      <span class="admin-brand-copy"><strong>Wonderland</strong><small>Core Administration</small></span>
+    </a>
+    <div class="admin-topbar-actions">
+      <a href="arena.html" class="wl-button wl-button-gold">Arena de Testes</a>
+      <button id="adminLogout" class="wl-button wl-button-red" type="button">Sair</button>
+    </div>
   </header>
+
   <main class="admin-shell">
-    <section class="admin-hero"><div><span class="admin-eyebrow">Centro de comando</span><h1>Painel Administrativo</h1><p id="adminGreeting">Carregando sua conta...</p></div><div class="admin-status"><span>Status</span><strong>Conectado ao Supabase</strong></div></section>
-    <section class="admin-stats" aria-label="Resumo do servidor"><article><span>Usuários</span><strong id="statUsers">—</strong></article><article><span>Personagens</span><strong id="statCharacters">—</strong></article><article><span>Raças</span><strong id="statRaces">—</strong></article><article><span>Classes</span><strong id="statClasses">—</strong></article><article><span>Habilidades</span><strong id="statSkills">—</strong></article><article><span>Itens</span><strong id="statItems">—</strong></article></section>
+    <section class="admin-hero">
+      <div>
+        <span class="admin-eyebrow">Núcleo operacional • acesso administrativo</span>
+        <h1>Centro de Comando</h1>
+        <p id="adminGreeting">Inicializando conexão segura...</p>
+      </div>
+      <div class="admin-status">
+        <span>Estado do sistema</span>
+        <strong>Supabase sincronizado</strong>
+      </div>
+    </section>
+
+    <section class="admin-stats" aria-label="Telemetria do servidor">
+      <article data-code="USR"><span>Usuários</span><strong id="statUsers">—</strong></article>
+      <article data-code="CHR"><span>Personagens</span><strong id="statCharacters">—</strong></article>
+      <article data-code="RCE"><span>Raças</span><strong id="statRaces">—</strong></article>
+      <article data-code="CLS"><span>Classes</span><strong id="statClasses">—</strong></article>
+      <article data-code="SKL"><span>Habilidades</span><strong id="statSkills">—</strong></article>
+      <article data-code="ITM"><span>Itens</span><strong id="statItems">—</strong></article>
+    </section>
+
     <section class="admin-console">
       <nav class="admin-module-nav" aria-label="Módulos administrativos">
-        <button type="button" data-admin-module="content"><span>✦</span><strong>Conteúdo do RPG</strong><small>Raças, classes e sistemas</small></button>
-        <button type="button" data-admin-module="items"><span>◇</span><strong>Itens</strong><small>Equipamentos e economia</small></button>
-        <button type="button" data-admin-module="users"><span>♙</span><strong>Usuários</strong><small>Contas e personagens</small></button>
-        <button type="button" data-admin-module="settings"><span>⚖</span><strong>Balanceamento</strong><small>Valores globais</small></button>
-        <button type="button" data-admin-module="xp"><span>✦</span><strong>XP & WG</strong><small>Missões e dungeons</small></button>
-        <a href="arena.html" class="admin-module-link"><span>⚔</span><strong>Arena de Testes</strong><small>Simulação de combate</small></a>
+        <span class="admin-nav-caption">Módulos do sistema</span>
+        <button type="button" data-admin-module="content"><span>⌬</span><strong>Conteúdo do RPG</strong><small>Raças, classes, habilidades e regras</small></button>
+        <button type="button" data-admin-module="items"><span>◇</span><strong>Itens</strong><small>Equipamentos, atributos e economia</small></button>
+        <button type="button" data-admin-module="users"><span>♙</span><strong>Usuários</strong><small>Contas, personagens e permissões</small></button>
+        <button type="button" data-admin-module="settings"><span>⚖</span><strong>Balanceamento</strong><small>Variáveis globais da engine</small></button>
+        <button type="button" data-admin-module="xp"><span>✦</span><strong>XP & WG</strong><small>Progressão, missões e recompensas</small></button>
+        <a href="arena.html" class="admin-module-link"><span>⚔</span><strong>Arena de Testes</strong><small>Laboratório de combate</small></a>
       </nav>
-      <section class="admin-workspace"><header><span>Área de trabalho</span><h2 id="adminModuleTitle">Visão geral</h2></header><div id="adminModuleContent" class="admin-module-content"><p>Escolha um módulo ao lado para abrir seus registros e ferramentas.</p></div></section>
+
+      <section class="admin-workspace">
+        <header>
+          <div><span>Terminal administrativo</span><h2 id="adminModuleTitle">Visão geral</h2></div>
+        </header>
+        <div id="adminModuleContent" class="admin-module-content">
+          <div class="admin-empty">Escolha um módulo para abrir dados, editores e ferramentas.</div>
+        </div>
+      </section>
     </section>
   </main>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-client.js?v=2"></script>
   <script src="js/data/progression-system.js?v=2"></script>
@@ -55,7 +94,7 @@
   <script src="js/pages/admin-character-tools.js?v=1" defer></script>
   <script src="js/pages/admin-kingdom-account-tools.js?v=1" defer></script>
   <script src="js/pages/admin-items-definitive.js?v=4" defer></script>
-  <script src="js/pages/admin-cms.js?v=1" defer></script>
+  <script src="js/pages/admin-cms.js?v=2" defer></script>
   <script src="js/pages/admin-content-cms.js?v=4" defer></script>
 </body>
 </html>

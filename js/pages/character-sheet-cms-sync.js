@@ -3,13 +3,14 @@
 (async function () {
   const account = window.WONDERLAND_ACCOUNT;
   const store = window.WONDERLAND_CONTENT_STORE;
+  const scaling = window.WONDERLAND_SCALING;
   const characterId = new URLSearchParams(window.location.search).get("id");
   const target = document.getElementById("sheetSkills");
   const summary = document.getElementById("sheetSkillsSummary");
 
-  if (!account || !store || !characterId || !target || !summary) return;
+  if (!account || !store || !scaling || !characterId || !target || !summary) return;
 
-  const attrs = ["FOR", "DEF", "RES", "INI", "INT", "ARC"];
+  const attrs = scaling.ATTRIBUTES;
   const esc = (value) => String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -25,59 +26,78 @@
     return (template.content.textContent || "").replace(/\s+/g, " ").trim();
   }
 
-  function getFinalAttributes(row) {
+  function equipmentBonuses(equipment) {
+    const totals = Object.fromEntries(attrs.map((attr) => [attr, 0]));
+    const seen = new Set();
+
+    (equipment || []).forEach((item) => {
+      if (item?.metadata?.linked_two_hand) return;
+      const identity = `${item?.item_key || item?.id || "item"}:${item?.slot || "slot"}`;
+      if (seen.has(identity)) return;
+      seen.add(identity);
+
+      Object.entries(item?.metadata?.stats || {}).forEach(([key, value]) => {
+        const attribute = String(key).toUpperCase();
+        if (attrs.includes(attribute)) totals[attribute] += Number(value) || 0;
+      });
+    });
+
+    return totals;
+  }
+
+  function getFinalAttributes(row, equipment) {
+    const bonuses = equipmentBonuses(equipment);
     return Object.fromEntries(attrs.map((attr) => {
       const key = attr.toLowerCase();
       const value = Number(row?.[`base_${key}`] || 20)
         + Number(row?.[`allocated_${key}`] || 0)
-        + Number(row?.[`racial_${key}`] || 0);
+        + Number(row?.[`racial_${key}`] || 0)
+        + Number(bonuses[attr] || 0);
       return [attr, value];
     }));
   }
 
-  function applyStructuredScale(description, row) {
-    let result = stripHtml(description);
-    const percent = Number(row?.scale_percent);
-    const attribute = String(row?.scale_attribute || "").toUpperCase();
+  function normalizedDescription(row) {
+    const plain = stripHtml(row.description || row.descricao || row.content || "");
+    const normalized = scaling.normalizeSkill({ ...row, description: plain });
+    const description = scaling.normalizeDescription(normalized.description);
+    const hasScale = scaling.parseTerms(description).length > 0;
 
-    if (!row?._cms || !Number.isFinite(percent) || percent <= 0 || !attrs.includes(attribute)) {
-      return result;
-    }
-
-    const value = Number.isInteger(percent) ? percent : percent.toLocaleString("pt-BR");
-    const replacement = `${value}% de ${attribute}`;
-    const pattern = new RegExp(`\\d+(?:[.,]\\d+)?%\\s+(?:do|de|da)\\s+(?:seu\\s+)?${attribute}`, "i");
-    return pattern.test(result)
-      ? result.replace(pattern, replacement)
-      : `${result}${result ? " " : ""}Escala: ${replacement}.`;
+    if (row.passive || hasScale || Number(normalized.scale_multiplier || 0) <= 0) return description;
+    return `${description}${description ? " " : ""}Escala principal: ${scaling.describe(normalized.scale_multiplier, normalized.scale_attribute)}.`;
   }
 
   function classifyEffect(description, category) {
     const source = `${description || ""} ${category || ""}`.toLowerCase();
-    if (source.includes("cura") || source.includes("restaura") || source.includes("recupera")) return "Cura final";
-    if (source.includes("escudo") || source.includes("proteção") || source.includes("protecao")) return "Escudo final";
-    if (source.includes("dano")) return "Dano final";
-    return "Efeito calculado";
+    if (source.includes("cura") || source.includes("restaura") || source.includes("recupera")) return "Cura-base";
+    if (source.includes("escudo") || source.includes("proteção") || source.includes("protecao")) return "Escudo-base";
+    if (source.includes("dano")) return "Dano-base";
+    return "Valor-base";
   }
 
-  function finalEffect(description, category, finalAttrs) {
-    const matches = [...String(description || "").matchAll(
-      /(\d+(?:[.,]\d+)?)%\s+(?:do|de|da)\s+(?:seu\s+)?(FOR|DEF|RES|INI|INT|ARC)/gi
-    )];
+  function calculatedEffect(row, description, category, finalAttrs) {
+    const calculation = scaling.calculateTerms(description, finalAttrs);
+    let values = calculation.terms;
 
-    if (!matches.length) return null;
+    if (!values.length && !row.passive) {
+      const normalized = scaling.normalizeSkill({ ...row, description });
+      if (Number(normalized.scale_multiplier || 0) > 0 && normalized.scale_attribute) {
+        const base = Number(finalAttrs[normalized.scale_attribute] || 0);
+        values = [{
+          multiplier: normalized.scale_multiplier,
+          attribute: normalized.scale_attribute,
+          base,
+          total: scaling.calculate(normalized.scale_multiplier, base)
+        }];
+      }
+    }
 
-    const values = matches.map((match) => {
-      const percent = Number(match[1].replace(",", "."));
-      const attr = match[2].toUpperCase();
-      const base = Number(finalAttrs[attr] || 0);
-      return { percent, attr, base, total: Math.round(base * (percent / 100)) };
-    });
+    if (!values.length) return null;
 
     return {
       label: classifyEffect(description, category),
       total: values.reduce((sum, item) => sum + item.total, 0),
-      details: values.map((item) => `${item.percent}% de ${item.attr} (${item.base}) = ${item.total}`).join(" + ")
+      details: values.map((item) => `${scaling.formatMultiplier(item.multiplier)} ${item.attribute} (${item.base}) = ${item.total}`).join(" + ")
     };
   }
 
@@ -104,6 +124,8 @@
   }
 
   try {
+    if (window.WONDERLAND_CONTENT_READY) await window.WONDERLAND_CONTENT_READY;
+
     const [sheetReady, sheet] = await Promise.all([
       waitForSheet(),
       account.getCharacterSheet(characterId)
@@ -112,7 +134,7 @@
     if (!sheetReady || !sheet?.character) return;
 
     const content = await store.characterContent(sheet.character);
-    const finalAttrs = getFinalAttributes(sheet.attributes);
+    const finalAttrs = getFinalAttributes(sheet.attributes, sheet.equipment);
     const rows = [
       ...(content.passives || []).map((row) => ({ ...row, passive: true })),
       ...(content.skills || []).map((row) => ({ ...row, passive: false }))
@@ -130,16 +152,16 @@
     if (raceElement) raceElement.textContent = raceName;
     if (sheetSummary) sheetSummary.textContent = `${raceName} • ${classLabel}`;
 
-    summary.textContent = `${rows.length} habilidade(s) e passiva(s) disponíveis no nível ${sheet.character.level}. Dados sincronizados com o painel administrativo.`;
+    summary.textContent = `${rows.length} habilidade(s) e passiva(s) disponíveis no nível ${sheet.character.level}. Valores-base usam os atributos finais, incluindo equipamentos.`;
 
     target.innerHTML = rows.length
       ? rows.map((row) => {
-          const description = applyStructuredScale(row.description, row);
+          const description = normalizedDescription(row);
           const category = row.passive ? "Passiva" : row.category || "Habilidade";
           const level = row.passive ? (row.source_type === "path" ? 50 : 1) : Number(row.unlock_level || 1);
           const mana = Number(row.mana_cost || 0);
           const cost = row.passive || mana <= 0 ? "Sem custo" : `${mana} Mana`;
-          const effect = finalEffect(description, category, finalAttrs);
+          const effect = calculatedEffect(row, description, category, finalAttrs);
           const effectHtml = effect
             ? `<div class="character-sheet-skill-damage"><strong>${esc(effect.label)}:</strong> <b>${esc(effect.total)}</b><small>${esc(effect.details)}</small></div>`
             : `<div class="character-sheet-skill-damage"><strong>Tipo:</strong> ${esc(category)}</div>`;

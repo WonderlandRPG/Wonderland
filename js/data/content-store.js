@@ -52,8 +52,8 @@
       query("races",q=>q.eq("is_active",true).order("sort_order")),
       query("classes",q=>q.eq("is_active",true).order("sort_order")),
       query("class_paths",q=>q.eq("is_active",true).order("sort_order")),
-      query("arena_skill_catalog",q=>q.order("sort_order")),
-      query("arena_passive_catalog",q=>q.order("sort_order")),
+      query("skills",q=>q.eq("is_active",true).order("sort_order")),
+      query("passives",q=>q.eq("is_active",true).order("sort_order")),
       query("combat_mechanics",q=>q.eq("is_active",true))
     ]);
     cache.races=mergeRows(fallback.races,races,"id");

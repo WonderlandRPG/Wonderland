@@ -11,4 +11,4 @@ try {
   console.warn("A Arena seguirá com o catálogo local normalizado.", error);
 }
 
-await import("./arena.js?v=10");
+await import("./arena.js?v=11");

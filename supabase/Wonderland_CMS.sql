@@ -1,5 +1,5 @@
 -- Wonderland CMS consolidado e idempotente
--- Preserva dados existentes e recria apenas funções, triggers, views, índices e colunas ausentes.
+-- Preserva dados existentes e recria funções, políticas, triggers, índices e colunas ausentes.
 
 create extension if not exists pgcrypto;
 
@@ -47,23 +47,21 @@ alter table public.items
   add column if not exists created_at timestamptz not null default now(),
   add column if not exists updated_at timestamptz not null default now();
 
--- Normaliza IDs nulos sem assumir se a coluna é text ou uuid.
 do $$
-declare
-  v_id_type text;
+declare v_id_type text;
 begin
   select udt_name into v_id_type
   from information_schema.columns
   where table_schema='public' and table_name='items' and column_name='id';
 
   if v_id_type='uuid' then
+    execute 'alter table public.items alter column id set default gen_random_uuid()';
     execute 'update public.items set id=gen_random_uuid() where id is null';
   elsif v_id_type in ('text','varchar','bpchar') then
     execute 'update public.items set id=gen_random_uuid()::text where id is null';
   end if;
 end $$;
 
--- Remove checks antigos de raridade.
 do $$
 declare c record;
 begin
@@ -248,6 +246,178 @@ begin
 end $$;
 
 grant execute on function public.admin_delete_item(text) to authenticated;
+
+-- ============================================================================
+-- CMS DE CONTEÚDO
+-- ============================================================================
+
+create table if not exists public.races(
+  id text primary key,
+  name text not null,
+  description text not null default '',
+  tagline text,
+  archetype text,
+  difficulty integer not null default 1,
+  base_hp integer not null default 500,
+  base_mana integer not null default 0,
+  mechanic_name text,
+  mechanic_description text,
+  icon text,
+  artwork_url text,
+  is_active boolean not null default true,
+  sort_order integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.classes(
+  id text primary key,
+  name text not null,
+  description text not null default '',
+  role text,
+  specialization text,
+  difficulty integer not null default 1,
+  primary_attribute text,
+  secondary_attribute text,
+  strengths text,
+  weaknesses text,
+  resource_name text,
+  resource_description text,
+  icon text,
+  artwork_url text,
+  is_active boolean not null default true,
+  sort_order integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.class_paths(
+  id text primary key,
+  class_id text not null,
+  name text not null,
+  description text not null default '',
+  specialization text,
+  complexity text,
+  is_active boolean not null default true,
+  sort_order integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.passives(
+  id uuid primary key default gen_random_uuid(),
+  passive_key text,
+  name text not null,
+  description text not null default '',
+  source_type text not null default 'class',
+  race_id text,
+  class_id text,
+  class_path_id text,
+  effect_schema jsonb not null default '[]'::jsonb,
+  is_active boolean not null default true,
+  sort_order integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.skills(
+  id uuid primary key default gen_random_uuid(),
+  skill_key text,
+  name text not null,
+  description text not null default '',
+  category text,
+  source_type text not null default 'class',
+  race_id text,
+  class_id text,
+  class_path_id text,
+  unlock_level integer not null default 1,
+  mana_cost integer not null default 0,
+  cooldown_turns integer not null default 0,
+  range_cells integer not null default 1,
+  area_cells integer not null default 0,
+  duration_turns integer not null default 0,
+  uses_per_combat integer,
+  target_type text not null default 'enemy',
+  damage_type text not null default 'physical',
+  scale_attribute text,
+  scale_percent numeric(8,2) not null default 0,
+  effect_schema jsonb not null default '[]'::jsonb,
+  is_passive boolean not null default false,
+  is_ultimate boolean not null default false,
+  is_active boolean not null default true,
+  sort_order integer not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.combat_mechanics(
+  mechanic_key text primary key,
+  source_type text not null default 'global',
+  race_id text,
+  class_id text,
+  class_path_id text,
+  name text not null,
+  description text not null default '',
+  initial_value numeric not null default 0,
+  max_value numeric,
+  gain_schema jsonb not null default '[]'::jsonb,
+  spend_schema jsonb not null default '[]'::jsonb,
+  effect_schema jsonb not null default '[]'::jsonb,
+  is_active boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+alter table public.passives alter column id set default gen_random_uuid();
+alter table public.skills alter column id set default gen_random_uuid();
+
+update public.passives set id=gen_random_uuid() where id is null;
+update public.skills set id=gen_random_uuid() where id is null;
+
+create unique index if not exists passives_passive_key_unique
+on public.passives(passive_key)
+where passive_key is not null;
+
+create unique index if not exists skills_skill_key_unique
+on public.skills(skill_key)
+where skill_key is not null;
+
+-- Permite leitura pública do conteúdo ativo e escrita apenas para administradores.
+alter table public.races enable row level security;
+alter table public.classes enable row level security;
+alter table public.class_paths enable row level security;
+alter table public.passives enable row level security;
+alter table public.skills enable row level security;
+alter table public.combat_mechanics enable row level security;
+
+do $$
+declare t text;
+begin
+  foreach t in array array['races','classes','class_paths','passives','skills','combat_mechanics'] loop
+    execute format('drop policy if exists %I on public.%I', t || '_read', t);
+    execute format('drop policy if exists %I on public.%I', t || '_admin_insert', t);
+    execute format('drop policy if exists %I on public.%I', t || '_admin_update', t);
+    execute format('drop policy if exists %I on public.%I', t || '_admin_delete', t);
+
+    execute format('create policy %I on public.%I for select using (true)', t || '_read', t);
+    execute format($p$
+      create policy %I on public.%I for insert to authenticated
+      with check (exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='admin'))
+    $p$, t || '_admin_insert', t);
+    execute format($p$
+      create policy %I on public.%I for update to authenticated
+      using (exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='admin'))
+      with check (exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='admin'))
+    $p$, t || '_admin_update', t);
+    execute format($p$
+      create policy %I on public.%I for delete to authenticated
+      using (exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='admin'))
+    $p$, t || '_admin_delete', t);
+  end loop;
+end $$;
+
+grant select on public.races,public.classes,public.class_paths,public.passives,public.skills,public.combat_mechanics to anon,authenticated;
+grant insert,update,delete on public.races,public.classes,public.class_paths,public.passives,public.skills,public.combat_mechanics to authenticated;
+
+create or replace view public.arena_skill_catalog as
+select * from public.skills where is_active=true;
+
+create or replace view public.arena_passive_catalog as
+select * from public.passives where is_active=true;
 
 -- ============================================================================
 -- PROGRESSÃO

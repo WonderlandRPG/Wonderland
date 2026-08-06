@@ -41,9 +41,37 @@
     return ATTRIBUTES.includes(attribute) ? attribute : null;
   }
 
-  function parseTerms(value) {
+  function sentenceContext(source, index, length) {
+    const start = Math.max(
+      source.lastIndexOf(".", index - 1),
+      source.lastIndexOf("!", index - 1),
+      source.lastIndexOf("?", index - 1),
+      source.lastIndexOf(";", index - 1),
+      source.lastIndexOf("\n", index - 1)
+    ) + 1;
+
+    const nextStops = [".", "!", "?", ";", "\n"]
+      .map((token) => source.indexOf(token, index + length))
+      .filter((position) => position >= 0);
+    const end = nextStops.length ? Math.min(...nextStops) : source.length;
+
+    return source.slice(start, end).toLowerCase();
+  }
+
+  function isDirectScaleContext(source, index, length) {
+    const context = sentenceContext(source, index, length);
+    const directWords = /causa|dano|cura|curar|recupera|restaura|regenera|escudo|barreira|absorve|equivalente|valor igual|pontos de vida|hp/;
+    const modifierWords = /aumenta|reduz|diminui|eleva|amplifica|fortalece|enfraquece|recebe bônus|recebe bonus|ganha bônus|ganha bonus/;
+
+    if (directWords.test(context)) return true;
+    if (modifierWords.test(context)) return false;
+    return false;
+  }
+
+  function parseTerms(value, options = {}) {
     const source = String(value || "");
     const terms = [];
+    const directOnly = options.directOnly !== false;
 
     MULTIPLIER_PATTERN.lastIndex = 0;
     let match;
@@ -64,6 +92,7 @@
         match.index >= term.index && match.index < term.index + term.raw.length
       );
       if (overlaps) continue;
+      if (directOnly && !isDirectScaleContext(source, match.index, match[0].length)) continue;
 
       terms.push({
         syntax: "percent",
@@ -81,15 +110,16 @@
       .sort((a, b) => a.index - b.index);
   }
 
-  function parseFirst(value) {
-    return parseTerms(value)[0] || null;
+  function parseFirst(value, options = {}) {
+    return parseTerms(value, options)[0] || null;
   }
 
   function normalizeDescription(value) {
     let result = String(value ?? "");
 
     PERCENT_PATTERN.lastIndex = 0;
-    result = result.replace(PERCENT_PATTERN, (full, rawValue, attribute) => {
+    result = result.replace(PERCENT_PATTERN, (full, rawValue, attribute, offset, source) => {
+      if (!isDirectScaleContext(source, offset, full.length)) return full;
       const percent = toNumber(rawValue);
       const multiplier = percent / 100;
       const signed = String(rawValue).startsWith("+");
@@ -173,6 +203,7 @@
     formatNumber,
     formatMultiplier,
     normalizeAttribute,
+    isDirectScaleContext,
     parseTerms,
     parseFirst,
     normalizeDescription,

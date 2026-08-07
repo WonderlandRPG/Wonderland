@@ -9,6 +9,7 @@ export type AttributeKey = (typeof attributeKeys)[number];
 const finiteNumberSchema = z.number().finite();
 const nonNegativeNumberSchema = finiteNumberSchema.min(0);
 const requiredTextSchema = z.string().trim().min(1);
+const nonNegativeIntegerSchema = z.number().int().min(0);
 
 export const attributesSchema = z.object({
   FOR: finiteNumberSchema,
@@ -31,15 +32,49 @@ export const progressionEntrySchema = z.object({
   description: requiredTextSchema,
 });
 
-export const racePayloadSchema = z.object({
+export const raceAbilitySchema = z.object({
+  name: requiredTextSchema,
   description: requiredTextSchema,
-  difficulty: z.number().int().min(1).max(5),
-  baseHp: nonNegativeNumberSchema,
-  baseMana: nonNegativeNumberSchema,
-  attributeBonuses: attributesSchema,
-  traits: z.array(traitSchema),
-  progression: z.array(progressionEntrySchema),
+  unlockLevel: z.number().int().min(1),
+  manaCost: nonNegativeIntegerSchema,
+  cooldown: nonNegativeIntegerSchema,
 });
+
+export const raceAttributeBonusesSchema = z.object({
+  FOR: nonNegativeIntegerSchema,
+  DEF: nonNegativeIntegerSchema,
+  RES: nonNegativeIntegerSchema,
+  INI: nonNegativeIntegerSchema,
+  INT: nonNegativeIntegerSchema,
+  ARC: nonNegativeIntegerSchema,
+});
+
+export const racePayloadSchema = z
+  .object({
+    description: requiredTextSchema,
+    imageUrl: z.union([z.literal(""), z.url()]).default(""),
+    difficulty: z.number().int().min(1).max(5),
+    baseHp: nonNegativeIntegerSchema,
+    baseMana: nonNegativeIntegerSchema,
+    attributeBonuses: raceAttributeBonusesSchema,
+    traits: z.array(traitSchema),
+    abilities: z.array(raceAbilitySchema).default([]),
+    progression: z.array(progressionEntrySchema),
+  })
+  .superRefine((payload, context) => {
+    const total = attributeKeys.reduce(
+      (sum, attribute) => sum + payload.attributeBonuses[attribute],
+      0,
+    );
+
+    if (total > 25) {
+      context.addIssue({
+        code: "custom",
+        message: "Os bônus raciais não podem ultrapassar 25 pontos.",
+        path: ["attributeBonuses"],
+      });
+    }
+  });
 
 export const classPayloadSchema = z.object({
   description: requiredTextSchema,

@@ -42,6 +42,7 @@ export interface CharacterSheet extends CharacterRecord {
     equippedSlot: string | null;
     attributes: Partial<AllocatedAttributes>;
     specialEffects: ItemSpecialEffect[];
+    twoHanded: boolean;
   }>;
 }
 
@@ -71,7 +72,7 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
   const { data: shopRows } = itemIds.length
     ? await client
         .from("v2_shop_items")
-        .select("id,name,description,category,rarity,slot,attributes,special_effects")
+        .select("id,name,description,category,rarity,slot,attributes,special_effects,two_handed")
         .in("id", itemIds)
     : { data: [] };
   const shop = new Map((shopRows ?? []).map((entry) => [entry.id, entry]));
@@ -102,6 +103,7 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
             equippedSlot: entry.equipped_slot,
             attributes: parsed.success ? parsed.data : {},
             specialEffects: parseItemSpecialEffects(item.special_effects),
+            twoHanded: item.two_handed,
           },
         ];
       });

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { PortalShell } from "@/components/portal-shell";
 import { getShopItems } from "@/lib/game/player-portal";
 import { requireActiveCharacter } from "@/lib/content/active-character";
@@ -15,21 +17,152 @@ const rarityLabels: Record<string, string> = {
   mythic: "Mítico",
 };
 export const dynamic = "force-dynamic";
-export default async function ShopPage() {
+type ShopSearchParams = {
+  busca?: string;
+  categoria?: string;
+  slot?: string;
+  empunhadura?: string;
+  disponibilidade?: string;
+  ordem?: string;
+};
+
+function normalized(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("pt-BR");
+}
+
+export default async function ShopPage({
+  searchParams,
+}: {
+  searchParams: Promise<ShopSearchParams>;
+}) {
   const { characterId } = await requireActiveCharacter("/loja");
-  const [items, character] = await Promise.all([
+  const [items, character, filters] = await Promise.all([
     getShopItems(),
     requireCharacterSheet(characterId),
+    searchParams,
   ]);
+  const categories = [...new Set(items.map((item) => item.category))].sort((a, b) =>
+    a.localeCompare(b, "pt-BR"),
+  );
+  const slots = [...new Set(items.map((item) => item.slot))].sort((a, b) =>
+    itemSlotLabel(a).localeCompare(itemSlotLabel(b), "pt-BR"),
+  );
+  const search = normalized(filters.busca?.trim() ?? "");
+  const filteredItems = items
+    .filter((item) => {
+      const searchable = normalized(`${item.name} ${item.description} ${item.category}`);
+      return (
+        (!search || searchable.includes(search)) &&
+        (!filters.categoria || item.category === filters.categoria) &&
+        (!filters.slot || item.slot === filters.slot) &&
+        (!filters.empunhadura ||
+          (filters.empunhadura === "duas" ? item.two_handed : !item.two_handed)) &&
+        (filters.disponibilidade !== "compraveis" || item.price <= character.gold)
+      );
+    })
+    .sort((a, b) => {
+      if (filters.ordem === "preco_maior") return b.price - a.price;
+      if (filters.ordem === "nome") return a.name.localeCompare(b.name, "pt-BR");
+      return a.price - b.price;
+    });
+  const hasFilters = Boolean(
+    filters.busca ||
+    filters.categoria ||
+    filters.slot ||
+    filters.empunhadura ||
+    filters.disponibilidade ||
+    filters.ordem,
+  );
   return (
     <PortalShell
       eyebrow="Mercado real"
       title="Loja de Wonderland"
       description={`${character.name} possui ${character.gold.toLocaleString("pt-BR")} WG para comprar equipamentos.`}
     >
+      <section className="shop-filters" aria-labelledby="shop-filters-title">
+        <header>
+          <div>
+            <span className="eyebrow">Localizar equipamentos</span>
+            <h2 id="shop-filters-title">Filtros da loja</h2>
+          </div>
+          <strong>
+            {filteredItems.length}{" "}
+            {filteredItems.length === 1 ? "item encontrado" : "itens encontrados"}
+          </strong>
+        </header>
+        <form action="/loja" method="get">
+          <label className="shop-filters__search">
+            <span>Buscar item</span>
+            <input
+              name="busca"
+              type="search"
+              defaultValue={filters.busca ?? ""}
+              placeholder="Nome, descrição ou categoria"
+            />
+          </label>
+          <label>
+            <span>Categoria</span>
+            <select name="categoria" defaultValue={filters.categoria ?? ""}>
+              <option value="">Todas</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>Slot</span>
+            <select name="slot" defaultValue={filters.slot ?? ""}>
+              <option value="">Todos</option>
+              {slots.map((slot) => (
+                <option key={slot} value={slot}>
+                  {itemSlotEmoji(slot)} {itemSlotLabel(slot)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            <span>Empunhadura</span>
+            <select name="empunhadura" defaultValue={filters.empunhadura ?? ""}>
+              <option value="">Todas</option>
+              <option value="uma">Uma mão</option>
+              <option value="duas">Duas mãos</option>
+            </select>
+          </label>
+          <label>
+            <span>Disponibilidade</span>
+            <select name="disponibilidade" defaultValue={filters.disponibilidade ?? ""}>
+              <option value="">Todos os preços</option>
+              <option value="compraveis">Posso comprar agora</option>
+            </select>
+          </label>
+          <label>
+            <span>Ordenar</span>
+            <select name="ordem" defaultValue={filters.ordem ?? "preco_menor"}>
+              <option value="preco_menor">Menor preço</option>
+              <option value="preco_maior">Maior preço</option>
+              <option value="nome">Nome A–Z</option>
+            </select>
+          </label>
+          <div className="shop-filters__actions">
+            <button className="button button--primary" type="submit">
+              Aplicar filtros
+            </button>
+            {hasFilters ? (
+              <Link className="button button--glass" href="/loja">
+                Limpar filtros
+              </Link>
+            ) : null}
+          </div>
+        </form>
+      </section>
       <div className="portal-card-grid">
-        {items.length ? (
-          items.map((item) => {
+        {filteredItems.length ? (
+          filteredItems.map((item) => {
             const parsed = attributesSchema.partial().safeParse(item.attributes);
             const attributes = parsed.success ? parsed.data : {};
             return (
@@ -74,9 +207,12 @@ export default async function ShopPage() {
           })
         ) : (
           <div className="portal-empty">
-            <span>◆</span>
-            <h2>Estoque em preparação</h2>
-            <p>Os primeiros itens aparecerão após a atualização do reino.</p>
+            <span>⌕</span>
+            <h2>Nenhum item encontrado</h2>
+            <p>Altere ou limpe os filtros para visualizar outros equipamentos.</p>
+            <Link className="button button--primary" href="/loja">
+              Limpar filtros
+            </Link>
           </div>
         )}
       </div>

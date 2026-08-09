@@ -26,11 +26,8 @@ export default async function Home() {
             atravessar todos os reinos.
           </p>
           <div className="hero__actions">
-            <Link
-              className="button button--primary"
-              href={account ? "/personagens?selecionar=1" : "/cadastro"}
-            >
-              {account ? "Escolher personagem" : "Começar minha jornada"} <span>→</span>
+            <Link className="button button--primary" href={account ? "/personagens" : "/cadastro"}>
+              {account ? "Continuar minha jornada" : "Começar minha jornada"} <span>→</span>
             </Link>
           </div>
         </div>

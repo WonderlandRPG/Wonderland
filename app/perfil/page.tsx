@@ -6,9 +6,7 @@ import { SignOutButton } from "@/components/account/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
 import { isAdministrativeRole, roleLabels } from "@/lib/auth/account";
 import { requireActiveCharacter } from "@/lib/content/active-character";
-import { getCharacterRules } from "@/lib/content/character-settings";
-import { getCharacterSheets } from "@/lib/content/characters";
-import { kingdomName } from "@/lib/game/kingdoms";
+import { requireCharacterSheet } from "@/lib/content/characters";
 
 export const metadata: Metadata = { title: "Minha conta" };
 
@@ -27,9 +25,8 @@ interface ProfilePageProps {
 
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   const { account, characterId: activeCharacterId } = await requireActiveCharacter("/perfil");
-  const [characters, characterRules, params] = await Promise.all([
-    getCharacterSheets(account.id),
-    getCharacterRules(),
+  const [activeCharacter, params] = await Promise.all([
+    requireCharacterSheet(activeCharacterId),
     searchParams,
   ]);
   const joinedAt = new Intl.DateTimeFormat("pt-BR", {
@@ -86,82 +83,17 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
         <section className="account-dashboard">
           <div className="account-main-column">
-            <article className="account-card account-card--characters">
+            <article className="account-card account-profile-intro">
               <div className="account-card__heading">
                 <div>
-                  <span className="eyebrow">Personagens</span>
-                  <h2>Suas fichas</h2>
+                  <span className="eyebrow">Configurações da conta</span>
+                  <h2>Seu perfil de jogador</h2>
                 </div>
-                <span className="account-card__counter">
-                  {characters.length} / {characterRules.maximumSlots}
-                </span>
               </div>
-
-              <div className="profile-character-grid">
-                {Array.from({ length: characterRules.maximumSlots }, (_, index) => index + 1).map(
-                  (slot) => (
-                    <article
-                      className={`profile-character-card ${characters[slot - 1]?.id === activeCharacterId ? "is-active" : ""}`}
-                      key={slot}
-                    >
-                      <div className="profile-character-card__portrait">
-                        {characters[slot - 1]?.image_url ? (
-                          <span
-                            style={{ backgroundImage: `url(${characters[slot - 1].image_url})` }}
-                          />
-                        ) : (
-                          <b>
-                            {characters[slot - 1]?.name.slice(0, 2).toUpperCase() ??
-                              String(slot).padStart(2, "0")}
-                          </b>
-                        )}
-                      </div>
-                      <small>
-                        {characters[slot - 1]?.id === activeCharacterId
-                          ? "Em jogo"
-                          : `Ficha ${String(slot).padStart(2, "0")}`}
-                      </small>
-                      <h3>{characters[slot - 1]?.name ?? "Espaço disponível"}</h3>
-                      {characters[slot - 1] ? (
-                        <dl>
-                          <div>
-                            <dt>Raça</dt>
-                            <dd>{characters[slot - 1].race.name}</dd>
-                          </div>
-                          <div>
-                            <dt>Classe</dt>
-                            <dd>{characters[slot - 1].characterClass.name}</dd>
-                          </div>
-                          <div>
-                            <dt>Nível</dt>
-                            <dd>{characters[slot - 1].level}</dd>
-                          </div>
-                          <div>
-                            <dt>Reino</dt>
-                            <dd>{kingdomName(characters[slot - 1].kingdom)}</dd>
-                          </div>
-                        </dl>
-                      ) : (
-                        <p>Crie um novo herói para entrar na Arena.</p>
-                      )}
-                      <Link
-                        href={
-                          characters[slot - 1]
-                            ? `/personagens/${characters[slot - 1].id}`
-                            : "/personagens/novo"
-                        }
-                        aria-label={
-                          characters[slot - 1]
-                            ? `Ver ${characters[slot - 1].name}`
-                            : `Criar personagem no espaço ${slot}`
-                        }
-                      >
-                        {characters[slot - 1] ? "Abrir ficha" : "Criar personagem"}
-                      </Link>
-                    </article>
-                  ),
-                )}
-              </div>
+              <p>
+                Gerencie apenas os dados da sua conta aqui. Personagem, inventário, nível e presença
+                ficam concentrados na ficha em jogo.
+              </p>
             </article>
 
             <article className="account-card">
@@ -188,28 +120,41 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                   <dd>{roleLabels[account.role]}</dd>
                 </div>
                 <div>
-                  <dt>Personagens</dt>
-                  <dd>
-                    {characters.length} de {characterRules.maximumSlots}
-                  </dd>
-                </div>
-                <div>
                   <dt>Status</dt>
                   <dd className="is-online">Conta ativa</dd>
                 </div>
               </dl>
             </article>
 
-            <article className="account-card account-coming-soon">
-              <span>Prepare-se para a Arena</span>
-              <h2>Monte sua primeira ficha</h2>
+            <article className="account-card account-active-character">
+              <div
+                className={`account-active-character__portrait ${activeCharacter.image_url ? "is-image" : ""}`}
+                style={
+                  activeCharacter.image_url
+                    ? { backgroundImage: `url(${activeCharacter.image_url})` }
+                    : undefined
+                }
+              >
+                {activeCharacter.image_url ? "" : activeCharacter.name.slice(0, 2).toUpperCase()}
+                <span>Online</span>
+              </div>
+              <small>Personagem em jogo</small>
+              <h2>{activeCharacter.name}</h2>
               <p>
-                Escolha raça e classe, distribua seus atributos e conheça as habilidades que serão
-                liberadas durante a progressão.
+                {activeCharacter.race.name} · {activeCharacter.characterClass.name} · Nível{" "}
+                {activeCharacter.level}
               </p>
-              <Link className="button button--primary" href="/personagens">
-                Ver personagens
-              </Link>
+              <div>
+                <Link
+                  className="button button--primary"
+                  href={`/personagens/${activeCharacter.id}`}
+                >
+                  Abrir ficha
+                </Link>
+                <Link className="button button--glass" href="/personagens?selecionar=1">
+                  Trocar
+                </Link>
+              </div>
             </article>
           </aside>
         </section>

@@ -105,16 +105,30 @@ export default async function CharactersPage({
                   <small>Nível {character.level}</small>
                 </div>
                 <div className="character-card__body">
-                  <span className="eyebrow">
-                    {character.race.name} · {character.characterClass.name}
-                  </span>
+                  <span className="eyebrow">Herói de Wonderland</span>
                   <h2>{character.name}</h2>
                   {character.id === activeCharacterId ? (
                     <small className="character-card__online">● Online agora</small>
                   ) : null}
-                  <p className="character-card__level">Nível {character.level}</p>
-                  <p>{character.gold.toLocaleString("pt-BR")} WG</p>
-                  <div>
+                  <dl className="character-card__identity">
+                    <div>
+                      <dt>Raça</dt>
+                      <dd>{character.race.name}</dd>
+                    </div>
+                    <div>
+                      <dt>Classe</dt>
+                      <dd>{character.characterClass.name}</dd>
+                    </div>
+                    <div>
+                      <dt>Nível</dt>
+                      <dd>{character.level}</dd>
+                    </div>
+                  </dl>
+                  <p className="character-card__wallet">
+                    <small>Carteira</small>
+                    {character.gold.toLocaleString("pt-BR")} WG
+                  </p>
+                  <div className="character-card__stats">
                     <span>
                       HP <strong>{character.stats.maxHp}</strong>
                     </span>

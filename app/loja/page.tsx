@@ -7,6 +7,7 @@ import { requireCharacterSheet } from "@/lib/content/characters";
 import { buyItem } from "./actions";
 import { itemSlotEmoji, itemSlotLabel } from "@/lib/game/equipment";
 import { attributesSchema } from "@/lib/game/schemas";
+import { ShopBuyButton } from "@/components/shop/shop-buy-button";
 
 const rarityLabels: Record<string, string> = {
   common: "Comum",
@@ -24,6 +25,7 @@ type ShopSearchParams = {
   empunhadura?: string;
   disponibilidade?: string;
   ordem?: string;
+  compra?: string;
 };
 
 function normalized(value: string) {
@@ -82,6 +84,28 @@ export default async function ShopPage({
       title="Loja de Wonderland"
       description={`${character.name} possui ${character.gold.toLocaleString("pt-BR")} WG para comprar equipamentos.`}
     >
+      {filters.compra ? (
+        <div
+          className={`shop-purchase-notice ${filters.compra === "sucesso" ? "is-success" : "is-error"}`}
+          role="status"
+        >
+          <span>{filters.compra === "sucesso" ? "✓" : "!"}</span>
+          <div>
+            <strong>
+              {filters.compra === "sucesso"
+                ? "Item adquirido com sucesso"
+                : filters.compra === "saldo"
+                  ? "WG insuficiente"
+                  : "Não foi possível concluir a compra"}
+            </strong>
+            <small>
+              {filters.compra === "sucesso"
+                ? `O item já está no inventário de ${character.name}.`
+                : "Seu saldo não foi alterado. Tente novamente ou escolha outro item."}
+            </small>
+          </div>
+        </div>
+      ) : null}
       <section className="shop-filters" aria-labelledby="shop-filters-title">
         <header>
           <div>
@@ -177,6 +201,7 @@ export default async function ShopPage({
                     <span>{itemSlotEmoji(item.slot)}</span>
                   )}
                   <i>{item.two_handed ? "2M" : "1M"}</i>
+                  <b>{itemSlotLabel(item.slot)}</b>
                 </div>
                 <div className="shop-item-card__body">
                   <small>
@@ -193,13 +218,17 @@ export default async function ShopPage({
                   </div>
                 </div>
                 <footer>
-                  <strong>
-                    <small>Preço</small>
-                    {item.price.toLocaleString("pt-BR")} WG
-                  </strong>
+                  <div className="shop-item-card__price">
+                    <strong>{item.price.toLocaleString("pt-BR")} WG</strong>
+                    <small>
+                      {character.gold >= item.price
+                        ? `Restam ${(character.gold - item.price).toLocaleString("pt-BR")} WG`
+                        : `Faltam ${(item.price - character.gold).toLocaleString("pt-BR")} WG`}
+                    </small>
+                  </div>
                   <form action={buyItem}>
                     <input type="hidden" name="itemId" value={item.id} />
-                    <button disabled={character.gold < item.price}>Comprar item</button>
+                    <ShopBuyButton disabled={character.gold < item.price} />
                   </form>
                 </footer>
               </article>

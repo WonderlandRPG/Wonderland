@@ -8758,3 +8758,83 @@ body[data-rank]:has(.arena-page) .player-nav,
   color: #60776e;
   background: #07100d;
 }
+
+/* Leitura inequívoca de recursos e origens das habilidades */
+.arena-page .arena-fighter__status progress {
+  --resource-color: #7f9c90;
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--resource-color) 20%, #07100d);
+  border-radius: 999px;
+  appearance: none;
+  background: #020705;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.arena-page .arena-fighter__status progress::-webkit-progress-bar {
+  border-radius: 999px;
+  background: #020705;
+}
+.arena-page .arena-fighter__status progress::-webkit-progress-value {
+  border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--resource-color) 72%, #07100d), var(--resource-color));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--resource-color) 55%, transparent);
+}
+.arena-page .arena-fighter__status progress::-moz-progress-bar {
+  border-radius: 999px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--resource-color) 72%, #07100d), var(--resource-color));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--resource-color) 55%, transparent);
+}
+.arena-page progress.is-hp { --resource-color: #ef5968; accent-color: #ef5968; }
+.arena-page progress.is-mana { --resource-color: #4c8dff; accent-color: #4c8dff; }
+.arena-page progress.is-class-resource { --resource-color: #f3a847; accent-color: #f3a847; }
+.arena-page progress.is-race-resource { --resource-color: #45d9b0; accent-color: #45d9b0; }
+.arena-page .arena-fighter__status p:has(+ progress.is-hp) { color: #e86d78; }
+.arena-page .arena-fighter__status p:has(+ progress.is-mana) { color: #6c9fff; }
+.arena-page .arena-fighter__status p:has(+ progress.is-class-resource) { color: #e7a955; }
+.arena-page .arena-fighter__status p:has(+ progress.is-race-resource) { color: #53cfac; }
+.arena-page .arena-fighter__status p:has(+ progress) strong { color: #f1f7f4; }
+
+.arena-page .arena-actions > button {
+  --action-color: #69d6ae;
+  box-shadow: inset 3px 0 0 var(--action-color);
+}
+.arena-page .arena-actions > button[data-action="basic"] { --action-color: #e45e69; }
+.arena-page .arena-actions > button[data-action="race"] { --action-color: #32cbd2; }
+.arena-page .arena-actions > button[data-action="class"] { --action-color: #a36de0; }
+.arena-page .arena-actions > button[data-action="item"] { --action-color: #d6ae5d; }
+.arena-page .arena-actions > button::before {
+  color: color-mix(in srgb, var(--action-color) 75%, white);
+}
+.arena-skill-origin {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 5px;
+  color: color-mix(in srgb, var(--action-color) 78%, white);
+  font-size: 0.57rem;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.arena-skill-origin i {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--action-color) 55%, transparent);
+  border-radius: 50%;
+  color: var(--action-color);
+  background: color-mix(in srgb, var(--action-color) 10%, transparent);
+  font-size: 0.7rem;
+  font-style: normal;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--action-color) 16%, transparent);
+}
+.arena-page .arena-actions > button[data-action="race"] strong { color: #aef8f5; }
+.arena-page .arena-actions > button[data-action="class"] strong { color: #e1c6ff; }
+.arena-page .arena-actions > button[data-action="item"] strong { color: #f0dcae; }
+.arena-page .arena-actions > button:hover:not(:disabled) {
+  border-color: var(--action-color);
+  box-shadow: inset 3px 0 0 var(--action-color), 0 8px 24px color-mix(in srgb, var(--action-color) 12%, transparent);
+}

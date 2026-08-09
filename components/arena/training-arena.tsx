@@ -237,6 +237,7 @@ function Battle({
         <header><div><span className="eyebrow">Comandos disponíveis</span><h2>Escolha suas ações</h2></div><small>1 ação de cada categoria por rodada</small></header>
       <div className="arena-actions">
         <button data-action="basic" data-action-label="Ataque" disabled={finished || actions.basic} onClick={attack} type="button">
+          <em className="arena-skill-origin"><i>⚔</i>Ação básica</em>
           <strong>Ataque básico</strong>
           <span>
             1x{" "}
@@ -259,6 +260,7 @@ function Battle({
               onClick={() => handleRaceAbility(ability)}
               type="button"
             >
+              <em className="arena-skill-origin"><i>✦</i>Habilidade racial</em>
               <strong>{ability.name}</strong>
               <span>{meta.summary}</span>
               <small>
@@ -286,6 +288,7 @@ function Battle({
               onClick={() => handleSkill(skill)}
               type="button"
             >
+              <em className="arena-skill-origin"><i>◆</i>Habilidade de classe</em>
               <strong>{skill.name}</strong>
               <span>{skill.effect}</span>
               <small>
@@ -306,6 +309,7 @@ function Battle({
               onClick={() => handleItem(item)}
               type="button"
             >
+              <em className="arena-skill-origin"><i>◈</i>Item equipado</em>
               <strong>{item.name}</strong>
               <span>{item.description}</span>
               <small>Item consumível</small>
@@ -313,6 +317,7 @@ function Battle({
           ))
         ) : (
           <button data-action="item" data-action-label="Item" disabled type="button">
+            <em className="arena-skill-origin"><i>◈</i>Item equipado</em>
             <strong>Item</strong>
             <span>Nenhum consumível no inventário.</span>
           </button>
@@ -354,14 +359,14 @@ function Fighter({ combatant, subtitle, side, imageUrl }: { combatant: Combatant
           {combatant.hp}/{combatant.maxHp}
         </strong>
       </p>
-      <progress max={combatant.maxHp} value={combatant.hp} />
+      <progress className="is-hp" max={combatant.maxHp} value={combatant.hp} />
       <p>
         Mana{" "}
         <strong>
           {combatant.mana}/{combatant.maxMana}
         </strong>
       </p>
-      <progress max={combatant.maxMana || 1} value={combatant.mana} />
+      <progress className="is-mana" max={combatant.maxMana || 1} value={combatant.mana} />
       {combatant.maxClassResource > 0 ? (
         <>
           <p>
@@ -370,7 +375,7 @@ function Fighter({ combatant, subtitle, side, imageUrl }: { combatant: Combatant
               {combatant.classResource}/{combatant.maxClassResource}
             </strong>
           </p>
-          <progress max={combatant.maxClassResource} value={combatant.classResource} />
+          <progress className="is-class-resource" max={combatant.maxClassResource} value={combatant.classResource} />
         </>
       ) : null}
       {combatant.maxRaceResource > 0 ? (
@@ -381,7 +386,7 @@ function Fighter({ combatant, subtitle, side, imageUrl }: { combatant: Combatant
               {combatant.raceResource}/{combatant.maxRaceResource}
             </strong>
           </p>
-          <progress max={combatant.maxRaceResource} value={combatant.raceResource} />
+          <progress className="is-race-resource" max={combatant.maxRaceResource} value={combatant.raceResource} />
         </>
       ) : null}
       {combatant.shield > 0 ? <small>Escudo: {combatant.shield}</small> : null}

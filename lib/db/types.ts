@@ -123,6 +123,92 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_user_roles"]["Insert"]>;
         Relationships: [];
       };
+      v2_player_progress: {
+        Row: {
+          user_id: string;
+          level: number;
+          experience: number;
+          coins: number;
+          last_seen_at: string;
+          last_daily_claim: string | null;
+          daily_streak: number;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          level?: number;
+          experience?: number;
+          coins?: number;
+          last_seen_at?: string;
+          last_daily_claim?: string | null;
+          daily_streak?: number;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_player_progress"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_shop_items: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          description: string;
+          category: string;
+          price: number;
+          image_url: string | null;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          description?: string;
+          category?: string;
+          price: number;
+          image_url?: string | null;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_shop_items"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_inventory: {
+        Row: { user_id: string; item_id: string; quantity: number; acquired_at: string };
+        Insert: { user_id: string; item_id: string; quantity?: number; acquired_at?: string };
+        Update: Partial<Database["public"]["Tables"]["v2_inventory"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_player_achievements: {
+        Row: { user_id: string; achievement_slug: string; unlocked_at: string };
+        Insert: { user_id: string; achievement_slug: string; unlocked_at?: string };
+        Update: Partial<Database["public"]["Tables"]["v2_player_achievements"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_admin_history: {
+        Row: {
+          id: number;
+          actor_id: string | null;
+          action: string;
+          target_type: string;
+          target_id: string | null;
+          details: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          actor_id?: string | null;
+          action: string;
+          target_type: string;
+          target_id?: string | null;
+          details?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_admin_history"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -138,6 +224,9 @@ export interface Database {
         Args: { p_setting_key: string };
         Returns: Database["public"]["Tables"]["v2_game_settings"]["Row"];
       };
+      v2_set_player_role: { Args: { p_user_id: string; p_role: string }; Returns: undefined };
+      v2_claim_daily_reward: { Args: Record<PropertyKey, never>; Returns: Json };
+      v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

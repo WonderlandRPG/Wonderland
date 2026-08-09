@@ -11,9 +11,9 @@ import { roleLabels } from "@/lib/auth/roles";
 const navigation = [
   { label: "Visão geral", glyph: "01", href: "/admin" },
   { label: "Conteúdo do jogo", glyph: "02", href: "/admin/racas" },
-  { label: "Balanceamento", glyph: "03" },
-  { label: "Jogadores", glyph: "04" },
-  { label: "Histórico", glyph: "05" },
+  { label: "Balanceamento", glyph: "03", href: "/admin/balanceamento" },
+  { label: "Jogadores", glyph: "04", href: "/admin/jogadores" },
+  { label: "Histórico", glyph: "05", href: "/admin/historico" },
 ];
 
 export function AdminSidebar({ account }: { account: CurrentAccount }) {

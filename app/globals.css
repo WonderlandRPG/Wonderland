@@ -3812,6 +3812,572 @@ button:disabled {
   }
 }
 
+/* Player portal */
+.player-nav {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--mist-50);
+}
+.player-nav nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.player-nav nav > a:not(.button) {
+  color: rgba(238, 247, 241, 0.72);
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.player-nav nav > a:hover {
+  color: var(--emerald-300);
+}
+.player-hero h1 span {
+  color: var(--gold-300);
+}
+.realm-section {
+  padding: 110px 0;
+}
+.realm-section > h2,
+.player-features h2 {
+  max-width: 680px;
+  margin: 18px 0 48px;
+  font-family: Georgia, serif;
+  font-size: clamp(2.4rem, 5vw, 4.6rem);
+  font-weight: 400;
+  line-height: 1;
+}
+.realm-grid,
+.feature-grid,
+.portal-card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+.realm-grid article {
+  min-height: 340px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  color: var(--mist-50);
+  border-radius: var(--radius-medium);
+  background: linear-gradient(160deg, var(--ink-700), var(--ink-950));
+  box-shadow: var(--shadow-large);
+}
+.realm-grid article:nth-child(2) {
+  background: linear-gradient(160deg, #3f6070, #0b1920);
+}
+.realm-grid article:nth-child(3) {
+  background: linear-gradient(160deg, #8a6130, #211307);
+}
+.realm-grid article:nth-child(4) {
+  background: linear-gradient(160deg, #4a546f, #10131e);
+}
+.realm-grid article > span {
+  margin-bottom: auto;
+  color: var(--emerald-300);
+  font-weight: 800;
+}
+.realm-grid small {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.65;
+}
+.realm-grid h3 {
+  margin: 8px 0 12px;
+  font:
+    400 2rem Georgia,
+    serif;
+}
+.realm-grid p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.65;
+}
+.player-features {
+  padding: 110px 0;
+  color: var(--mist-50);
+  background: var(--ink-900);
+}
+.player-features .eyebrow {
+  color: var(--emerald-300);
+}
+.feature-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+.feature-grid a {
+  padding: 34px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-medium);
+  background: rgba(255, 255, 255, 0.025);
+}
+.feature-grid a:hover {
+  border-color: var(--emerald-400);
+  transform: translateY(-4px);
+}
+.feature-grid span {
+  color: var(--gold-300);
+  font-size: 2rem;
+}
+.feature-grid h3 {
+  font:
+    400 1.7rem Georgia,
+    serif;
+}
+.feature-grid p {
+  color: var(--mist-400);
+  line-height: 1.7;
+}
+.home-news {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  padding: 110px 0;
+}
+.home-news > div {
+  padding: 38px;
+  border: 1px solid var(--line-light);
+  border-radius: var(--radius-medium);
+  background: #fff;
+}
+.home-news time,
+.home-news > div > small {
+  display: block;
+  margin: 22px 0 5px;
+  color: var(--emerald-700);
+  font-weight: 900;
+}
+.home-news h2 {
+  font:
+    400 2.1rem Georgia,
+    serif;
+}
+.home-news p,
+.home-news li {
+  color: #53655d;
+  line-height: 1.7;
+}
+.home-news a {
+  color: var(--emerald-700);
+  font-weight: 800;
+}
+.portal-shell {
+  min-height: 100vh;
+  color: var(--mist-50);
+  background: var(--ink-900);
+}
+.portal-hero {
+  padding: 90px 0 55px;
+}
+.portal-hero .eyebrow {
+  color: var(--emerald-300);
+}
+.portal-hero h1 {
+  max-width: 850px;
+  margin: 16px 0;
+  font:
+    400 clamp(3rem, 7vw, 6rem)/0.95 Georgia,
+    serif;
+}
+.portal-hero > p {
+  max-width: 680px;
+  color: var(--mist-400);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.portal-content {
+  padding-bottom: 100px;
+}
+.portal-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 32px 0;
+  color: var(--mist-400);
+  border-top: 1px solid var(--line-dark);
+}
+.ranking-list {
+  display: grid;
+  gap: 10px;
+}
+.ranking-list > a,
+.ranking-list > article {
+  display: grid;
+  grid-template-columns: 65px 54px 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 24px;
+  border: 1px solid var(--line-dark);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+}
+.ranking-list a:hover {
+  border-color: var(--emerald-400);
+}
+.ranking-list h2 {
+  margin: 0;
+  font:
+    400 1.25rem Georgia,
+    serif;
+}
+.ranking-list p {
+  margin: 5px 0 0;
+  color: var(--mist-400);
+  font-size: 0.8rem;
+}
+.ranking-list > b {
+  color: var(--gold-300);
+}
+.portal-avatar {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--ink-950);
+  background: var(--emerald-300);
+  font-weight: 900;
+}
+.portal-card-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+.shop-card,
+.achievement-card {
+  position: relative;
+  min-height: 285px;
+  padding: 28px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-medium);
+  background: rgba(255, 255, 255, 0.035);
+}
+.shop-card__icon,
+.achievement-card > span {
+  display: block;
+  color: var(--gold-300);
+  font-size: 2.2rem;
+}
+.shop-card small,
+.achievement-card small {
+  color: var(--emerald-300);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.shop-card h2,
+.achievement-card h2 {
+  font:
+    400 1.65rem Georgia,
+    serif;
+}
+.shop-card p,
+.achievement-card p {
+  color: var(--mist-400);
+  line-height: 1.65;
+}
+.shop-card footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+.shop-card .button {
+  min-height: 38px;
+  font-size: 0.6rem;
+}
+.achievement-card em {
+  display: inline-block;
+  margin-top: 18px;
+  color: var(--mist-400);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+.achievement-card.is-unlocked {
+  border-color: var(--gold-400);
+}
+.achievement-card.is-unlocked em {
+  color: var(--gold-300);
+}
+.event-list,
+.update-list,
+.history-list,
+.admin-table {
+  display: grid;
+  gap: 12px;
+}
+.event-list article {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  align-items: center;
+  gap: 28px;
+  padding: 26px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-medium);
+}
+.event-list time {
+  color: var(--gold-300);
+  font-weight: 900;
+}
+.event-list small {
+  color: var(--emerald-300);
+  text-transform: uppercase;
+}
+.event-list h2 {
+  margin: 6px 0;
+  font:
+    400 1.5rem Georgia,
+    serif;
+}
+.event-list p {
+  margin: 0;
+  color: var(--mist-400);
+}
+.event-list article > span {
+  color: var(--mist-400);
+  font-size: 0.72rem;
+}
+.update-list {
+  grid-template-columns: repeat(2, 1fr);
+}
+.update-list article {
+  padding: 30px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-medium);
+}
+.update-list header {
+  display: flex;
+  justify-content: space-between;
+  color: var(--emerald-300);
+}
+.update-list h2 {
+  font:
+    400 1.7rem Georgia,
+    serif;
+}
+.update-list li {
+  margin: 10px 0;
+  color: var(--mist-400);
+}
+.portal-empty {
+  grid-column: 1/-1;
+  padding: 70px;
+  text-align: center;
+  border: 1px dashed var(--line-dark);
+  border-radius: var(--radius-medium);
+}
+.portal-empty > span {
+  font-size: 2.5rem;
+  color: var(--gold-300);
+}
+.public-profile-stats,
+.player-progress-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.public-profile-stats article {
+  padding: 25px;
+  border: 1px solid var(--line-dark);
+  border-radius: var(--radius-medium);
+}
+.public-profile-stats small,
+.player-progress-strip small {
+  display: block;
+  color: var(--mist-400);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.public-profile-stats strong {
+  display: block;
+  margin-top: 8px;
+  font:
+    400 2rem Georgia,
+    serif;
+}
+.portal-subtitle {
+  margin: 60px 0 22px;
+  font:
+    400 2rem Georgia,
+    serif;
+}
+.player-progress-strip {
+  grid-template-columns: 100px 1fr 150px auto;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 22px;
+  border: 1px solid var(--line-light);
+  border-radius: var(--radius-medium);
+  background: #fff;
+}
+.player-progress-strip strong {
+  display: block;
+  margin-top: 6px;
+}
+.player-xp > span {
+  display: block;
+  height: 6px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--mist-100);
+}
+.player-xp i {
+  display: block;
+  height: 100%;
+  background: var(--emerald-500);
+}
+.admin-page-title {
+  padding: 42px 48px 20px;
+}
+.admin-page-title h2 {
+  margin: 12px 0;
+  font:
+    400 2.7rem Georgia,
+    serif;
+}
+.admin-page-title p {
+  color: #63756d;
+}
+.admin-table article {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line-light);
+}
+.admin-table small {
+  display: block;
+  margin-top: 5px;
+  color: #71827a;
+}
+.admin-table form {
+  display: flex;
+  gap: 10px;
+}
+.admin-table select {
+  min-width: 150px;
+  padding: 0 12px;
+  border: 1px solid var(--line-light);
+  border-radius: 8px;
+  background: #fff;
+}
+.balance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.balance-grid article {
+  position: relative;
+  padding: 24px;
+  border: 1px solid var(--line-light);
+  border-radius: 14px;
+}
+.balance-grid h3 {
+  font:
+    400 1.35rem Georgia,
+    serif;
+}
+.balance-grid p {
+  min-height: 45px;
+  color: #6d7d75;
+}
+.balance-grid > article > strong {
+  font-size: 1.5rem;
+  color: var(--emerald-700);
+}
+.balance-grid .status-pill {
+  float: right;
+}
+.history-list article {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  gap: 15px;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid var(--line-light);
+}
+.history-list article > span {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--ink-950);
+  background: var(--emerald-300);
+}
+.history-list small {
+  display: block;
+  color: #71827a;
+}
+.history-list time {
+  font-size: 0.75rem;
+  color: #71827a;
+}
+@media (max-width: 900px) {
+  .player-nav nav > a:not(.button) {
+    display: none;
+  }
+  .realm-grid,
+  .portal-card-grid,
+  .balance-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .home-news {
+    grid-template-columns: 1fr;
+  }
+  .player-progress-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+  .event-list article {
+    grid-template-columns: 80px 1fr;
+  }
+  .event-list article > span {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .realm-grid,
+  .feature-grid,
+  .portal-card-grid,
+  .update-list,
+  .public-profile-stats,
+  .balance-grid {
+    grid-template-columns: 1fr;
+  }
+  .realm-grid article {
+    min-height: 270px;
+  }
+  .portal-hero {
+    padding-top: 60px;
+  }
+  .ranking-list > a {
+    grid-template-columns: 45px 1fr;
+  }
+  .ranking-list .portal-avatar {
+    display: none;
+  }
+  .ranking-list b {
+    grid-column: 2;
+  }
+  .player-progress-strip {
+    grid-template-columns: 1fr;
+  }
+  .admin-table article {
+    grid-template-columns: 48px 1fr;
+  }
+  .admin-table form {
+    grid-column: 1/-1;
+  }
+  .event-list article {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

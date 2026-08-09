@@ -1,178 +1,146 @@
 import Link from "next/link";
-
-import { SectionHeading } from "@/components/section-heading";
-import { SiteHeader } from "@/components/site-header";
-import { contentCatalog } from "@/lib/game/catalog";
-
-export const dynamic = "force-dynamic";
-
-const foundations = [
+import { PlayerNav } from "@/components/player-nav";
+import { portalEvents, updates } from "@/lib/game/player-portal";
+const realms = [
   {
-    index: "01",
-    title: "Uma fonte de regras",
-    description:
-      "Ficha, Arena e criação de personagem usam o mesmo motor para nível, atributos, HP, Mana e dano.",
+    name: "Aokigahara",
+    title: "Reino da Floresta",
+    text: "Árvores ancestrais, pactos druidas e caminhos que mudam sob seus pés.",
   },
   {
-    index: "02",
-    title: "Conteúdo administrável",
-    description:
-      "Raças, classes, habilidades, itens e progressão deixam de ficar espalhados em arquivos diferentes.",
+    name: "Oymyakon",
+    title: "Reino do Gelo",
+    text: "Além da tempestade perpétua, sobreviventes guardam segredos congelados.",
   },
   {
-    index: "03",
-    title: "Publicação segura",
-    description:
-      "Toda mudança passa por rascunho, validação, publicação e histórico antes de chegar aos jogadores.",
+    name: "Lesedi",
+    title: "Reino de Areia",
+    text: "Dunas douradas, planaltos e cidades que florescem contra o sol.",
+  },
+  {
+    name: "Skypiece",
+    title: "Reino Celestial",
+    text: "Ilhas flutuantes voltaram aos céus após séculos de silêncio.",
   },
 ];
-
 export default function Home() {
   return (
-    <main className="home-shell">
-      <section className="hero">
+    <main className="home-shell player-home">
+      <section className="hero player-hero">
         <div className="hero__backdrop" />
         <div className="hero__grid" />
-        <SiteHeader />
-
+        <PlayerNav />
         <div className="hero__content page-container">
           <div className="hero__status">
-            <span className="signal-dot" />
-            Nova fundação em desenvolvimento
+            <span className="signal-dot" /> Temporada inaugural aberta
           </div>
-          <p className="hero__kicker">Wonderland // Core v2.0</p>
+          <p className="hero__kicker">Wonderland RPG // Crie sua lenda</p>
           <h1>
-            Um mundo vivo.
-            <span>Uma única fonte de verdade.</span>
+            Os portões <span>estão abertos.</span>
           </h1>
           <p className="hero__lead">
-            O Wonderland está sendo reconstruído para crescer como um RPG online de verdade:
-            organizado, seguro e inteiramente controlável pelo painel.
+            Escolha seu caminho, conheça outros aventureiros e escreva uma história capaz de
+            atravessar todos os reinos.
           </p>
           <div className="hero__actions">
             <Link className="button button--primary" href="/cadastro">
-              Criar minha conta
-              <span aria-hidden="true">→</span>
+              Começar minha jornada <span>→</span>
             </Link>
-            <a className="button button--ghost" href="#fundacao">
-              Explorar a fundação
-            </a>
+            <Link className="button button--ghost" href="/ranking">
+              Ver aventureiros
+            </Link>
           </div>
         </div>
-
-        <div className="hero__telemetry" aria-label="Princípios da nova base">
+        <div className="hero__telemetry">
           <div>
             <span>01</span>
-            <strong>Motor central</strong>
-            <small>Sem cálculos duplicados</small>
+            <strong>Crie sua conta</strong>
+            <small>Sua identidade no mundo</small>
           </div>
           <div>
             <span>02</span>
-            <strong>Dados versionados</strong>
-            <small>Rascunho e publicação</small>
+            <strong>Ganhe experiência</strong>
+            <small>Evolua a cada aventura</small>
           </div>
           <div>
             <span>03</span>
-            <strong>Painel modular</strong>
-            <small>Conteúdo sem editar código</small>
+            <strong>Deixe sua marca</strong>
+            <small>Conquistas e ranking</small>
           </div>
         </div>
       </section>
-
-      <section className="foundation-section page-container" id="fundacao">
-        <SectionHeading
-          eyebrow="Nova arquitetura"
-          title="Reconstruída desde o primeiro comando."
-          description="A versão anterior cresceu além da estrutura para a qual havia sido criada. A nova base nasce preparada para contas, personagens, combate, conteúdo e administração."
-        />
-
-        <div className="foundation-grid">
-          {foundations.map((foundation) => (
-            <article className="foundation-card" key={foundation.index}>
-              <span className="foundation-card__index">{foundation.index}</span>
-              <div className="foundation-card__line" />
-              <h3>{foundation.title}</h3>
-              <p>{foundation.description}</p>
+      <section className="realm-section page-container">
+        <span className="eyebrow">Explore Wonderland</span>
+        <h2>Quatro reinos. Infinitas histórias.</h2>
+        <div className="realm-grid">
+          {realms.map((realm, i) => (
+            <article key={realm.name}>
+              <span>0{i + 1}</span>
+              <small>{realm.title}</small>
+              <h3>{realm.name}</h3>
+              <p>{realm.text}</p>
             </article>
           ))}
         </div>
       </section>
-
-      <section className="flow-section">
-        <div className="page-container flow-section__inner">
-          <SectionHeading
-            eyebrow="Fluxo único"
-            title="O painel altera. Todo o jogo responde."
-            description="Uma mudança publicada deixa de depender de correções repetidas em cada página."
-          />
-          <div className="system-flow" aria-label="Fluxo central de dados do Wonderland">
-            <div className="system-flow__node system-flow__node--primary">
-              <span>Entrada</span>
-              <strong>Painel ADM</strong>
-              <small>Cria, valida e publica</small>
-            </div>
-            <div className="system-flow__connector">
-              <span />
-              <em>Dados validados</em>
-            </div>
-            <div className="system-flow__node">
-              <span>Núcleo</span>
-              <strong>Supabase</strong>
-              <small>Conteúdo + histórico</small>
-            </div>
-            <div className="system-flow__connector">
-              <span />
-              <em>Regras oficiais</em>
-            </div>
-            <div className="system-flow__outputs">
-              <span>Ficha</span>
-              <span>Arena</span>
-              <span>Dungeons</span>
-            </div>
+      <section className="player-features">
+        <div className="page-container">
+          <span className="eyebrow">Sua jornada continua</span>
+          <h2>Todo dia traz uma nova razão para voltar.</h2>
+          <div className="feature-grid">
+            <Link href="/conquistas">
+              <span>✦</span>
+              <h3>Conquistas</h3>
+              <p>Registre façanhas e exiba os marcos da sua aventura.</p>
+            </Link>
+            <Link href="/loja">
+              <span>◆</span>
+              <h3>Loja e recompensas</h3>
+              <p>Conquiste moedas e encontre itens para sua identidade.</p>
+            </Link>
+            <Link href="/ranking">
+              <span>♜</span>
+              <h3>Ranking</h3>
+              <p>Compare sua evolução com aventureiros de todos os reinos.</p>
+            </Link>
           </div>
         </div>
       </section>
-
-      <section className="systems-section page-container" id="sistemas">
-        <SectionHeading
-          eyebrow="Ecossistema administrável"
-          title="Cada sistema já nasce como um módulo."
-          description="As categorias abaixo fazem parte do mesmo catálogo central e receberão editores próprios no painel."
-        />
-        <div className="module-grid">
-          {contentCatalog.map((module) => (
-            <article className="module-card" key={module.key}>
-              <span className="module-card__glyph">{module.glyph}</span>
-              <div>
-                <h3>{module.label}</h3>
-                <p>{module.description}</p>
-              </div>
-              <span className="module-card__state">Mapeado</span>
-            </article>
-          ))}
+      <section className="home-news page-container">
+        <div>
+          <span className="eyebrow">Próximo evento</span>
+          <time>{portalEvents[0].date}</time>
+          <h2>{portalEvents[0].title}</h2>
+          <p>{portalEvents[0].description}</p>
+          <Link href="/eventos">Ver calendário completo →</Link>
+        </div>
+        <div>
+          <span className="eyebrow">Última atualização</span>
+          <small>v{updates[0].version}</small>
+          <h2>{updates[0].title}</h2>
+          <ul>
+            {updates[0].notes.map((n) => (
+              <li key={n}>{n}</li>
+            ))}
+          </ul>
+          <Link href="/atualizacoes">Ler diário de atualizações →</Link>
         </div>
       </section>
-
       <section className="launch-section">
         <div className="page-container launch-section__inner">
           <div>
-            <span className="eyebrow">Primeira operação</span>
-            <h2>A central de comando já tem uma nova base.</h2>
-            <p>
-              Contas, sessões e permissões já estão conectadas ao Supabase. A próxima operação será
-              ativar a criação de personagens.
-            </p>
+            <span className="eyebrow">Sua história começa aqui</span>
+            <h2>O mundo precisa de novos nomes.</h2>
+            <p>Crie sua conta gratuitamente e atravesse os portões de Wonderland.</p>
           </div>
           <Link className="button button--primary" href="/cadastro">
-            Criar conta
-            <span aria-hidden="true">→</span>
+            Criar minha conta <span>→</span>
           </Link>
         </div>
       </section>
-
       <footer className="site-footer page-container">
         <span>Wonderland RPG</span>
-        <small>Fundação v2 // Em reconstrução</small>
+        <small>Um mundo criado para histórias inesquecíveis.</small>
         <small>© 2026 Wonderland Ltda.</small>
       </footer>
     </main>

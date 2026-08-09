@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function SignUpPage() {
   const account = await getCurrentAccount();
 
-  if (account) redirect("/perfil");
+  if (account) redirect("/personagens");
 
   return (
     <AuthShell

@@ -33,7 +33,7 @@ describe("redirecionamentos internos", () => {
   });
 
   it("bloqueia destinos externos", () => {
-    expect(getSafeRedirectPath("//site-malicioso.example")).toBe("/perfil");
-    expect(getSafeRedirectPath("https://site-malicioso.example")).toBe("/perfil");
+    expect(getSafeRedirectPath("//site-malicioso.example")).toBe("/personagens");
+    expect(getSafeRedirectPath("https://site-malicioso.example")).toBe("/personagens");
   });
 });

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { BrandMark } from "@/components/brand-mark";
+import { PlayerNav } from "@/components/player-nav";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { getLevelProgress } from "@/lib/game/experience";
@@ -76,13 +76,7 @@ export default async function CharacterSheetPage({
   };
   return (
     <main className="sheet-page">
-      <header className="account-header">
-        <BrandMark inverse />
-        <nav>
-          <Link href="/personagens">Personagens</Link>
-          <Link href="/perfil">Minha conta</Link>
-        </nav>
-      </header>
+      <PlayerNav />
       <div className="page-container sheet-page__inner">
         {query.status === "criado" ? (
           <div className="account-notice" data-sfx-on-mount="confirm" role="status">

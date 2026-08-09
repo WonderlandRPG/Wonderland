@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ProfileForm } from "@/components/account/profile-form";
-import { SignOutButton } from "@/components/account/sign-out-button";
-import { BrandMark } from "@/components/brand-mark";
-import { isAdministrativeRole, roleLabels } from "@/lib/auth/account";
+import { PlayerNav } from "@/components/player-nav";
+import { roleLabels } from "@/lib/auth/account";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { RankBadge } from "@/components/characters/rank-badge";
@@ -46,17 +45,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
   return (
     <main className="account-shell">
-      <header className="account-header">
-        <div>
-          <BrandMark inverse />
-        </div>
-        <nav aria-label="Navegação da conta">
-          <Link href="/">Portal</Link>
-          <Link href="/personagens">Personagens</Link>
-          {isAdministrativeRole(account.role) ? <Link href="/admin">Painel ADM</Link> : null}
-          <SignOutButton compact />
-        </nav>
-      </header>
+      <PlayerNav />
 
       <div className="account-grid" />
       <section className="account-hero page-container">

@@ -1,7 +1,5 @@
-import Link from "next/link";
-
 import { TrainingArena } from "@/components/arena/training-arena";
-import { BrandMark } from "@/components/brand-mark";
+import { PlayerNav } from "@/components/player-nav";
 import { getCharacterSheets } from "@/lib/content/characters";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { defaultCombatRules } from "@/lib/game/combat";
@@ -20,13 +18,7 @@ export default async function ArenaPage({
 
   return (
     <main className="arena-page">
-      <header className="account-header">
-        <BrandMark inverse />
-        <nav>
-          <Link href="/personagens">Personagens</Link>
-          <Link href="/perfil">Minha conta</Link>
-        </nav>
-      </header>
+      <PlayerNav />
       <div className="page-container arena-page__inner">
         <TrainingArena
           characters={characters

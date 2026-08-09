@@ -30,8 +30,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <AuthShell
       eyebrow="Acesso à conta"
-      title="Bem-vindo de volta."
-      description="Entre para acessar seu perfil e, em breve, seus personagens e aventuras."
+      title="Volte para Wonderland."
+      description="Entre, escolha seu personagem e retome exatamente de onde sua jornada parou."
     >
       {params.status && statusMessages[params.status] ? (
         <div className="auth-status-banner" role="status">

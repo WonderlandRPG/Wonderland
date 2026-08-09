@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { BrandMark } from "@/components/brand-mark";
+import { PlayerNav } from "@/components/player-nav";
 import { DeleteCharacterButton } from "@/components/characters/delete-character-button";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
@@ -40,13 +40,7 @@ export default async function CharactersPage({
       : characters;
   return (
     <main className="character-page">
-      <header className="account-header">
-        <BrandMark inverse />
-        <nav>
-          <Link href="/">Portal</Link>
-          <Link href="/perfil">Minha conta</Link>
-        </nav>
-      </header>
+      <PlayerNav />
       <div className="page-container character-page__inner">
         <header className="character-page__header">
           <div>
@@ -218,6 +212,55 @@ export default async function CharactersPage({
             </Link>
           </section>
         )}
+        {!selecting && activeCharacter ? (
+          <section className="game-command-center">
+            <header>
+              <span className="eyebrow">Central de jogo</span>
+              <h2>O que você quer fazer agora?</h2>
+            </header>
+            <div>
+              <Link className="game-command-card is-primary" href="/arena">
+                <span aria-hidden="true">⚔</span>
+                <small>Combate</small>
+                <strong>Entrar na Arena</strong>
+                <i>→</i>
+              </Link>
+              <Link
+                className="game-command-card"
+                href={`/personagens/${activeCharacter.id}?tab=equipamentos`}
+              >
+                <span aria-hidden="true">◈</span>
+                <small>Personagem</small>
+                <strong>Equipamentos</strong>
+                <i>→</i>
+              </Link>
+              <Link className="game-command-card" href="/loja">
+                <span aria-hidden="true">◆</span>
+                <small>Economia</small>
+                <strong>Visitar a Loja</strong>
+                <i>→</i>
+              </Link>
+              <Link className="game-command-card" href="/mapas">
+                <span aria-hidden="true">⌖</span>
+                <small>Exploração</small>
+                <strong>Abrir o Mapa</strong>
+                <i>→</i>
+              </Link>
+              <Link className="game-command-card" href="/eventos">
+                <span aria-hidden="true">◇</span>
+                <small>Agenda</small>
+                <strong>Próximos eventos</strong>
+                <i>→</i>
+              </Link>
+              <Link className="game-command-card" href="/ranking">
+                <span aria-hidden="true">♜</span>
+                <small>Comunidade</small>
+                <strong>Ver Ranking</strong>
+                <i>→</i>
+              </Link>
+            </div>
+          </section>
+        ) : null}
       </div>
     </main>
   );

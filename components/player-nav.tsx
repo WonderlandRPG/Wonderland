@@ -3,6 +3,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 import { getActiveCharacterId } from "@/lib/content/active-character";
 import { getCharacterSheet } from "@/lib/content/characters";
+import { SignOutButton } from "@/components/account/sign-out-button";
 
 export async function PlayerNav() {
   const account = await getCurrentAccount();
@@ -16,16 +17,32 @@ export async function PlayerNav() {
       <nav aria-label="Portal dos jogadores">
         {activeCharacterId ? (
           <>
+            <Link href="/personagens">Jogar</Link>
             <Link href="/arena">Arena</Link>
-            <Link href="/mapas">Mapas</Link>
+            <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}>Equipamentos</Link>
             <Link href="/loja">Loja</Link>
-            <Link href="/ranking">Ranking</Link>
-            <Link href="/ranks">Ranks</Link>
-            <Link href="/eventos">Eventos</Link>
-            <Link href="/atualizacoes">Atualizações</Link>
+            <Link href="/mapas">Mapa</Link>
+            <details className="player-nav__world-menu">
+              <summary>
+                Mundo <span aria-hidden="true">⌄</span>
+              </summary>
+              <div>
+                <small>Comunidade</small>
+                <Link href="/ranking">Ranking</Link>
+                <Link href="/ranks">Ranks</Link>
+                <Link href="/eventos">Eventos</Link>
+                <small>Informações</small>
+                <Link href="/atualizacoes">Atualizações</Link>
+                <Link href="/perfil">Minha conta</Link>
+                {account && isAdministrativeRole(account.role) ? (
+                  <Link href="/admin">Painel ADM</Link>
+                ) : null}
+                <SignOutButton compact />
+              </div>
+            </details>
           </>
         ) : null}
-        {account && isAdministrativeRole(account.role) ? (
+        {!activeCharacterId && account && isAdministrativeRole(account.role) ? (
           <Link href="/admin">Painel ADM</Link>
         ) : null}
         {activeCharacter ? (

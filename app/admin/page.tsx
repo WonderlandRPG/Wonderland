@@ -18,16 +18,16 @@ export default async function AdminPage() {
           <span className="eyebrow">Core administrativo // v2.1</span>
           <h2>Uma central para governar todo o Wonderland.</h2>
           <p>
-            O primeiro editor está ativo. Raças, bônus, mecânicas, passivas e habilidades por nível
-            agora podem ser administrados sem alterar o código do site.
+            Raças e classes agora compartilham o mesmo núcleo administrável que alimentará fichas,
+            Grimório e Arena sem duplicar regras pelo site.
           </p>
           <div className="command-hero__actions">
             <Link className="button button--primary" href="/admin/racas/nova">
               Criar raça
               <span aria-hidden="true">＋</span>
             </Link>
-            <Link className="button button--dark" href="/admin/racas">
-              Gerenciar raças
+            <Link className="button button--dark" href="/admin/classes">
+              Gerenciar classes
             </Link>
           </div>
         </div>
@@ -76,7 +76,8 @@ export default async function AdminPage() {
 
         <div className="admin-module-grid">
           {overview.modules.map((module, index) => {
-            const enabled = module.key === "race";
+            const enabled =
+              module.key === "race" || module.key === "class" || module.key === "item";
 
             return (
               <article
@@ -95,7 +96,16 @@ export default async function AdminPage() {
                   <span>{module.published} publicados</span>
                   <span>{module.drafts} rascunhos</span>
                   {enabled ? (
-                    <Link aria-label={`Abrir módulo ${module.label}`} href="/admin/racas">
+                    <Link
+                      aria-label={`Abrir módulo ${module.label}`}
+                      href={
+                        module.key === "class"
+                          ? "/admin/classes"
+                          : module.key === "item"
+                            ? "/admin/itens"
+                            : "/admin/racas"
+                      }
+                    >
                       →
                     </Link>
                   ) : (
@@ -113,11 +123,11 @@ export default async function AdminPage() {
       <section className="admin-setup">
         <div className="admin-setup__index">LIVE</div>
         <div>
-          <span className="eyebrow">Primeiro módulo</span>
-          <h2>Gerenciamento de raças ativado.</h2>
+          <span className="eyebrow">Conteúdo unificado</span>
+          <h2>Raças e classes administráveis.</h2>
           <p>
-            Crie, publique, duplique e arquive raças. O histórico registra cada alteração e o limite
-            racial de 25 pontos é protegido pelo servidor.
+            Publique alterações com histórico automático. As fórmulas estruturadas usam
+            multiplicadores e ficam prontas para o motor de combate.
           </p>
         </div>
         <span className="admin-setup__status">Editor disponível</span>

@@ -153,6 +153,42 @@
         text-transform: uppercase;
       }
 
+      .audio-control {
+        position: fixed;
+        z-index: 10;
+        right: 18px;
+        bottom: 18px;
+        display: flex;
+        min-height: 46px;
+        align-items: center;
+        gap: 9px;
+        padding: 0 14px;
+        color: #f7f7f2;
+        border: 1px solid rgba(121, 235, 194, 0.26);
+        border-radius: 999px;
+        background: rgba(5, 12, 10, 0.88);
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(12px);
+        cursor: pointer;
+      }
+
+      .audio-control > span {
+        display: grid;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        color: #79ebc2;
+        border: 1px solid rgba(121, 235, 194, 0.24);
+        border-radius: 50%;
+      }
+
+      .audio-control small {
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
       @media (max-height: 650px) {
         body {
           overflow: auto;
@@ -210,5 +246,102 @@
       </section>
       <footer>Wonderland RPG · 2026</footer>
     </main>
+    <button
+      aria-label="Pausar música tema"
+      aria-pressed="true"
+      class="audio-control"
+      data-sfx="click"
+      id="audio-control"
+      type="button"
+    >
+      <span aria-hidden="true">♫</span>
+      <small>Som no primeiro clique</small>
+    </button>
+    <script>
+      (() => {
+        const musicEnabledKey = "wonderland:music-enabled";
+        const musicPositionKey = "wonderland:music-position";
+        const effectSources = {
+          open: "assets/effects/Abrir Menu  ou Janela.mp3",
+          click: "assets/effects/Click.mp3",
+          confirm: "assets/effects/Confirmar.mp3",
+          error: "assets/effects/Erro.mp3",
+          close: "assets/effects/Fechar Menu  Janela.mp3",
+        };
+        const theme = new Audio("assets/music/tema.mp3");
+        const control = document.querySelector("#audio-control");
+        const label = control.querySelector("small");
+        const effects = Object.fromEntries(
+          Object.entries(effectSources).map(([key, source]) => [key, new Audio(source)]),
+        );
+        let enabled = localStorage.getItem(musicEnabledKey) !== "false";
+        const savedPosition = Number(localStorage.getItem(musicPositionKey));
+
+        theme.loop = true;
+        theme.preload = "auto";
+        theme.volume = 0.25;
+        if (Number.isFinite(savedPosition) && savedPosition > 0) theme.currentTime = savedPosition;
+
+        function updateControl(playing) {
+          control.setAttribute("aria-pressed", String(enabled));
+          control.setAttribute("aria-label", enabled ? "Pausar música tema" : "Tocar música tema");
+          label.textContent = enabled
+            ? playing
+              ? "Tema tocando"
+              : "Som no primeiro clique"
+            : "Tema pausado";
+        }
+
+        async function playTheme() {
+          if (!enabled) return;
+          try {
+            await theme.play();
+            updateControl(true);
+          } catch {
+            updateControl(false);
+          }
+        }
+
+        function playEffect(name) {
+          const source = effects[name];
+          if (!source) return;
+          const instance = source.cloneNode();
+          instance.volume = name === "click" ? 0.28 : 0.42;
+          instance.play().catch(() => undefined);
+        }
+
+        control.addEventListener("click", () => {
+          enabled = !enabled;
+          localStorage.setItem(musicEnabledKey, String(enabled));
+          if (enabled) playTheme();
+          else {
+            theme.pause();
+            updateControl(false);
+          }
+        });
+
+        document.addEventListener(
+          "click",
+          (event) => {
+            const target = event.target.closest?.(
+              "button, a, [role='button'], input[type='submit']",
+            );
+            if (!target) return;
+            playEffect(target.dataset.sfx || "click");
+          },
+          true,
+        );
+
+        const unlock = () => playTheme();
+        window.addEventListener("pointerdown", unlock, { once: true, capture: true });
+        window.addEventListener("keydown", unlock, { once: true, capture: true });
+        window.setInterval(() => {
+          if (Number.isFinite(theme.currentTime))
+            localStorage.setItem(musicPositionKey, String(theme.currentTime));
+        }, 1500);
+        updateControl(false);
+        playTheme();
+      })();
+    </script>
   </body>
 </html>

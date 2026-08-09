@@ -61,15 +61,30 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
             </Link>
           );
         })}
-        {pathname.startsWith("/admin/racas") ? (
+        {pathname.startsWith("/admin/racas") ||
+        pathname.startsWith("/admin/classes") ||
+        pathname.startsWith("/admin/itens") ? (
           <div className="admin-sidebar__subnav">
-            <Link className="is-active" href="/admin/racas">
+            <Link
+              className={pathname.startsWith("/admin/racas") ? "is-active" : ""}
+              href="/admin/racas"
+            >
               <span>RA</span>
               Raças
             </Link>
-            <Link href="/admin/racas/nova">
-              <span>＋</span>
-              Nova raça
+            <Link
+              className={pathname.startsWith("/admin/classes") ? "is-active" : ""}
+              href="/admin/classes"
+            >
+              <span>CL</span>
+              Classes
+            </Link>
+            <Link
+              className={pathname.startsWith("/admin/itens") ? "is-active" : ""}
+              href="/admin/itens"
+            >
+              <span>IT</span>
+              Itens
             </Link>
           </div>
         ) : null}

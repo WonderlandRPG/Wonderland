@@ -12,6 +12,8 @@ export async function SiteHeader() {
       <nav className="site-header__nav" aria-label="Navegação principal">
         <a href="#fundacao">Fundação</a>
         <a href="#sistemas">Sistemas</a>
+        {account ? <Link href="/personagens">Personagens</Link> : null}
+        {account ? <Link href="/arena">Arena</Link> : null}
         {account && isAdministrativeRole(account.role) ? (
           <Link href="/admin">Painel ADM</Link>
         ) : null}

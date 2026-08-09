@@ -5,6 +5,8 @@ import { ProfileForm } from "@/components/account/profile-form";
 import { SignOutButton } from "@/components/account/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
 import { isAdministrativeRole, requireCurrentAccount, roleLabels } from "@/lib/auth/account";
+import { getCharacterRules } from "@/lib/content/character-settings";
+import { getCharacterSheets } from "@/lib/content/characters";
 
 export const metadata: Metadata = { title: "Minha conta" };
 
@@ -23,7 +25,11 @@ interface ProfilePageProps {
 
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   const account = await requireCurrentAccount();
-  const params = await searchParams;
+  const [params, characters, characterRules] = await Promise.all([
+    searchParams,
+    getCharacterSheets(account.id),
+    getCharacterRules(),
+  ]);
   const joinedAt = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "long",
@@ -44,6 +50,8 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
         </div>
         <nav aria-label="Navegação da conta">
           <Link href="/">Portal</Link>
+          <Link href="/personagens">Personagens</Link>
+          <Link href="/arena">Arena</Link>
           {isAdministrativeRole(account.role) ? <Link href="/admin">Painel ADM</Link> : null}
           <SignOutButton compact />
         </nav>
@@ -83,26 +91,40 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                   <span className="eyebrow">Personagens</span>
                   <h2>Suas fichas</h2>
                 </div>
-                <span className="account-card__counter">0 / 3</span>
+                <span className="account-card__counter">
+                  {characters.length} / {characterRules.maximumSlots}
+                </span>
               </div>
 
               <div className="character-slots">
-                {[1, 2, 3].map((slot) => (
-                  <div className="character-slot" key={slot}>
-                    <span>{String(slot).padStart(2, "0")}</span>
-                    <div>
-                      <strong>Espaço disponível</strong>
-                      <small>A criação de personagens será ativada na próxima etapa.</small>
-                    </div>
-                    <button
-                      type="button"
-                      disabled
-                      aria-label={`Criar personagem no espaço ${slot}`}
-                    >
-                      ＋
-                    </button>
-                  </div>
-                ))}
+                {Array.from({ length: characterRules.maximumSlots }, (_, index) => index + 1).map(
+                  (slot) => {
+                    const character = characters[slot - 1];
+                    return (
+                      <div className="character-slot" key={slot}>
+                        <span>{String(slot).padStart(2, "0")}</span>
+                        <div>
+                          <strong>{character?.name ?? "Espaço disponível"}</strong>
+                          <small>
+                            {character
+                              ? `Nível ${character.level} · ${character.race.name} · ${character.characterClass.name}`
+                              : "Crie uma nova ficha para iniciar uma jornada."}
+                          </small>
+                        </div>
+                        <Link
+                          aria-label={
+                            character
+                              ? `Abrir ${character.name}`
+                              : `Criar personagem no espaço ${slot}`
+                          }
+                          href={character ? `/personagens/${character.id}` : "/personagens/novo"}
+                        >
+                          {character ? "→" : "＋"}
+                        </Link>
+                      </div>
+                    );
+                  },
+                )}
               </div>
             </article>
 
@@ -131,7 +153,9 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </div>
                 <div>
                   <dt>Personagens</dt>
-                  <dd>0 de 3</dd>
+                  <dd>
+                    {characters.length} de {characterRules.maximumSlots}
+                  </dd>
                 </div>
                 <div>
                   <dt>Status</dt>
@@ -141,11 +165,14 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             </article>
 
             <article className="account-card account-coming-soon">
-              <span>Próxima expansão</span>
-              <h2>Criação de personagem</h2>
+              <span>Ficha online</span>
+              <h2>Seus heróis estão vivos</h2>
               <p>
-                Raça, classe, atributos e aparência serão reunidos em uma única jornada de criação.
+                Atributos e habilidades são recalculados com o conteúdo publicado pelo Painel ADM.
               </p>
+              <Link className="button button--primary" href="/personagens">
+                Ver personagens
+              </Link>
             </article>
           </aside>
         </section>

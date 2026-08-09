@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import type { AuthActionState, AuthField } from "@/lib/auth/forms";
+import { getSignInErrorMessage } from "@/lib/auth/errors";
+import { resolveRequestOrigin } from "@/lib/auth/origin";
 import { getSafeRedirectPath } from "@/lib/auth/redirects";
 import {
   loginSchema,
@@ -34,15 +36,14 @@ function validationError(error: {
 }
 
 async function getRequestOrigin() {
-  const configuredUrl = getConfiguredSiteUrl();
-
-  if (configuredUrl) return configuredUrl;
-
   const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? "http";
 
-  return host ? `${protocol}://${host}` : "http://localhost:3000";
+  return resolveRequestOrigin({
+    forwardedHost: requestHeaders.get("x-forwarded-host"),
+    host: requestHeaders.get("host"),
+    forwardedProtocol: requestHeaders.get("x-forwarded-proto"),
+    configuredUrl: getConfiguredSiteUrl(),
+  });
 }
 
 async function getAuthCallbackUrl(nextPath: string) {
@@ -67,17 +68,34 @@ export async function signInAction(
 
   if (!supabase) return configurationError();
 
-  const { error } = await supabase.auth.signInWithPassword(result.data);
+  const { data, error } = await supabase.auth.signInWithPassword(result.data);
 
   if (error) {
     return {
       status: "error",
-      message: "E-mail ou senha incorretos. Confira os dados e tente novamente.",
+      message: getSignInErrorMessage(error),
+    };
+  }
+
+  if (!data.session || !data.user) {
+    return {
+      status: "error",
+      message: "A senha foi aceita, mas a sessão não pôde ser iniciada. Tente novamente.",
+    };
+  }
+
+  const { data: verifiedIdentity, error: verificationError } = await supabase.auth.getUser();
+
+  if (verificationError || verifiedIdentity.user?.id !== data.user.id) {
+    await supabase.auth.signOut();
+
+    return {
+      status: "error",
+      message: "Não foi possível confirmar a sessão criada. Atualize a página e tente novamente.",
     };
   }
 
   const nextPath = getSafeRedirectPath(String(formData.get("next") ?? ""));
-  revalidatePath("/", "layout");
   redirect(nextPath);
 }
 
@@ -151,6 +169,13 @@ export async function requestPasswordResetAction(
     return {
       status: "error",
       message: "Aguarde um minuto antes de solicitar outro e-mail de recuperação.",
+    };
+  }
+
+  if (error) {
+    return {
+      status: "error",
+      message: "Não foi possível enviar o link agora. Atualize a página e tente novamente.",
     };
   }
 

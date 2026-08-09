@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { SignOutButton } from "@/components/account/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
+import { getAccountNavigation } from "@/lib/auth/access";
 import type { CurrentAccount } from "@/lib/auth/roles";
 import { roleLabels } from "@/lib/auth/roles";
 
@@ -18,6 +19,9 @@ const navigation = [
 
 export function AdminSidebar({ account }: { account: CurrentAccount }) {
   const pathname = usePathname();
+  const playerNavigation = getAccountNavigation(account.role).filter(
+    (area) => area.key !== "admin",
+  );
 
   return (
     <aside className="admin-sidebar">
@@ -88,6 +92,14 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
             </Link>
           </div>
         ) : null}
+
+        <span className="admin-sidebar__nav-label">Área do jogador</span>
+        {playerNavigation.map((area) => (
+          <Link className="admin-sidebar__nav-item" href={area.href} key={area.key}>
+            <span>{area.glyph}</span>
+            {area.shortLabel}
+          </Link>
+        ))}
       </nav>
 
       <div className="admin-sidebar__footer">

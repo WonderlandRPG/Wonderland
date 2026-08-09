@@ -4176,6 +4176,12 @@ button:disabled {
   margin-top: 28px;
 }
 
+.auth-status-banner--error {
+  color: #8e4039;
+  border-color: rgba(191, 107, 97, 0.25);
+  background: rgba(191, 107, 97, 0.08);
+}
+
 .password-hint {
   margin: -8px 0 0;
   color: #809188;
@@ -4363,6 +4369,118 @@ button:disabled {
   color: #825622;
   border-color: rgba(218, 183, 83, 0.34);
   background: rgba(243, 215, 123, 0.13);
+}
+
+.account-access-panel {
+  margin-bottom: 16px;
+  padding: 30px;
+  border: 1px solid var(--line-light);
+  border-radius: var(--radius-medium);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 22px 65px rgba(9, 32, 23, 0.06);
+}
+
+.account-access-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.account-access-panel .eyebrow {
+  color: var(--emerald-700);
+}
+
+.account-access-panel h2 {
+  margin: 12px 0 0;
+  color: var(--ink-900);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+.account-access-panel > header > small {
+  color: var(--emerald-700);
+  font-family: ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.account-access-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.account-access-grid > article {
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid #d8e2dc;
+  border-radius: 14px;
+  background: rgba(245, 248, 244, 0.72);
+}
+
+.account-access-grid > article > span:first-child {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  color: var(--emerald-700);
+  border: 1px solid rgba(47, 167, 116, 0.2);
+  border-radius: 11px;
+  background: rgba(77, 197, 144, 0.08);
+  font-family: ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 900;
+}
+
+.account-access-grid > article > div {
+  flex: 1;
+}
+
+.account-access-grid h3 {
+  margin: 0;
+  color: #2a4236;
+  font-size: 0.84rem;
+}
+
+.account-access-grid p {
+  margin: 10px 0 0;
+  color: #7b8f84;
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+.account-access-grid a,
+.account-access-grid__disabled {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--emerald-700);
+  font-size: 0.65rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.account-access-grid a:hover {
+  color: var(--ink-900);
+}
+
+.account-access-grid > article.is-disabled {
+  opacity: 0.55;
+}
+
+.account-access-grid__disabled {
+  color: #7b8f84;
 }
 
 .account-dashboard {
@@ -4554,6 +4672,10 @@ button:disabled {
     grid-template-columns: minmax(0, 1fr) 320px;
   }
 
+  .account-access-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .module-grid,
   .admin-module-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -4661,6 +4783,24 @@ button:disabled {
 
   .account-header {
     width: calc(100% - 32px);
+    min-height: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding-block: 20px;
+  }
+
+  .account-header nav {
+    width: 100%;
+    gap: 20px;
+    padding-bottom: 6px;
+    overflow-x: auto;
+  }
+
+  .account-header nav > a,
+  .account-header .sign-out-button {
+    flex: 0 0 auto;
+    white-space: nowrap;
   }
 
   .account-hero {
@@ -4675,6 +4815,10 @@ button:disabled {
 
   .account-dashboard {
     grid-template-columns: 1fr;
+  }
+
+  .account-access-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .page-container,
@@ -4848,12 +4992,8 @@ button:disabled {
     font-size: 2.8rem;
   }
 
-  .account-header nav {
-    gap: 14px;
-  }
-
   .account-header nav > a {
-    display: none;
+    display: block;
   }
 
   .account-hero {
@@ -4874,6 +5014,22 @@ button:disabled {
 
   .account-card {
     padding: 22px;
+  }
+
+  .account-access-panel {
+    padding: 22px;
+  }
+
+  .account-access-panel > header {
+    display: grid;
+  }
+
+  .account-access-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-access-grid > article {
+    min-height: 0;
   }
 
   .character-slot {

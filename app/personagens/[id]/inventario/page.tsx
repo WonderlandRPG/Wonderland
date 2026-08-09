@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { equipItemAction, unequipItemAction } from "@/app/personagens/[id]/inventario/actions";
-import { BrandMark } from "@/components/brand-mark";
+import { AccountHeader } from "@/components/account/account-header";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { getCharacterInventory } from "@/lib/content/inventory";
@@ -23,7 +23,7 @@ export default async function InventoryPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ notice?: string }>;
 }) {
-  await requireCurrentAccount("/personagens");
+  const account = await requireCurrentAccount("/personagens");
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const [character, inventory] = await Promise.all([
     requireCharacterSheet(id),
@@ -32,13 +32,7 @@ export default async function InventoryPage({
   const notice = query.notice ? notices[query.notice] : undefined;
   return (
     <main className="character-page inventory-page">
-      <header className="account-header">
-        <BrandMark inverse />
-        <nav>
-          <Link href={`/personagens/${id}`}>Ficha</Link>
-          <Link href="/personagens">Personagens</Link>
-        </nav>
-      </header>
+      <AccountHeader account={account} />
       <div className="page-container character-page__inner">
         <header className="character-page__header">
           <div>

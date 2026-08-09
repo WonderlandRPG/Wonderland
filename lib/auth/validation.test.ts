@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { getSafeRedirectPath } from "@/lib/auth/redirects";
-import { newPasswordSchema, signUpSchema } from "@/lib/auth/validation";
+import { loginSchema, newPasswordSchema, signUpSchema } from "@/lib/auth/validation";
 
 describe("validação das contas", () => {
   it("aceita um cadastro completo e normaliza o e-mail", () => {
@@ -24,6 +24,15 @@ describe("validação das contas", () => {
     });
 
     expect(result.success).toBe(false);
+  });
+
+  it("não altera espaços que façam parte da senha", () => {
+    const result = loginSchema.parse({
+      email: "colten@example.com",
+      password: " Wonderland2026 ",
+    });
+
+    expect(result.password).toBe(" Wonderland2026 ");
   });
 });
 

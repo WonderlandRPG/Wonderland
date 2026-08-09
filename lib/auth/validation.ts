@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const requiredText = (label: string) => z.string().trim().min(1, `${label} é obrigatório.`);
+const requiredPassword = z.string().min(1, "A senha é obrigatória.");
 
 export const emailSchema = requiredText("O e-mail")
   .pipe(z.email("Digite um endereço de e-mail válido."))
@@ -14,7 +15,7 @@ export const passwordSchema = z
 
 export const loginSchema = z.object({
   email: emailSchema,
-  password: requiredText("A senha"),
+  password: requiredPassword,
 });
 
 export const signUpSchema = z

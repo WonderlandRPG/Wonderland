@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AccountHeader } from "@/components/account/account-header";
 import { CharacterCreator } from "@/components/characters/character-creator";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
@@ -22,6 +23,7 @@ export default async function NewCharacterPage() {
   if (characters.length >= rules.maximumSlots) {
     return (
       <main className="character-page">
+        <AccountHeader account={account} />
         <div className="page-container character-page__inner">
           <Link className="race-back-link" href="/personagens">
             ← Voltar aos personagens
@@ -38,6 +40,7 @@ export default async function NewCharacterPage() {
   if (publishedRaces.length === 0 || classes.length === 0) {
     return (
       <main className="character-page">
+        <AccountHeader account={account} />
         <div className="page-container character-page__inner">
           <Link className="race-back-link" href="/personagens">
             ← Voltar aos personagens
@@ -56,6 +59,7 @@ export default async function NewCharacterPage() {
   }
   return (
     <main className="character-page">
+      <AccountHeader account={account} />
       <div className="page-container character-page__inner">
         <header className="character-page__header">
           <div>

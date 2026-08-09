@@ -11,6 +11,8 @@ const statusMessages: Record<string, string> = {
   "configuracao-indisponivel": "A conexão de contas está temporariamente indisponível.",
 };
 
+const errorStatuses = new Set(["link-invalido", "configuracao-indisponivel"]);
+
 interface LoginScreenProps {
   next?: string;
   status?: string;
@@ -30,7 +32,11 @@ export async function LoginScreen({ next, status }: LoginScreenProps) {
       description="Entre para acessar seu perfil, personagens, inventário e a Arena de Wonderland."
     >
       {status && statusMessages[status] ? (
-        <div className="auth-status-banner" data-sfx-on-mount="confirm" role="status">
+        <div
+          className={`auth-status-banner ${errorStatuses.has(status) ? "auth-status-banner--error" : ""}`}
+          data-sfx-on-mount={errorStatuses.has(status) ? "error" : "confirm"}
+          role={errorStatuses.has(status) ? "alert" : "status"}
+        >
           {statusMessages[status]}
         </div>
       ) : null}

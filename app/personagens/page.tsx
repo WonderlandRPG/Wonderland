@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { BrandMark } from "@/components/brand-mark";
+import { AccountHeader } from "@/components/account/account-header";
 import { DeleteCharacterButton } from "@/components/characters/delete-character-button";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
@@ -27,13 +27,7 @@ export default async function CharactersPage({
   ]);
   return (
     <main className="character-page">
-      <header className="account-header">
-        <BrandMark inverse />
-        <nav>
-          <Link href="/">Portal</Link>
-          <Link href="/perfil">Minha conta</Link>
-        </nav>
-      </header>
+      <AccountHeader account={account} />
       <div className="page-container character-page__inner">
         <header className="character-page__header">
           <div>

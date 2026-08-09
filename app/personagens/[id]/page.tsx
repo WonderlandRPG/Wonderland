@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { BrandMark } from "@/components/brand-mark";
+import { AccountHeader } from "@/components/account/account-header";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { attributeLabels } from "@/lib/game/races";
@@ -16,7 +16,7 @@ export default async function CharacterSheetPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ status?: string }>;
 }) {
-  await requireCurrentAccount("/personagens");
+  const account = await requireCurrentAccount("/personagens");
   const [{ id }, query] = await Promise.all([params, searchParams]);
   const character = await requireCharacterSheet(id);
   const futureClassSkills = character.characterClass.payload.progression
@@ -27,13 +27,7 @@ export default async function CharacterSheetPage({
     .sort((a, b) => a.level - b.level);
   return (
     <main className="sheet-page">
-      <header className="account-header">
-        <BrandMark inverse />
-        <nav>
-          <Link href="/personagens">Personagens</Link>
-          <Link href="/perfil">Minha conta</Link>
-        </nav>
-      </header>
+      <AccountHeader account={account} />
       <div className="page-container sheet-page__inner">
         {query.status === "criado" ? (
           <div className="account-notice" data-sfx-on-mount="confirm" role="status">

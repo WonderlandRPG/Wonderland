@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
   const tokenHash = url.searchParams.get("token_hash");
   const requestedType = url.searchParams.get("type");
   const nextPath = getSafeRedirectPath(url.searchParams.get("next"));
+  const recoveryFlow = requestedType === "recovery" || nextPath === "/nova-senha";
   const supabase = await createServerSupabaseClient();
 
   if (!supabase) {
@@ -41,8 +42,13 @@ export async function GET(request: NextRequest) {
   }
 
   if (error) {
-    return NextResponse.redirect(new URL("/?status=link-invalido", url));
+    return NextResponse.redirect(
+      new URL(
+        recoveryFlow ? "/recuperar-senha?status=link-invalido" : "/?status=link-invalido",
+        url,
+      ),
+    );
   }
 
-  return NextResponse.redirect(new URL(nextPath, url));
+  return NextResponse.redirect(new URL(recoveryFlow ? "/nova-senha" : nextPath, url));
 }

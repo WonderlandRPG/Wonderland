@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { AccountAccessPanel } from "@/components/account/account-access-panel";
+import { AccountHeader } from "@/components/account/account-header";
 import { ProfileForm } from "@/components/account/profile-form";
-import { SignOutButton } from "@/components/account/sign-out-button";
-import { BrandMark } from "@/components/brand-mark";
-import { isAdministrativeRole, requireCurrentAccount, roleLabels } from "@/lib/auth/account";
+import { requireCurrentAccount, roleLabels } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
 
@@ -44,18 +44,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
   return (
     <main className="account-shell">
-      <header className="account-header">
-        <div>
-          <BrandMark inverse />
-        </div>
-        <nav aria-label="Navegação da conta">
-          <Link href="/">Portal</Link>
-          <Link href="/personagens">Personagens</Link>
-          <Link href="/arena">Arena</Link>
-          {isAdministrativeRole(account.role) ? <Link href="/admin">Painel ADM</Link> : null}
-          <SignOutButton compact />
-        </nav>
-      </header>
+      <AccountHeader account={account} />
 
       <div className="account-grid" />
       <section className="account-hero page-container">
@@ -82,6 +71,11 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             {statusMessages[params.status]}
           </div>
         ) : null}
+
+        <AccountAccessPanel
+          account={account}
+          canCreateCharacter={characters.length < characterRules.maximumSlots}
+        />
 
         <section className="account-dashboard">
           <div className="account-main-column">

@@ -45,6 +45,11 @@ export interface CombatantState {
   mana: number;
   shield: number;
   cooldowns: Record<string, number>;
+  classResourceName: string;
+  classResource: number;
+  maxClassResource: number;
+  statuses: Record<string, { duration: number; stacks: number }>;
+  resourceGainOnBasicAttack: number;
 }
 
 export interface CombatEvent {
@@ -87,6 +92,12 @@ export function createCombatant(input: {
   baseHp: number;
   baseMana: number;
   rules?: CombatRules;
+  classResource?: {
+    name: string;
+    initial: number;
+    maximum: number;
+    generationEvents?: Array<{ trigger: string; amount: number }>;
+  };
 }): CombatantState {
   const stats = deriveStats(input.attributes, input.baseHp, input.baseMana, input.rules);
   return {
@@ -99,6 +110,13 @@ export function createCombatant(input: {
     mana: stats.maxMana,
     shield: 0,
     cooldowns: {},
+    classResourceName: input.classResource?.name ?? "Recurso",
+    classResource: input.classResource?.initial ?? 0,
+    maxClassResource: input.classResource?.maximum ?? 0,
+    statuses: {},
+    resourceGainOnBasicAttack:
+      input.classResource?.generationEvents?.find((entry) => entry.trigger === "BASIC_ATTACK_HIT")
+        ?.amount ?? 0,
   };
 }
 
@@ -155,7 +173,13 @@ export function resolveBasicAttack(
     (isMagical ? actor.attributes.INT : actor.attributes.FOR) * rules.basicAttackMultiplier;
   const amount = calculateDamage(raw, damageType, target.attributes, rules);
   return {
-    actor,
+    actor: {
+      ...actor,
+      classResource: Math.min(
+        actor.maxClassResource,
+        actor.classResource + actor.resourceGainOnBasicAttack,
+      ),
+    },
     target: applyDamage(target, amount),
     event: {
       kind: "damage",
@@ -203,17 +227,32 @@ export function resolveSkill(
   if (skill.resource === "life" && actor.hp <= skill.cost) {
     return skillError(actor, target, `HP insuficiente para usar ${skill.name}.`);
   }
+  if (skill.resource === "special" && actor.classResource < skill.cost) {
+    return skillError(
+      actor,
+      target,
+      `${actor.classResourceName} insuficiente para usar ${skill.name}.`,
+    );
+  }
 
   const paidActor: CombatantState = {
     ...actor,
     mana: skill.resource === "mana" ? actor.mana - skill.cost : actor.mana,
     hp: skill.resource === "life" ? actor.hp - skill.cost : actor.hp,
+    classResource:
+      skill.resource === "special" ? actor.classResource - skill.cost : actor.classResource,
     cooldowns: { ...actor.cooldowns, [skill.key]: skill.cooldown },
   };
-  const rawPower = calculateScaledPower(actor.attributes, primaryScaling(skill));
+  const primaryOperation = skill.operations[0];
+  const operationScaling = primaryOperation?.scaling.length
+    ? primaryOperation.scaling
+    : primaryScaling(skill);
+  const rawPower =
+    (primaryOperation?.base ?? 0) + calculateScaledPower(actor.attributes, operationScaling);
 
-  if (skill.kind === "damage") {
-    const type: DamageType = skill.damageType === "none" ? "physical" : skill.damageType;
+  if (primaryOperation?.operation === "DAMAGE") {
+    const type: DamageType =
+      primaryOperation.damageType === "none" ? "physical" : primaryOperation.damageType;
     const amount = calculateDamage(rawPower, type, target.attributes, rules);
     return {
       actor: paidActor,
@@ -227,7 +266,7 @@ export function resolveSkill(
     };
   }
 
-  if (skill.kind === "heal") {
+  if (primaryOperation?.operation === "HEAL") {
     const amount = rawPower || rounded(actor.maxHp * 0.08);
     const receiver = skill.target === "enemy" ? target : paidActor;
     const healed = Math.min(amount, receiver.maxHp - receiver.hp);
@@ -243,7 +282,7 @@ export function resolveSkill(
     };
   }
 
-  if (skill.kind === "shield") {
+  if (primaryOperation?.operation === "SHIELD") {
     const amount = rawPower || rounded(actor.attributes.ARC);
     const receiver = skill.target === "enemy" ? target : paidActor;
     const next = { ...receiver, shield: receiver.shield + amount };
@@ -258,9 +297,26 @@ export function resolveSkill(
     };
   }
 
+  const statusTarget = primaryOperation?.target === "self" ? paidActor : target;
+  const status = primaryOperation?.status;
+  const withStatus = status
+    ? {
+        ...statusTarget,
+        statuses: {
+          ...statusTarget.statuses,
+          [status]: {
+            duration: primaryOperation.duration,
+            stacks: Math.min(
+              primaryOperation.maxStacks || 1,
+              (statusTarget.statuses[status]?.stacks ?? 0) + (primaryOperation.stacks || 1),
+            ),
+          },
+        },
+      }
+    : statusTarget;
   return {
-    actor: paidActor,
-    target,
+    actor: withStatus.id === paidActor.id ? withStatus : paidActor,
+    target: withStatus.id === target.id ? withStatus : target,
     event: {
       kind: "utility",
       amount: 0,

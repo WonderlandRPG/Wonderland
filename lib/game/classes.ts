@@ -35,11 +35,34 @@ export function createEmptyClassSkill(level = 1): ClassSkill {
     area: 0,
     duration: 0,
     scaling: [],
+    reachText: "1 casa",
+    conditions: [],
+    systemRule: "Executa as operações na ordem cadastrada.",
+    playerDescription: "Descreva o efeito para o jogador.",
+    chance: 100,
+    maxStacks: 0,
+    operations: [
+      {
+        operation: "APPLY_STATUS",
+        target: "enemy",
+        base: 0,
+        scaling: [],
+        damageType: "none",
+        status: "novo-efeito",
+        duration: 1,
+        chance: 100,
+        stacks: 1,
+        maxStacks: 1,
+        distance: 0,
+        modifiers: [],
+      },
+    ],
   };
 }
 
 export function createEmptyClassPayload(): ClassPayload {
   return {
+    engineContractVersion: 1,
     description: "",
     imageUrl: "",
     difficulty: 1,
@@ -48,6 +71,15 @@ export function createEmptyClassPayload(): ClassPayload {
     primaryAttributes: ["FOR"],
     affinities: { FOR: 3, DEF: 3, RES: 3, INI: 3, INT: 1, ARC: 1 },
     mechanic: { name: "Recurso de classe", description: "Descreva a mecânica exclusiva." },
+    resource: {
+      name: "Recurso",
+      initial: 0,
+      maximum: 100,
+      generationRules: ["Defina como o recurso é gerado."],
+      consumptionRules: ["Defina como o recurso é consumido."],
+      resetRules: ["O recurso retorna ao valor inicial no começo de cada combate."],
+      generationEvents: [{ trigger: "BASIC_ATTACK_HIT", amount: 10, limitPerAction: 1 }],
+    },
     passive: { name: "Passiva da classe", description: "Descreva a passiva permanente." },
     progression: [],
     paths: [],

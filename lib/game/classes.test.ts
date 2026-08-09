@@ -5,20 +5,13 @@ import { officialClasses } from "@/lib/game/official-classes";
 import { classPayloadSchema } from "@/lib/game/schemas";
 
 describe("catálogo oficial de classes", () => {
-  it("contém as 13 classes e toda a progressão do livro", () => {
-    expect(officialClasses).toHaveLength(13);
-    expect(new Set(officialClasses.map((entry) => entry.slug)).size).toBe(13);
+  it("contém as 14 classes do novo roster estruturado", () => {
+    expect(officialClasses).toHaveLength(14);
+    expect(new Set(officialClasses.map((entry) => entry.slug)).size).toBe(14);
     expect(officialClasses.reduce((sum, entry) => sum + entry.payload.progression.length, 0)).toBe(
-      156,
+      70,
     );
-    expect(officialClasses.reduce((sum, entry) => sum + entry.payload.paths.length, 0)).toBe(26);
-    expect(
-      officialClasses.reduce(
-        (sum, entry) =>
-          sum + entry.payload.paths.reduce((pathSum, path) => pathSum + path.skills.length, 0),
-        0,
-      ),
-    ).toBe(130);
+    expect(officialClasses.every((entry) => entry.payload.engineContractVersion === 1)).toBe(true);
   });
 
   it("valida todos os registros com o esquema usado pelo servidor", () => {
@@ -27,21 +20,19 @@ describe("catálogo oficial de classes", () => {
     );
   });
 
-  it("usa multiplicadores para escalas e preserva percentuais modificadores", () => {
+  it("usa operações genéricas e regras separadas da descrição", () => {
     const barbarian = officialClasses.find((entry) => entry.slug === "barbaro");
     const strike = barbarian?.payload.progression.find((skill) => skill.key === "golpe-selvagem");
-    const ironSkin = barbarian?.payload.progression.find((skill) => skill.key === "pele-de-ferro");
-    expect(strike?.effect).toContain("1x FOR");
-    expect(strike?.effect).toContain("0,2x FOR");
-    expect(ironSkin?.effect).toContain("26%");
-    expect(ironSkin?.effect).toContain("0,84x RES");
+    expect(strike?.operations[0]?.operation).toBe("DAMAGE");
+    expect(strike?.operations[0]?.scaling).toEqual([{ attribute: "FOR", multiplier: 1.25 }]);
+    expect(strike?.systemRule).not.toBe(strike?.playerDescription);
   });
 
   it("desbloqueia habilidades somente até o nível atual", () => {
     const archer = officialClasses.find((entry) => entry.slug === "arqueiro");
     expect(archer).toBeDefined();
     expect(getUnlockedClassSkills(archer!.payload, 1)).toHaveLength(2);
-    expect(getUnlockedClassSkills(archer!.payload, 20)).toHaveLength(6);
-    expect(getUnlockedClassSkills(archer!.payload, 50)).toHaveLength(12);
+    expect(getUnlockedClassSkills(archer!.payload, 20)).toHaveLength(3);
+    expect(getUnlockedClassSkills(archer!.payload, 50)).toHaveLength(5);
   });
 });

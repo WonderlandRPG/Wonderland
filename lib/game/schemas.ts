@@ -107,6 +107,45 @@ export const classSkillScalingSchema = z.object({
   multiplier: finiteNumberSchema.min(0),
 });
 
+export const engineOperationKeys = [
+  "DAMAGE",
+  "HEAL",
+  "SHIELD",
+  "BUFF",
+  "DEBUFF",
+  "STUN",
+  "ROOT",
+  "SILENCE",
+  "FEAR",
+  "PUSH",
+  "MOVE",
+  "TELEPORT",
+  "APPLY_STATUS",
+  "REMOVE_STATUS",
+  "RESOURCE_GAIN",
+  "RESOURCE_COST",
+  "SUMMON",
+  "TAUNT",
+  "REACTION",
+] as const;
+
+export const engineOperationSchema = z.object({
+  operation: z.enum(engineOperationKeys),
+  target: z.enum(["self", "ally", "enemy", "area", "source"]),
+  base: nonNegativeNumberSchema.default(0),
+  scaling: z.array(classSkillScalingSchema).default([]),
+  damageType: z.enum(["physical", "magic", "true", "none"]).default("none"),
+  status: z.string().trim().default(""),
+  duration: nonNegativeIntegerSchema.default(0),
+  chance: z.number().finite().min(0).max(100).default(100),
+  stacks: nonNegativeIntegerSchema.default(0),
+  maxStacks: nonNegativeIntegerSchema.default(0),
+  distance: nonNegativeIntegerSchema.default(0),
+  modifiers: z
+    .array(z.object({ attribute: z.enum(attributeKeys), value: finiteNumberSchema }))
+    .default([]),
+});
+
 export const classSkillSchema = z.object({
   key: z
     .string()
@@ -128,6 +167,13 @@ export const classSkillSchema = z.object({
   area: nonNegativeIntegerSchema,
   duration: nonNegativeIntegerSchema,
   scaling: z.array(classSkillScalingSchema),
+  reachText: requiredTextSchema,
+  conditions: z.array(requiredTextSchema).default([]),
+  systemRule: requiredTextSchema,
+  playerDescription: requiredTextSchema,
+  chance: z.number().finite().min(0).max(100).default(100),
+  maxStacks: nonNegativeIntegerSchema.default(0),
+  operations: z.array(engineOperationSchema).min(1),
 });
 
 export const classPathSchema = z.object({
@@ -143,6 +189,7 @@ export const classPathSchema = z.object({
 });
 
 export const classPayloadSchema = z.object({
+  engineContractVersion: z.literal(1),
   description: requiredTextSchema,
   imageUrl: z.union([z.literal(""), z.url()]).default(""),
   difficulty: z.number().int().min(1).max(5),
@@ -158,6 +205,32 @@ export const classPayloadSchema = z.object({
     ARC: z.number().int().min(1).max(5),
   }),
   mechanic: z.object({ name: requiredTextSchema, description: requiredTextSchema }),
+  resource: z.object({
+    name: requiredTextSchema,
+    initial: nonNegativeIntegerSchema,
+    maximum: z.number().int().positive(),
+    generationRules: z.array(requiredTextSchema).min(1),
+    consumptionRules: z.array(requiredTextSchema).min(1),
+    resetRules: z.array(requiredTextSchema).min(1),
+    generationEvents: z
+      .array(
+        z.object({
+          trigger: z.enum([
+            "BASIC_ATTACK_HIT",
+            "DAMAGE_DEALT",
+            "DAMAGE_TAKEN",
+            "HEAL_APPLIED",
+            "SHIELD_APPLIED",
+            "STATUS_APPLIED",
+            "TARGET_CHANGED",
+            "MULTI_TARGET_HIT",
+          ]),
+          amount: z.number().int().positive(),
+          limitPerAction: z.number().int().positive().default(1),
+        }),
+      )
+      .min(1),
+  }),
   passive: z.object({ name: requiredTextSchema, description: requiredTextSchema }),
   progression: z.array(classSkillSchema),
   paths: z.array(classPathSchema),

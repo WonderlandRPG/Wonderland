@@ -24,6 +24,12 @@ interface ArenaCharacter {
   className: string;
   baseHp: number;
   baseMana: number;
+  classResource: {
+    name: string;
+    initial: number;
+    maximum: number;
+    generationEvents?: Array<{ trigger: string; amount: number }>;
+  };
   attributes: CombatAttributes;
   skills: ClassSkill[];
   raceAbilities: RaceProgressionEntry[];
@@ -253,9 +259,13 @@ function Battle({
         {character.skills.map((skill) => {
           const cooldown = player.cooldowns[skill.key] ?? 0;
           const cannotPay = skill.resource === "mana" && player.mana < skill.cost;
+          const cannotPayClassResource =
+            skill.resource === "special" && player.classResource < skill.cost;
           return (
             <button
-              disabled={finished || actions.class || cooldown > 0 || cannotPay}
+              disabled={
+                finished || actions.class || cooldown > 0 || cannotPay || cannotPayClassResource
+              }
               key={skill.key}
               onClick={() => handleSkill(skill)}
               type="button"
@@ -265,7 +275,7 @@ function Battle({
               <small>
                 {cooldown
                   ? `Recarga: ${cooldown}`
-                  : `${skill.cost} ${skill.resource === "mana" ? "Mana" : "HP"} · Recarga ${skill.cooldown}`}
+                  : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "special" ? player.classResourceName : "HP"} · Recarga ${skill.cooldown}`}
               </small>
             </button>
           );
@@ -328,6 +338,17 @@ function Fighter({ combatant, subtitle }: { combatant: CombatantState; subtitle:
         </strong>
       </p>
       <progress max={combatant.maxMana || 1} value={combatant.mana} />
+      {combatant.maxClassResource > 0 ? (
+        <>
+          <p>
+            {combatant.classResourceName}{" "}
+            <strong>
+              {combatant.classResource}/{combatant.maxClassResource}
+            </strong>
+          </p>
+          <progress max={combatant.maxClassResource} value={combatant.classResource} />
+        </>
+      ) : null}
       {combatant.shield > 0 ? <small>Escudo: {combatant.shield}</small> : null}
     </article>
   );

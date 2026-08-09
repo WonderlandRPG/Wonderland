@@ -49,6 +49,7 @@ describe("motor de combate", () => {
       attributes,
       baseHp: 300,
       baseMana: 100,
+      classResource: { name: "Carga Arcana", initial: 5, maximum: 5 },
     });
     const target = createCombatant({
       id: "b",
@@ -61,11 +62,11 @@ describe("motor de combate", () => {
     const mage = officialClasses.find((entry) => entry.slug === "mago")!;
     const projectile = mage.payload.progression.find((skill) => skill.key === "projetil-arcano")!;
     const resolution = resolveSkill(actor, target, projectile);
-    expect(resolution.actor.mana).toBe(actor.mana - 30);
-    expect(resolution.actor.cooldowns[projectile.key]).toBe(4);
+    expect(resolution.actor.classResource).toBe(actor.classResource - 1);
+    expect(resolution.actor.cooldowns[projectile.key]).toBe(1);
     expect(resolution.target.hp).toBeLessThan(target.hp);
     expect(resolveSkill(resolution.actor, resolution.target, projectile).event.kind).toBe("error");
-    expect(tickCooldowns(resolution.actor).cooldowns[projectile.key]).toBe(3);
+    expect(tickCooldowns(resolution.actor).cooldowns[projectile.key]).toBe(0);
   });
 
   it("combina base, pontos livres e bônus raciais", () => {

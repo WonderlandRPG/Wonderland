@@ -30,6 +30,7 @@ export default async function ArenaPage({
               className: character.characterClass.name,
               baseHp: character.race.payload.baseHp,
               baseMana: character.race.payload.baseMana,
+              classResource: character.characterClass.payload.resource,
               attributes: character.stats.attributes,
               skills: character.unlockedClassSkills
                 .filter((skill) => !/passiva/i.test(skill.type))

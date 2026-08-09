@@ -1,10 +1,10 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireCurrentAccount } from "@/lib/auth/account";
+import { requireActiveCharacter } from "@/lib/content/active-character";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 export async function buyItem(formData: FormData) {
-  await requireCurrentAccount("/loja");
+  await requireActiveCharacter("/loja");
   const id = z.uuid().safeParse(formData.get("itemId"));
   if (!id.success) return;
   const client = await createServerSupabaseClient();

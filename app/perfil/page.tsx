@@ -4,7 +4,8 @@ import Link from "next/link";
 import { ProfileForm } from "@/components/account/profile-form";
 import { SignOutButton } from "@/components/account/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
-import { isAdministrativeRole, requireCurrentAccount, roleLabels } from "@/lib/auth/account";
+import { isAdministrativeRole, roleLabels } from "@/lib/auth/account";
+import { requireActiveCharacter } from "@/lib/content/active-character";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { claimDailyReward } from "./player-actions";
 import { getCharacterRules } from "@/lib/content/character-settings";
@@ -26,7 +27,7 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
-  const account = await requireCurrentAccount();
+  const { account, characterId } = await requireActiveCharacter("/perfil");
   const client = await createServerSupabaseClient();
   const [{ data: progress }, characters, characterRules, params] = await Promise.all([
     client
@@ -44,6 +45,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   const experience = progress?.experience ?? 0;
   const nextLevelXp = Math.round(100 * Math.pow(1.18, level - 1));
   const claimedToday = progress?.last_daily_claim === new Date().toISOString().slice(0, 10);
+  const activeCharacter = characters.find((character) => character.id === characterId);
   const joinedAt = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "long",
@@ -101,8 +103,8 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             </span>
           </div>
           <div>
-            <small>Moedas</small>
-            <strong>◆ {(progress?.coins ?? 0).toLocaleString("pt-BR")}</strong>
+            <small>WG de {activeCharacter?.name ?? "personagem"}</small>
+            <strong>◆ {(activeCharacter?.gold ?? 0).toLocaleString("pt-BR")}</strong>
           </div>
           <form action={claimDailyReward}>
             <button className="button button--primary" disabled={claimedToday}>

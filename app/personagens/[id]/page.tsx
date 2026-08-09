@@ -5,6 +5,7 @@ import { requireCurrentAccount } from "@/lib/auth/account";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
+import { equipItemAction, unequipItemAction } from "./equipment-actions";
 
 export const metadata = { title: "Ficha do Personagem" };
 export const dynamic = "force-dynamic";
@@ -55,6 +56,7 @@ export default async function CharacterSheetPage({
             <span>Nível</span>
             <strong>{character.level}</strong>
             <small>{character.xp} XP</small>
+            <small>{character.gold.toLocaleString("pt-BR")} WG</small>
           </div>
         </section>
         <nav className="sheet-actions">
@@ -199,6 +201,48 @@ export default async function CharacterSheetPage({
               }))}
             />
           </div>
+        </section>
+        <section className="sheet-section">
+          <header>
+            <span className="eyebrow">Equipamentos</span>
+            <h2>Inventário de {character.name}</h2>
+            <p>Itens equipados alteram a ficha e os cálculos da Arena.</p>
+          </header>
+          {character.inventory.length ? (
+            <div className="portal-card-grid">
+              {character.inventory.map((entry) => (
+                <article className="shop-card" key={entry.id}>
+                  <small>
+                    {entry.rarity} · {entry.slot}
+                  </small>
+                  <h3>{entry.name}</h3>
+                  <p>{entry.description}</p>
+                  <footer>
+                    <span>{entry.equippedSlot ? "Equipado" : `Quantidade ${entry.quantity}`}</span>
+                    <form
+                      action={
+                        entry.equippedSlot
+                          ? unequipItemAction.bind(null, character.id)
+                          : equipItemAction.bind(null, character.id)
+                      }
+                    >
+                      <input name="inventoryId" type="hidden" value={entry.id} />
+                      <input name="slot" type="hidden" value={entry.slot} />
+                      <button className="button button--dark">
+                        {entry.equippedSlot ? "Desequipar" : "Equipar"}
+                      </button>
+                    </form>
+                  </footer>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="portal-empty">
+              <span>◆</span>
+              <h3>Inventário vazio</h3>
+              <p>Compre equipamentos na Loja usando WG.</p>
+            </div>
+          )}
         </section>
       </div>
     </main>

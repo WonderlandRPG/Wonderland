@@ -4355,6 +4355,56 @@ button:disabled {
 }
 
 /* Player portal */
+.admin-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.admin-form label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.admin-form label:has(textarea),
+.admin-form button {
+  grid-column: 1 / -1;
+}
+.admin-form input:not([type="checkbox"]),
+.admin-form textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid rgba(54, 42, 28, 0.2);
+  background: white;
+  color: inherit;
+}
+.rarity {
+  font-weight: 800;
+}
+.rarity--common {
+  color: #716b63;
+}
+.rarity--uncommon {
+  color: #29764a;
+}
+.rarity--rare {
+  color: #236ab4;
+}
+.rarity--epic {
+  color: #7b3db4;
+}
+.rarity--legendary {
+  color: #bd6a12;
+}
+.rarity--mythic {
+  color: #b22537;
+}
+@media (max-width: 700px) {
+  .admin-form {
+    grid-template-columns: 1fr;
+  }
+}
+
 .arena-page {
   min-height: 100vh;
   background: #f1eadc;

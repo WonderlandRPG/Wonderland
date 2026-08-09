@@ -78,7 +78,7 @@ export async function signInAction(
 
   const nextPath = getSafeRedirectPath(String(formData.get("next") ?? ""));
   revalidatePath("/", "layout");
-  redirect(nextPath);
+  redirect(`/personagens?selecionar=1&next=${encodeURIComponent(nextPath)}`);
 }
 
 export async function signUpAction(
@@ -121,7 +121,7 @@ export async function signUpAction(
 
   if (data.session) {
     revalidatePath("/", "layout");
-    redirect("/perfil?status=conta-criada");
+    redirect("/personagens/novo?status=conta-criada");
   }
 
   return {

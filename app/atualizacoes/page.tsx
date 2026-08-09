@@ -1,6 +1,14 @@
 import { PortalShell } from "@/components/portal-shell";
-import { updates } from "@/lib/game/player-portal";
-export default function UpdatesPage() {
+import { getPortalUpdates } from "@/lib/game/player-portal";
+export const dynamic = "force-dynamic";
+export default async function UpdatesPage() {
+  const updates = await getPortalUpdates();
+  const date = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
   return (
     <PortalShell
       eyebrow="Diário de atualizações"
@@ -12,7 +20,7 @@ export default function UpdatesPage() {
           <article key={update.version}>
             <header>
               <span>v{update.version}</span>
-              <time>{update.date}</time>
+              <time>{date.format(new Date(`${update.published_on}T00:00:00Z`))}</time>
             </header>
             <h2>{update.title}</h2>
             <ul>

@@ -2,8 +2,8 @@ import Link from "next/link";
 
 import { TrainingArena } from "@/components/arena/training-arena";
 import { BrandMark } from "@/components/brand-mark";
-import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheets } from "@/lib/content/characters";
+import { requireActiveCharacter } from "@/lib/content/active-character";
 import { defaultCombatRules } from "@/lib/game/combat";
 
 export const metadata = { title: "Arena de Treinamento" };
@@ -14,7 +14,7 @@ export default async function ArenaPage({
 }: {
   searchParams: Promise<{ personagem?: string }>;
 }) {
-  const account = await requireCurrentAccount("/arena");
+  const { account, characterId } = await requireActiveCharacter("/arena");
   const [characters, query] = await Promise.all([getCharacterSheets(account.id), searchParams]);
 
   return (
@@ -28,16 +28,18 @@ export default async function ArenaPage({
       </header>
       <div className="page-container arena-page__inner">
         <TrainingArena
-          characters={characters.map((character) => ({
-            id: character.id,
-            name: character.name,
-            raceName: character.race.name,
-            className: character.characterClass.name,
-            baseHp: character.race.payload.baseHp,
-            baseMana: character.race.payload.baseMana,
-            attributes: character.stats.attributes,
-            skills: character.unlockedClassSkills,
-          }))}
+          characters={characters
+            .filter((character) => character.id === characterId)
+            .map((character) => ({
+              id: character.id,
+              name: character.name,
+              raceName: character.race.name,
+              className: character.characterClass.name,
+              baseHp: character.race.payload.baseHp,
+              baseMana: character.race.payload.baseMana,
+              attributes: character.stats.attributes,
+              skills: character.unlockedClassSkills,
+            }))}
           initialCharacterId={query.personagem}
           rules={defaultCombatRules}
         />

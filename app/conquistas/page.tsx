@@ -1,6 +1,8 @@
 import { PortalShell } from "@/components/portal-shell";
+import { requireActiveCharacter } from "@/lib/content/active-character";
 import { achievements } from "@/lib/game/player-portal";
-export default function AchievementsPage() {
+export default async function AchievementsPage() {
+  await requireActiveCharacter("/conquistas");
   return (
     <PortalShell
       eyebrow="Jornada"

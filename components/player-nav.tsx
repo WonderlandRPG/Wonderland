@@ -10,6 +10,7 @@ export async function PlayerNav() {
         <BrandMark inverse />
       </Link>
       <nav aria-label="Portal dos jogadores">
+        {account ? <Link href="/personagens?selecionar=1">Trocar personagem</Link> : null}
         <Link href="/ranking">Ranking</Link>
         <Link href="/loja">Loja</Link>
         <Link href="/conquistas">Conquistas</Link>

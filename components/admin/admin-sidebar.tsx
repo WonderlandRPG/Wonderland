@@ -14,6 +14,8 @@ const navigation = [
   { label: "Balanceamento", glyph: "03", href: "/admin/balanceamento" },
   { label: "Jogadores", glyph: "04", href: "/admin/jogadores" },
   { label: "Histórico", glyph: "05", href: "/admin/historico" },
+  { label: "Eventos", glyph: "06", href: "/admin/eventos" },
+  { label: "Atualizações", glyph: "07", href: "/admin/atualizacoes" },
 ];
 
 export function AdminSidebar({ account }: { account: CurrentAccount }) {

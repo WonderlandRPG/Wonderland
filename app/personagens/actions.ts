@@ -93,7 +93,7 @@ export async function createCharacterAction(
   if (error || !data) return fail(error?.message || "Não foi possível criar o personagem.");
   revalidatePath("/perfil");
   revalidatePath("/personagens");
-  redirect(`/personagens/${data.id}?status=criado`);
+  redirect("/personagens?selecionar=1&notice=criado");
 }
 
 export async function deleteCharacterAction(id: string) {

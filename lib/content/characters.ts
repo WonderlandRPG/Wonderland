@@ -13,6 +13,7 @@ import {
   type AllocatedAttributes,
 } from "@/lib/game/characters";
 import { parseRacePayload, type RacePayload } from "@/lib/game/races";
+import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type CharacterRow = Database["public"]["Tables"]["v2_characters"]["Row"];
@@ -28,6 +29,17 @@ export interface CharacterSheet extends CharacterRecord {
   stats: ReturnType<typeof buildCharacterStats>;
   unlockedRaceAbilities: RacePayload["progression"];
   unlockedClassSkills: ClassPayload["progression"];
+  inventory: Array<{
+    id: string;
+    itemId: string;
+    name: string;
+    description: string;
+    rarity: string;
+    slot: string;
+    quantity: number;
+    equippedSlot: string | null;
+    attributes: Partial<AllocatedAttributes>;
+  }>;
 }
 
 function parseCharacter(row: CharacterRow): CharacterRecord | null {
@@ -47,6 +59,19 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
   const ids = [...new Set(records.flatMap((entry) => [entry.race_id, entry.class_id]))];
   const { data } = await client.from("v2_content").select("*").in("id", ids);
   const content = new Map((data ?? []).map((entry) => [entry.id, entry as ContentRow]));
+  const characterIds = records.map((entry) => entry.id);
+  const { data: inventoryRows } = await client
+    .from("v2_character_inventory")
+    .select("*")
+    .in("character_id", characterIds);
+  const itemIds = [...new Set((inventoryRows ?? []).map((entry) => entry.item_id))];
+  const { data: shopRows } = itemIds.length
+    ? await client
+        .from("v2_shop_items")
+        .select("id,name,description,rarity,slot,attributes")
+        .in("id", itemIds)
+    : { data: [] };
+  const shop = new Map((shopRows ?? []).map((entry) => [entry.id, entry]));
   const characterRules = await getCharacterRules();
   return records.flatMap((record) => {
     const raceRow = content.get(record.race_id);
@@ -55,6 +80,34 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
     const race = parseRacePayload(raceRow.payload);
     const characterClass = parseClassPayload(classRow.payload);
     if (!race.success || !characterClass.success) return [];
+    const inventory = (inventoryRows ?? [])
+      .filter((entry) => entry.character_id === record.id)
+      .flatMap((entry) => {
+        const item = shop.get(entry.item_id);
+        if (!item) return [];
+        const parsed = attributesSchema.partial().safeParse(item.attributes);
+        return [
+          {
+            id: entry.id,
+            itemId: entry.item_id,
+            name: item.name,
+            description: item.description,
+            rarity: item.rarity,
+            slot: item.slot,
+            quantity: entry.quantity,
+            equippedSlot: entry.equipped_slot,
+            attributes: parsed.success ? parsed.data : {},
+          },
+        ];
+      });
+    const equipmentBonuses = Object.fromEntries(
+      attributeKeys.map((attribute) => [
+        attribute,
+        inventory
+          .filter((entry) => entry.equippedSlot)
+          .reduce((total, entry) => total + (entry.attributes[attribute] ?? 0), 0),
+      ]),
+    );
     return [
       {
         ...record,
@@ -65,9 +118,11 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
           race.data,
           characterRules,
           defaultCombatRules,
+          equipmentBonuses,
         ),
         unlockedRaceAbilities: getUnlockedRaceAbilities(race.data, record.level),
         unlockedClassSkills: getUnlockedClassSkills(characterClass.data, record.level),
+        inventory,
       },
     ];
   });

@@ -87,6 +87,7 @@ export interface Database {
           class_path_key: string | null;
           level: number;
           xp: number;
+          gold: number;
           allocated_attributes: Json;
           created_at: string;
           updated_at: string;
@@ -100,6 +101,7 @@ export interface Database {
           class_path_key?: string | null;
           level?: number;
           xp?: number;
+          gold?: number;
           allocated_attributes: Json;
           created_at?: string;
           updated_at?: string;
@@ -127,6 +129,12 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["v2_character_inventory"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_active_characters: {
+        Row: { user_id: string; character_id: string; selected_at: string };
+        Insert: { user_id: string; character_id: string; selected_at?: string };
+        Update: Partial<Database["public"]["Tables"]["v2_active_characters"]["Insert"]>;
         Relationships: [];
       };
       v2_game_settings: {
@@ -208,6 +216,11 @@ export interface Database {
           category: string;
           price: number;
           image_url: string | null;
+          slot: string;
+          rarity: string;
+          attributes: Json;
+          two_handed: boolean;
+          sort_order: number;
           active: boolean;
           created_at: string;
           updated_at: string;
@@ -220,11 +233,66 @@ export interface Database {
           category?: string;
           price: number;
           image_url?: string | null;
+          slot?: string;
+          rarity?: string;
+          attributes?: Json;
+          two_handed?: boolean;
+          sort_order?: number;
           active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["v2_shop_items"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_events: {
+        Row: {
+          id: string;
+          title: string;
+          event_type: string;
+          description: string;
+          starts_at: string;
+          registration_label: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          event_type?: string;
+          description?: string;
+          starts_at: string;
+          registration_label?: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_events"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_updates: {
+        Row: {
+          id: string;
+          version: string;
+          title: string;
+          notes: Json;
+          published_on: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          version: string;
+          title: string;
+          notes?: Json;
+          published_on?: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_updates"]["Insert"]>;
         Relationships: [];
       };
       v2_inventory: {
@@ -279,6 +347,27 @@ export interface Database {
       v2_set_player_role: { Args: { p_user_id: string; p_role: string }; Returns: undefined };
       v2_claim_daily_reward: { Args: Record<PropertyKey, never>; Returns: Json };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
+      v2_select_character: { Args: { p_character_id: string }; Returns: undefined };
+      v2_character_ranking: {
+        Args: Record<PropertyKey, never>;
+        Returns: Array<{
+          id: string;
+          user_id: string;
+          name: string;
+          level: number;
+          xp: number;
+          race_name: string;
+          class_name: string;
+        }>;
+      };
+      v2_equip_inventory_item: {
+        Args: { p_inventory_id: string; p_slot: string };
+        Returns: Database["public"]["Tables"]["v2_character_inventory"]["Row"];
+      };
+      v2_unequip_inventory_item: {
+        Args: { p_inventory_id: string };
+        Returns: Database["public"]["Tables"]["v2_character_inventory"]["Row"];
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

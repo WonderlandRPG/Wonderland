@@ -5,11 +5,14 @@ import { DeleteCharacterButton } from "@/components/characters/delete-character-
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
+import { getActiveCharacterId } from "@/lib/content/active-character";
+import { selectCharacterAction } from "./select-actions";
 
 export const metadata = { title: "Meus Personagens" };
 export const dynamic = "force-dynamic";
 
 const noticeMessages: Record<string, string> = {
+  criado: "Personagem criado! Agora escolha com quem deseja jogar.",
   excluido: "O personagem foi excluído.",
   erro: "Não foi possível concluir a operação.",
 };
@@ -17,13 +20,14 @@ const noticeMessages: Record<string, string> = {
 export default async function CharactersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ notice?: string }>;
+  searchParams: Promise<{ notice?: string; selecionar?: string; next?: string }>;
 }) {
   const account = await requireCurrentAccount("/personagens");
-  const [characters, rules, query] = await Promise.all([
+  const [characters, rules, query, activeCharacterId] = await Promise.all([
     getCharacterSheets(account.id),
     getCharacterRules(),
     searchParams,
+    getActiveCharacterId(account.id),
   ]);
   return (
     <main className="character-page">
@@ -61,6 +65,11 @@ export default async function CharactersPage({
             {noticeMessages[query.notice]}
           </div>
         ) : null}
+        {query.selecionar === "1" ? (
+          <div className="account-notice" role="status">
+            <span>♜</span>Escolha o personagem com quem deseja jogar nesta sessão.
+          </div>
+        ) : null}
         {characters.length > 0 ? (
           <section className="character-card-grid">
             {characters.map((character) => (
@@ -74,7 +83,9 @@ export default async function CharactersPage({
                     {character.race.name} · {character.characterClass.name}
                   </span>
                   <h2>{character.name}</h2>
+                  {character.id === activeCharacterId ? <small>Personagem em jogo</small> : null}
                   <p>{character.characterClass.payload.specialization}</p>
+                  <p>{character.gold.toLocaleString("pt-BR")} WG</p>
                   <div>
                     <span>
                       HP <strong>{character.stats.maxHp}</strong>
@@ -88,6 +99,13 @@ export default async function CharactersPage({
                   </div>
                 </div>
                 <footer>
+                  <form action={selectCharacterAction}>
+                    <input name="characterId" type="hidden" value={character.id} />
+                    <input name="next" type="hidden" value={query.next ?? "/perfil"} />
+                    <button className="button button--dark" type="submit">
+                      {character.id === activeCharacterId ? "Continuar jogando" : "Jogar com este"}
+                    </button>
+                  </form>
                   <Link className="button button--primary" href={`/personagens/${character.id}`}>
                     Abrir ficha
                   </Link>

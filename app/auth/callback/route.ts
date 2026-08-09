@@ -44,5 +44,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/entrar?status=link-invalido", url));
   }
 
-  return NextResponse.redirect(new URL(nextPath, url));
+  const selectionUrl = new URL("/personagens", url);
+  selectionUrl.searchParams.set("selecionar", "1");
+  selectionUrl.searchParams.set("next", nextPath);
+  return NextResponse.redirect(selectionUrl);
 }

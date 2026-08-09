@@ -1,6 +1,13 @@
 import { PortalShell } from "@/components/portal-shell";
-import { portalEvents } from "@/lib/game/player-portal";
-export default function EventsPage() {
+import { getPortalEvents } from "@/lib/game/player-portal";
+export const dynamic = "force-dynamic";
+export default async function EventsPage() {
+  const events = await getPortalEvents();
+  const date = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    timeZone: "America/Sao_Paulo",
+  });
   return (
     <PortalShell
       eyebrow="Agenda dos reinos"
@@ -8,15 +15,15 @@ export default function EventsPage() {
       description="Prepare a ficha e encontre seu grupo para as próximas aventuras."
     >
       <div className="event-list">
-        {portalEvents.map((event) => (
-          <article key={event.title}>
-            <time>{event.date}</time>
+        {events.map((event) => (
+          <article key={event.id}>
+            <time>{date.format(new Date(event.starts_at)).toUpperCase().replace(".", "")}</time>
             <div>
-              <small>{event.type}</small>
+              <small>{event.event_type}</small>
               <h2>{event.title}</h2>
               <p>{event.description}</p>
             </div>
-            <span>Inscrições em breve</span>
+            <span>{event.registration_label}</span>
           </article>
         ))}
       </div>

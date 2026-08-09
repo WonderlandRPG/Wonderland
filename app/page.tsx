@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PlayerNav } from "@/components/player-nav";
-import { portalEvents, updates } from "@/lib/game/player-portal";
+import { getPortalEvents, getPortalUpdates } from "@/lib/game/player-portal";
 const realms = [
   {
     name: "Aokigahara",
@@ -23,7 +23,11 @@ const realms = [
     text: "Ilhas flutuantes voltaram aos céus após séculos de silêncio.",
   },
 ];
-export default function Home() {
+export const dynamic = "force-dynamic";
+export default async function Home() {
+  const [portalEvents, updates] = await Promise.all([getPortalEvents(), getPortalUpdates()]);
+  const nextEvent = portalEvents[0];
+  const latestUpdate = updates[0];
   return (
     <main className="home-shell player-home">
       <section className="hero player-hero">
@@ -109,17 +113,25 @@ export default function Home() {
       <section className="home-news page-container">
         <div>
           <span className="eyebrow">Próximo evento</span>
-          <time>{portalEvents[0].date}</time>
-          <h2>{portalEvents[0].title}</h2>
-          <p>{portalEvents[0].description}</p>
+          <time>
+            {nextEvent
+              ? new Intl.DateTimeFormat("pt-BR", {
+                  day: "2-digit",
+                  month: "short",
+                  timeZone: "America/Sao_Paulo",
+                }).format(new Date(nextEvent.starts_at))
+              : "Em breve"}
+          </time>
+          <h2>{nextEvent?.title ?? "Novos eventos a caminho"}</h2>
+          <p>{nextEvent?.description ?? "O calendário será atualizado pelo mestre."}</p>
           <Link href="/eventos">Ver calendário completo →</Link>
         </div>
         <div>
           <span className="eyebrow">Última atualização</span>
-          <small>v{updates[0].version}</small>
-          <h2>{updates[0].title}</h2>
+          <small>{latestUpdate ? `v${latestUpdate.version}` : "Diário"}</small>
+          <h2>{latestUpdate?.title ?? "Sem atualizações publicadas"}</h2>
           <ul>
-            {updates[0].notes.map((n) => (
+            {(latestUpdate?.notes ?? []).map((n) => (
               <li key={n}>{n}</li>
             ))}
           </ul>

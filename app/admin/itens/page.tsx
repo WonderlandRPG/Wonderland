@@ -140,6 +140,11 @@ export default async function AdminItemsPage({
                   <label><span>Nome do efeito</span><input name="effectName" defaultValue={effect?.name ?? ""} placeholder="Sem efeito especial" /></label>
                   <label><span>Descrição</span><input name="effectDescription" defaultValue={effect?.description ?? ""} /></label>
                   {(["FOR","DEF","RES","INI","INT","ARC"] as const).map((attribute) => <label key={attribute}><span>Bônus de {attribute}</span><input name={`effect${attribute}`} type="number" min="0" defaultValue={effect?.modifiers[attribute] ?? 0} /></label>)}
+                  <label><span>Escudo inicial</span><input name="effectShield" type="number" min="0" defaultValue={effect?.shield ?? 0} /></label>
+                  <label><span>HP máximo (%)</span><input name="effectMaxHpPercent" type="number" min="0" max="100" defaultValue={effect?.maxHpPercent ?? 0} /></label>
+                  <label><span>Mana inicial</span><input name="effectMana" type="number" min="0" defaultValue={effect?.mana ?? 0} /></label>
+                  <label><span>Recurso de classe inicial</span><input name="effectClassResource" type="number" min="0" defaultValue={effect?.classResource ?? 0} /></label>
+                  <label><span>Recurso racial inicial</span><input name="effectRaceResource" type="number" min="0" defaultValue={effect?.raceResource ?? 0} /></label>
                   <label><span>Duração (0 = combate inteiro)</span><input name="effectDuration" type="number" min="0" defaultValue={effect?.duration ?? 0} /></label>
                 </fieldset>
                 <label>

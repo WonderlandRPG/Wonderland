@@ -12,10 +12,38 @@ import {
   resolveSkill,
   tickCooldowns,
 } from "@/lib/game/combat";
+import { applyBattleStartItemEffects, itemSpecialEffectSchema } from "@/lib/game/item-effects";
 
 const attributes = { FOR: 100, DEF: 100, RES: 100, INI: 60, INT: 80, ARC: 70 };
 
 describe("motor de combate", () => {
+  it("aplica efeitos estruturados diferentes de itens no início da batalha", () => {
+    const combatant = createCombatant({
+      id: "item-test",
+      name: "Aventureiro",
+      attributes,
+      baseHp: 400,
+      baseMana: 100,
+      classResource: { name: "Ímpeto", initial: 2, maximum: 10 },
+      raceResource: { name: "Bravura", initial: 1, maximum: 5 },
+    });
+    const effect = itemSpecialEffectSchema.parse({
+      key: "vigilia",
+      name: "Vigília",
+      description: "Concede vida, escudo e recursos no início da batalha.",
+      trigger: "BATTLE_START",
+      maxHpPercent: 10,
+      shield: 25,
+      mana: 20,
+      classResource: 3,
+      raceResource: 2,
+    });
+    const result = applyBattleStartItemEffects(combatant, [effect]);
+    expect(result.maxHp).toBe(Math.round(combatant.maxHp * 1.1));
+    expect(result.shield).toBe(25);
+    expect(result.classResource).toBe(5);
+    expect(result.raceResource).toBe(3);
+  });
   it("deriva HP, Mana e poderes a partir dos atributos", () => {
     expect(deriveStats(attributes, 300, 100)).toEqual({
       maxHp: 800,

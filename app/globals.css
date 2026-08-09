@@ -4371,12 +4371,120 @@ button:disabled {
   grid-column: 1 / -1;
 }
 .admin-form input:not([type="checkbox"]),
-.admin-form textarea {
+.admin-form textarea,
+.admin-form select {
   width: 100%;
-  padding: 0.8rem;
-  border: 1px solid rgba(54, 42, 28, 0.2);
-  background: white;
+  min-height: 46px;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid rgba(119, 225, 181, 0.16);
+  border-radius: 10px;
+  background: rgba(2, 17, 12, 0.72);
   color: inherit;
+}
+.admin-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+.admin-form input:focus,
+.admin-form textarea:focus {
+  outline: 2px solid rgba(119, 225, 181, 0.32);
+  border-color: var(--emerald-300);
+}
+.admin-editor-page {
+  max-width: 1180px;
+}
+.admin-editor-page .admin-page-title {
+  padding: 8px 0 10px;
+}
+.admin-editor-card {
+  padding: 28px;
+  border: 1px solid rgba(119, 225, 181, 0.14);
+  border-radius: 18px;
+  background: rgba(8, 29, 21, 0.72);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.14);
+}
+.admin-editor-card.is-new {
+  border-color: rgba(119, 225, 181, 0.28);
+}
+.admin-editor-card > h2 {
+  margin: 0 0 22px;
+  font-family: Georgia, serif;
+  font-weight: 400;
+}
+.admin-editor-list {
+  display: grid;
+  gap: 12px;
+}
+.admin-editor-card summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  cursor: pointer;
+  list-style: none;
+}
+.admin-editor-card summary::-webkit-details-marker {
+  display: none;
+}
+.admin-editor-card summary span {
+  display: grid;
+  gap: 5px;
+}
+.admin-editor-card summary small {
+  color: var(--emerald-300);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.admin-editor-card summary strong {
+  font:
+    400 1.25rem Georgia,
+    serif;
+}
+.admin-editor-card summary b {
+  color: var(--emerald-300);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+}
+.admin-editor-card[open] summary {
+  padding-bottom: 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid rgba(119, 225, 181, 0.12);
+}
+.admin-character-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.admin-character-card {
+  padding: 24px;
+  border: 1px solid rgba(119, 225, 181, 0.14);
+  border-radius: 18px;
+  background: rgba(8, 29, 21, 0.72);
+}
+.admin-character-card > header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.admin-character-card > header > span,
+.admin-character-card > header img {
+  width: 70px;
+  height: 70px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  object-fit: cover;
+  background: rgba(119, 225, 181, 0.12);
+  color: var(--emerald-300);
+  font-weight: 800;
+}
+.admin-character-card h3,
+.admin-character-card p {
+  margin: 4px 0;
+}
+.admin-character-card small {
+  color: var(--emerald-300);
 }
 .rarity {
   font-weight: 800;
@@ -4399,9 +4507,152 @@ button:disabled {
 .rarity--mythic {
   color: #b22537;
 }
+
+.shop-card {
+  --rarity-color: 119, 225, 181;
+  overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  background: linear-gradient(
+    145deg,
+    rgba(var(--rarity-color), 0.11),
+    rgba(255, 255, 255, 0.025) 45%
+  );
+}
+.shop-card::before {
+  position: absolute;
+  inset: -45% 20% auto -15%;
+  height: 180px;
+  content: "";
+  filter: blur(45px);
+  opacity: 0.25;
+  background: rgb(var(--rarity-color));
+  pointer-events: none;
+}
+.shop-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(var(--rarity-color), 0.72);
+  box-shadow:
+    0 18px 55px rgba(var(--rarity-color), 0.22),
+    inset 0 0 30px rgba(var(--rarity-color), 0.07);
+}
+.shop-card__icon {
+  filter: drop-shadow(0 0 12px rgba(var(--rarity-color), 0.8));
+  color: rgb(var(--rarity-color));
+}
+.shop-card--common {
+  --rarity-color: 166, 174, 170;
+}
+.shop-card--uncommon {
+  --rarity-color: 77, 214, 137;
+}
+.shop-card--rare {
+  --rarity-color: 70, 151, 255;
+}
+.shop-card--epic {
+  --rarity-color: 176, 92, 255;
+}
+.shop-card--legendary {
+  --rarity-color: 255, 174, 55;
+}
+.shop-card--mythic {
+  --rarity-color: 255, 70, 104;
+  animation: mythic-pulse 2.8s ease-in-out infinite;
+}
+.shop-card[class*="shop-card--"] {
+  background: linear-gradient(
+    145deg,
+    rgba(var(--rarity-color), 0.13),
+    rgba(255, 255, 255, 0.025) 48%
+  );
+  border-color: rgba(var(--rarity-color), 0.28);
+}
+.shop-card[class*="shop-card--"] .shop-card__icon {
+  color: rgb(var(--rarity-color));
+  filter: drop-shadow(0 0 12px rgba(var(--rarity-color), 0.8));
+}
+@keyframes mythic-pulse {
+  50% {
+    box-shadow: 0 0 38px rgba(255, 70, 104, 0.25);
+  }
+}
+
+.character-progress-strip {
+  display: grid;
+  grid-template-columns: 100px 1fr 170px auto;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  border: 1px solid var(--line-light);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(30, 48, 40, 0.08);
+}
+.character-progress-strip small {
+  display: block;
+  color: #7a8d84;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.68rem;
+}
+.character-progress-strip strong {
+  display: block;
+  margin-top: 6px;
+  color: #10261d;
+}
+.sheet-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 7px;
+  border: 1px solid rgba(31, 60, 47, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.72);
+}
+.sheet-tabs a {
+  padding: 11px 18px;
+  border-radius: 9px;
+  color: #536a60;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.sheet-tabs a.is-active {
+  color: white;
+  background: #143d2d;
+  box-shadow: 0 8px 22px rgba(20, 61, 45, 0.2);
+}
+.is-image {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: transparent !important;
+}
+.character-image-editor form {
+  display: flex;
+  gap: 10px;
+}
+.character-image-editor input {
+  flex: 1;
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid rgba(31, 60, 47, 0.18);
+  border-radius: 10px;
+}
 @media (max-width: 700px) {
   .admin-form {
     grid-template-columns: 1fr;
+  }
+  .admin-character-grid {
+    grid-template-columns: 1fr;
+  }
+  .character-progress-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+  .character-progress-strip .player-xp {
+    grid-column: 1 / -1;
   }
 }
 

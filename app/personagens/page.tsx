@@ -75,7 +75,16 @@ export default async function CharactersPage({
             {characters.map((character) => (
               <article className="character-card" key={character.id}>
                 <div className="character-card__portrait">
-                  <span>{character.name.slice(0, 2).toUpperCase()}</span>
+                  {character.image_url ? (
+                    <span
+                      className="is-image"
+                      role="img"
+                      aria-label={`Retrato de ${character.name}`}
+                      style={{ backgroundImage: `url(${character.image_url})` }}
+                    />
+                  ) : (
+                    <span>{character.name.slice(0, 2).toUpperCase()}</span>
+                  )}
                   <small>Nível {character.level}</small>
                 </div>
                 <div className="character-card__body">

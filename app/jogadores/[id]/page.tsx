@@ -7,17 +7,13 @@ export default async function PublicProfile({ params }: { params: Promise<{ id: 
   const { id } = await params;
   const client = await createServerSupabaseClient();
   if (!client) notFound();
-  const [{ data: profile }, { data: progress }, { data: unlocked }] = await Promise.all([
+  const [{ data: profile }, { data: characters }, { data: unlocked }] = await Promise.all([
     client
       .from("v2_profiles")
       .select("display_name,avatar_url,created_at")
       .eq("user_id", id)
       .maybeSingle(),
-    client
-      .from("v2_player_progress")
-      .select("level,experience,daily_streak")
-      .eq("user_id", id)
-      .maybeSingle(),
+    client.rpc("v2_character_ranking", {}),
     client.from("v2_player_achievements").select("achievement_slug,unlocked_at").eq("user_id", id),
   ]);
   if (!profile) notFound();
@@ -28,20 +24,23 @@ export default async function PublicProfile({ params }: { params: Promise<{ id: 
       title={profile.display_name || "Aventureiro"}
       description={`Membro de Wonderland desde ${new Date(profile.created_at).toLocaleDateString("pt-BR")}.`}
     >
-      <section className="public-profile-stats">
-        <article>
-          <small>Nível</small>
-          <strong>{progress?.level ?? 1}</strong>
-        </article>
-        <article>
-          <small>Experiência</small>
-          <strong>{(progress?.experience ?? 0).toLocaleString("pt-BR")} XP</strong>
-        </article>
-        <article>
-          <small>Sequência</small>
-          <strong>{progress?.daily_streak ?? 0} dias</strong>
-        </article>
-      </section>
+      <h2 className="portal-subtitle">Personagens</h2>
+      <div className="ranking-list">
+        {(characters ?? [])
+          .filter((character) => character.user_id === id)
+          .map((character) => (
+            <article key={character.id}>
+              <span className="portal-avatar">{character.name.slice(0, 2).toUpperCase()}</span>
+              <div>
+                <h2>{character.name}</h2>
+                <p>
+                  {character.race_name} · {character.class_name}
+                </p>
+              </div>
+              <b>Nível {character.level}</b>
+            </article>
+          ))}
+      </div>
       <h2 className="portal-subtitle">Conquistas públicas</h2>
       <div className="portal-card-grid">
         {achievements.map((item) => (

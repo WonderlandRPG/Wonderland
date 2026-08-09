@@ -88,6 +88,9 @@ export interface Database {
           level: number;
           xp: number;
           gold: number;
+          image_url: string | null;
+          last_daily_claim: string | null;
+          daily_streak: number;
           allocated_attributes: Json;
           created_at: string;
           updated_at: string;
@@ -102,6 +105,9 @@ export interface Database {
           level?: number;
           xp?: number;
           gold?: number;
+          image_url?: string | null;
+          last_daily_claim?: string | null;
+          daily_streak?: number;
           allocated_attributes: Json;
           created_at?: string;
           updated_at?: string;
@@ -367,6 +373,20 @@ export interface Database {
       v2_unequip_inventory_item: {
         Args: { p_inventory_id: string };
         Returns: Database["public"]["Tables"]["v2_character_inventory"]["Row"];
+      };
+      v2_set_character_image: {
+        Args: { p_character_id: string; p_image_url: string };
+        Returns: Database["public"]["Tables"]["v2_characters"]["Row"];
+      };
+      v2_admin_update_character: {
+        Args: {
+          p_character_id: string;
+          p_name: string;
+          p_xp: number;
+          p_gold: number;
+          p_image_url: string;
+        };
+        Returns: Database["public"]["Tables"]["v2_characters"]["Row"];
       };
     };
     Enums: Record<string, never>;

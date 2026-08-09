@@ -28,8 +28,10 @@ export default async function ShopPage() {
       <div className="portal-card-grid">
         {items.length ? (
           items.map((item) => (
-            <article className="shop-card" key={item.id}>
-              <span className="shop-card__icon">◆</span>
+            <article className={`shop-card shop-card--${item.rarity}`} key={item.id}>
+              <span className="shop-card__icon" aria-hidden="true">
+                ◆
+              </span>
               <small className={`rarity rarity--${item.rarity}`}>
                 {rarityLabels[item.rarity] ?? item.rarity} · {item.category}
               </small>

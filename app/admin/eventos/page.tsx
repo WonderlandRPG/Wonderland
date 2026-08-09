@@ -15,11 +15,11 @@ export default async function AdminEventsPage({
     searchParams,
   ]);
   return (
-    <div className="admin-page">
-      <header className="admin-page__header">
+    <div className="admin-content admin-editor-page">
+      <header className="admin-page-title">
         <div>
           <span className="eyebrow">Conteúdo ao vivo</span>
-          <h1>Calendário de eventos</h1>
+          <h2>Calendário de eventos</h2>
           <p>Adicione eventos e edite o que os jogadores veem.</p>
         </div>
       </header>
@@ -28,15 +28,24 @@ export default async function AdminEventsPage({
           {query.status === "salvo" ? "✓ Evento salvo." : "! Revise os dados."}
         </div>
       ) : null}
-      <section className="admin-panel">
+      <section className="admin-editor-card is-new">
         <h2>Novo evento</h2>
         <EventForm />
       </section>
-      <section className="admin-card-grid">
+      <section className="admin-editor-list">
         {(data ?? []).map((event) => (
-          <article className="admin-panel" key={event.id}>
+          <details className="admin-editor-card" key={event.id}>
+            <summary>
+              <span>
+                <small>
+                  {event.event_type} · {new Date(event.starts_at).toLocaleDateString("pt-BR")}
+                </small>
+                <strong>{event.title}</strong>
+              </span>
+              <b>{event.active ? "Publicado" : "Oculto"}</b>
+            </summary>
             <EventForm event={event} />
-          </article>
+          </details>
         ))}
       </section>
     </div>

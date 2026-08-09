@@ -80,6 +80,11 @@ export function CharacterCreator({
           <span>Nome do personagem</span>
           <input maxLength={32} minLength={2} name="name" placeholder="Ex.: Aster" required />
         </label>
+        <label className="race-field">
+          <span>Imagem do personagem (opcional)</span>
+          <input name="imageUrl" type="url" placeholder="https://exemplo.com/personagem.png" />
+          <small>Cole o link direto de uma imagem disponível na internet.</small>
+        </label>
       </section>
 
       <section className="character-create-section">

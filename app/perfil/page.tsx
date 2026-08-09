@@ -6,8 +6,6 @@ import { SignOutButton } from "@/components/account/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
 import { isAdministrativeRole, roleLabels } from "@/lib/auth/account";
 import { requireActiveCharacter } from "@/lib/content/active-character";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { claimDailyReward } from "./player-actions";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
 
@@ -27,25 +25,12 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
-  const { account, characterId } = await requireActiveCharacter("/perfil");
-  const client = await createServerSupabaseClient();
-  const [{ data: progress }, characters, characterRules, params] = await Promise.all([
-    client
-      ? client
-          .from("v2_player_progress")
-          .select("level,experience,coins,daily_streak,last_daily_claim")
-          .eq("user_id", account.id)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
+  const { account } = await requireActiveCharacter("/perfil");
+  const [characters, characterRules, params] = await Promise.all([
     getCharacterSheets(account.id),
     getCharacterRules(),
     searchParams,
   ]);
-  const level = progress?.level ?? 1;
-  const experience = progress?.experience ?? 0;
-  const nextLevelXp = Math.round(100 * Math.pow(1.18, level - 1));
-  const claimedToday = progress?.last_daily_claim === new Date().toISOString().slice(0, 10);
-  const activeCharacter = characters.find((character) => character.id === characterId);
   const joinedAt = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "long",
@@ -88,32 +73,6 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
       </section>
 
       <div className="account-content page-container">
-        <section className="player-progress-strip">
-          <div>
-            <small>Nível atual</small>
-            <strong>{level}</strong>
-          </div>
-          <div className="player-xp">
-            <small>Experiência</small>
-            <strong>
-              {experience.toLocaleString("pt-BR")} / {nextLevelXp.toLocaleString("pt-BR")} XP
-            </strong>
-            <span>
-              <i style={{ width: `${Math.min(100, (experience / nextLevelXp) * 100)}%` }} />
-            </span>
-          </div>
-          <div>
-            <small>WG de {activeCharacter?.name ?? "personagem"}</small>
-            <strong>◆ {(activeCharacter?.gold ?? 0).toLocaleString("pt-BR")}</strong>
-          </div>
-          <form action={claimDailyReward}>
-            <button className="button button--primary" disabled={claimedToday}>
-              {claimedToday
-                ? `Sequência: ${progress?.daily_streak ?? 1} dias`
-                : "Coletar recompensa diária"}
-            </button>
-          </form>
-        </section>
         {params.status && statusMessages[params.status] ? (
           <div
             className={`account-notice ${params.status === "acesso-negado" ? "is-warning" : ""}`}

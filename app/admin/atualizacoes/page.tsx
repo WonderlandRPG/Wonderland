@@ -14,11 +14,11 @@ export default async function AdminUpdatesPage({
     searchParams,
   ]);
   return (
-    <div className="admin-page">
-      <header className="admin-page__header">
+    <div className="admin-content admin-editor-page">
+      <header className="admin-page-title">
         <div>
           <span className="eyebrow">Diário público</span>
-          <h1>Atualizações</h1>
+          <h2>Atualizações</h2>
           <p>Publique versões e altere as notas exibidas aos jogadores.</p>
         </div>
       </header>
@@ -27,13 +27,25 @@ export default async function AdminUpdatesPage({
           {query.status === "salvo" ? "✓ Atualização salva." : "! Revise os dados."}
         </div>
       ) : null}
-      <section className="admin-panel">
+      <section className="admin-editor-card is-new">
         <h2>Nova atualização</h2>
         <UpdateForm />
       </section>
-      <section className="admin-card-grid">
+      <section className="admin-editor-list">
         {(data ?? []).map((update) => (
-          <article className="admin-panel" key={update.id}>
+          <details className="admin-editor-card" key={update.id}>
+            <summary>
+              <span>
+                <small>
+                  v{update.version} ·{" "}
+                  {new Date(`${update.published_on}T00:00:00Z`).toLocaleDateString("pt-BR", {
+                    timeZone: "UTC",
+                  })}
+                </small>
+                <strong>{update.title}</strong>
+              </span>
+              <b>{update.active ? "Publicado" : "Oculto"}</b>
+            </summary>
             <UpdateForm
               update={{
                 ...update,
@@ -42,7 +54,7 @@ export default async function AdminUpdatesPage({
                   : [],
               }}
             />
-          </article>
+          </details>
         ))}
       </section>
     </div>

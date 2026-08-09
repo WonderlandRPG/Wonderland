@@ -19,6 +19,12 @@ const creationSchema = z.object({
     .max(32, "Use no máximo 32 caracteres."),
   raceId: z.uuid("Escolha uma raça."),
   classId: z.uuid("Escolha uma classe."),
+  imageUrl: z.union([
+    z.literal(""),
+    z
+      .url("Informe um link de imagem válido.")
+      .refine((value) => /^https?:\/\//.test(value), "Use um link http ou https."),
+  ]),
   allocation: z.string().min(1),
 });
 
@@ -35,6 +41,7 @@ export async function createCharacterAction(
     name: formData.get("name"),
     raceId: formData.get("raceId"),
     classId: formData.get("classId"),
+    imageUrl: String(formData.get("imageUrl") ?? "").trim(),
     allocation: formData.get("allocation"),
   });
   if (!submission.success)
@@ -84,6 +91,7 @@ export async function createCharacterAction(
       name: submission.data.name,
       race_id: submission.data.raceId,
       class_id: submission.data.classId,
+      image_url: submission.data.imageUrl || null,
       allocated_attributes: allocation.data as unknown as Json,
     })
     .select("id")

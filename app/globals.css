@@ -6201,6 +6201,13 @@ button:disabled {
   text-transform: uppercase;
   letter-spacing: 0.09em;
 }
+.character-card__level {
+  color: #f2dfb5 !important;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 .character-session-card {
   display: flex;
   flex-direction: column;

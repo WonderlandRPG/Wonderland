@@ -112,7 +112,7 @@ export default async function CharactersPage({
                   {character.id === activeCharacterId ? (
                     <small className="character-card__online">● Online agora</small>
                   ) : null}
-                  <p>{character.characterClass.payload.specialization}</p>
+                  <p className="character-card__level">Nível {character.level}</p>
                   <p>{character.gold.toLocaleString("pt-BR")} WG</p>
                   <div>
                     <span>

@@ -9,16 +9,20 @@ import type { CurrentAccount } from "@/lib/auth/roles";
 import { roleLabels } from "@/lib/auth/roles";
 
 const navigation = [
-  { label: "Visão geral", glyph: "01", href: "/admin" },
-  { label: "Conteúdo do jogo", glyph: "02", href: "/admin/racas" },
-  { label: "Balanceamento", glyph: "03", href: "/admin/balanceamento" },
-  { label: "Jogadores", glyph: "04", href: "/admin/jogadores" },
-  { label: "Personagens", glyph: "05", href: "/admin/personagens" },
-  { label: "Itens", glyph: "06", href: "/admin/itens" },
-  { label: "Presença", glyph: "07", href: "/admin/presenca" },
-  { label: "Histórico", glyph: "08", href: "/admin/historico" },
-  { label: "Eventos", glyph: "09", href: "/admin/eventos" },
-  { label: "Atualizações", glyph: "10", href: "/admin/atualizacoes" },
+  { group: "Comando", items: [{ label: "Visão geral", glyph: "01", href: "/admin" }] },
+  { group: "Comunidade", items: [
+    { label: "Publicar evento", glyph: "＋", href: "/admin/eventos#novo-evento" },
+    { label: "Publicar atualização", glyph: "＋", href: "/admin/atualizacoes#nova-atualizacao" },
+    { label: "Jogadores", glyph: "02", href: "/admin/jogadores" },
+    { label: "Personagens", glyph: "03", href: "/admin/personagens" },
+  ] },
+  { group: "Jogo e economia", items: [
+    { label: "Raças e conteúdo", glyph: "04", href: "/admin/racas" },
+    { label: "Itens", glyph: "05", href: "/admin/itens" },
+    { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
+    { label: "Presença", glyph: "07", href: "/admin/presenca" },
+  ] },
+  { group: "Auditoria", items: [{ label: "Histórico", glyph: "08", href: "/admin/historico" }] },
 ];
 
 export function AdminSidebar({ account }: { account: CurrentAccount }) {
@@ -32,8 +36,9 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
       </div>
 
       <nav className="admin-sidebar__nav" aria-label="Seções administrativas">
-        <span className="admin-sidebar__nav-label">Núcleo de controle</span>
-        {navigation.map((item) => {
+        {navigation.map((section) => <div className="admin-sidebar__nav-group" key={section.group}>
+          <span className="admin-sidebar__nav-label">{section.group}</span>
+          {section.items.map((item) => {
           const active = item.href
             ? item.href === "/admin"
               ? pathname === item.href
@@ -65,7 +70,8 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
               {item.label}
             </Link>
           );
-        })}
+          })}
+        </div>)}
         {pathname.startsWith("/admin/racas") ? (
           <div className="admin-sidebar__subnav">
             <Link className="is-active" href="/admin/racas">

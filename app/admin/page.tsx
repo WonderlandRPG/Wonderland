@@ -1,127 +1,59 @@
 import Link from "next/link";
 
-import { getAdminOverview } from "@/lib/content/overview";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export const metadata = {
-  title: "Central de Comando",
-};
-
+export const metadata = { title: "Central de Comando" };
 export const dynamic = "force-dynamic";
 
+const tools = [
+  { href: "/admin/jogadores", index: "01", title: "Jogadores", text: "Contas, cargos e acesso administrativo." },
+  { href: "/admin/personagens", index: "02", title: "Personagens", text: "XP, WG, rank, reino e caminho de classe." },
+  { href: "/admin/racas", index: "03", title: "Conteúdo do jogo", text: "Raças, habilidades e regras publicadas." },
+  { href: "/admin/itens", index: "04", title: "Itens e economia", text: "Catálogo, raridades, preços e efeitos." },
+  { href: "/admin/balanceamento", index: "05", title: "Balanceamento", text: "Parâmetros globais do combate e progressão." },
+  { href: "/admin/presenca", index: "06", title: "Presença", text: "Recompensas diárias por personagem." },
+  { href: "/admin/historico", index: "07", title: "Histórico", text: "Registro de todas as mudanças administrativas." },
+];
+
 export default async function AdminPage() {
-  const overview = await getAdminOverview();
+  const client = await createServerSupabaseClient();
+  const results = client ? await Promise.all([
+    client.from("v2_events").select("id", { count: "exact", head: true }),
+    client.from("v2_updates").select("id", { count: "exact", head: true }),
+    client.from("v2_characters").select("id", { count: "exact", head: true }),
+    client.from("v2_shop_items").select("id", { count: "exact", head: true }),
+  ]) : [];
+  const [events, updates, characters, items] = results.map((result) => result.count ?? 0);
 
-  return (
-    <div className="admin-content">
-      <section className="command-hero">
-        <div className="command-hero__copy">
-          <span className="eyebrow">Core administrativo // v2.1</span>
-          <h2>Uma central para governar todo o Wonderland.</h2>
-          <p>
-            O primeiro editor está ativo. Raças, bônus, mecânicas, passivas e habilidades por nível
-            agora podem ser administrados sem alterar o código do site.
-          </p>
-          <div className="command-hero__actions">
-            <Link className="button button--primary" href="/admin/racas/nova">
-              Criar raça
-              <span aria-hidden="true">＋</span>
-            </Link>
-            <Link className="button button--dark" href="/admin/racas">
-              Gerenciar raças
-            </Link>
-          </div>
-        </div>
-        <div className="command-hero__radar" aria-hidden="true">
-          <div className="radar-ring radar-ring--one" />
-          <div className="radar-ring radar-ring--two" />
-          <div className="radar-ring radar-ring--three" />
-          <span className="radar-core">W</span>
-          <span className="radar-ping radar-ping--one" />
-          <span className="radar-ping radar-ping--two" />
-          <span className="radar-ping radar-ping--three" />
-        </div>
-      </section>
+  return <div className="admin-content admin-command-center">
+    <section className="admin-command-welcome">
+      <div>
+        <span className="eyebrow">Painel administrativo</span>
+        <h2>O que você quer administrar hoje?</h2>
+        <p>As ações mais usadas ficam primeiro. Publicações, jogadores e sistemas estão separados por função.</p>
+      </div>
+      <div className="admin-command-welcome__status"><span className="signal-dot"/><small>Núcleo online</small><strong>Wonderland</strong></div>
+    </section>
 
-      <section className="admin-metrics" aria-label="Resumo do painel">
-        <article>
-          <span>Módulos mapeados</span>
-          <strong>{String(overview.totals.modules).padStart(2, "0")}</strong>
-          <small>Estrutura central definida</small>
-        </article>
-        <article>
-          <span>Conteúdos publicados</span>
-          <strong>{String(overview.totals.published).padStart(2, "0")}</strong>
-          <small>Sincronizados com o jogo</small>
-        </article>
-        <article>
-          <span>Rascunhos</span>
-          <strong>{String(overview.totals.drafts).padStart(2, "0")}</strong>
-          <small>Aguardando publicação</small>
-        </article>
-        <article className="admin-metrics__health">
-          <span>Integridade do núcleo</span>
-          <strong>100%</strong>
-          <small>Validação TypeScript ativa</small>
-        </article>
-      </section>
+    <section className="admin-publish-launchers" aria-label="Publicar conteúdo">
+      <Link href="/admin/eventos#novo-evento">
+        <span>Agenda dos jogadores</span><h3>Publicar novo evento</h3><p>Defina data, horário, descrição e visibilidade no calendário.</p><b>Criar evento <i>＋</i></b>
+      </Link>
+      <Link href="/admin/atualizacoes#nova-atualizacao">
+        <span>Diário público</span><h3>Publicar atualização</h3><p>Informe a versão e apresente todas as mudanças aos jogadores.</p><b>Escrever atualização <i>＋</i></b>
+      </Link>
+    </section>
 
-      <section className="admin-section">
-        <div className="admin-section__heading">
-          <div>
-            <span className="eyebrow">Catálogo central</span>
-            <h2>Sistemas administráveis</h2>
-          </div>
-          <span className="admin-section__meta">{overview.totals.modules} módulos</span>
-        </div>
+    <section className="admin-command-metrics">
+      <article><small>Eventos</small><strong>{events ?? 0}</strong><Link href="/admin/eventos">Gerenciar</Link></article>
+      <article><small>Atualizações</small><strong>{updates ?? 0}</strong><Link href="/admin/atualizacoes">Gerenciar</Link></article>
+      <article><small>Personagens</small><strong>{characters ?? 0}</strong><Link href="/admin/personagens">Abrir</Link></article>
+      <article><small>Itens</small><strong>{items ?? 0}</strong><Link href="/admin/itens">Abrir</Link></article>
+    </section>
 
-        <div className="admin-module-grid">
-          {overview.modules.map((module, index) => {
-            const enabled = module.key === "race";
-
-            return (
-              <article
-                className={`admin-module-card ${enabled ? "is-enabled" : ""}`}
-                key={module.key}
-              >
-                <div className="admin-module-card__head">
-                  <span className="admin-module-card__glyph">{module.glyph}</span>
-                  <span className="admin-module-card__number">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <h3>{module.label}</h3>
-                <p>{module.description}</p>
-                <div className="admin-module-card__footer">
-                  <span>{module.published} publicados</span>
-                  <span>{module.drafts} rascunhos</span>
-                  {enabled ? (
-                    <Link aria-label={`Abrir módulo ${module.label}`} href="/admin/racas">
-                      →
-                    </Link>
-                  ) : (
-                    <button type="button" disabled aria-label={`Abrir módulo ${module.label}`}>
-                      →
-                    </button>
-                  )}
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="admin-setup">
-        <div className="admin-setup__index">LIVE</div>
-        <div>
-          <span className="eyebrow">Primeiro módulo</span>
-          <h2>Gerenciamento de raças ativado.</h2>
-          <p>
-            Crie, publique, duplique e arquive raças. O histórico registra cada alteração e o limite
-            racial de 25 pontos é protegido pelo servidor.
-          </p>
-        </div>
-        <span className="admin-setup__status">Editor disponível</span>
-      </section>
-    </div>
-  );
+    <section className="admin-tool-section">
+      <header><div><span className="eyebrow">Ferramentas</span><h2>Todos os controles</h2></div><small>{tools.length} áreas disponíveis</small></header>
+      <div className="admin-tool-grid">{tools.map((tool) => <Link href={tool.href} key={tool.href}><span>{tool.index}</span><div><h3>{tool.title}</h3><p>{tool.text}</p></div><b>→</b></Link>)}</div>
+    </section>
+  </div>;
 }

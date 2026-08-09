@@ -15,12 +15,13 @@ export default async function AdminUpdatesPage({
   ]);
   return (
     <div className="admin-content admin-editor-page">
-      <header className="admin-page-title">
+      <header className="admin-page-title admin-publisher-hero">
         <div>
           <span className="eyebrow">Diário público</span>
           <h2>Atualizações</h2>
           <p>Publique versões e altere as notas exibidas aos jogadores.</p>
         </div>
+        <a className="button button--primary" href="#nova-atualizacao">＋ Publicar atualização</a>
       </header>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
@@ -31,11 +32,13 @@ export default async function AdminUpdatesPage({
               : "! Revise os dados."}
         </div>
       ) : null}
-      <section className="admin-editor-card is-new">
-        <h2>Nova atualização</h2>
+      <section className="admin-composer" id="nova-atualizacao">
+        <header><span>01</span><div><small>NOVA PUBLICAÇÃO</small><h2>Nova atualização</h2><p>Organize as notas por linha e escolha quando elas ficam visíveis.</p></div></header>
         <UpdateForm />
       </section>
-      <section className="admin-editor-list">
+      <section className="admin-publication-section">
+        <header><div><small>HISTÓRICO PÚBLICO</small><h2>Atualizações cadastradas</h2></div><span>{data?.length ?? 0} publicações</span></header>
+        <div className="admin-editor-list">
         {(data ?? []).map((update) => (
           <details className="admin-editor-card" key={update.id}>
             <summary>
@@ -64,6 +67,7 @@ export default async function AdminUpdatesPage({
             </form>
           </details>
         ))}
+        </div>
       </section>
     </div>
   );

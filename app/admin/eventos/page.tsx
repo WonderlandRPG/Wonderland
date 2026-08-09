@@ -16,12 +16,13 @@ export default async function AdminEventsPage({
   ]);
   return (
     <div className="admin-content admin-editor-page">
-      <header className="admin-page-title">
+      <header className="admin-page-title admin-publisher-hero">
         <div>
           <span className="eyebrow">Conteúdo ao vivo</span>
           <h2>Calendário de eventos</h2>
           <p>Adicione eventos e edite o que os jogadores veem.</p>
         </div>
+        <a className="button button--primary" href="#novo-evento">＋ Publicar evento</a>
       </header>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
@@ -32,11 +33,13 @@ export default async function AdminEventsPage({
               : "! Revise os dados."}
         </div>
       ) : null}
-      <section className="admin-editor-card is-new">
-        <h2>Novo evento</h2>
+      <section className="admin-composer" id="novo-evento">
+        <header><span>01</span><div><small>NOVA PUBLICAÇÃO</small><h2>Novo evento</h2><p>Preencha os dados abaixo. Você pode publicar agora ou deixar oculto.</p></div></header>
         <EventForm />
       </section>
-      <section className="admin-editor-list">
+      <section className="admin-publication-section">
+        <header><div><small>CALENDÁRIO</small><h2>Eventos cadastrados</h2></div><span>{data?.length ?? 0} publicações</span></header>
+        <div className="admin-editor-list">
         {(data ?? []).map((event) => (
           <details className="admin-editor-card" key={event.id}>
             <summary>
@@ -55,6 +58,7 @@ export default async function AdminEventsPage({
             </form>
           </details>
         ))}
+        </div>
       </section>
     </div>
   );

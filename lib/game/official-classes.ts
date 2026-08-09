@@ -87,6 +87,7 @@ function buildSkill(seed: SkillSeed, resourceName: string) {
     damageType: seed.damageType ?? "none",
     target: seed.target,
     resource: seed.type === "Passiva" ? "none" : "special",
+    resourceKey: "class",
     cost: seed.type === "Passiva" ? 0 : seed.cost,
     cooldown: seed.cooldown,
     range: seed.range,

@@ -27,7 +27,7 @@ export interface CharacterSheet extends CharacterRecord {
   race: { id: string; name: string; payload: RacePayload };
   characterClass: { id: string; name: string; payload: ClassPayload };
   stats: ReturnType<typeof buildCharacterStats>;
-  unlockedRaceAbilities: RacePayload["progression"];
+  unlockedRaceAbilities: ClassPayload["progression"];
   unlockedClassSkills: ClassPayload["progression"];
   inventory: Array<{
     id: string;

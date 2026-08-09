@@ -1,11 +1,14 @@
 import { z } from "zod";
 
 import { attributeKeys, racePayloadSchema, type AttributeKey } from "@/lib/game/schemas";
+import { classSkillSchema } from "@/lib/game/schemas";
+import type { ClassSkill } from "@/lib/game/classes";
 
 export type RacePayload = z.infer<typeof racePayloadSchema>;
 export type RaceTrait = RacePayload["traits"][number];
 export type RaceMechanic = RacePayload["mechanics"][number];
 export type RaceProgressionEntry = RacePayload["progression"][number];
+export type StructuredRaceAbility = ClassSkill;
 
 export const maximumRaceBonusPoints = 25;
 
@@ -20,6 +23,9 @@ export const attributeLabels: Record<AttributeKey, string> = {
 
 export function createEmptyRacePayload(): RacePayload {
   return {
+    engineContractVersion: 1,
+    specialization: "Versátil",
+    tags: ["HUMANOIDE"],
     description: "",
     imageUrl: "",
     difficulty: 1,
@@ -36,7 +42,14 @@ export function createEmptyRacePayload(): RacePayload {
     mechanics: [],
     traits: [],
     progression: [],
+    abilitiesV2: [],
+    traitsV2: [],
+    resource: null,
   };
+}
+
+export function getStructuredRaceAbilities(payload: RacePayload): StructuredRaceAbility[] {
+  return classSkillSchema.array().parse(payload.abilitiesV2);
 }
 
 export function getRaceBonusTotal(bonuses: RacePayload["attributeBonuses"]) {

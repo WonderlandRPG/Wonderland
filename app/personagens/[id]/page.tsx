@@ -9,6 +9,7 @@ import { attributeKeys } from "@/lib/game/schemas";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { RankBadge } from "@/components/characters/rank-badge";
 import { getAdventureRank } from "@/lib/game/ranks";
+import { getStructuredRaceAbilities } from "@/lib/game/races";
 import {
   defaultEquipSlot,
   equipmentSlots,
@@ -43,7 +44,7 @@ export default async function CharacterSheetPage({
   const futureClassSkills = character.characterClass.payload.progression
     .filter((skill) => skill.level > character.level)
     .sort((a, b) => a.level - b.level);
-  const futureRaceSkills = character.race.payload.progression
+  const futureRaceSkills = getStructuredRaceAbilities(character.race.payload)
     .filter((skill) => skill.level > character.level)
     .sort((a, b) => a.level - b.level);
   const equippedItems = new Map(
@@ -317,13 +318,13 @@ export default async function CharacterSheetPage({
                 title="Habilidades da raça"
                 unlocked={character.unlockedRaceAbilities.map((entry) => ({
                   level: entry.level,
-                  name: entry.title,
-                  description: entry.description,
+                  name: entry.name,
+                  description: entry.playerDescription,
                 }))}
                 locked={futureRaceSkills.map((entry) => ({
                   level: entry.level,
-                  name: entry.title,
-                  description: entry.description,
+                  name: entry.name,
+                  description: entry.playerDescription,
                 }))}
               />
               <SkillList

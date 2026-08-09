@@ -61,6 +61,9 @@ export const raceAttributeBonusesSchema = z.object({
 
 export const racePayloadSchema = z
   .object({
+    engineContractVersion: z.literal(1).default(1),
+    specialization: requiredTextSchema.default("Versátil"),
+    tags: z.array(z.string().trim().min(1).regex(/^[A-Z0-9_]+$/)).default(["HUMANOIDE"]),
     description: requiredTextSchema,
     imageUrl: z.union([z.literal(""), z.url()]).default(""),
     difficulty: z.number().int().min(1).max(5),
@@ -71,6 +74,36 @@ export const racePayloadSchema = z
     traits: z.array(raceTraitSchema),
     abilities: z.array(raceAbilitySchema).optional(),
     progression: z.array(progressionEntrySchema),
+    abilitiesV2: z.array(z.record(z.string(), z.unknown())).default([]),
+    traitsV2: z.array(z.record(z.string(), z.unknown())).default([]),
+    resource: z
+      .object({
+        name: requiredTextSchema,
+        initial: nonNegativeIntegerSchema,
+        maximum: z.number().int().positive(),
+        generationEvents: z
+          .array(
+            z.object({
+              trigger: z.enum([
+                "BASIC_ATTACK_HIT",
+                "DAMAGE_DEALT",
+                "DAMAGE_TAKEN",
+                "HEAL_APPLIED",
+                "SHIELD_APPLIED",
+                "STATUS_APPLIED",
+                "TARGET_CHANGED",
+                "MULTI_TARGET_HIT",
+              ]),
+              amount: z.number().int().positive(),
+              limitPerAction: z.number().int().positive().default(1),
+            }),
+          )
+          .min(1),
+        consumptionRules: z.array(requiredTextSchema).min(1),
+        resetRules: z.array(requiredTextSchema).min(1),
+      })
+      .nullable()
+      .default(null),
   })
   .superRefine((payload, context) => {
     const total = attributeKeys.reduce(
@@ -161,6 +194,7 @@ export const classSkillSchema = z.object({
   damageType: z.enum(["physical", "magic", "true", "none"]),
   target: z.enum(["self", "ally", "enemy", "area"]),
   resource: z.enum(["mana", "life", "special", "none"]),
+  resourceKey: z.enum(["class", "race"]).default("class"),
   cost: nonNegativeNumberSchema,
   cooldown: nonNegativeIntegerSchema,
   range: nonNegativeIntegerSchema,

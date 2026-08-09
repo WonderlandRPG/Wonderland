@@ -4,6 +4,7 @@ import {
   createEmptyRacePayload,
   createRaceSlug,
   getRaceBonusTotal,
+  getStructuredRaceAbilities,
   maximumRaceBonusPoints,
 } from "@/lib/game/races";
 import { officialRaces } from "@/lib/game/official-races";
@@ -63,10 +64,17 @@ describe("regras das raças", () => {
       expect(racePayloadSchema.safeParse(race.payload).success).toBe(true);
       expect(getRaceBonusTotal(race.payload.attributeBonuses)).toBe(15);
       expect(race.payload.mechanics.length).toBeGreaterThan(0);
-      expect(race.payload.traits.length).toBeGreaterThanOrEqual(2);
+      expect(race.payload.engineContractVersion).toBe(1);
+      expect(race.payload.traits.length).toBeGreaterThanOrEqual(1);
+      expect(race.payload.traitsV2.length).toBeGreaterThanOrEqual(1);
+      expect(race.payload.abilitiesV2).toHaveLength(5);
       expect(race.payload.progression.map((entry) => entry.level)).toEqual([
-        1, 20, 40, 60, 80, 100,
+        1, 1, 25, 50, 80,
       ]);
+      getStructuredRaceAbilities(race.payload).forEach((ability) => {
+        expect(ability.operations.length).toBeGreaterThan(0);
+        expect(ability.systemRule).toContain("Arredonde");
+      });
     });
   });
 
@@ -76,10 +84,10 @@ describe("regras das raças", () => {
     expect(catalogText).not.toMatch(
       /\d+% (?:do|da) (?:FOR|INT|ARC|maior atributo|atributo utilizado|dano original)/,
     );
-    expect(catalogText).toContain("1x ARC");
-    expect(catalogText).toContain("1,5x FOR");
-    expect(catalogText).toContain("2x FOR");
-    expect(catalogText).toContain("20% menos dano");
+    expect(catalogText).toContain("1,1x ARC");
+    expect(catalogText).toContain("1,5x RES");
+    expect(catalogText).toContain("1,35x FOR");
+    expect(catalogText).toContain('"resourceKey":"race"');
   });
 
   it("migra habilidades do formato antigo para a progressão racial", () => {

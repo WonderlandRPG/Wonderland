@@ -29,6 +29,7 @@ export function createEmptyClassSkill(level = 1): ClassSkill {
     damageType: "none",
     target: "enemy",
     resource: "none",
+    resourceKey: "class",
     cost: 0,
     cooldown: 0,
     range: 1,

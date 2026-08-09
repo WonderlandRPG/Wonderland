@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { combineAttributes, deriveStats, type CombatRules } from "@/lib/game/combat";
 import type { RacePayload } from "@/lib/game/races";
+import { getStructuredRaceAbilities } from "@/lib/game/races";
 import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
 
 export const allocatedAttributesSchema = z.object({
@@ -71,7 +72,9 @@ export function buildCharacterStats(
 }
 
 export function getUnlockedRaceAbilities(race: RacePayload, level: number) {
-  return race.progression.filter((entry) => entry.level <= level).sort((a, b) => a.level - b.level);
+  return getStructuredRaceAbilities(race)
+    .filter((entry) => entry.level <= level && entry.type !== "Passiva")
+    .sort((a, b) => a.level - b.level);
 }
 
 export function createEmptyAllocation(): AllocatedAttributes {

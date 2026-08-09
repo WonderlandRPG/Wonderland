@@ -55,7 +55,7 @@ describe("personagens e fichas", () => {
       true,
     );
     expect(getUnlockedRaceAbilities(aengel.payload, 100)).toHaveLength(
-      aengel.payload.progression.length,
+      aengel.payload.abilitiesV2.filter((entry) => entry.type !== "Passiva").length,
     );
   });
 });

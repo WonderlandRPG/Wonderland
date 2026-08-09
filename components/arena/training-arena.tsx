@@ -15,7 +15,6 @@ import {
   type CombatantState,
 } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
-import type { RaceProgressionEntry } from "@/lib/game/races";
 
 interface ArenaCharacter {
   id: string;
@@ -30,9 +29,15 @@ interface ArenaCharacter {
     maximum: number;
     generationEvents?: Array<{ trigger: string; amount: number }>;
   };
+  raceResource: {
+    name: string;
+    initial: number;
+    maximum: number;
+    generationEvents?: Array<{ trigger: string; amount: number }>;
+  } | null;
   attributes: CombatAttributes;
   skills: ClassSkill[];
-  raceAbilities: RaceProgressionEntry[];
+  raceAbilities: ClassSkill[];
   items: Array<{ id: string; name: string; description: string }>;
   combatLore: Array<{ name: string; description: string }>;
 }
@@ -158,7 +163,7 @@ function Battle({
     applyPlayerAction(result.actor, result.target, result.event.message, "class");
   }
 
-  function handleRaceAbility(ability: RaceProgressionEntry) {
+  function handleRaceAbility(ability: ClassSkill) {
     if (finished || actions.race) return;
     const result = resolveRaceAbility(player, enemy, ability, rules);
     if (result.event.kind === "error") return setMessage(result.event.message);
@@ -239,19 +244,21 @@ function Battle({
         {character.raceAbilities.map((ability) => {
           const cooldown = getRaceAbilityCooldown(player, ability);
           const meta = getRaceAbilityArenaMeta(ability);
+          const raceCannotPay =
+            ability.resource === "special" && player.raceResource < ability.cost;
           return (
             <button
-              disabled={finished || actions.race || cooldown > 0}
-              key={`${ability.level}-${ability.title}`}
+              disabled={finished || actions.race || cooldown > 0 || raceCannotPay}
+              key={ability.key}
               onClick={() => handleRaceAbility(ability)}
               type="button"
             >
-              <strong>{ability.title}</strong>
+              <strong>{ability.name}</strong>
               <span>{meta.summary}</span>
               <small>
                 {cooldown
                   ? `Recarga: ${cooldown} rodada(s)`
-                  : `${meta.cost} Mana · Recarga ${meta.cooldown}`}
+                  : `${meta.cost} ${ability.resource === "special" ? player.raceResourceName : "Mana"} · Recarga ${meta.cooldown}`}
               </small>
             </button>
           );
@@ -260,7 +267,8 @@ function Battle({
           const cooldown = player.cooldowns[skill.key] ?? 0;
           const cannotPay = skill.resource === "mana" && player.mana < skill.cost;
           const cannotPayClassResource =
-            skill.resource === "special" && player.classResource < skill.cost;
+            skill.resource === "special" &&
+            (skill.resourceKey === "race" ? player.raceResource : player.classResource) < skill.cost;
           return (
             <button
               disabled={
@@ -275,7 +283,7 @@ function Battle({
               <small>
                 {cooldown
                   ? `Recarga: ${cooldown}`
-                  : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "special" ? player.classResourceName : "HP"} · Recarga ${skill.cooldown}`}
+                  : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "special" ? (skill.resourceKey === "race" ? player.raceResourceName : player.classResourceName) : "HP"} · Recarga ${skill.cooldown}`}
               </small>
             </button>
           );
@@ -347,6 +355,17 @@ function Fighter({ combatant, subtitle }: { combatant: CombatantState; subtitle:
             </strong>
           </p>
           <progress max={combatant.maxClassResource} value={combatant.classResource} />
+        </>
+      ) : null}
+      {combatant.maxRaceResource > 0 ? (
+        <>
+          <p>
+            {combatant.raceResourceName}{" "}
+            <strong>
+              {combatant.raceResource}/{combatant.maxRaceResource}
+            </strong>
+          </p>
+          <progress max={combatant.maxRaceResource} value={combatant.raceResource} />
         </>
       ) : null}
       {combatant.shield > 0 ? <small>Escudo: {combatant.shield}</small> : null}

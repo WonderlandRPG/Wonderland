@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import type { ClassSkill } from "@/lib/game/classes";
-import type { RaceProgressionEntry } from "@/lib/game/races";
 import { attributeKeys, attributesSchema, type AttributeKey } from "@/lib/game/schemas";
 
 export const combatRulesSchema = z.object({
@@ -50,6 +49,10 @@ export interface CombatantState {
   maxClassResource: number;
   statuses: Record<string, { duration: number; stacks: number }>;
   resourceGainOnBasicAttack: number;
+  raceResourceName: string;
+  raceResource: number;
+  maxRaceResource: number;
+  raceResourceGainOnBasicAttack: number;
 }
 
 export interface CombatEvent {
@@ -98,6 +101,12 @@ export function createCombatant(input: {
     maximum: number;
     generationEvents?: Array<{ trigger: string; amount: number }>;
   };
+  raceResource?: {
+    name: string;
+    initial: number;
+    maximum: number;
+    generationEvents?: Array<{ trigger: string; amount: number }>;
+  } | null;
 }): CombatantState {
   const stats = deriveStats(input.attributes, input.baseHp, input.baseMana, input.rules);
   return {
@@ -116,6 +125,12 @@ export function createCombatant(input: {
     statuses: {},
     resourceGainOnBasicAttack:
       input.classResource?.generationEvents?.find((entry) => entry.trigger === "BASIC_ATTACK_HIT")
+        ?.amount ?? 0,
+    raceResourceName: input.raceResource?.name ?? "Recurso racial",
+    raceResource: input.raceResource?.initial ?? 0,
+    maxRaceResource: input.raceResource?.maximum ?? 0,
+    raceResourceGainOnBasicAttack:
+      input.raceResource?.generationEvents?.find((entry) => entry.trigger === "BASIC_ATTACK_HIT")
         ?.amount ?? 0,
   };
 }
@@ -179,6 +194,10 @@ export function resolveBasicAttack(
         actor.maxClassResource,
         actor.classResource + actor.resourceGainOnBasicAttack,
       ),
+      raceResource: Math.min(
+        actor.maxRaceResource,
+        actor.raceResource + actor.raceResourceGainOnBasicAttack,
+      ),
     },
     target: applyDamage(target, amount),
     event: {
@@ -227,11 +246,14 @@ export function resolveSkill(
   if (skill.resource === "life" && actor.hp <= skill.cost) {
     return skillError(actor, target, `HP insuficiente para usar ${skill.name}.`);
   }
-  if (skill.resource === "special" && actor.classResource < skill.cost) {
+  const usesRaceResource = skill.resource === "special" && skill.resourceKey === "race";
+  const availableSpecialResource = usesRaceResource ? actor.raceResource : actor.classResource;
+  const specialResourceName = usesRaceResource ? actor.raceResourceName : actor.classResourceName;
+  if (skill.resource === "special" && availableSpecialResource < skill.cost) {
     return skillError(
       actor,
       target,
-      `${actor.classResourceName} insuficiente para usar ${skill.name}.`,
+      `${specialResourceName} insuficiente para usar ${skill.name}.`,
     );
   }
 
@@ -240,7 +262,13 @@ export function resolveSkill(
     mana: skill.resource === "mana" ? actor.mana - skill.cost : actor.mana,
     hp: skill.resource === "life" ? actor.hp - skill.cost : actor.hp,
     classResource:
-      skill.resource === "special" ? actor.classResource - skill.cost : actor.classResource,
+      skill.resource === "special" && !usesRaceResource
+        ? actor.classResource - skill.cost
+        : actor.classResource,
+    raceResource:
+      skill.resource === "special" && usesRaceResource
+        ? actor.raceResource - skill.cost
+        : actor.raceResource,
     cooldowns: { ...actor.cooldowns, [skill.key]: skill.cooldown },
   };
   const primaryOperation = skill.operations[0];
@@ -325,116 +353,25 @@ export function resolveSkill(
   };
 }
 
-function raceAbilityKey(ability: RaceProgressionEntry) {
-  return `race:${ability.level}:${ability.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
-}
-
-function descriptionNumber(description: string, label: string) {
-  const match = description.match(new RegExp(`${label}\\s*:\\s*(\\d+)`, "i"));
-  return match ? Number(match[1]) : 0;
-}
-
-export function getRaceAbilityArenaMeta(ability: RaceProgressionEntry) {
-  const statedCost = descriptionNumber(ability.description, "Custo");
-  const statedCooldown = descriptionNumber(ability.description, "Recarga");
+export function getRaceAbilityArenaMeta(ability: ClassSkill) {
   return {
-    cost: statedCost || 25 + Math.ceil(ability.level / 20) * 10,
-    cooldown: statedCooldown || (ability.level >= 80 ? 5 : ability.level >= 40 ? 4 : 2),
-    summary:
-      ability.description
-        .split("\n")
-        .find((line) => /dano|cura|escudo|reduz|aumenta|recupera/i.test(line)) ??
-      ability.description.split("\n")[0],
+    cost: ability.cost,
+    cooldown: ability.cooldown,
+    summary: ability.playerDescription,
   };
 }
 
 export function resolveRaceAbility(
   actor: CombatantState,
   target: CombatantState,
-  ability: RaceProgressionEntry,
+  ability: ClassSkill,
   rules: CombatRules = defaultCombatRules,
 ): CombatResolution {
-  const key = raceAbilityKey(ability);
-  if ((actor.cooldowns[key] ?? 0) > 0) {
-    return skillError(actor, target, `${ability.title} ainda está em recarga.`);
-  }
-  const meta = getRaceAbilityArenaMeta(ability);
-  const manaCost = meta.cost;
-  if (actor.mana < manaCost) {
-    return skillError(actor, target, `Mana insuficiente para usar ${ability.title}.`);
-  }
-  const cooldown = meta.cooldown;
-  const paidActor: CombatantState = {
-    ...actor,
-    mana: actor.mana - manaCost,
-    cooldowns: { ...actor.cooldowns, [key]: cooldown },
-  };
-  const scaling = [
-    ...ability.description.matchAll(/(\d+(?:[,.]\d+)?)x\s*(FOR|DEF|RES|INI|INT|ARC)/gi),
-  ].map((match) => ({
-    multiplier: Number(match[1].replace(",", ".")),
-    attribute: match[2].toUpperCase() as AttributeKey,
-  }));
-  const rawPower = calculateScaledPower(actor.attributes, scaling.slice(0, 2));
-  const text = ability.description.toLowerCase();
-
-  if (/cura|recupera hp|recuperando/.test(text)) {
-    const amount = rawPower || rounded(actor.attributes.ARC);
-    const healed = Math.min(amount, paidActor.maxHp - paidActor.hp);
-    return {
-      actor: { ...paidActor, hp: paidActor.hp + healed },
-      target,
-      event: {
-        kind: "heal",
-        amount: healed,
-        message: `${actor.name} usou ${ability.title} e recuperou ${healed} de HP.`,
-      },
-    };
-  }
-  if (/escudo/.test(text) && !/causando dano|dano mágico|dano físico/.test(text)) {
-    const amount = rawPower || rounded(actor.attributes.ARC);
-    return {
-      actor: { ...paidActor, shield: paidActor.shield + amount },
-      target,
-      event: {
-        kind: "shield",
-        amount,
-        message: `${actor.name} usou ${ability.title} e recebeu ${amount} de escudo.`,
-      },
-    };
-  }
-  if (/dano|atinge um inimigo|julgamento/.test(text)) {
-    const type: DamageType = /mágic|\bint\b|\barc\b/.test(text) ? "magic" : "physical";
-    const amount = calculateDamage(
-      rawPower || actor.attributes[type === "magic" ? "INT" : "FOR"],
-      type,
-      target.attributes,
-      rules,
-    );
-    return {
-      actor: paidActor,
-      target: applyDamage(target, amount),
-      event: {
-        kind: "damage",
-        damageType: type,
-        amount,
-        message: `${actor.name} usou ${ability.title} e causou ${amount} de dano ${type === "magic" ? "mágico" : "físico"}.`,
-      },
-    };
-  }
-  return {
-    actor: paidActor,
-    target,
-    event: {
-      kind: "utility",
-      amount: 0,
-      message: `${actor.name} usou ${ability.title}: ${ability.description.split("\n")[0]}`,
-    },
-  };
+  return resolveSkill(actor, target, ability, rules);
 }
 
-export function getRaceAbilityCooldown(combatant: CombatantState, ability: RaceProgressionEntry) {
-  return combatant.cooldowns[raceAbilityKey(ability)] ?? 0;
+export function getRaceAbilityCooldown(combatant: CombatantState, ability: ClassSkill) {
+  return combatant.cooldowns[ability.key] ?? 0;
 }
 
 export function combineAttributes(...sources: Partial<CombatAttributes>[]): CombatAttributes {

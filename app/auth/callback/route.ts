@@ -18,17 +18,22 @@ export async function GET(request: NextRequest) {
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const requestedType = url.searchParams.get("type");
+  const flowId = url.searchParams.get("sb_flow_id");
   const nextPath = getSafeRedirectPath(url.searchParams.get("next"));
+  const recoveryFlow = requestedType === "recovery" || nextPath === "/nova-senha";
   const supabase = await createServerSupabaseClient();
 
   if (!supabase) {
-    return NextResponse.redirect(new URL("/entrar?status=configuracao-indisponivel", url));
+    return NextResponse.redirect(new URL("/?status=configuracao-indisponivel", url));
   }
 
   let error: Error | null = null;
 
   if (code) {
-    const result = await supabase.auth.exchangeCodeForSession(code);
+    const result = await supabase.auth.exchangeCodeForSession(
+      code,
+      flowId ? { flowId } : undefined,
+    );
     error = result.error;
   } else if (tokenHash && requestedType && otpTypes.includes(requestedType as EmailOtpType)) {
     const result = await supabase.auth.verifyOtp({
@@ -41,8 +46,13 @@ export async function GET(request: NextRequest) {
   }
 
   if (error) {
-    return NextResponse.redirect(new URL("/entrar?status=link-invalido", url));
+    return NextResponse.redirect(
+      new URL(
+        recoveryFlow ? "/recuperar-senha?status=link-invalido" : "/?status=link-invalido",
+        url,
+      ),
+    );
   }
 
-  return NextResponse.redirect(new URL(nextPath, url));
+  return NextResponse.redirect(new URL(recoveryFlow ? "/nova-senha" : nextPath, url));
 }

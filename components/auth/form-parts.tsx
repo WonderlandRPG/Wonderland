@@ -22,6 +22,7 @@ export function FormNotice({ state }: { state: AuthActionState }) {
   return (
     <div
       className={`form-notice form-notice--${state.status}`}
+      data-sfx-on-mount={state.status === "success" ? "confirm" : "error"}
       role={state.status === "error" ? "alert" : "status"}
     >
       <span aria-hidden="true">{state.status === "success" ? "✓" : "!"}</span>
@@ -33,11 +34,14 @@ export function FormNotice({ state }: { state: AuthActionState }) {
 export function SubmitButton({
   idleLabel,
   pendingLabel,
+  pending: externalPending,
 }: {
   idleLabel: string;
   pendingLabel: string;
+  pending?: boolean;
 }) {
-  const { pending } = useFormStatus();
+  const { pending: formPending } = useFormStatus();
+  const pending = externalPending ?? formPending;
 
   return (
     <button className="button button--primary auth-submit" type="submit" disabled={pending}>

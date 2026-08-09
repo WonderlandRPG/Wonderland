@@ -1,17 +1,92 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { type FormEvent, useState } from "react";
 
-import { signUpAction } from "@/app/auth/actions";
 import { FieldError, FormNotice, SubmitButton } from "@/components/auth/form-parts";
 import { idleAuthState } from "@/lib/auth/forms";
+import type { AuthActionState, AuthField } from "@/lib/auth/forms";
+import { signUpSchema } from "@/lib/auth/validation";
+import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 export function SignUpForm() {
-  const [state, action] = useActionState(signUpAction, idleAuthState);
+  const [state, setState] = useState<AuthActionState>(idleAuthState);
+  const [pending, setPending] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (pending) return;
+
+    const formData = new FormData(event.currentTarget);
+    const result = signUpSchema.safeParse({
+      displayName: formData.get("displayName"),
+      email: formData.get("email"),
+      password: formData.get("password"),
+      confirmPassword: formData.get("confirmPassword"),
+      acceptedTerms: formData.get("acceptedTerms"),
+    });
+
+    if (!result.success) {
+      setState({
+        status: "error",
+        message: "Revise os campos destacados antes de continuar.",
+        fieldErrors: result.error.flatten().fieldErrors as Partial<Record<AuthField, string[]>>,
+      });
+      return;
+    }
+
+    const supabase = createBrowserSupabaseClient();
+
+    if (!supabase) {
+      setState({
+        status: "error",
+        message: "A conexão de contas ainda não está disponível. Tente novamente em instantes.",
+      });
+      return;
+    }
+
+    setPending(true);
+    setState(idleAuthState);
+
+    const callbackUrl = new URL("/auth/callback", window.location.origin);
+    callbackUrl.searchParams.set("next", "/perfil?status=conta-confirmada");
+    const { displayName, email, password } = result.data;
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { display_name: displayName },
+        emailRedirectTo: callbackUrl.toString(),
+      },
+    });
+
+    setPending(false);
+
+    if (error) {
+      setState({
+        status: "error",
+        message:
+          error.status === 429
+            ? "Muitas tentativas foram feitas. Aguarde alguns minutos antes de tentar novamente."
+            : "Não foi possível criar a conta agora. Tente novamente em instantes.",
+      });
+      return;
+    }
+
+    if (data.session) {
+      window.location.replace("/perfil?status=conta-criada");
+      return;
+    }
+
+    setState({
+      status: "success",
+      message:
+        "Cadastro recebido! Enviamos um link de confirmação para o seu e-mail. Abra-o para ativar a conta.",
+    });
+  }
 
   return (
-    <form className="auth-form" action={action} noValidate>
+    <form className="auth-form" onSubmit={handleSubmit} noValidate>
       <FormNotice state={state} />
 
       <label className="form-field">
@@ -82,10 +157,10 @@ export function SignUpForm() {
       </label>
       <FieldError state={state} field="acceptedTerms" />
 
-      <SubmitButton idleLabel="Criar minha conta" pendingLabel="Criando conta" />
+      <SubmitButton idleLabel="Criar minha conta" pendingLabel="Criando conta" pending={pending} />
 
       <p className="auth-form__switch">
-        Já tem uma conta? <Link href="/entrar">Entrar</Link>
+        Já tem uma conta? <Link href="/">Entrar</Link>
       </p>
     </form>
   );

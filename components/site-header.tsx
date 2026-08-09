@@ -12,10 +12,12 @@ export async function SiteHeader() {
       <nav className="site-header__nav" aria-label="Navegação principal">
         <a href="#fundacao">Fundação</a>
         <a href="#sistemas">Sistemas</a>
+        {account ? <Link href="/personagens">Personagens</Link> : null}
+        {account ? <Link href="/arena">Arena</Link> : null}
         {account && isAdministrativeRole(account.role) ? (
           <Link href="/admin">Painel ADM</Link>
         ) : null}
-        <Link className="button button--small button--glass" href={account ? "/perfil" : "/entrar"}>
+        <Link className="button button--small button--glass" href={account ? "/perfil" : "/"}>
           {account ? "Minha conta" : "Entrar"}
         </Link>
       </nav>

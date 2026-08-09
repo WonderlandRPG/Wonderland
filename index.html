@@ -153,6 +153,55 @@
         text-transform: uppercase;
       }
 
+      .audio-control {
+        position: fixed;
+        z-index: 10;
+        right: 18px;
+        bottom: 18px;
+        display: flex;
+        min-height: 46px;
+        align-items: center;
+        gap: 9px;
+        padding: 0 14px;
+        color: #f7f7f2;
+        border: 1px solid rgba(121, 235, 194, 0.26);
+        border-radius: 999px;
+        background: rgba(5, 12, 10, 0.88);
+        box-shadow: 0 12px 36px rgba(0, 0, 0, 0.32);
+        backdrop-filter: blur(12px);
+        cursor: pointer;
+      }
+
+      .audio-control > span {
+        display: grid;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        color: #79ebc2;
+        border: 1px solid rgba(121, 235, 194, 0.24);
+        border-radius: 50%;
+      }
+
+      .audio-control.is-playing > span {
+        box-shadow: 0 0 16px rgba(121, 235, 194, 0.48);
+      }
+
+      .audio-control.has-error {
+        border-color: rgba(231, 154, 126, 0.48);
+      }
+
+      .audio-control.has-error > span {
+        color: #e7a081;
+        border-color: rgba(231, 154, 126, 0.35);
+      }
+
+      .audio-control small {
+        font-size: 0.62rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
       @media (max-height: 650px) {
         body {
           overflow: auto;
@@ -210,5 +259,137 @@
       </section>
       <footer>Wonderland RPG · 2026</footer>
     </main>
+    <button
+      aria-label="Ativar música tema"
+      aria-pressed="false"
+      class="audio-control"
+      data-sfx="click"
+      id="audio-control"
+      type="button"
+    >
+      <span aria-hidden="true">♫</span>
+      <small>Ativar som</small>
+    </button>
+    <script>
+      (() => {
+        const musicEnabledKey = "wonderland:music-enabled";
+        const musicPositionKey = "wonderland:music-position";
+        const effectSources = {
+          open: "assets/effects/open.mp3",
+          click: "assets/effects/click.mp3",
+          confirm: "assets/effects/confirm.mp3",
+          error: "assets/effects/error.mp3",
+          close: "assets/effects/close.mp3",
+        };
+        const theme = new Audio("assets/music/tema.mp3");
+        const control = document.querySelector("#audio-control");
+        const label = control.querySelector("small");
+        const effects = Object.fromEntries(
+          Object.entries(effectSources).map(([key, source]) => [key, new Audio(source)]),
+        );
+        let enabled = localStorage.getItem(musicEnabledKey) !== "false";
+        let playing = false;
+        let unavailable = false;
+        const savedPosition = Number(localStorage.getItem(musicPositionKey));
+
+        theme.loop = true;
+        theme.preload = "auto";
+        theme.volume = 0.25;
+
+        const restorePosition = () => {
+          if (!Number.isFinite(savedPosition) || savedPosition <= 0) return;
+          theme.currentTime = Number.isFinite(theme.duration)
+            ? savedPosition % theme.duration
+            : savedPosition;
+        };
+
+        if (theme.readyState >= HTMLMediaElement.HAVE_METADATA) restorePosition();
+        else theme.addEventListener("loadedmetadata", restorePosition, { once: true });
+
+        function updateControl() {
+          control.classList.toggle("is-playing", playing);
+          control.classList.toggle("has-error", unavailable);
+          control.setAttribute("aria-pressed", String(playing));
+          control.setAttribute("aria-label", playing ? "Pausar música tema" : "Ativar música tema");
+          label.textContent = unavailable
+            ? "Áudio indisponível"
+            : playing
+              ? "Tema tocando"
+              : enabled
+                ? "Ativar som"
+                : "Tema pausado";
+        }
+
+        async function playTheme() {
+          if (!enabled) return;
+          try {
+            await theme.play();
+            playing = true;
+          } catch (error) {
+            playing = false;
+            unavailable = error.name !== "NotAllowedError" && Boolean(theme.error);
+          }
+          updateControl();
+        }
+
+        function playEffect(name) {
+          const source = effects[name];
+          if (!source) return;
+          const instance = source.cloneNode(true);
+          instance.currentTime = 0;
+          instance.volume = name === "click" ? 0.55 : 0.65;
+          instance.play().catch(() => {
+            if (instance.error) {
+              unavailable = true;
+              updateControl();
+            }
+          });
+        }
+
+        control.addEventListener("click", () => {
+          if (playing && !theme.paused) {
+            enabled = false;
+            playing = false;
+            theme.pause();
+          } else {
+            enabled = true;
+            unavailable = false;
+            playTheme();
+          }
+          localStorage.setItem(musicEnabledKey, String(enabled));
+          updateControl();
+        });
+
+        document.addEventListener(
+          "click",
+          (event) => {
+            const target = event.target.closest?.(
+              "button, a, [role='button'], input[type='submit']",
+            );
+            if (!target) return;
+            playEffect(target.dataset.sfx || "click");
+          },
+          true,
+        );
+
+        const unlock = (event) => {
+          if (event.target.closest?.("#audio-control")) return;
+          if (enabled && theme.paused) playTheme();
+        };
+        window.addEventListener("pointerdown", unlock, true);
+        window.addEventListener("keydown", unlock, true);
+        theme.addEventListener("error", () => {
+          unavailable = true;
+          playing = false;
+          updateControl();
+        });
+        window.setInterval(() => {
+          if (Number.isFinite(theme.currentTime))
+            localStorage.setItem(musicPositionKey, String(theme.currentTime));
+        }, 1500);
+        updateControl();
+        playTheme();
+      })();
+    </script>
   </body>
 </html>

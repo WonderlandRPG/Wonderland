@@ -1,5 +1,7 @@
 import type { UserRole } from "@/lib/db/types";
 
+import { isAdministrativeRole } from "@/lib/auth/access";
+
 export interface CurrentAccount {
   id: string;
   email: string;
@@ -16,6 +18,4 @@ export const roleLabels: Record<UserRole, string> = {
   founder: "Fundador",
 };
 
-export function isAdministrativeRole(role: UserRole) {
-  return role === "admin" || role === "founder";
-}
+export { isAdministrativeRole };

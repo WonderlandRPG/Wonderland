@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 import { SignOutButton } from "@/components/account/sign-out-button";
 import { BrandMark } from "@/components/brand-mark";
+import { getAccountNavigation } from "@/lib/auth/access";
 import type { CurrentAccount } from "@/lib/auth/roles";
 import { roleLabels } from "@/lib/auth/roles";
 
@@ -18,6 +19,9 @@ const navigation = [
 
 export function AdminSidebar({ account }: { account: CurrentAccount }) {
   const pathname = usePathname();
+  const playerNavigation = getAccountNavigation(account.role).filter(
+    (area) => area.key !== "admin",
+  );
 
   return (
     <aside className="admin-sidebar">
@@ -61,18 +65,41 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
             </Link>
           );
         })}
-        {pathname.startsWith("/admin/racas") ? (
+        {pathname.startsWith("/admin/racas") ||
+        pathname.startsWith("/admin/classes") ||
+        pathname.startsWith("/admin/itens") ? (
           <div className="admin-sidebar__subnav">
-            <Link className="is-active" href="/admin/racas">
+            <Link
+              className={pathname.startsWith("/admin/racas") ? "is-active" : ""}
+              href="/admin/racas"
+            >
               <span>RA</span>
               Raças
             </Link>
-            <Link href="/admin/racas/nova">
-              <span>＋</span>
-              Nova raça
+            <Link
+              className={pathname.startsWith("/admin/classes") ? "is-active" : ""}
+              href="/admin/classes"
+            >
+              <span>CL</span>
+              Classes
+            </Link>
+            <Link
+              className={pathname.startsWith("/admin/itens") ? "is-active" : ""}
+              href="/admin/itens"
+            >
+              <span>IT</span>
+              Itens
             </Link>
           </div>
         ) : null}
+
+        <span className="admin-sidebar__nav-label">Área do jogador</span>
+        {playerNavigation.map((area) => (
+          <Link className="admin-sidebar__nav-item" href={area.href} key={area.key}>
+            <span>{area.glyph}</span>
+            {area.shortLabel}
+          </Link>
+        ))}
       </nav>
 
       <div className="admin-sidebar__footer">

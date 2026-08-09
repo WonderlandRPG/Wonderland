@@ -101,6 +101,20 @@ export function getUnlockedClassSkills(payload: ClassPayload, level: number) {
     .sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
 }
 
+export function getClassPath(payload: ClassPayload, pathKey: string | null | undefined) {
+  return payload.paths.find((path) => path.key === pathKey) ?? null;
+}
+
+export function getUnlockedPathSkills(
+  payload: ClassPayload,
+  pathKey: string | null | undefined,
+  level: number,
+) {
+  return (getClassPath(payload, pathKey)?.skills ?? [])
+    .filter((skill) => skill.level <= level)
+    .sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
+}
+
 export function prepareArenaSkill(skill: ClassSkill): ClassSkill {
   if (/passiva/i.test(skill.type)) return skill;
   const derivedCost =

@@ -8868,6 +8868,11 @@ body[data-rank]:has(.arena-page) .player-nav,
 .codex-entry__body article p { margin:0; color:#78968a; font-size:.72rem; line-height:1.55; white-space:pre-line; }
 .codex-entry__body article em { color:#b99b63; font-size:.62rem; font-style:normal; }
 .codex-paths { display:grid; grid-column:1/-1; grid-template-columns:repeat(2,1fr); gap:9px; }
+.codex-path-skills { display:grid; gap:8px; margin-top:14px; padding-top:12px; border-top:1px solid color-mix(in srgb,var(--rank-color,#67e8b5) 24%,transparent); }
+.codex-path-skills span { display:grid; gap:4px; padding:10px; border-radius:10px; background:rgba(3,19,15,.58); border:1px solid rgba(117,224,190,.14); }
+.codex-path-skills b { color:#effff9; font-size:.78rem; letter-spacing:.04em; }
+.codex-path-skills small { color:#a9c8bd; line-height:1.5; }
+.codex-path-skills i { color:#79ddb8; font-size:.68rem; font-style:normal; text-transform:uppercase; letter-spacing:.08em; }
 
 /* Portal e resultados dos modos de Arena */
 .arena-mode-select > header { margin-bottom:26px; text-align:center; }

@@ -56,6 +56,8 @@ export default async function CharacterSheetPage({
   const classPath = character.characterClass.payload.paths?.find(
     (path) => path.key === character.class_path_key,
   );
+  const unlockedPathSkills = (classPath?.skills ?? []).filter((skill) => skill.level <= character.level);
+  const futurePathSkills = (classPath?.skills ?? []).filter((skill) => skill.level > character.level);
   const renderEquipmentSlot = (slot: (typeof equipmentSlots)[number]) => {
     const item = equippedItems.get(slot.key);
     return (
@@ -336,7 +338,7 @@ export default async function CharacterSheetPage({
               />
               <SkillList
                 title="Habilidades da classe"
-                unlocked={character.unlockedClassSkills.map((entry) => ({
+                unlocked={character.unlockedClassSkills.filter((entry) => !(classPath?.skills ?? []).some((skill) => skill.key === entry.key)).map((entry) => ({
                   level: entry.level,
                   name: entry.name,
                   description: entry.effect,
@@ -346,6 +348,11 @@ export default async function CharacterSheetPage({
                   name: entry.name,
                   description: entry.effect,
                 }))}
+              />
+              <SkillList
+                title={`Caminho · ${classPath?.name ?? "Não definido"}`}
+                unlocked={unlockedPathSkills.map((entry) => ({ level: entry.level, name: entry.name, description: entry.playerDescription }))}
+                locked={futurePathSkills.map((entry) => ({ level: entry.level, name: entry.name, description: entry.playerDescription }))}
               />
             </div>
           </section>

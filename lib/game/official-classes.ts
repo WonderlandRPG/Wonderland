@@ -48,72 +48,606 @@ interface ClassSeed {
   skills: SkillSeed[];
 }
 
-const classPaths: Record<string, Array<{ key: string; name: string; description: string; passive: string }>> = {
-  barbaro: [
-    { key: "berserker", name: "Berserker", description: "Converte Fúria em pressão ofensiva e execuções.", passive: "Dano físico aumenta enquanto a Fúria estiver acima da metade." },
-    { key: "guardiao-totemico", name: "Guardião Totêmico", description: "Transforma Fúria em resistência e proteção do grupo.", passive: "Ao receber dano elevado, concede proteção temporária a si." },
+type PathTechniqueMode = "damage" | "shield" | "buff" | "debuff" | "heal" | "control" | "mobility";
+type PathTechniqueSeed = { name: string; mode: PathTechniqueMode; flavor: string };
+
+const pathTechniques: Record<string, [PathTechniqueSeed, PathTechniqueSeed]> = {
+  berserker: [
+    { name: "Frenesi Carmesim", mode: "buff", flavor: "Transforma a dor em força bruta." },
+    {
+      name: "Ruptura do Carrasco",
+      mode: "damage",
+      flavor: "Desfere um golpe decisivo contra o alvo.",
+    },
   ],
-  guerreiro: [
-    { key: "mestre-de-armas", name: "Mestre de Armas", description: "Especialista em sequências técnicas e dano consistente.", passive: "Alternar habilidades ofensivas reduz a recarga da próxima técnica." },
-    { key: "comandante", name: "Comandante", description: "Controla a linha de frente e fortalece aliados.", passive: "A primeira habilidade de suporte da rodada tem efeito ampliado." },
+  "guardiao-totemico": [
+    { name: "Totem do Urso", mode: "shield", flavor: "Invoca a proteção dos ancestrais." },
+    { name: "Clamor Ancestral", mode: "buff", flavor: "Fortalece o corpo com poder totêmico." },
   ],
-  paladino: [
-    { key: "juramento-da-luz", name: "Juramento da Luz", description: "Cura, escudos e proteção sagrada.", passive: "Escudos aplicados em alvos feridos ficam mais fortes." },
-    { key: "juramento-da-vinganca", name: "Juramento da Vingança", description: "Persegue e pune inimigos marcados.", passive: "Causa dano adicional contra o último inimigo que feriu um aliado." },
+  "mestre-de-armas": [
+    {
+      name: "Corte de Transição",
+      mode: "damage",
+      flavor: "Conecta posturas em um único ataque técnico.",
+    },
+    {
+      name: "Arsenal Perfeito",
+      mode: "buff",
+      flavor: "Entra na postura ideal para o próximo confronto.",
+    },
   ],
-  cavaleiro: [
-    { key: "bastiao", name: "Bastião", description: "Defesa absoluta, provocação e bloqueio.", passive: "Recebe menos dano enquanto protege um aliado." },
-    { key: "cavaleiro-negro", name: "Cavaleiro Negro", description: "Sacrifica proteção para aplicar pressão sombria.", passive: "Perder HP fortalece o próximo ataque físico." },
+  comandante: [
+    {
+      name: "Ordem de Avanço",
+      mode: "buff",
+      flavor: "Emite uma ordem que aumenta o poder ofensivo.",
+    },
+    {
+      name: "Formação Inabalável",
+      mode: "shield",
+      flavor: "Organiza a linha de frente contra o impacto inimigo.",
+    },
   ],
-  arqueiro: [
-    { key: "atirador", name: "Atirador", description: "Precisão extrema e dano em alvo único.", passive: "Ataques a longa distância acumulam Precisão." },
-    { key: "cacador", name: "Caçador", description: "Marcas, armadilhas e controle de território.", passive: "Alvos marcados não podem ocultar sua posição." },
+  "juramento-da-luz": [
+    { name: "Luz Restauradora", mode: "heal", flavor: "Canaliza a luz para restaurar um aliado." },
+    {
+      name: "Égide do Juramento",
+      mode: "shield",
+      flavor: "Concede uma proteção sagrada duradoura.",
+    },
   ],
-  assassino: [
-    { key: "executor", name: "Executor", description: "Explosão de dano contra inimigos enfraquecidos.", passive: "Dano aumenta contra alvos abaixo de 35% do HP." },
-    { key: "sombra", name: "Sombra", description: "Mobilidade, furtividade e ataques de oportunidade.", passive: "Reposicionar-se fortalece o próximo golpe." },
+  "juramento-da-vinganca": [
+    {
+      name: "Marca do Culpado",
+      mode: "debuff",
+      flavor: "Condena o inimigo que ameaça seus aliados.",
+    },
+    {
+      name: "Sentença Radiante",
+      mode: "damage",
+      flavor: "Executa a sentença do juramento em luz concentrada.",
+    },
   ],
-  ladino: [
-    { key: "duelista", name: "Duelista", description: "Combate ágil, contra-ataques e precisão.", passive: "Esquivar habilita uma reação ofensiva." },
-    { key: "trapaceiro", name: "Trapaceiro", description: "Debuffs, itens e manipulação do campo.", passive: "O primeiro item de cada combate não consome a ação de item." },
+  bastiao: [
+    {
+      name: "Muralha Viva",
+      mode: "shield",
+      flavor: "Transforma a própria armadura em uma fortaleza.",
+    },
+    {
+      name: "Desafio Irrecusável",
+      mode: "control",
+      flavor: "Obriga o inimigo a enfrentar o Bastião.",
+    },
   ],
-  monge: [
-    { key: "punho-de-ferro", name: "Punho de Ferro", description: "Combos físicos e quebra de postura.", passive: "Golpes consecutivos aumentam o dano do combo." },
-    { key: "caminho-espiritual", name: "Caminho Espiritual", description: "Ki defensivo, cura e purificação.", passive: "Gastar Ki em suporte recupera uma pequena quantidade de HP." },
+  "cavaleiro-negro": [
+    {
+      name: "Lâmina do Sacrifício",
+      mode: "damage",
+      flavor: "Converte vitalidade perdida em um golpe sombrio.",
+    },
+    {
+      name: "Armadura Profana",
+      mode: "buff",
+      flavor: "Aceita a corrupção para ampliar o poder físico.",
+    },
   ],
-  mago: [
-    { key: "elementalista", name: "Elementalista", description: "Domina áreas e interações elementais.", passive: "Alternar elementos aplica uma reação elemental adicional." },
-    { key: "arcanista", name: "Arcanista", description: "Controle de Mana, escudos e magia pura.", passive: "Ao terminar a rodada com Mana, recebe escudo arcano." },
+  atirador: [
+    {
+      name: "Mira Implacável",
+      mode: "buff",
+      flavor: "Estabiliza a postura e elimina qualquer hesitação.",
+    },
+    {
+      name: "Disparo Perfurante",
+      mode: "damage",
+      flavor: "Dispara um projétil de altíssima precisão.",
+    },
   ],
-  feiticeiro: [
-    { key: "linhagem-draconica", name: "Linhagem Dracônica", description: "Poder elemental estável e resistência mágica.", passive: "Habilidades elementais concedem resistência temporária." },
-    { key: "caos-arcano", name: "Caos Arcano", description: "Magia imprevisível de alto risco e recompensa.", passive: "Efeitos com chance bem-sucedidos geram poder adicional." },
+  cacador: [
+    { name: "Marca da Presa", mode: "debuff", flavor: "Expõe a presa e seus pontos vulneráveis." },
+    {
+      name: "Armadilha de Contenção",
+      mode: "control",
+      flavor: "Prende o alvo no terreno preparado.",
+    },
   ],
-  bruxo: [
-    { key: "pacto-infernal", name: "Pacto Infernal", description: "Dano contínuo, fogo e contratos de poder.", passive: "Inimigos com debuff recebem dano mágico adicional." },
-    { key: "pacto-abissal", name: "Pacto Abissal", description: "Controle, medo e enfraquecimento.", passive: "Aplicar controle recupera parte do recurso de pacto." },
+  executor: [
+    { name: "Selo da Execução", mode: "debuff", flavor: "Marca o alvo para um fim rápido." },
+    { name: "Golpe Terminal", mode: "damage", flavor: "Ataca o ponto vital revelado pelo selo." },
   ],
-  clerigo: [
-    { key: "dominio-da-vida", name: "Domínio da Vida", description: "Cura intensiva e remoção de efeitos negativos.", passive: "A primeira cura em um alvo ferido é ampliada." },
-    { key: "dominio-da-guerra", name: "Domínio da Guerra", description: "Bênçãos ofensivas e combate sagrado.", passive: "Curar um aliado fortalece o próximo ataque do Clérigo." },
+  sombra: [
+    {
+      name: "Passo Sombrio",
+      mode: "mobility",
+      flavor: "Desaparece e reaparece em posição vantajosa.",
+    },
+    { name: "Lâmina do Ocaso", mode: "damage", flavor: "Ataca ao emergir da escuridão." },
   ],
-  druida: [
-    { key: "circulo-da-lua", name: "Círculo da Lua", description: "Transformações e combate bestial.", passive: "Transformações preservam parte dos efeitos defensivos ativos." },
-    { key: "circulo-da-terra", name: "Círculo da Terra", description: "Controle natural, cura e terreno.", passive: "Efeitos de terreno duram uma rodada adicional." },
+  duelista: [
+    {
+      name: "Convite ao Duelo",
+      mode: "debuff",
+      flavor: "Desafia o alvo e quebra sua concentração.",
+    },
+    {
+      name: "Resposta Perfeita",
+      mode: "damage",
+      flavor: "Transforma uma abertura em contra-ataque preciso.",
+    },
   ],
-  bardo: [
-    { key: "colegio-da-guerra", name: "Colégio da Guerra", description: "Inspiração ofensiva e liderança de batalha.", passive: "Inspirar um aliado também fortalece o próprio Bardo." },
-    { key: "colegio-do-glamour", name: "Colégio do Glamour", description: "Encanto, ilusão e controle social.", passive: "O primeiro controle aplicado em combate tem chance aumentada." },
+  trapaceiro: [
+    {
+      name: "Bolsa de Truques",
+      mode: "debuff",
+      flavor: "Usa um artifício para enfraquecer o adversário.",
+    },
+    {
+      name: "Saída Ensaiada",
+      mode: "mobility",
+      flavor: "Escapa da ameaça antes que o plano seja descoberto.",
+    },
+  ],
+  "punho-de-ferro": [
+    {
+      name: "Quebra-Postura",
+      mode: "debuff",
+      flavor: "Abala a guarda do inimigo com um impacto concentrado.",
+    },
+    {
+      name: "Cem Punhos",
+      mode: "damage",
+      flavor: "Conclui o combo com uma sequência devastadora.",
+    },
+  ],
+  "caminho-espiritual": [
+    { name: "Sopro de Ki", mode: "heal", flavor: "Conduz energia vital para fechar ferimentos." },
+    {
+      name: "Círculo de Pureza",
+      mode: "shield",
+      flavor: "Forma uma barreira espiritual contra agressões.",
+    },
+  ],
+  elementalista: [
+    {
+      name: "Convergência Elemental",
+      mode: "debuff",
+      flavor: "Mistura elementos para romper resistências.",
+    },
+    {
+      name: "Cataclismo Primordial",
+      mode: "damage",
+      flavor: "Libera uma colisão concentrada de forças elementais.",
+    },
+  ],
+  arcanista: [
+    { name: "Barreira de Mana", mode: "shield", flavor: "Condensa Mana em proteção arcana." },
+    { name: "Ruptura Arcana", mode: "damage", flavor: "Desmonta a defesa inimiga com magia pura." },
+  ],
+  "linhagem-draconica": [
+    {
+      name: "Escamas Ancestrais",
+      mode: "shield",
+      flavor: "Manifesta a resistência da linhagem dracônica.",
+    },
+    {
+      name: "Sopro do Ancestral",
+      mode: "damage",
+      flavor: "Expele o poder elemental herdado do sangue dracônico.",
+    },
+  ],
+  "caos-arcano": [
+    {
+      name: "Distorção Instável",
+      mode: "debuff",
+      flavor: "Desorganiza a energia do alvo com magia caótica.",
+    },
+    {
+      name: "Surto Impossível",
+      mode: "damage",
+      flavor: "Força o caos a assumir uma forma destrutiva.",
+    },
+  ],
+  "pacto-infernal": [
+    {
+      name: "Contrato em Chamas",
+      mode: "debuff",
+      flavor: "Grava no alvo uma cláusula de sofrimento.",
+    },
+    {
+      name: "Cobrança Infernal",
+      mode: "damage",
+      flavor: "Cobra o preço do contrato com fogo profano.",
+    },
+  ],
+  "pacto-abissal": [
+    {
+      name: "Olhar do Abismo",
+      mode: "control",
+      flavor: "Impõe ao alvo uma visão paralisante do vazio.",
+    },
+    {
+      name: "Maré do Vazio",
+      mode: "damage",
+      flavor: "Faz o abismo atravessar o campo de batalha.",
+    },
+  ],
+  "dominio-da-vida": [
+    { name: "Oração Revigorante", mode: "heal", flavor: "Restaura a força vital com uma prece." },
+    {
+      name: "Milagre da Vigília",
+      mode: "shield",
+      flavor: "Mantém o alvo de pé sob proteção divina.",
+    },
+  ],
+  "dominio-da-guerra": [
+    { name: "Bênção do Confronto", mode: "buff", flavor: "Consagra o combatente para a batalha." },
+    {
+      name: "Martelo da Fé",
+      mode: "damage",
+      flavor: "Concentra a convicção em um impacto sagrado.",
+    },
+  ],
+  "circulo-da-lua": [
+    { name: "Pele da Fera", mode: "buff", flavor: "Assume aspectos predatórios sob a luz lunar." },
+    {
+      name: "Investida Bestial",
+      mode: "damage",
+      flavor: "Avança com a força de uma fera transformada.",
+    },
+  ],
+  "circulo-da-terra": [
+    { name: "Raízes Profundas", mode: "control", flavor: "Faz o terreno aprisionar o inimigo." },
+    {
+      name: "Seiva Ancestral",
+      mode: "heal",
+      flavor: "Canaliza a vitalidade da terra para um aliado.",
+    },
+  ],
+  "colegio-da-guerra": [
+    { name: "Marcha dos Heróis", mode: "buff", flavor: "Entoa um ritmo que conduz ao ataque." },
+    {
+      name: "Acorde de Impacto",
+      mode: "damage",
+      flavor: "Transforma música em uma onda ofensiva.",
+    },
+  ],
+  "colegio-do-glamour": [
+    {
+      name: "Olhar Irresistível",
+      mode: "control",
+      flavor: "Captura a atenção do alvo com encanto sobrenatural.",
+    },
+    {
+      name: "Palco de Ilusões",
+      mode: "debuff",
+      flavor: "Cerca o inimigo de imagens que confundem seus sentidos.",
+    },
   ],
 };
 
-function buildPaths(slug: string) {
+const classPaths: Record<
+  string,
+  Array<{ key: string; name: string; description: string; passive: string }>
+> = {
+  barbaro: [
+    {
+      key: "berserker",
+      name: "Berserker",
+      description: "Converte Fúria em pressão ofensiva e execuções.",
+      passive: "Dano físico aumenta enquanto a Fúria estiver acima da metade.",
+    },
+    {
+      key: "guardiao-totemico",
+      name: "Guardião Totêmico",
+      description: "Transforma Fúria em resistência e proteção do grupo.",
+      passive: "Ao receber dano elevado, concede proteção temporária a si.",
+    },
+  ],
+  guerreiro: [
+    {
+      key: "mestre-de-armas",
+      name: "Mestre de Armas",
+      description: "Especialista em sequências técnicas e dano consistente.",
+      passive: "Alternar habilidades ofensivas reduz a recarga da próxima técnica.",
+    },
+    {
+      key: "comandante",
+      name: "Comandante",
+      description: "Controla a linha de frente e fortalece aliados.",
+      passive: "A primeira habilidade de suporte da rodada tem efeito ampliado.",
+    },
+  ],
+  paladino: [
+    {
+      key: "juramento-da-luz",
+      name: "Juramento da Luz",
+      description: "Cura, escudos e proteção sagrada.",
+      passive: "Escudos aplicados em alvos feridos ficam mais fortes.",
+    },
+    {
+      key: "juramento-da-vinganca",
+      name: "Juramento da Vingança",
+      description: "Persegue e pune inimigos marcados.",
+      passive: "Causa dano adicional contra o último inimigo que feriu um aliado.",
+    },
+  ],
+  cavaleiro: [
+    {
+      key: "bastiao",
+      name: "Bastião",
+      description: "Defesa absoluta, provocação e bloqueio.",
+      passive: "Recebe menos dano enquanto protege um aliado.",
+    },
+    {
+      key: "cavaleiro-negro",
+      name: "Cavaleiro Negro",
+      description: "Sacrifica proteção para aplicar pressão sombria.",
+      passive: "Perder HP fortalece o próximo ataque físico.",
+    },
+  ],
+  arqueiro: [
+    {
+      key: "atirador",
+      name: "Atirador",
+      description: "Precisão extrema e dano em alvo único.",
+      passive: "Ataques a longa distância acumulam Precisão.",
+    },
+    {
+      key: "cacador",
+      name: "Caçador",
+      description: "Marcas, armadilhas e controle de território.",
+      passive: "Alvos marcados não podem ocultar sua posição.",
+    },
+  ],
+  assassino: [
+    {
+      key: "executor",
+      name: "Executor",
+      description: "Explosão de dano contra inimigos enfraquecidos.",
+      passive: "Dano aumenta contra alvos abaixo de 35% do HP.",
+    },
+    {
+      key: "sombra",
+      name: "Sombra",
+      description: "Mobilidade, furtividade e ataques de oportunidade.",
+      passive: "Reposicionar-se fortalece o próximo golpe.",
+    },
+  ],
+  ladino: [
+    {
+      key: "duelista",
+      name: "Duelista",
+      description: "Combate ágil, contra-ataques e precisão.",
+      passive: "Esquivar habilita uma reação ofensiva.",
+    },
+    {
+      key: "trapaceiro",
+      name: "Trapaceiro",
+      description: "Debuffs, itens e manipulação do campo.",
+      passive: "O primeiro item de cada combate não consome a ação de item.",
+    },
+  ],
+  monge: [
+    {
+      key: "punho-de-ferro",
+      name: "Punho de Ferro",
+      description: "Combos físicos e quebra de postura.",
+      passive: "Golpes consecutivos aumentam o dano do combo.",
+    },
+    {
+      key: "caminho-espiritual",
+      name: "Caminho Espiritual",
+      description: "Ki defensivo, cura e purificação.",
+      passive: "Gastar Ki em suporte recupera uma pequena quantidade de HP.",
+    },
+  ],
+  mago: [
+    {
+      key: "elementalista",
+      name: "Elementalista",
+      description: "Domina áreas e interações elementais.",
+      passive: "Alternar elementos aplica uma reação elemental adicional.",
+    },
+    {
+      key: "arcanista",
+      name: "Arcanista",
+      description: "Controle de Mana, escudos e magia pura.",
+      passive: "Ao terminar a rodada com Mana, recebe escudo arcano.",
+    },
+  ],
+  feiticeiro: [
+    {
+      key: "linhagem-draconica",
+      name: "Linhagem Dracônica",
+      description: "Poder elemental estável e resistência mágica.",
+      passive: "Habilidades elementais concedem resistência temporária.",
+    },
+    {
+      key: "caos-arcano",
+      name: "Caos Arcano",
+      description: "Magia imprevisível de alto risco e recompensa.",
+      passive: "Efeitos com chance bem-sucedidos geram poder adicional.",
+    },
+  ],
+  bruxo: [
+    {
+      key: "pacto-infernal",
+      name: "Pacto Infernal",
+      description: "Dano contínuo, fogo e contratos de poder.",
+      passive: "Inimigos com debuff recebem dano mágico adicional.",
+    },
+    {
+      key: "pacto-abissal",
+      name: "Pacto Abissal",
+      description: "Controle, medo e enfraquecimento.",
+      passive: "Aplicar controle recupera parte do recurso de pacto.",
+    },
+  ],
+  clerigo: [
+    {
+      key: "dominio-da-vida",
+      name: "Domínio da Vida",
+      description: "Cura intensiva e remoção de efeitos negativos.",
+      passive: "A primeira cura em um alvo ferido é ampliada.",
+    },
+    {
+      key: "dominio-da-guerra",
+      name: "Domínio da Guerra",
+      description: "Bênçãos ofensivas e combate sagrado.",
+      passive: "Curar um aliado fortalece o próximo ataque do Clérigo.",
+    },
+  ],
+  druida: [
+    {
+      key: "circulo-da-lua",
+      name: "Círculo da Lua",
+      description: "Transformações e combate bestial.",
+      passive: "Transformações preservam parte dos efeitos defensivos ativos.",
+    },
+    {
+      key: "circulo-da-terra",
+      name: "Círculo da Terra",
+      description: "Controle natural, cura e terreno.",
+      passive: "Efeitos de terreno duram uma rodada adicional.",
+    },
+  ],
+  bardo: [
+    {
+      key: "colegio-da-guerra",
+      name: "Colégio da Guerra",
+      description: "Inspiração ofensiva e liderança de batalha.",
+      passive: "Inspirar um aliado também fortalece o próprio Bardo.",
+    },
+    {
+      key: "colegio-do-glamour",
+      name: "Colégio do Glamour",
+      description: "Encanto, ilusão e controle social.",
+      passive: "O primeiro controle aplicado em combate tem chance aumentada.",
+    },
+  ],
+};
+
+function buildPathSkill(
+  pathKey: string,
+  seed: PathTechniqueSeed,
+  index: number,
+  resourceName: string,
+  primary: AttributeKey[],
+) {
+  const level = index === 0 ? 15 : 45;
+  const strong = index === 1;
+  const attribute =
+    seed.mode === "shield"
+      ? primary.includes("DEF")
+        ? "DEF"
+        : "RES"
+      : seed.mode === "heal"
+        ? primary.includes("ARC")
+          ? "ARC"
+          : "INT"
+        : primary[0];
+  const multiplier = strong ? 1.8 : 1.25;
+  const value = strong ? 15 : 10;
+  const duration =
+    seed.mode === "control" ? 1 : seed.mode === "damage" || seed.mode === "mobility" ? 0 : 2;
+  const target =
+    seed.mode === "heal"
+      ? "ally"
+      : seed.mode === "damage" || seed.mode === "debuff" || seed.mode === "control"
+        ? "enemy"
+        : "self";
+  const operation =
+    seed.mode === "damage"
+      ? "DAMAGE"
+      : seed.mode === "shield"
+        ? "SHIELD"
+        : seed.mode === "heal"
+          ? "HEAL"
+          : seed.mode === "buff"
+            ? "BUFF"
+            : seed.mode === "debuff"
+              ? "DEBUFF"
+              : seed.mode === "control"
+                ? "APPLY_STATUS"
+                : "MOVE";
+  const category =
+    seed.mode === "damage"
+      ? "Dano"
+      : seed.mode === "shield"
+        ? "Escudo"
+        : seed.mode === "heal"
+          ? "Cura"
+          : seed.mode === "control"
+            ? "Controle"
+            : seed.mode === "mobility"
+              ? "Mobilidade"
+              : seed.mode === "buff"
+                ? "Buff"
+                : "Debuff";
+  const detail =
+    seed.mode === "damage"
+      ? `Causa dano ${multiplier}x ${attribute}.`
+      : seed.mode === "shield"
+        ? `Concede escudo de ${multiplier}x ${attribute} por ${duration} rodadas.`
+        : seed.mode === "heal"
+          ? `Cura ${multiplier}x ${attribute}.`
+          : seed.mode === "buff"
+            ? `Aumenta ${attribute} em ${value} por ${duration} rodadas.`
+            : seed.mode === "debuff"
+              ? `Reduz ${attribute} do alvo em ${value} por ${duration} rodadas.`
+              : seed.mode === "control"
+                ? `Aplica ${pathKey} por 1 rodada.`
+                : "Move o usuário em até 2 casas sem provocar reação.";
+  return buildSkill(
+    {
+      key: `${pathKey}-${index + 1}`,
+      name: seed.name,
+      level,
+      category,
+      kind:
+        seed.mode === "damage"
+          ? "damage"
+          : seed.mode === "shield"
+            ? "shield"
+            : seed.mode === "heal"
+              ? "heal"
+              : "utility",
+      damageType:
+        seed.mode === "damage"
+          ? attribute === "FOR" || attribute === "INI"
+            ? "physical"
+            : "magic"
+          : "none",
+      target,
+      cost: strong ? 40 : 25,
+      cooldown: strong ? 4 : 2,
+      range: target === "enemy" || target === "ally" ? 4 : 0,
+      duration,
+      attribute,
+      multiplier:
+        seed.mode === "damage" || seed.mode === "shield" || seed.mode === "heal" ? multiplier : 0,
+      operation,
+      status: seed.mode === "control" ? pathKey : "",
+      modifiers:
+        seed.mode === "buff" || seed.mode === "debuff"
+          ? [{ attribute, value: seed.mode === "buff" ? value : -value }]
+          : [],
+      description: `${seed.flavor} ${detail}`,
+    },
+    resourceName,
+  );
+}
+
+function buildPaths(slug: string, resourceName: string, primary: AttributeKey[]) {
   return (classPaths[slug] ?? []).map((path) => ({
     key: path.key,
     name: path.name,
     description: path.description,
     passive: { name: `Doutrina: ${path.name}`, description: path.passive },
-    skills: [],
+    skills: (pathTechniques[path.key] ?? []).map((skill, index) =>
+      buildPathSkill(path.key, skill, index, resourceName, primary),
+    ),
   }));
 }
 
@@ -231,7 +765,7 @@ function buildClass(seed: ClassSeed) {
         description: seed.passive.description,
       },
       progression,
-      paths: buildPaths(seed.slug),
+      paths: buildPaths(seed.slug, seed.resource.name, seed.primary),
     }),
   };
 }

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import { defaultCombatRules } from "@/lib/game/combat";
 import type { Database } from "@/lib/db/types";
-import { parseClassPayload, getUnlockedClassSkills, type ClassPayload } from "@/lib/game/classes";
+import { parseClassPayload, getUnlockedClassSkills, getUnlockedPathSkills, type ClassPayload } from "@/lib/game/classes";
 import {
   allocatedAttributesSchema,
   buildCharacterStats,
@@ -123,7 +123,10 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
           equipmentBonuses,
         ),
         unlockedRaceAbilities: getUnlockedRaceAbilities(race.data, record.level),
-        unlockedClassSkills: getUnlockedClassSkills(characterClass.data, record.level),
+        unlockedClassSkills: [
+          ...getUnlockedClassSkills(characterClass.data, record.level),
+          ...getUnlockedPathSkills(characterClass.data, record.class_path_key, record.level),
+        ].sort((left, right) => left.level - right.level || left.name.localeCompare(right.name)),
         inventory,
       },
     ];

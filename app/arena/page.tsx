@@ -65,6 +65,9 @@ export default async function ArenaPage({
                   name: character.characterClass.payload.mechanic.name,
                   description: character.characterClass.payload.mechanic.description,
                 },
+                ...character.characterClass.payload.paths
+                  .filter((path) => path.key === character.class_path_key)
+                  .map((path) => ({ name: path.passive.name, description: path.passive.description })),
                 ...character.race.payload.traits,
                 ...character.race.payload.mechanics,
               ],

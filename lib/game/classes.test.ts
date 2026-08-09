@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getUnlockedClassSkills } from "@/lib/game/classes";
+import { getUnlockedClassSkills, getUnlockedPathSkills } from "@/lib/game/classes";
 import { officialClasses } from "@/lib/game/official-classes";
 import { classPayloadSchema } from "@/lib/game/schemas";
 
@@ -18,6 +18,17 @@ describe("catálogo oficial de classes", () => {
     officialClasses.forEach((entry) =>
       expect(classPayloadSchema.safeParse(entry.payload).success).toBe(true),
     );
+  });
+
+  it("concede duas técnicas estruturadas por Caminho", () => {
+    const paths = officialClasses.flatMap((entry) => entry.payload.paths);
+    expect(paths).toHaveLength(28);
+    expect(paths.every((path) => path.skills.length === 2)).toBe(true);
+    expect(paths.flatMap((path) => path.skills)).toHaveLength(56);
+    const barbarian = officialClasses.find((entry) => entry.slug === "barbaro")!;
+    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 14)).toHaveLength(0);
+    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 15)).toHaveLength(1);
+    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 45)).toHaveLength(2);
   });
 
   it("usa operações genéricas e regras separadas da descrição", () => {

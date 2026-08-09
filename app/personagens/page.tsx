@@ -8,6 +8,7 @@ import { getCharacterSheets } from "@/lib/content/characters";
 import { getActiveCharacterId } from "@/lib/content/active-character";
 import { selectCharacterAction } from "./select-actions";
 import { RankBadge } from "@/components/characters/rank-badge";
+import { getAdventureRank } from "@/lib/game/ranks";
 
 export const metadata = { title: "Meus Personagens" };
 export const dynamic = "force-dynamic";
@@ -90,83 +91,91 @@ export default async function CharactersPage({
         ) : null}
         {characters.length > 0 ? (
           <section className={`character-card-grid ${selecting ? "is-selecting" : "is-lobby"}`}>
-            {visibleCharacters.map((character) => (
-              <article className="character-card" key={character.id}>
-                <div className="character-card__portrait">
-                  {character.image_url ? (
-                    <span
-                      className="is-image"
-                      role="img"
-                      aria-label={`Retrato de ${character.name}`}
-                      style={{ backgroundImage: `url(${character.image_url})` }}
-                    />
-                  ) : (
-                    <span>{character.name.slice(0, 2).toUpperCase()}</span>
-                  )}
-                  <small>Nível {character.level}</small>
-                  <RankBadge compact rank={character.adventure_rank} />
-                </div>
-                <div className="character-card__body">
-                  <span className="eyebrow">Herói de Wonderland</span>
-                  <h2>{character.name}</h2>
-                  {character.id === activeCharacterId ? (
-                    <small className="character-card__online">● Online agora</small>
-                  ) : null}
-                  <dl className="character-card__identity">
-                    <div>
-                      <dt>Raça</dt>
-                      <dd>{character.race.name}</dd>
-                    </div>
-                    <div>
-                      <dt>Classe</dt>
-                      <dd>{character.characterClass.name}</dd>
-                    </div>
-                    <div>
-                      <dt>Nível</dt>
-                      <dd>{character.level}</dd>
-                    </div>
-                  </dl>
-                  <p className="character-card__wallet">
-                    <small>Carteira</small>
-                    {character.gold.toLocaleString("pt-BR")} WG
-                  </p>
-                  <div className="character-card__stats">
-                    <span>
-                      HP <strong>{character.stats.maxHp}</strong>
-                    </span>
-                    <span>
-                      Mana <strong>{character.stats.maxMana}</strong>
-                    </span>
-                    <span>
-                      INI <strong>{character.stats.initiative}</strong>
-                    </span>
+            {visibleCharacters.map((character) => {
+              const rank = getAdventureRank(character.adventure_rank);
+              return (
+                <article
+                  className="character-card"
+                  key={character.id}
+                  style={{ "--card-rank": rank.color } as React.CSSProperties}
+                  data-card-rank={rank.key}
+                >
+                  <div className="character-card__portrait">
+                    {character.image_url ? (
+                      <span
+                        className="is-image"
+                        role="img"
+                        aria-label={`Retrato de ${character.name}`}
+                        style={{ backgroundImage: `url(${character.image_url})` }}
+                      />
+                    ) : (
+                      <span>{character.name.slice(0, 2).toUpperCase()}</span>
+                    )}
+                    <small>Nível {character.level}</small>
+                    <RankBadge compact rank={character.adventure_rank} />
                   </div>
-                </div>
-                <footer>
-                  {selecting ? (
-                    <form action={selectCharacterAction}>
-                      <input name="characterId" type="hidden" value={character.id} />
-                      <input name="next" type="hidden" value={query.next ?? "/personagens"} />
-                      <button className="button button--dark" type="submit">
-                        {character.id === activeCharacterId
-                          ? "Continuar jogando"
-                          : "Jogar com este"}
-                      </button>
-                    </form>
-                  ) : (
-                    <Link className="button button--dark" href="/arena">
-                      Entrar na arena
+                  <div className="character-card__body">
+                    <span className="eyebrow">Herói de Wonderland</span>
+                    <h2>{character.name}</h2>
+                    {character.id === activeCharacterId ? (
+                      <small className="character-card__online">● Online agora</small>
+                    ) : null}
+                    <dl className="character-card__identity">
+                      <div>
+                        <dt>Raça</dt>
+                        <dd>{character.race.name}</dd>
+                      </div>
+                      <div>
+                        <dt>Classe</dt>
+                        <dd>{character.characterClass.name}</dd>
+                      </div>
+                      <div>
+                        <dt>Nível</dt>
+                        <dd>{character.level}</dd>
+                      </div>
+                    </dl>
+                    <p className="character-card__wallet">
+                      <small>Carteira</small>
+                      {character.gold.toLocaleString("pt-BR")} WG
+                    </p>
+                    <div className="character-card__stats">
+                      <span>
+                        HP <strong>{character.stats.maxHp}</strong>
+                      </span>
+                      <span>
+                        Mana <strong>{character.stats.maxMana}</strong>
+                      </span>
+                      <span>
+                        INI <strong>{character.stats.initiative}</strong>
+                      </span>
+                    </div>
+                  </div>
+                  <footer>
+                    {selecting ? (
+                      <form action={selectCharacterAction}>
+                        <input name="characterId" type="hidden" value={character.id} />
+                        <input name="next" type="hidden" value={query.next ?? "/personagens"} />
+                        <button className="button button--dark" type="submit">
+                          {character.id === activeCharacterId
+                            ? "Continuar jogando"
+                            : "Jogar com este"}
+                        </button>
+                      </form>
+                    ) : (
+                      <Link className="button button--dark" href="/arena">
+                        Entrar na arena
+                      </Link>
+                    )}
+                    <Link className="button button--primary" href={`/personagens/${character.id}`}>
+                      Abrir ficha
                     </Link>
-                  )}
-                  <Link className="button button--primary" href={`/personagens/${character.id}`}>
-                    Abrir ficha
-                  </Link>
-                  {selecting ? (
-                    <DeleteCharacterButton id={character.id} name={character.name} />
-                  ) : null}
-                </footer>
-              </article>
-            ))}
+                    {selecting ? (
+                      <DeleteCharacterButton id={character.id} name={character.name} />
+                    ) : null}
+                  </footer>
+                </article>
+              );
+            })}
             {!selecting && activeCharacter ? (
               <aside className="character-session-card">
                 <span className="eyebrow">Você está em Wonderland</span>

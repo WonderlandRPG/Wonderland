@@ -7,6 +7,8 @@ import { BrandMark } from "@/components/brand-mark";
 import { isAdministrativeRole, roleLabels } from "@/lib/auth/account";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
+import { RankBadge } from "@/components/characters/rank-badge";
+import { getAdventureRank } from "@/lib/game/ranks";
 
 export const metadata: Metadata = { title: "Minha conta" };
 
@@ -40,6 +42,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
+  const activeRank = getAdventureRank(activeCharacter.adventure_rank);
 
   return (
     <main className="account-shell">
@@ -126,7 +129,11 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               </dl>
             </article>
 
-            <article className="account-card account-active-character">
+            <article
+              className="account-card account-active-character"
+              style={{ "--card-rank": activeRank.color } as React.CSSProperties}
+              data-card-rank={activeRank.key}
+            >
               <div
                 className={`account-active-character__portrait ${activeCharacter.image_url ? "is-image" : ""}`}
                 style={
@@ -137,6 +144,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               >
                 {activeCharacter.image_url ? "" : activeCharacter.name.slice(0, 2).toUpperCase()}
                 <span>Online</span>
+                <RankBadge compact rank={activeCharacter.adventure_rank} />
               </div>
               <small>Personagem em jogo</small>
               <h2>{activeCharacter.name}</h2>

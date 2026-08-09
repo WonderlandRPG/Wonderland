@@ -6749,4 +6749,408 @@ button:disabled {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+
+  .rank-atmosphere {
+    display: none;
+  }
+}
+
+/* Tema vivo do personagem selecionado */
+body[data-rank] {
+  --emerald-300: color-mix(in srgb, var(--hud-rank) 78%, white);
+  --emerald-400: var(--hud-rank);
+  --emerald-500: color-mix(in srgb, var(--hud-rank) 78%, #173e32);
+  --emerald-700: color-mix(in srgb, var(--hud-rank) 48%, #092018);
+  background:
+    radial-gradient(
+      circle at 85% 5%,
+      color-mix(in srgb, var(--hud-rank) 10%, transparent),
+      transparent 32rem
+    ),
+    var(--mist-50);
+}
+
+body[data-rank] > main,
+body[data-rank] > div:not(.rank-atmosphere) {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-rank] .account-header,
+body[data-rank] .player-nav {
+  border-color: color-mix(in srgb, var(--hud-rank) 30%, transparent);
+  box-shadow: 0 12px 45px color-mix(in srgb, var(--hud-rank) 8%, transparent);
+}
+
+body[data-rank] .eyebrow,
+body[data-rank] .character-card__online,
+body[data-rank] .is-online {
+  color: color-mix(in srgb, var(--hud-rank) 80%, white);
+}
+
+.rank-atmosphere {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rank-atmosphere i {
+  --particle-size: 8px;
+  position: absolute;
+  top: -10vh;
+  left: 5%;
+  width: var(--particle-size);
+  height: calc(var(--particle-size) * 1.7);
+  border: 1px solid color-mix(in srgb, var(--hud-rank) 82%, white);
+  opacity: 0;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--hud-rank) 68%, white),
+    var(--hud-rank)
+  );
+  box-shadow: 0 0 12px color-mix(in srgb, var(--hud-rank) 70%, transparent);
+  transform: rotate(45deg);
+  animation: rank-crystal-fall 12s linear infinite;
+  animation-delay: calc(var(--particle-index) * -0.83s);
+}
+
+.rank-atmosphere i:nth-child(2) {
+  left: 13%;
+  --particle-size: 5px;
+}
+.rank-atmosphere i:nth-child(3) {
+  left: 21%;
+  --particle-size: 10px;
+}
+.rank-atmosphere i:nth-child(4) {
+  left: 30%;
+  --particle-size: 6px;
+}
+.rank-atmosphere i:nth-child(5) {
+  left: 38%;
+  --particle-size: 4px;
+}
+.rank-atmosphere i:nth-child(6) {
+  left: 46%;
+  --particle-size: 9px;
+}
+.rank-atmosphere i:nth-child(7) {
+  left: 55%;
+  --particle-size: 5px;
+}
+.rank-atmosphere i:nth-child(8) {
+  left: 63%;
+  --particle-size: 7px;
+}
+.rank-atmosphere i:nth-child(9) {
+  left: 70%;
+  --particle-size: 4px;
+}
+.rank-atmosphere i:nth-child(10) {
+  left: 77%;
+  --particle-size: 9px;
+}
+.rank-atmosphere i:nth-child(11) {
+  left: 84%;
+  --particle-size: 5px;
+}
+.rank-atmosphere i:nth-child(12) {
+  left: 90%;
+  --particle-size: 8px;
+}
+.rank-atmosphere i:nth-child(13) {
+  left: 95%;
+  --particle-size: 4px;
+}
+.rank-atmosphere i:nth-child(14) {
+  left: 67%;
+  --particle-size: 5px;
+}
+
+body[data-rank="E"] .rank-atmosphere i {
+  filter: saturate(0.35);
+  opacity: 0;
+}
+body[data-rank="D"] .rank-atmosphere i {
+  border-radius: 70% 0 70% 0;
+}
+body[data-rank="C"] .rank-atmosphere i {
+  animation-duration: 10s;
+}
+body[data-rank="B"] .rank-atmosphere i {
+  height: calc(var(--particle-size) * 2.2);
+}
+body[data-rank="A"] .rank-atmosphere i {
+  animation-name: rank-crystal-fall, rank-crystal-pulse;
+  animation-duration: 13s, 2.4s;
+}
+body[data-rank="S"] .rank-atmosphere i {
+  clip-path: polygon(50% 0, 64% 35%, 100% 50%, 64% 65%, 50% 100%, 36% 65%, 0 50%, 36% 35%);
+  border: 0;
+}
+body[data-rank="EX"] .rank-atmosphere i {
+  background: linear-gradient(145deg, #f1feff, var(--hud-rank) 52%, #a855f7);
+  animation-duration: 8s;
+}
+
+@keyframes rank-crystal-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -10vh, 0) rotate(0);
+  }
+  12% {
+    opacity: 0.42;
+  }
+  82% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(45px, 115vh, 0) rotate(310deg);
+  }
+}
+
+@keyframes rank-crystal-pulse {
+  50% {
+    filter: brightness(1.7);
+  }
+}
+
+/* Card de personagem com aura própria do rank */
+.character-card,
+.account-active-character {
+  --card-rank: #7d8790;
+  border-color: color-mix(in srgb, var(--card-rank) 65%, transparent) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--card-rank) 14%, transparent),
+    0 20px 55px rgba(0, 0, 0, 0.35),
+    0 0 28px color-mix(in srgb, var(--card-rank) 16%, transparent);
+  animation: character-rank-aura 3.8s ease-in-out infinite;
+}
+
+.character-card__identity,
+.character-card__stats > span {
+  border-color: color-mix(in srgb, var(--card-rank) 32%, transparent);
+}
+
+.character-card__portrait::after,
+.account-active-character__portrait::after {
+  background: linear-gradient(
+    transparent 42%,
+    color-mix(in srgb, var(--card-rank) 20%, #04100d) 100%
+  );
+}
+
+.account-active-character__portrait > .rank-badge {
+  position: absolute;
+  z-index: 2;
+  left: 16px;
+  bottom: 14px;
+}
+
+@keyframes character-rank-aura {
+  50% {
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--card-rank) 35%, transparent),
+      0 24px 65px rgba(0, 0, 0, 0.42),
+      0 0 42px color-mix(in srgb, var(--card-rank) 28%, transparent);
+  }
+}
+
+/* Ficha reconstruída como painel de jogo */
+.character-command-hero {
+  --character-rank: #7d8790;
+  position: relative;
+  display: grid;
+  overflow: hidden;
+  min-height: 430px;
+  grid-template-columns: minmax(300px, 0.85fr) minmax(380px, 1.15fr);
+  border: 1px solid color-mix(in srgb, var(--character-rank) 56%, transparent);
+  border-radius: 26px;
+  background: #04110d;
+  box-shadow:
+    0 35px 90px rgba(0, 0, 0, 0.42),
+    0 0 45px color-mix(in srgb, var(--character-rank) 15%, transparent);
+}
+
+.character-command-hero::after {
+  position: absolute;
+  right: -140px;
+  bottom: -180px;
+  width: 420px;
+  height: 420px;
+  border: 1px solid color-mix(in srgb, var(--character-rank) 22%, transparent);
+  border-radius: 50%;
+  content: "";
+  box-shadow: 0 0 100px color-mix(in srgb, var(--character-rank) 12%, transparent);
+}
+
+.character-command-hero__art {
+  position: relative;
+  min-height: 430px;
+  background: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--character-rank) 22%, #071812),
+    #020806 76%
+  );
+}
+
+.character-command-hero__art > span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--character-rank);
+  background-position: center;
+  background-size: cover;
+  font:
+    700 4rem Georgia,
+    serif;
+}
+
+.character-command-hero__art > span::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, transparent 58%, #04110d 100%),
+    linear-gradient(transparent 58%, #04110d 100%);
+}
+
+.character-command-hero__art > .rank-badge {
+  position: absolute;
+  z-index: 2;
+  left: 28px;
+  bottom: 28px;
+}
+
+.character-command-hero__identity {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: clamp(36px, 6vw, 74px);
+}
+
+.character-command-hero__identity h1 {
+  margin: 10px 0 8px;
+  color: #f7f4eb;
+  font:
+    400 clamp(3.4rem, 7vw, 6.7rem)/0.92 Georgia,
+    serif;
+  text-shadow: 0 0 35px color-mix(in srgb, var(--character-rank) 22%, transparent);
+}
+
+.character-command-hero__identity > p {
+  margin: 8px 0 24px;
+  color: #9eb6aa;
+}
+.character-command-hero__facts {
+  display: flex;
+  gap: 1px;
+  margin: 0 0 25px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--character-rank) 25%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--character-rank) 13%, transparent);
+}
+.character-command-hero__facts > div {
+  min-width: 96px;
+  padding: 11px 15px;
+  background: #06140f;
+}
+.character-command-hero__facts dt {
+  color: #668578;
+  font-size: 0.5rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.character-command-hero__facts dd {
+  margin: 4px 0 0;
+  color: color-mix(in srgb, var(--character-rank) 75%, white);
+  font-weight: 850;
+}
+.character-command-hero__actions {
+  display: flex;
+  gap: 10px;
+}
+.character-command-hero__image-editor {
+  margin-top: 22px;
+  color: #76978a;
+  font-size: 0.67rem;
+}
+.character-command-hero__image-editor summary {
+  width: max-content;
+  cursor: pointer;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.character-command-hero__image-editor form {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.character-command-hero__image-editor input {
+  min-width: 0;
+  flex: 1;
+  border-color: color-mix(in srgb, var(--character-rank) 35%, transparent);
+  color: #e8f5ef;
+  background: #020a07;
+}
+.character-command-hero__image-editor .button {
+  flex: 0 0 auto;
+}
+.character-vitals-panel {
+  margin-top: -1px;
+  border-color: color-mix(in srgb, var(--character-rank, var(--hud-rank)) 30%, transparent);
+  border-radius: 0 0 20px 20px;
+}
+.character-vitals-panel .player-xp i {
+  background: var(--character-rank, var(--hud-rank));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--character-rank, var(--hud-rank)) 50%, transparent);
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@media (max-width: 800px) {
+  .character-command-hero {
+    grid-template-columns: 1fr;
+  }
+  .character-command-hero__art {
+    min-height: 370px;
+  }
+  .character-command-hero__art > span::after {
+    background: linear-gradient(transparent 55%, #04110d 100%);
+  }
+  .character-command-hero__identity {
+    padding: 30px 22px 34px;
+  }
+  .character-command-hero__identity h1 {
+    font-size: clamp(3rem, 16vw, 5rem);
+  }
+  .character-command-hero__facts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .character-command-hero__facts > div {
+    min-width: 0;
+  }
+  .character-command-hero__image-editor form {
+    flex-direction: column;
+  }
 }

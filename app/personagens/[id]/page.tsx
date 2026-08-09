@@ -8,6 +8,7 @@ import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { RankBadge } from "@/components/characters/rank-badge";
+import { getAdventureRank } from "@/lib/game/ranks";
 import {
   defaultEquipSlot,
   equipmentSlots,
@@ -50,6 +51,7 @@ export default async function CharacterSheetPage({
       .filter((item) => item.equippedSlot)
       .map((item) => [item.equippedSlot, item]),
   );
+  const rank = getAdventureRank(character.adventure_rank);
   return (
     <main className="sheet-page">
       <header className="account-header">
@@ -65,8 +67,12 @@ export default async function CharacterSheetPage({
             <span>✓</span>Personagem criado! A ficha já está salva no seu perfil.
           </div>
         ) : null}
-        <section className="sheet-hero">
-          <div className="sheet-hero__portrait">
+        <section
+          className="character-command-hero"
+          style={{ "--character-rank": rank.color } as React.CSSProperties}
+          data-character-rank={rank.key}
+        >
+          <div className="character-command-hero__art">
             {character.image_url ? (
               <span
                 className="is-image"
@@ -77,21 +83,42 @@ export default async function CharacterSheetPage({
             ) : (
               <span>{character.name.slice(0, 2).toUpperCase()}</span>
             )}
-          </div>
-          <div>
-            <span className="eyebrow">
-              {character.race.name} · {character.characterClass.name} ·{" "}
-              {kingdomName(character.kingdom)}
-            </span>
-            <h1>{character.name}</h1>
             <RankBadge rank={character.adventure_rank} />
-            <p>{character.characterClass.payload.specialization}</p>
-            <form
-              className="sheet-hero__image-form"
-              action={updateCharacterImageAction.bind(null, character.id)}
-            >
-              <label htmlFor="character-image-url">Imagem do personagem por link</label>
+          </div>
+          <div className="character-command-hero__identity">
+            <span className="eyebrow">Personagem online · {kingdomName(character.kingdom)}</span>
+            <h1>{character.name}</h1>
+            <p>
+              {character.race.name} · {character.characterClass.name}
+            </p>
+            <dl className="character-command-hero__facts">
               <div>
+                <dt>Rank</dt>
+                <dd>{rank.key}</dd>
+              </div>
+              <div>
+                <dt>Nível</dt>
+                <dd>{character.level}</dd>
+              </div>
+              <div>
+                <dt>Reino</dt>
+                <dd>{kingdomName(character.kingdom)}</dd>
+              </div>
+            </dl>
+            <nav className="character-command-hero__actions">
+              <Link className="button button--primary" href={`/arena?personagem=${character.id}`}>
+                Entrar na Arena
+              </Link>
+              <Link className="button button--dark" href="/loja">
+                Visitar loja
+              </Link>
+            </nav>
+            <details className="character-command-hero__image-editor">
+              <summary>Alterar retrato por link</summary>
+              <form action={updateCharacterImageAction.bind(null, character.id)}>
+                <label className="sr-only" htmlFor="character-image-url">
+                  URL da imagem
+                </label>
                 <input
                   id="character-image-url"
                   name="imageUrl"
@@ -99,12 +126,15 @@ export default async function CharacterSheetPage({
                   defaultValue={character.image_url ?? ""}
                   placeholder="https://exemplo.com/personagem.png"
                 />
-                <button className="button button--primary">Salvar imagem</button>
-              </div>
-            </form>
+                <button className="button button--primary">Salvar retrato</button>
+              </form>
+            </details>
           </div>
         </section>
-        <section className="character-progress-strip">
+        <section
+          className="character-progress-strip character-vitals-panel"
+          style={{ "--character-rank": rank.color } as React.CSSProperties}
+        >
           <div>
             <small>Nível atual</small>
             <strong>{character.level}</strong>
@@ -135,14 +165,6 @@ export default async function CharacterSheetPage({
             </button>
           </form>
         </section>
-        <nav className="sheet-actions">
-          <Link className="button button--primary" href={`/arena?personagem=${character.id}`}>
-            Entrar na Arena
-          </Link>
-          <Link className="button button--dark" href="/loja">
-            Visitar loja
-          </Link>
-        </nav>
         <nav className="sheet-tabs" aria-label="Seções da ficha">
           <Link
             className={tab === "resumo" ? "is-active" : ""}

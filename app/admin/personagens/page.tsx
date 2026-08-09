@@ -2,6 +2,8 @@ import { getLevelProgress } from "@/lib/game/experience";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { updateCharacterAdminAction } from "./actions";
 import { kingdoms } from "@/lib/game/kingdoms";
+import { adventureRanks } from "@/lib/game/ranks";
+import { RankBadge } from "@/components/characters/rank-badge";
 
 export const metadata = { title: "Personagens | Painel ADM" };
 export const dynamic = "force-dynamic";
@@ -16,7 +18,7 @@ export default async function AdminCharactersPage({
     client
       ? client
           .from("v2_characters")
-          .select("id,name,level,xp,gold,image_url,kingdom,race_id,class_id,user_id")
+          .select("id,name,level,xp,gold,image_url,kingdom,adventure_rank,race_id,class_id,user_id")
           .order("name")
       : Promise.resolve({ data: [] }),
     searchParams,
@@ -64,6 +66,7 @@ export default async function AdminCharactersPage({
                     {names.get(character.race_id)} · {names.get(character.class_id)}
                   </small>
                   <h3>{character.name}</h3>
+                  <RankBadge compact rank={character.adventure_rank} />
                   <p>
                     Nível {character.level} · próximo nível em{" "}
                     {progress.next.toLocaleString("pt-BR")} XP
@@ -90,6 +93,16 @@ export default async function AdminCharactersPage({
                     {kingdoms.map((kingdom) => (
                       <option key={kingdom.key} value={kingdom.key}>
                         {kingdom.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  <span>Rank do aventureiro</span>
+                  <select name="adventureRank" defaultValue={character.adventure_rank} required>
+                    {adventureRanks.map((rank) => (
+                      <option key={rank.key} value={rank.key}>
+                        Rank {rank.key} · {rank.colorName}
                       </option>
                     ))}
                   </select>

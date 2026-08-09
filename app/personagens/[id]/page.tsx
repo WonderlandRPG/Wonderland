@@ -7,6 +7,7 @@ import { getLevelProgress } from "@/lib/game/experience";
 import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
 import { kingdomName } from "@/lib/game/kingdoms";
+import { RankBadge } from "@/components/characters/rank-badge";
 import {
   defaultEquipSlot,
   equipmentSlots,
@@ -83,6 +84,7 @@ export default async function CharacterSheetPage({
               {kingdomName(character.kingdom)}
             </span>
             <h1>{character.name}</h1>
+            <RankBadge rank={character.adventure_rank} />
             <p>{character.characterClass.payload.specialization}</p>
             <form
               className="sheet-hero__image-form"

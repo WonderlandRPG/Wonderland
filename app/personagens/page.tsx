@@ -7,6 +7,7 @@ import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
 import { getActiveCharacterId } from "@/lib/content/active-character";
 import { selectCharacterAction } from "./select-actions";
+import { RankBadge } from "@/components/characters/rank-badge";
 
 export const metadata = { title: "Meus Personagens" };
 export const dynamic = "force-dynamic";
@@ -103,6 +104,7 @@ export default async function CharactersPage({
                     <span>{character.name.slice(0, 2).toUpperCase()}</span>
                   )}
                   <small>Nível {character.level}</small>
+                  <RankBadge compact rank={character.adventure_rank} />
                 </div>
                 <div className="character-card__body">
                   <span className="eyebrow">Herói de Wonderland</span>

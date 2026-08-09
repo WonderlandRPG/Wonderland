@@ -6,6 +6,7 @@ import { z } from "zod";
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { kingdoms } from "@/lib/game/kingdoms";
+import { adventureRanks } from "@/lib/game/ranks";
 
 const schema = z.object({
   characterId: z.uuid(),
@@ -14,6 +15,7 @@ const schema = z.object({
   gold: z.coerce.number().int().min(0).max(999999999),
   imageUrl: z.union([z.literal(""), z.url().refine((value) => /^https?:\/\//.test(value))]),
   kingdom: z.enum(kingdoms.map((entry) => entry.key) as [string, ...string[]]),
+  adventureRank: z.enum(adventureRanks.map((entry) => entry.key) as [string, ...string[]]),
 });
 
 export async function updateCharacterAdminAction(formData: FormData) {
@@ -25,6 +27,7 @@ export async function updateCharacterAdminAction(formData: FormData) {
     gold: formData.get("gold"),
     imageUrl: String(formData.get("imageUrl") ?? "").trim(),
     kingdom: formData.get("kingdom"),
+    adventureRank: formData.get("adventureRank"),
   });
   if (!parsed.success) redirect("/admin/personagens?status=erro");
   const client = await createServerSupabaseClient();
@@ -36,6 +39,7 @@ export async function updateCharacterAdminAction(formData: FormData) {
     p_gold: parsed.data.gold,
     p_image_url: parsed.data.imageUrl,
     p_kingdom: parsed.data.kingdom,
+    p_adventure_rank: parsed.data.adventureRank,
   });
   if (error) redirect("/admin/personagens?status=erro");
   revalidatePath("/admin/personagens");

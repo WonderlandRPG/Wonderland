@@ -92,6 +92,7 @@ export interface Database {
           last_daily_claim: string | null;
           daily_streak: number;
           kingdom: string;
+          adventure_rank: string;
           allocated_attributes: Json;
           created_at: string;
           updated_at: string;
@@ -110,6 +111,7 @@ export interface Database {
           last_daily_claim?: string | null;
           daily_streak?: number;
           kingdom?: string;
+          adventure_rank?: string;
           allocated_attributes: Json;
           created_at?: string;
           updated_at?: string;
@@ -362,6 +364,7 @@ export interface Database {
           class_name: string;
           image_url: string | null;
           kingdom: string;
+          adventure_rank: string;
         }>;
       };
       v2_equip_inventory_item: {
@@ -384,6 +387,7 @@ export interface Database {
           p_gold: number;
           p_image_url: string;
           p_kingdom: string;
+          p_adventure_rank: string;
         };
         Returns: Database["public"]["Tables"]["v2_characters"]["Row"];
       };

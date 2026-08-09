@@ -2,6 +2,7 @@ import { PortalShell } from "@/components/portal-shell";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { getRanking } from "@/lib/game/player-portal";
+import { RankBadge } from "@/components/characters/rank-badge";
 export const dynamic = "force-dynamic";
 export default async function RankingPage() {
   await requireActiveCharacter("/ranking");
@@ -34,6 +35,7 @@ export default async function RankingPage() {
                 </p>
               </div>
               <b>Nível {character.level}</b>
+              <RankBadge compact rank={character.adventure_rank} />
             </article>
           ))
         ) : (

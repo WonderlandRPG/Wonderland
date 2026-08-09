@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AudioProvider } from "@/components/audio/audio-provider";
 
 import "./globals.css";
 
@@ -14,7 +15,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <AudioProvider>{children}</AudioProvider>
+      </body>
     </html>
   );
 }

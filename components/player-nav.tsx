@@ -20,6 +20,7 @@ export async function PlayerNav() {
             <Link href="/mapas">Mapas</Link>
             <Link href="/loja">Loja</Link>
             <Link href="/ranking">Ranking</Link>
+            <Link href="/ranks">Ranks</Link>
             <Link href="/eventos">Eventos</Link>
             <Link href="/atualizacoes">Atualizações</Link>
           </>

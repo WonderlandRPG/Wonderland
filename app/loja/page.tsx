@@ -4,6 +4,7 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { buyItem } from "./actions";
 import { itemSlotEmoji, itemSlotLabel } from "@/lib/game/equipment";
+import { attributesSchema } from "@/lib/game/schemas";
 
 const rarityLabels: Record<string, string> = {
   common: "Comum",
@@ -28,27 +29,49 @@ export default async function ShopPage() {
     >
       <div className="portal-card-grid">
         {items.length ? (
-          items.map((item) => (
-            <article className={`shop-card shop-card--${item.rarity}`} key={item.id}>
-              <span className="shop-card__icon" aria-hidden="true">
-                {itemSlotEmoji(item.slot)}
-              </span>
-              <small className={`rarity rarity--${item.rarity}`}>
-                {rarityLabels[item.rarity] ?? item.rarity} · {itemSlotLabel(item.slot)}
-              </small>
-              <h2>{item.name}</h2>
-              <p>{item.description}</p>
-              <footer>
-                <strong>{item.price.toLocaleString("pt-BR")} WG</strong>
-                <form action={buyItem}>
-                  <input type="hidden" name="itemId" value={item.id} />
-                  <button className="button button--primary" disabled={character.gold < item.price}>
-                    Comprar
-                  </button>
-                </form>
-              </footer>
-            </article>
-          ))
+          items.map((item) => {
+            const parsed = attributesSchema.partial().safeParse(item.attributes);
+            const attributes = parsed.success ? parsed.data : {};
+            return (
+              <article className="shop-item-card" key={item.id}>
+                <div className="shop-item-card__art">
+                  {item.image_url ? (
+                    <span
+                      className="is-image"
+                      style={{ backgroundImage: `url(${item.image_url})` }}
+                    />
+                  ) : (
+                    <span>{itemSlotEmoji(item.slot)}</span>
+                  )}
+                  <i>{item.two_handed ? "2M" : "1M"}</i>
+                </div>
+                <div className="shop-item-card__body">
+                  <small>
+                    {rarityLabels[item.rarity] ?? item.rarity} · {itemSlotLabel(item.slot)}
+                  </small>
+                  <h2>{item.name}</h2>
+                  <p>{item.description}</p>
+                  <div className="shop-item-card__stats">
+                    {Object.entries(attributes).map(([key, value]) => (
+                      <span key={key}>
+                        <b>{key}</b> +{value}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <footer>
+                  <strong>
+                    <small>Preço</small>
+                    {item.price.toLocaleString("pt-BR")} WG
+                  </strong>
+                  <form action={buyItem}>
+                    <input type="hidden" name="itemId" value={item.id} />
+                    <button disabled={character.gold < item.price}>Comprar item</button>
+                  </form>
+                </footer>
+              </article>
+            );
+          })
         ) : (
           <div className="portal-empty">
             <span>◆</span>

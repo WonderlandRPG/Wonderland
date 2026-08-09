@@ -84,6 +84,22 @@ export default async function CharacterSheetPage({
             </span>
             <h1>{character.name}</h1>
             <p>{character.characterClass.payload.specialization}</p>
+            <form
+              className="sheet-hero__image-form"
+              action={updateCharacterImageAction.bind(null, character.id)}
+            >
+              <label htmlFor="character-image-url">Imagem do personagem por link</label>
+              <div>
+                <input
+                  id="character-image-url"
+                  name="imageUrl"
+                  type="url"
+                  defaultValue={character.image_url ?? ""}
+                  placeholder="https://exemplo.com/personagem.png"
+                />
+                <button className="button button--primary">Salvar imagem</button>
+              </div>
+            </form>
           </div>
         </section>
         <section className="character-progress-strip">
@@ -244,22 +260,6 @@ export default async function CharacterSheetPage({
                 </div>
               </section>
             </div>
-            <section className="sheet-section character-image-editor">
-              <header>
-                <span className="eyebrow">Retrato</span>
-                <h2>Imagem do personagem</h2>
-                <p>Use um link direto de imagem da internet.</p>
-              </header>
-              <form action={updateCharacterImageAction.bind(null, character.id)}>
-                <input
-                  name="imageUrl"
-                  type="url"
-                  defaultValue={character.image_url ?? ""}
-                  placeholder="https://exemplo.com/retrato.png"
-                />
-                <button className="button button--dark">Salvar imagem</button>
-              </form>
-            </section>
           </>
         ) : null}
         {tab === "habilidades" ? (

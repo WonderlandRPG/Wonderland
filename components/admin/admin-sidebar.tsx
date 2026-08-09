@@ -15,9 +15,10 @@ const navigation = [
   { label: "Jogadores", glyph: "04", href: "/admin/jogadores" },
   { label: "Personagens", glyph: "05", href: "/admin/personagens" },
   { label: "Itens", glyph: "06", href: "/admin/itens" },
-  { label: "Histórico", glyph: "07", href: "/admin/historico" },
-  { label: "Eventos", glyph: "08", href: "/admin/eventos" },
-  { label: "Atualizações", glyph: "09", href: "/admin/atualizacoes" },
+  { label: "Presença", glyph: "07", href: "/admin/presenca" },
+  { label: "Histórico", glyph: "08", href: "/admin/historico" },
+  { label: "Eventos", glyph: "09", href: "/admin/eventos" },
+  { label: "Atualizações", glyph: "10", href: "/admin/atualizacoes" },
 ];
 
 export function AdminSidebar({ account }: { account: CurrentAccount }) {

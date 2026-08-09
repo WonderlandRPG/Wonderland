@@ -29,6 +29,13 @@ export default async function CharactersPage({
     searchParams,
     getActiveCharacterId(account.id),
   ]);
+  const selecting = query.selecionar === "1" || !activeCharacterId;
+  const activeCharacter = characters.find((character) => character.id === activeCharacterId);
+  const visibleCharacters = selecting
+    ? characters
+    : activeCharacter
+      ? [activeCharacter]
+      : characters;
   return (
     <main className="character-page">
       <header className="account-header">
@@ -41,11 +48,21 @@ export default async function CharactersPage({
       <div className="page-container character-page__inner">
         <header className="character-page__header">
           <div>
-            <span className="eyebrow">Companhia de {account.displayName}</span>
-            <h1>Meus personagens</h1>
-            <p>Até três fichas persistentes, sempre ligadas às regras publicadas no Painel ADM.</p>
+            <span className="eyebrow">
+              {selecting ? `Companhia de ${account.displayName}` : "Sessão de jogo"}
+            </span>
+            <h1>{selecting ? "Escolha seu personagem" : `Bem-vindo, ${activeCharacter?.name}`}</h1>
+            <p>
+              {selecting
+                ? "Selecione uma ficha para entrar em Wonderland."
+                : "Seu personagem está online e pronto para continuar a jornada."}
+            </p>
           </div>
-          {characters.length < rules.maximumSlots ? (
+          {!selecting ? (
+            <div className="character-online-status">
+              <span aria-hidden="true" /> Online
+            </div>
+          ) : characters.length < rules.maximumSlots ? (
             <Link className="button button--primary" href="/personagens/novo">
               Criar personagem ＋
             </Link>
@@ -65,14 +82,14 @@ export default async function CharactersPage({
             {noticeMessages[query.notice]}
           </div>
         ) : null}
-        {query.selecionar === "1" ? (
+        {selecting && characters.length > 0 ? (
           <div className="account-notice" role="status">
             <span>♜</span>Escolha o personagem com quem deseja jogar nesta sessão.
           </div>
         ) : null}
         {characters.length > 0 ? (
-          <section className="character-card-grid">
-            {characters.map((character) => (
+          <section className={`character-card-grid ${selecting ? "is-selecting" : "is-lobby"}`}>
+            {visibleCharacters.map((character) => (
               <article className="character-card" key={character.id}>
                 <div className="character-card__portrait">
                   {character.image_url ? (
@@ -92,7 +109,9 @@ export default async function CharactersPage({
                     {character.race.name} · {character.characterClass.name}
                   </span>
                   <h2>{character.name}</h2>
-                  {character.id === activeCharacterId ? <small>Personagem em jogo</small> : null}
+                  {character.id === activeCharacterId ? (
+                    <small className="character-card__online">● Online agora</small>
+                  ) : null}
                   <p>{character.characterClass.payload.specialization}</p>
                   <p>{character.gold.toLocaleString("pt-BR")} WG</p>
                   <div>
@@ -108,20 +127,61 @@ export default async function CharactersPage({
                   </div>
                 </div>
                 <footer>
-                  <form action={selectCharacterAction}>
-                    <input name="characterId" type="hidden" value={character.id} />
-                    <input name="next" type="hidden" value={query.next ?? "/perfil"} />
-                    <button className="button button--dark" type="submit">
-                      {character.id === activeCharacterId ? "Continuar jogando" : "Jogar com este"}
-                    </button>
-                  </form>
+                  {selecting ? (
+                    <form action={selectCharacterAction}>
+                      <input name="characterId" type="hidden" value={character.id} />
+                      <input name="next" type="hidden" value={query.next ?? "/personagens"} />
+                      <button className="button button--dark" type="submit">
+                        {character.id === activeCharacterId
+                          ? "Continuar jogando"
+                          : "Jogar com este"}
+                      </button>
+                    </form>
+                  ) : (
+                    <Link className="button button--dark" href="/arena">
+                      Entrar na arena
+                    </Link>
+                  )}
                   <Link className="button button--primary" href={`/personagens/${character.id}`}>
                     Abrir ficha
                   </Link>
-                  <DeleteCharacterButton id={character.id} name={character.name} />
+                  {selecting ? (
+                    <DeleteCharacterButton id={character.id} name={character.name} />
+                  ) : null}
                 </footer>
               </article>
             ))}
+            {!selecting && activeCharacter ? (
+              <aside className="character-session-card">
+                <span className="eyebrow">Você está em Wonderland</span>
+                <h2>Sessão ativa</h2>
+                <p>
+                  Todas as ações de presença, loja, inventário e arena serão feitas por{" "}
+                  {activeCharacter.name}.
+                </p>
+                <dl>
+                  <div>
+                    <dt>Personagem</dt>
+                    <dd>{activeCharacter.name}</dd>
+                  </div>
+                  <div>
+                    <dt>Raça</dt>
+                    <dd>{activeCharacter.race.name}</dd>
+                  </div>
+                  <div>
+                    <dt>Classe</dt>
+                    <dd>{activeCharacter.characterClass.name}</dd>
+                  </div>
+                  <div>
+                    <dt>Nível</dt>
+                    <dd>{activeCharacter.level}</dd>
+                  </div>
+                </dl>
+                <Link className="button button--glass" href="/personagens?selecionar=1">
+                  Trocar personagem
+                </Link>
+              </aside>
+            ) : null}
           </section>
         ) : (
           <section className="character-empty">

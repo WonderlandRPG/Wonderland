@@ -278,6 +278,20 @@ function descriptionNumber(description: string, label: string) {
   return match ? Number(match[1]) : 0;
 }
 
+export function getRaceAbilityArenaMeta(ability: RaceProgressionEntry) {
+  const statedCost = descriptionNumber(ability.description, "Custo");
+  const statedCooldown = descriptionNumber(ability.description, "Recarga");
+  return {
+    cost: statedCost || 25 + Math.ceil(ability.level / 20) * 10,
+    cooldown: statedCooldown || (ability.level >= 80 ? 5 : ability.level >= 40 ? 4 : 2),
+    summary:
+      ability.description
+        .split("\n")
+        .find((line) => /dano|cura|escudo|reduz|aumenta|recupera/i.test(line)) ??
+      ability.description.split("\n")[0],
+  };
+}
+
 export function resolveRaceAbility(
   actor: CombatantState,
   target: CombatantState,
@@ -288,11 +302,12 @@ export function resolveRaceAbility(
   if ((actor.cooldowns[key] ?? 0) > 0) {
     return skillError(actor, target, `${ability.title} ainda está em recarga.`);
   }
-  const manaCost = descriptionNumber(ability.description, "Custo");
+  const meta = getRaceAbilityArenaMeta(ability);
+  const manaCost = meta.cost;
   if (actor.mana < manaCost) {
     return skillError(actor, target, `Mana insuficiente para usar ${ability.title}.`);
   }
-  const cooldown = descriptionNumber(ability.description, "Recarga");
+  const cooldown = meta.cooldown;
   const paidActor: CombatantState = {
     ...actor,
     mana: actor.mana - manaCost,

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import {
   createCombatant,
   getRaceAbilityCooldown,
+  getRaceAbilityArenaMeta,
   resolveBasicAttack,
   resolveRaceAbility,
   resolveSkill,
@@ -27,6 +28,7 @@ interface ArenaCharacter {
   skills: ClassSkill[];
   raceAbilities: RaceProgressionEntry[];
   items: Array<{ id: string; name: string; description: string }>;
+  combatLore: Array<{ name: string; description: string }>;
 }
 
 type TurnActions = { basic: boolean; race: boolean; class: boolean; item: boolean };
@@ -204,6 +206,20 @@ function Battle({
         <span className={actions.class ? "is-used" : ""}>Classe {actions.class ? "✓" : "1"}</span>
         <span className={actions.item ? "is-used" : ""}>Item {actions.item ? "✓" : "1"}</span>
       </div>
+      <section className="arena-effects">
+        <header>
+          <span className="eyebrow">Efeitos permanentes aplicados</span>
+          <strong>Passivas e mecânicas ativas</strong>
+        </header>
+        <div>
+          {character.combatLore.slice(0, 6).map((entry) => (
+            <article key={entry.name}>
+              <b>{entry.name}</b>
+              <span>{combatModifierLabel(entry.description)}</span>
+            </article>
+          ))}
+        </div>
+      </section>
       <div className="arena-actions">
         <button disabled={finished || actions.basic} onClick={attack} type="button">
           <strong>Ataque básico</strong>
@@ -216,6 +232,7 @@ function Battle({
         </button>
         {character.raceAbilities.map((ability) => {
           const cooldown = getRaceAbilityCooldown(player, ability);
+          const meta = getRaceAbilityArenaMeta(ability);
           return (
             <button
               disabled={finished || actions.race || cooldown > 0}
@@ -224,8 +241,12 @@ function Battle({
               type="button"
             >
               <strong>{ability.title}</strong>
-              <span>{ability.description.split("\n")[0]}</span>
-              <small>{cooldown ? `Recarga: ${cooldown}` : "Habilidade de raça"}</small>
+              <span>{meta.summary}</span>
+              <small>
+                {cooldown
+                  ? `Recarga: ${cooldown} rodada(s)`
+                  : `${meta.cost} Mana · Recarga ${meta.cooldown}`}
+              </small>
             </button>
           );
         })}
@@ -244,7 +265,7 @@ function Battle({
               <small>
                 {cooldown
                   ? `Recarga: ${cooldown}`
-                  : `${skill.cost} ${skill.resource === "mana" ? "Mana" : "HP"}`}
+                  : `${skill.cost} ${skill.resource === "mana" ? "Mana" : "HP"} · Recarga ${skill.cooldown}`}
               </small>
             </button>
           );
@@ -313,7 +334,22 @@ function Fighter({ combatant, subtitle }: { combatant: CombatantState; subtitle:
 }
 
 function createBattle(character: ArenaCharacter, rules: CombatRules) {
-  const player = createCombatant({ ...character, rules });
+  const text = character.combatLore
+    .map((entry) => `${entry.name} ${entry.description}`)
+    .join(" ")
+    .toLowerCase();
+  const attributes = { ...character.attributes };
+  if (/dano|ofensiv|ataque/.test(text)) {
+    attributes.FOR = Math.round(attributes.FOR * 1.08);
+    attributes.INT = Math.round(attributes.INT * 1.08);
+  }
+  if (/prote|resist|defesa|reduz.*dano/.test(text)) {
+    attributes.DEF = Math.round(attributes.DEF * 1.08);
+    attributes.RES = Math.round(attributes.RES * 1.08);
+  }
+  if (/cura|escudo|suporte/.test(text)) attributes.ARC = Math.round(attributes.ARC * 1.1);
+  if (/mana|arcano|magia/.test(text)) attributes.INT = Math.round(attributes.INT * 1.05);
+  const player = createCombatant({ ...character, attributes, rules });
   const enemyAttributes: CombatAttributes = {
     FOR: Math.max(35, Math.round(character.attributes.FOR * 0.55)),
     DEF: Math.max(25, Math.round(character.attributes.DEF * 0.65)),
@@ -331,4 +367,14 @@ function createBattle(character: ArenaCharacter, rules: CombatRules) {
     rules,
   });
   return { player, enemy };
+}
+
+function combatModifierLabel(description: string) {
+  const text = description.toLowerCase();
+  const effects = [];
+  if (/dano|ofensiv|ataque/.test(text)) effects.push("Poder ofensivo +8%");
+  if (/prote|resist|defesa|reduz.*dano/.test(text)) effects.push("DEF e RES +8%");
+  if (/cura|escudo|suporte/.test(text)) effects.push("ARC +10%");
+  if (/mana|arcano|magia/.test(text)) effects.push("INT +5%");
+  return effects.join(" · ") || "Regra narrativa ativa na ficha";
 }

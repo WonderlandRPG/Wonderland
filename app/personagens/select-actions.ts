@@ -17,6 +17,6 @@ export async function selectCharacterAction(formData: FormData) {
   const { error } = await client.rpc("v2_select_character", { p_character_id: characterId.data });
   if (error) redirect("/personagens?notice=erro");
   revalidatePath("/", "layout");
-  const next = getSafeRedirectPath(String(formData.get("next") ?? "/perfil"));
-  redirect(next === "/" ? "/perfil" : next);
+  const next = getSafeRedirectPath(String(formData.get("next") ?? "/personagens"));
+  redirect(next === "/" ? "/personagens" : next);
 }

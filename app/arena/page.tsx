@@ -5,6 +5,7 @@ import { BrandMark } from "@/components/brand-mark";
 import { getCharacterSheets } from "@/lib/content/characters";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { defaultCombatRules } from "@/lib/game/combat";
+import { prepareArenaSkill } from "@/lib/game/classes";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -38,8 +39,22 @@ export default async function ArenaPage({
               baseHp: character.race.payload.baseHp,
               baseMana: character.race.payload.baseMana,
               attributes: character.stats.attributes,
-              skills: character.unlockedClassSkills,
+              skills: character.unlockedClassSkills
+                .filter((skill) => !/passiva/i.test(skill.type))
+                .map(prepareArenaSkill),
               raceAbilities: character.unlockedRaceAbilities,
+              combatLore: [
+                {
+                  name: character.characterClass.payload.passive.name,
+                  description: character.characterClass.payload.passive.description,
+                },
+                {
+                  name: character.characterClass.payload.mechanic.name,
+                  description: character.characterClass.payload.mechanic.description,
+                },
+                ...character.race.payload.traits,
+                ...character.race.payload.mechanics,
+              ],
               items: character.inventory
                 .filter((item) => /consum|poção|pocao/i.test(item.category))
                 .map((item) => ({ id: item.id, name: item.name, description: item.description })),

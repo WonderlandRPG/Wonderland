@@ -76,9 +76,8 @@ export async function signInAction(
     };
   }
 
-  const nextPath = getSafeRedirectPath(String(formData.get("next") ?? ""));
   revalidatePath("/", "layout");
-  redirect(`/personagens?selecionar=1&next=${encodeURIComponent(nextPath)}`);
+  redirect("/personagens");
 }
 
 export async function signUpAction(

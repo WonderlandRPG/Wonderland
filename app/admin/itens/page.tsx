@@ -121,8 +121,8 @@ export default async function AdminItemsPage({
                   ))}
                 </fieldset>
                 <label>
-                  <input name="twoHanded" type="checkbox" defaultChecked={item.two_handed} /> Duas
-                  mãos
+                  <input name="twoHanded" type="checkbox" defaultChecked={item.two_handed} /> Ocupa
+                  as duas mãos (bloqueia a arma secundária)
                 </label>
                 <label>
                   <input name="active" type="checkbox" defaultChecked={item.active} /> Disponível na

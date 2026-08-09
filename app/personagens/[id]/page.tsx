@@ -53,6 +53,8 @@ export default async function CharacterSheetPage({
       .filter((item) => item.equippedSlot)
       .map((item) => [item.equippedSlot, item]),
   );
+  const twoHandedMain = equippedItems.get("main_weapon");
+  if (twoHandedMain?.twoHanded) equippedItems.set("off_weapon", twoHandedMain);
   const rank = getAdventureRank(character.adventure_rank);
   const classPath = character.characterClass.payload.paths?.find(
     (path) => path.key === character.class_path_key,
@@ -72,6 +74,7 @@ export default async function CharacterSheetPage({
   );
   const renderEquipmentSlot = (slot: (typeof equipmentSlots)[number]) => {
     const item = equippedItems.get(slot.key);
+    const isTwoHandedReservation = slot.key === "off_weapon" && item?.twoHanded;
     const catalogSlot = slot.key.startsWith("ring")
       ? "ring"
       : slot.key.startsWith("earring")
@@ -81,14 +84,14 @@ export default async function CharacterSheetPage({
       (entry) => entry.slot === catalogSlot && entry.id !== item?.id,
     );
     return (
-      <details className={`equipment-slot-picker ${item ? "is-equipped" : ""}`} key={slot.key}>
+      <details className={`equipment-slot-picker ${item ? "is-equipped" : ""} ${isTwoHandedReservation ? "is-two-handed-reservation" : ""}`} key={slot.key}>
         <summary>
           <span className="equipment-slot__seal"><ItemGlyph slot={slot.key} /></span>
-          <div><small>{slot.label}</small><strong>{item?.name ?? "Espaço livre"}</strong></div>
+          <div><small>{slot.label}</small><strong>{item?.name ?? "Espaço livre"}</strong>{isTwoHandedReservation ? <em>Ocupado pela arma de duas mãos</em> : null}</div>
           <i aria-hidden="true">⌄</i>
         </summary>
         <div className="equipment-slot-picker__menu">
-          <header><strong>Equipar em {slot.label}</strong><small>{candidates.length} opções na mochila</small></header>
+          <header><strong>{isTwoHandedReservation ? "Espaço reservado" : `Equipar em ${slot.label}`}</strong><small>{isTwoHandedReservation ? "Remova a arma principal para liberar" : `${candidates.length} opções na mochila`}</small></header>
           {item ? <form action={unequipItemAction.bind(null, character.id)}><input name="inventoryId" type="hidden" value={item.id} /><span><ItemGlyph slot={item.slot}/><b>{item.name}</b><small>Equipado agora</small></span><button>Remover</button></form> : null}
           {candidates.map((entry) => <form action={equipItemAction.bind(null, character.id)} key={entry.id}><input name="inventoryId" type="hidden" value={entry.id}/><input name="slot" type="hidden" value={slot.key}/><span><ItemGlyph slot={entry.slot}/><b>{entry.name}</b><small>{entry.rarity}</small></span><button>Equipar</button></form>)}
           {!item && !candidates.length ? <p>Você ainda não possui itens compatíveis com este espaço.</p> : null}

@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-import { duplicateRaceAction, restoreRaceAction } from "@/app/admin/racas/actions";
+import {
+  duplicateRaceAction,
+  importOfficialRacesAction,
+  restoreRaceAction,
+} from "@/app/admin/racas/actions";
 import { getRaceCatalog } from "@/lib/content/races";
 import { getRaceBonusTotal } from "@/lib/game/races";
 
@@ -26,6 +30,10 @@ const statusLabels = {
 const notices: Record<string, { kind: "success" | "error"; message: string }> = {
   arquivada: { kind: "success", message: "A raça foi arquivada e saiu do conteúdo publicado." },
   erro: { kind: "error", message: "Não foi possível concluir a operação. Tente novamente." },
+  "oficiais-importadas": {
+    kind: "success",
+    message: "As 11 raças oficiais foram sincronizadas e publicadas com sucesso.",
+  },
   "nao-encontrada": { kind: "error", message: "A raça selecionada não foi encontrada." },
 };
 
@@ -65,12 +73,20 @@ export default async function RacesPage({
           <span className="eyebrow">Conteúdo do jogo // módulo 01</span>
           <h1>Raças</h1>
           <p>
-            Gerencie identidade, bônus, passivas, habilidades e progressão sem alterar o código.
+            Gerencie identidade, bônus, mecânica, passivas e habilidades por nível sem alterar o
+            código.
           </p>
         </div>
-        <Link className="button button--primary" href="/admin/racas/nova">
-          Criar nova raça <span>＋</span>
-        </Link>
+        <div className="race-catalog-hero__actions">
+          <form action={importOfficialRacesAction}>
+            <button className="button button--dark" type="submit">
+              Sincronizar 11 raças oficiais
+            </button>
+          </form>
+          <Link className="button button--primary" href="/admin/racas/nova">
+            Criar nova raça <span>＋</span>
+          </Link>
+        </div>
       </section>
 
       {notice ? (

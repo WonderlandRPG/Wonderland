@@ -16,7 +16,7 @@ import {
   createRaceSlug,
   getRaceBonusTotal,
   maximumRaceBonusPoints,
-  type RaceAbility,
+  type RaceMechanic,
   type RaceProgressionEntry,
   type RaceTrait,
 } from "@/lib/game/races";
@@ -66,11 +66,11 @@ export function RaceEditor({
     }));
   }
 
-  function updateAbility(index: number, field: keyof RaceAbility, value: string | number) {
+  function updateMechanic(index: number, field: keyof RaceMechanic, value: string) {
     setPayload((current) => ({
       ...current,
-      abilities: current.abilities.map((ability, abilityIndex) =>
-        abilityIndex === index ? { ...ability, [field]: value } : ability,
+      mechanics: current.mechanics.map((mechanic, mechanicIndex) =>
+        mechanicIndex === index ? { ...mechanic, [field]: value } : mechanic,
       ),
     }));
   }
@@ -339,7 +339,63 @@ export function RaceEditor({
               onClick={() =>
                 setPayload((current) => ({
                   ...current,
-                  traits: [...current.traits, { name: "", description: "", unlockLevel: 1 }],
+                  mechanics: [...current.mechanics, { name: "", description: "" }],
+                }))
+              }
+              type="button"
+            >
+              ＋ Adicionar mecânica
+            </button>
+          }
+          description="O sistema exclusivo que define como a raça gera, acumula e utiliza seu recurso."
+          index="03"
+          title="Mecânica racial"
+        >
+          <DynamicCollection empty="Nenhuma mecânica racial adicionada.">
+            {payload.mechanics.map((mechanic, index) => (
+              <DynamicCard
+                index={index}
+                key={`mechanic-${index}`}
+                label="Mecânica"
+                onRemove={() =>
+                  setPayload((current) => ({
+                    ...current,
+                    mechanics: current.mechanics.filter(
+                      (_, mechanicIndex) => mechanicIndex !== index,
+                    ),
+                  }))
+                }
+              >
+                <EditorField label="Nome da mecânica">
+                  <input
+                    onChange={(event) => updateMechanic(index, "name", event.target.value)}
+                    placeholder="Ex.: Radiância"
+                    required
+                    value={mechanic.name}
+                  />
+                </EditorField>
+                <EditorField label="Descrição">
+                  <textarea
+                    onChange={(event) => updateMechanic(index, "description", event.target.value)}
+                    placeholder="Explique como o recurso é obtido, seus limites, gastos e duração..."
+                    required
+                    rows={7}
+                    value={mechanic.description}
+                  />
+                </EditorField>
+              </DynamicCard>
+            ))}
+          </DynamicCollection>
+        </EditorSection>
+
+        <EditorSection
+          action={
+            <button
+              className="admin-add-button"
+              onClick={() =>
+                setPayload((current) => ({
+                  ...current,
+                  traits: [...current.traits, { name: "", description: "" }],
                 }))
               }
               type="button"
@@ -347,8 +403,8 @@ export function RaceEditor({
               ＋ Adicionar passiva
             </button>
           }
-          description="Características permanentes que definem a identidade racial."
-          index="03"
+          description="Características passivas e permanentes da raça."
+          index="04"
           title="Traços raciais"
         >
           <DynamicCollection empty="Nenhuma passiva adicionada.">
@@ -364,134 +420,21 @@ export function RaceEditor({
                   }))
                 }
               >
-                <div className="race-form-grid race-form-grid--level">
-                  <EditorField label="Nome da passiva">
-                    <input
-                      onChange={(event) => updateTrait(index, "name", event.target.value)}
-                      placeholder="Ex.: Asas Celestiais"
-                      required
-                      value={trait.name}
-                    />
-                  </EditorField>
-                  <EditorField label="Nível">
-                    <input
-                      min={1}
-                      onChange={(event) =>
-                        updateTrait(index, "unlockLevel", Number(event.target.value))
-                      }
-                      required
-                      type="number"
-                      value={trait.unlockLevel ?? 1}
-                    />
-                  </EditorField>
-                </div>
+                <EditorField label="Nome da passiva">
+                  <input
+                    onChange={(event) => updateTrait(index, "name", event.target.value)}
+                    placeholder="Ex.: Luz Celestial"
+                    required
+                    value={trait.name}
+                  />
+                </EditorField>
                 <EditorField label="Descrição">
                   <textarea
                     onChange={(event) => updateTrait(index, "description", event.target.value)}
                     placeholder="Explique exatamente como a passiva funciona..."
                     required
-                    rows={4}
+                    rows={6}
                     value={trait.description}
-                  />
-                </EditorField>
-              </DynamicCard>
-            ))}
-          </DynamicCollection>
-        </EditorSection>
-
-        <EditorSection
-          action={
-            <button
-              className="admin-add-button"
-              onClick={() =>
-                setPayload((current) => ({
-                  ...current,
-                  abilities: [
-                    ...current.abilities,
-                    {
-                      name: "",
-                      description: "",
-                      unlockLevel: 1,
-                      manaCost: 0,
-                      cooldown: 0,
-                    },
-                  ],
-                }))
-              }
-              type="button"
-            >
-              ＋ Adicionar habilidade
-            </button>
-          }
-          description="Poderes ativos desbloqueados pela própria raça."
-          index="04"
-          title="Habilidades raciais"
-        >
-          <DynamicCollection empty="Nenhuma habilidade racial adicionada.">
-            {payload.abilities.map((ability, index) => (
-              <DynamicCard
-                index={index}
-                key={`ability-${index}`}
-                label="Habilidade"
-                onRemove={() =>
-                  setPayload((current) => ({
-                    ...current,
-                    abilities: current.abilities.filter(
-                      (_, abilityIndex) => abilityIndex !== index,
-                    ),
-                  }))
-                }
-              >
-                <div className="race-form-grid race-form-grid--ability">
-                  <EditorField label="Nome">
-                    <input
-                      onChange={(event) => updateAbility(index, "name", event.target.value)}
-                      placeholder="Ex.: Julgamento Celestial"
-                      required
-                      value={ability.name}
-                    />
-                  </EditorField>
-                  <EditorField label="Nível">
-                    <input
-                      min={1}
-                      onChange={(event) =>
-                        updateAbility(index, "unlockLevel", Number(event.target.value))
-                      }
-                      required
-                      type="number"
-                      value={ability.unlockLevel}
-                    />
-                  </EditorField>
-                  <EditorField label="Mana">
-                    <input
-                      min={0}
-                      onChange={(event) =>
-                        updateAbility(index, "manaCost", Number(event.target.value))
-                      }
-                      required
-                      type="number"
-                      value={ability.manaCost}
-                    />
-                  </EditorField>
-                  <EditorField label="Recarga (turnos)">
-                    <input
-                      min={0}
-                      onChange={(event) =>
-                        updateAbility(index, "cooldown", Number(event.target.value))
-                      }
-                      required
-                      type="number"
-                      value={ability.cooldown}
-                    />
-                  </EditorField>
-                </div>
-                <EditorField label="Descrição">
-                  <textarea
-                    onChange={(event) => updateAbility(index, "description", event.target.value)}
-                    placeholder="Efeito, alcance, duração e regras da habilidade..."
-                    required
-                    rows={4}
-                    value={ability.description}
                   />
                 </EditorField>
               </DynamicCard>
@@ -511,19 +454,19 @@ export function RaceEditor({
               }
               type="button"
             >
-              ＋ Adicionar marco
+              ＋ Adicionar habilidade
             </button>
           }
-          description="Evoluções e novos recursos conquistados em níveis específicos."
+          description="Habilidades raciais desbloqueadas conforme o personagem alcança novos níveis."
           index="05"
           title="Progressão racial"
         >
-          <DynamicCollection empty="Nenhum marco de progressão adicionado.">
+          <DynamicCollection empty="Nenhuma habilidade de progressão adicionada.">
             {payload.progression.map((entry, index) => (
               <DynamicCard
                 index={index}
                 key={`progression-${index}`}
-                label="Marco"
+                label="Habilidade"
                 onRemove={() =>
                   setPayload((current) => ({
                     ...current,
@@ -534,10 +477,10 @@ export function RaceEditor({
                 }
               >
                 <div className="race-form-grid race-form-grid--level">
-                  <EditorField label="Título">
+                  <EditorField label="Nome da habilidade">
                     <input
                       onChange={(event) => updateProgression(index, "title", event.target.value)}
-                      placeholder="Ex.: Despertar das Asas"
+                      placeholder="Ex.: Toque da Alvorada"
                       required
                       value={entry.title}
                     />
@@ -559,9 +502,9 @@ export function RaceEditor({
                     onChange={(event) =>
                       updateProgression(index, "description", event.target.value)
                     }
-                    placeholder="Explique o que muda quando este nível é alcançado..."
+                    placeholder="Efeito, custo, recarga, duração, alcance e regras da habilidade..."
                     required
-                    rows={4}
+                    rows={8}
                     value={entry.description}
                   />
                 </EditorField>

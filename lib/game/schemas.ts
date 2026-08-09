@@ -32,6 +32,16 @@ export const progressionEntrySchema = z.object({
   description: requiredTextSchema,
 });
 
+export const raceMechanicSchema = z.object({
+  name: requiredTextSchema,
+  description: requiredTextSchema,
+});
+
+export const raceTraitSchema = z.object({
+  name: requiredTextSchema,
+  description: requiredTextSchema,
+});
+
 export const raceAbilitySchema = z.object({
   name: requiredTextSchema,
   description: requiredTextSchema,
@@ -57,8 +67,9 @@ export const racePayloadSchema = z
     baseHp: nonNegativeIntegerSchema,
     baseMana: nonNegativeIntegerSchema,
     attributeBonuses: raceAttributeBonusesSchema,
-    traits: z.array(traitSchema),
-    abilities: z.array(raceAbilitySchema).default([]),
+    mechanics: z.array(raceMechanicSchema).default([]),
+    traits: z.array(raceTraitSchema),
+    abilities: z.array(raceAbilitySchema).optional(),
     progression: z.array(progressionEntrySchema),
   })
   .superRefine((payload, context) => {
@@ -74,7 +85,22 @@ export const racePayloadSchema = z
         path: ["attributeBonuses"],
       });
     }
-  });
+  })
+  .transform(({ abilities, ...payload }) => ({
+    ...payload,
+    progression: [
+      ...payload.progression,
+      ...(abilities ?? []).map((ability) => ({
+        level: ability.unlockLevel,
+        title: ability.name,
+        description: [
+          ability.description,
+          `Custo: ${ability.manaCost} de Mana;`,
+          `Recarga: ${ability.cooldown} turno(s).`,
+        ].join("\n"),
+      })),
+    ],
+  }));
 
 export const classPayloadSchema = z.object({
   description: requiredTextSchema,

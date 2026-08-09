@@ -4,7 +4,7 @@ import { attributeKeys, racePayloadSchema, type AttributeKey } from "@/lib/game/
 
 export type RacePayload = z.infer<typeof racePayloadSchema>;
 export type RaceTrait = RacePayload["traits"][number];
-export type RaceAbility = RacePayload["abilities"][number];
+export type RaceMechanic = RacePayload["mechanics"][number];
 export type RaceProgressionEntry = RacePayload["progression"][number];
 
 export const maximumRaceBonusPoints = 25;
@@ -33,8 +33,8 @@ export function createEmptyRacePayload(): RacePayload {
       INT: 0,
       ARC: 0,
     },
+    mechanics: [],
     traits: [],
-    abilities: [],
     progression: [],
   };
 }

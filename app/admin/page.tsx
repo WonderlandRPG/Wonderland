@@ -18,8 +18,8 @@ export default async function AdminPage() {
           <span className="eyebrow">Core administrativo // v2.1</span>
           <h2>Uma central para governar todo o Wonderland.</h2>
           <p>
-            O primeiro editor está ativo. Raças, bônus, passivas e progressão agora podem ser
-            administrados sem alterar o código do site.
+            O primeiro editor está ativo. Raças, bônus, mecânicas, passivas e habilidades por nível
+            agora podem ser administrados sem alterar o código do site.
           </p>
           <div className="command-hero__actions">
             <Link className="button button--primary" href="/admin/racas/nova">

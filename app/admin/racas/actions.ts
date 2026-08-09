@@ -7,6 +7,7 @@ import { z } from "zod";
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import type { Json } from "@/lib/db/types";
 import type { RaceActionState } from "@/lib/game/race-forms";
+import { officialRaces } from "@/lib/game/official-races";
 import { createRaceSlug } from "@/lib/game/races";
 import { racePayloadSchema } from "@/lib/game/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -51,6 +52,37 @@ function refreshRaceRoutes(id?: string) {
     revalidatePath(`/admin/racas/${id}`);
     revalidatePath(`/admin/racas/${id}/preview`);
   }
+}
+
+export async function importOfficialRacesAction() {
+  const account = await requireAdministrativeAccount();
+  const client = await createServerSupabaseClient();
+  if (!client) redirect("/admin/racas?notice=erro");
+
+  const publishedAt = new Date().toISOString();
+  const { data, error } = await client
+    .from("v2_content")
+    .upsert(
+      officialRaces.map((race) => ({
+        content_type: "race",
+        name: race.name,
+        slug: race.slug,
+        status: "published" as const,
+        payload: race.payload as unknown as Json,
+        published_at: publishedAt,
+        updated_by: account.id,
+      })),
+      { onConflict: "content_type,slug" },
+    )
+    .select("id");
+
+  if (error || data?.length !== officialRaces.length) {
+    redirect("/admin/racas?notice=erro");
+  }
+
+  refreshRaceRoutes();
+  data.forEach((race) => refreshRaceRoutes(race.id));
+  redirect("/admin/racas?notice=oficiais-importadas");
 }
 
 export async function saveRaceAction(

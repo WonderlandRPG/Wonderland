@@ -2,7 +2,7 @@ export const contentCatalog = [
   {
     key: "race",
     label: "Raças",
-    description: "Bônus, atributos, passivas e progressão racial.",
+    description: "Bônus, mecânicas, passivas e habilidades por nível.",
     glyph: "RA",
   },
   {

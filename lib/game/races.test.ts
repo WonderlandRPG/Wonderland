@@ -6,6 +6,7 @@ import {
   getRaceBonusTotal,
   maximumRaceBonusPoints,
 } from "@/lib/game/races";
+import { officialRaces } from "@/lib/game/official-races";
 import { racePayloadSchema } from "@/lib/game/schemas";
 
 describe("regras das raças", () => {
@@ -41,5 +42,79 @@ describe("regras das raças", () => {
     payload.imageUrl = "imagem-local";
 
     expect(racePayloadSchema.safeParse(payload).success).toBe(false);
+  });
+
+  it("mantém as 11 raças oficiais completas e válidas", () => {
+    expect(officialRaces.map((race) => race.name)).toEqual([
+      "Aengel",
+      "Draconato",
+      "Lobisomem",
+      "Kitsune",
+      "Leonis",
+      "Tiefling",
+      "Vampiro",
+      "Elfo",
+      "Fada",
+      "Humano",
+      "Orc",
+    ]);
+
+    officialRaces.forEach((race) => {
+      expect(racePayloadSchema.safeParse(race.payload).success).toBe(true);
+      expect(getRaceBonusTotal(race.payload.attributeBonuses)).toBe(15);
+      expect(race.payload.mechanics.length).toBeGreaterThan(0);
+      expect(race.payload.traits.length).toBeGreaterThanOrEqual(2);
+      expect(race.payload.progression.map((entry) => entry.level)).toEqual([
+        1, 20, 40, 60, 80, 100,
+      ]);
+    });
+  });
+
+  it("usa multiplicadores nas escalas diretas do catálogo oficial", () => {
+    const catalogText = JSON.stringify(officialRaces);
+
+    expect(catalogText).not.toMatch(
+      /\d+% (?:do|da) (?:FOR|INT|ARC|maior atributo|atributo utilizado|dano original)/,
+    );
+    expect(catalogText).toContain("1x ARC");
+    expect(catalogText).toContain("1,5x FOR");
+    expect(catalogText).toContain("2x FOR");
+    expect(catalogText).toContain("20% menos dano");
+  });
+
+  it("migra habilidades do formato antigo para a progressão racial", () => {
+    const legacyPayload = {
+      ...createEmptyRacePayload(),
+      description: "Raça antiga ainda compatível.",
+      traits: [
+        {
+          name: "Passiva antiga",
+          description: "Permanece ativa.",
+          unlockLevel: 40,
+        },
+      ],
+      abilities: [
+        {
+          name: "Poder legado",
+          description: "Um efeito antigo.",
+          unlockLevel: 20,
+          manaCost: 30,
+          cooldown: 2,
+        },
+      ],
+    };
+
+    const parsed = racePayloadSchema.parse(legacyPayload);
+
+    expect(parsed).not.toHaveProperty("abilities");
+    expect(parsed.traits[0]).toEqual({
+      name: "Passiva antiga",
+      description: "Permanece ativa.",
+    });
+    expect(parsed.progression).toContainEqual({
+      level: 20,
+      title: "Poder legado",
+      description: "Um efeito antigo.\nCusto: 30 de Mana;\nRecarga: 2 turno(s).",
+    });
   });
 });

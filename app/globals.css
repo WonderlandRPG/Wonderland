@@ -1376,6 +1376,17 @@ button:disabled {
     radial-gradient(circle at 86% 20%, rgba(77, 197, 144, 0.2), transparent 28%);
 }
 
+.race-catalog-hero__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 9px;
+}
+
+.race-catalog-hero__actions form {
+  display: flex;
+}
+
 .race-catalog-hero .eyebrow,
 .race-editor-section .eyebrow,
 .race-history .eyebrow,
@@ -3694,6 +3705,16 @@ button:disabled {
   .race-catalog-hero .button,
   .race-saved-preview-header .button {
     width: 100%;
+  }
+
+  .race-catalog-hero__actions,
+  .race-catalog-hero__actions form {
+    width: 100%;
+  }
+
+  .race-catalog-hero__actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .race-catalog-stats > div {

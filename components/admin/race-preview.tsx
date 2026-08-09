@@ -63,25 +63,25 @@ export function RacePreview({
         {!compact ? (
           <>
             <PreviewCollection
+              empty="Nenhuma mecânica racial cadastrada."
+              eyebrow="Mecânica racial"
+              items={payload.mechanics.map((mechanic) => ({
+                meta: "Sistema exclusivo",
+                title: mechanic.name,
+                description: mechanic.description,
+              }))}
+            />
+            <PreviewCollection
               empty="Nenhuma passiva cadastrada."
               eyebrow="Traços raciais"
               items={payload.traits.map((trait) => ({
-                meta: `Nível ${trait.unlockLevel ?? 1}`,
+                meta: "Passiva",
                 title: trait.name,
                 description: trait.description,
               }))}
             />
             <PreviewCollection
-              empty="Nenhuma habilidade cadastrada."
-              eyebrow="Habilidades raciais"
-              items={payload.abilities.map((ability) => ({
-                meta: `Nível ${ability.unlockLevel} · ${ability.manaCost} Mana · ${ability.cooldown}T`,
-                title: ability.name,
-                description: ability.description,
-              }))}
-            />
-            <PreviewCollection
-              empty="Nenhum marco de progressão cadastrado."
+              empty="Nenhuma habilidade de progressão cadastrada."
               eyebrow="Progressão racial"
               items={[...payload.progression]
                 .sort((left, right) => left.level - right.level)

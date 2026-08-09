@@ -64,20 +64,21 @@ set search_path = public
 as $$
 declare
   inventory_row public.v2_character_inventory;
+  inventory_character_id uuid;
   owner_id uuid;
   item_slot text;
   required_level integer;
   character_level integer;
 begin
-  select inventory, characters.user_id, characters.level, content.payload ->> 'equipmentSlot',
+  select inventory.character_id, characters.user_id, characters.level, content.payload ->> 'equipmentSlot',
     coalesce((content.payload ->> 'levelRequirement')::integer, 1)
-  into inventory_row, owner_id, character_level, item_slot, required_level
+  into inventory_character_id, owner_id, character_level, item_slot, required_level
   from public.v2_character_inventory inventory
   join public.v2_characters characters on characters.id = inventory.character_id
   join public.v2_content content on content.id = inventory.item_id
   where inventory.id = p_inventory_id and content.content_type = 'item';
 
-  if inventory_row.id is null then
+  if inventory_character_id is null then
     raise exception 'Item do inventário não encontrado.' using errcode = 'P0002';
   end if;
   if owner_id <> auth.uid() and not public.v2_is_admin() then
@@ -92,7 +93,7 @@ begin
 
   update public.v2_character_inventory
   set equipped_slot = null
-  where character_id = inventory_row.character_id and equipped_slot = p_slot;
+  where character_id = inventory_character_id and equipped_slot = p_slot;
 
   update public.v2_character_inventory
   set equipped_slot = p_slot
@@ -111,15 +112,16 @@ set search_path = public
 as $$
 declare
   inventory_row public.v2_character_inventory;
+  inventory_character_id uuid;
   owner_id uuid;
 begin
-  select inventory, characters.user_id
-  into inventory_row, owner_id
+  select inventory.character_id, characters.user_id
+  into inventory_character_id, owner_id
   from public.v2_character_inventory inventory
   join public.v2_characters characters on characters.id = inventory.character_id
   where inventory.id = p_inventory_id;
 
-  if inventory_row.id is null then
+  if inventory_character_id is null then
     raise exception 'Item do inventário não encontrado.' using errcode = 'P0002';
   end if;
   if owner_id <> auth.uid() and not public.v2_is_admin() then

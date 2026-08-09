@@ -19,6 +19,7 @@ import type { ClassSkill } from "@/lib/game/classes";
 interface ArenaCharacter {
   id: string;
   name: string;
+  imageUrl: string;
   raceName: string;
   className: string;
   baseHp: number;
@@ -186,11 +187,11 @@ function Battle({
 
   return (
     <section className="arena-console">
-      <header className="arena-toolbar">
+      <header className="arena-toolbar arena-game-header">
         <div>
-          <span className="eyebrow">Coliseu de Wonderland</span>
-          <h1>Arena de Treinamento</h1>
-          <p>Monte sua sequência e encerre a rodada quando estiver pronto.</p>
+          <span className="eyebrow">Campo de treinamento</span>
+          <h1>Duelo de Arena</h1>
+          <p>Use até uma ação de cada grupo antes de encerrar a rodada.</p>
         </div>
         <label>
           Personagem
@@ -204,10 +205,10 @@ function Battle({
         </label>
         <strong className="arena-turn-counter"><small>Rodada atual</small>{String(turn).padStart(2, "0")}</strong>
       </header>
-      <div className="arena-stage">
-        <Fighter combatant={player} side="player" subtitle={`${character.raceName} · ${character.className}`} />
-        <b><small>Confronto</small>VS</b>
-        <Fighter combatant={enemy} side="enemy" subtitle="Autômato de treino" />
+      <div className="arena-stage arena-duel-board">
+        <Fighter combatant={player} imageUrl={character.imageUrl} side="player" subtitle={`${character.raceName} · ${character.className}`} />
+        <div className="arena-versus"><small>Rodada {turn}</small><b>VS</b><span>Treino</span></div>
+        <Fighter combatant={enemy} imageUrl="" side="enemy" subtitle="Autômato de treino" />
       </div>
       <p className="arena-message" role="status">
         <span>Registro de combate</span>{message}
@@ -337,10 +338,14 @@ function Battle({
   );
 }
 
-function Fighter({ combatant, subtitle, side }: { combatant: CombatantState; subtitle: string; side: "player" | "enemy" }) {
+function Fighter({ combatant, subtitle, side, imageUrl }: { combatant: CombatantState; subtitle: string; side: "player" | "enemy"; imageUrl: string }) {
   return (
     <article className={`arena-fighter is-${side}`}>
-      <div className="arena-fighter__sigil">{side === "player" ? "✦" : "◆"}</div>
+      <div className={`arena-fighter__portrait ${imageUrl ? "is-image" : ""}`} style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}>
+        {imageUrl ? "" : side === "player" ? combatant.name.slice(0, 2).toUpperCase() : "鬼"}
+        <span>{side === "player" ? "JOGADOR" : "OPONENTE"}</span>
+      </div>
+      <div className="arena-fighter__status">
       <span className="eyebrow">{subtitle}</span>
       <h2>{combatant.name}</h2>
       <p>
@@ -380,6 +385,7 @@ function Fighter({ combatant, subtitle, side }: { combatant: CombatantState; sub
         </>
       ) : null}
       {combatant.shield > 0 ? <small>Escudo: {combatant.shield}</small> : null}
+      </div>
     </article>
   );
 }

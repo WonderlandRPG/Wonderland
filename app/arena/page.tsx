@@ -26,6 +26,7 @@ export default async function ArenaPage({
             .map((character) => ({
               id: character.id,
               name: character.name,
+              imageUrl: character.image_url ?? "",
               raceName: character.race.name,
               className: character.characterClass.name,
               baseHp: character.race.payload.baseHp,

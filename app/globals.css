@@ -8623,3 +8623,138 @@ body[data-rank="EX"] .rank-atmosphere i {
     min-height: 112px;
   }
 }
+
+/* Correção final: Arena nunca herda superfícies claras do portal */
+body[data-rank]:has(.arena-page) {
+  color: #e9f4ef;
+  background: #020806;
+}
+body[data-rank]:has(.arena-page) .player-nav,
+.arena-page .player-nav {
+  color: #dcebe5;
+  border-color: rgba(91, 205, 164, 0.17);
+  background: #030c09;
+}
+.arena-page {
+  min-height: 100vh;
+  color: #e9f4ef;
+  background:
+    linear-gradient(rgba(5, 14, 11, 0.96), rgba(2, 8, 6, 0.99)),
+    repeating-linear-gradient(45deg, transparent 0 28px, rgba(77, 188, 148, 0.025) 29px 30px),
+    #020806;
+}
+.arena-page .arena-toolbar,
+.arena-page .arena-message,
+.arena-page .arena-turn-budget,
+.arena-page .arena-effects,
+.arena-page .arena-command-panel,
+.arena-page .arena-actions {
+  color: #dcebe5;
+  border-color: rgba(83, 195, 155, 0.16);
+  background: #06130e;
+  box-shadow: none;
+}
+.arena-page .arena-game-header {
+  color: #e9f4ef;
+  border-color: rgba(93, 211, 169, 0.24);
+  background:
+    linear-gradient(90deg, rgba(54, 175, 130, 0.13), transparent 42%),
+    #071a13;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+.arena-page .arena-game-header h1,
+.arena-page .arena-command-panel h2 {
+  color: #f5e7ce;
+}
+.arena-page .arena-game-header p,
+.arena-page .arena-command-panel > header > small {
+  color: #719488;
+}
+.arena-page .arena-game-header select {
+  color: #dcebe5;
+  border-color: rgba(91, 208, 164, 0.24);
+  background: #04110c;
+}
+.arena-page .arena-message {
+  color: #a5bdb3;
+  border-radius: 6px;
+  background: #071711;
+}
+.arena-page .arena-message > span {
+  color: var(--arena-accent);
+}
+.arena-page .arena-turn-budget {
+  padding: 7px;
+  border-radius: 6px;
+  background: #06130e;
+}
+.arena-page .arena-turn-budget span {
+  color: #6c8d80;
+  border: 1px solid rgba(90, 196, 158, 0.12);
+  background: #091b14;
+}
+.arena-page .arena-turn-budget span.is-used {
+  color: #05120d;
+  background: var(--arena-accent);
+}
+.arena-page .arena-effects {
+  color: #dcebe5;
+  border-radius: 6px;
+  background: #06130e;
+}
+.arena-page .arena-effects header strong {
+  color: #b8cbc3;
+}
+.arena-page .arena-effects article {
+  color: #dcebe5;
+  border-color: rgba(83, 195, 155, 0.12);
+  background: #091b14;
+}
+.arena-page .arena-effects article b {
+  color: #dcebe5;
+}
+.arena-page .arena-effects article span {
+  color: #719487;
+}
+.arena-page .arena-command-panel {
+  overflow: hidden;
+  border-radius: 7px;
+  background: #05110d;
+}
+.arena-page .arena-command-panel > header {
+  border-color: rgba(83, 195, 155, 0.13);
+  background: #071711;
+}
+.arena-page .arena-actions {
+  padding: 10px;
+  border: 0;
+  background: #05110d;
+}
+.arena-page .arena-actions > button {
+  color: #dcebe5;
+  border-color: rgba(83, 195, 155, 0.17);
+  border-radius: 5px;
+  background: linear-gradient(145deg, #0b261b, #06130e);
+}
+.arena-page .arena-actions > button[data-action="race"] {
+  background: linear-gradient(145deg, #0a2326, #061215);
+}
+.arena-page .arena-actions > button[data-action="class"] {
+  background: linear-gradient(145deg, #21152b, #100b14);
+}
+.arena-page .arena-actions > button[data-action="item"] {
+  background: linear-gradient(145deg, #2a2212, #130f07);
+}
+.arena-page .arena-actions > button strong {
+  color: #eee2cb;
+}
+.arena-page .arena-actions > button span {
+  color: #829f93;
+}
+.arena-page .arena-actions > button small {
+  color: var(--arena-accent);
+}
+.arena-page .arena-actions > button:disabled {
+  color: #60776e;
+  background: #07100d;
+}

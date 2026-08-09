@@ -16,6 +16,18 @@ where user_id = (
 
 Depois dessa primeira promoção, as permissões poderão ser administradas pelo próprio painel.
 
+## URLs obrigatórias da autenticação
+
+Em **Authentication → URL Configuration**, configure:
+
+- **Site URL:** `https://wonderland-six.vercel.app`
+- **Redirect URL de produção:** `https://wonderland-six.vercel.app/**`
+- **Redirect URL das previews da Vercel:** `https://*-wonderland-ltda.vercel.app/**`
+
+O curinga é necessário porque confirmação e recuperação usam `/auth/callback` com parâmetros de
+consulta. Se a URL não estiver na lista, o Supabase ignora o destino solicitado e volta para a
+Site URL. A página inicial também possui uma ponte de segurança para códigos PKCE que chegarem nela.
+
 ## Estrutura
 
 - `v2_profiles`: dados públicos básicos da conta;

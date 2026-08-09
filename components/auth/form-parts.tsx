@@ -34,11 +34,14 @@ export function FormNotice({ state }: { state: AuthActionState }) {
 export function SubmitButton({
   idleLabel,
   pendingLabel,
+  pending: externalPending,
 }: {
   idleLabel: string;
   pendingLabel: string;
+  pending?: boolean;
 }) {
-  const { pending } = useFormStatus();
+  const { pending: formPending } = useFormStatus();
+  const pending = externalPending ?? formPending;
 
   return (
     <button className="button button--primary auth-submit" type="submit" disabled={pending}>

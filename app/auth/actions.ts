@@ -1,21 +1,12 @@
 "use server";
 
-import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { recoveryIntentCookieName } from "@/lib/auth/callback";
 import type { AuthActionState, AuthField } from "@/lib/auth/forms";
-import { getSignInErrorMessage } from "@/lib/auth/errors";
-import { resolveRequestOrigin } from "@/lib/auth/origin";
-import { getSafeRedirectPath } from "@/lib/auth/redirects";
-import {
-  loginSchema,
-  newPasswordSchema,
-  profileSchema,
-  recoverySchema,
-  signUpSchema,
-} from "@/lib/auth/validation";
-import { getConfiguredSiteUrl } from "@/lib/config/env";
+import { newPasswordSchema, profileSchema } from "@/lib/auth/validation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function configurationError(): AuthActionState {
@@ -32,157 +23,6 @@ function validationError(error: {
     status: "error",
     message: "Revise os campos destacados antes de continuar.",
     fieldErrors: error.flatten().fieldErrors as Partial<Record<AuthField, string[]>>,
-  };
-}
-
-async function getRequestOrigin() {
-  const requestHeaders = await headers();
-
-  return resolveRequestOrigin({
-    forwardedHost: requestHeaders.get("x-forwarded-host"),
-    host: requestHeaders.get("host"),
-    forwardedProtocol: requestHeaders.get("x-forwarded-proto"),
-    configuredUrl: getConfiguredSiteUrl(),
-  });
-}
-
-async function getAuthCallbackUrl(nextPath: string) {
-  const origin = await getRequestOrigin();
-  const callbackUrl = new URL("/auth/callback", origin);
-  callbackUrl.searchParams.set("next", getSafeRedirectPath(nextPath));
-  return callbackUrl.toString();
-}
-
-export async function signInAction(
-  _previousState: AuthActionState,
-  formData: FormData,
-): Promise<AuthActionState> {
-  const result = loginSchema.safeParse({
-    email: formData.get("email"),
-    password: formData.get("password"),
-  });
-
-  if (!result.success) return validationError(result.error);
-
-  const supabase = await createServerSupabaseClient();
-
-  if (!supabase) return configurationError();
-
-  const { data, error } = await supabase.auth.signInWithPassword(result.data);
-
-  if (error) {
-    return {
-      status: "error",
-      message: getSignInErrorMessage(error),
-    };
-  }
-
-  if (!data.session || !data.user) {
-    return {
-      status: "error",
-      message: "A senha foi aceita, mas a sessão não pôde ser iniciada. Tente novamente.",
-    };
-  }
-
-  const { data: verifiedIdentity, error: verificationError } = await supabase.auth.getUser();
-
-  if (verificationError || verifiedIdentity.user?.id !== data.user.id) {
-    await supabase.auth.signOut();
-
-    return {
-      status: "error",
-      message: "Não foi possível confirmar a sessão criada. Atualize a página e tente novamente.",
-    };
-  }
-
-  const nextPath = getSafeRedirectPath(String(formData.get("next") ?? ""));
-  redirect(nextPath);
-}
-
-export async function signUpAction(
-  _previousState: AuthActionState,
-  formData: FormData,
-): Promise<AuthActionState> {
-  const result = signUpSchema.safeParse({
-    displayName: formData.get("displayName"),
-    email: formData.get("email"),
-    password: formData.get("password"),
-    confirmPassword: formData.get("confirmPassword"),
-    acceptedTerms: formData.get("acceptedTerms"),
-  });
-
-  if (!result.success) return validationError(result.error);
-
-  const supabase = await createServerSupabaseClient();
-
-  if (!supabase) return configurationError();
-
-  const { displayName, email, password } = result.data;
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { display_name: displayName },
-      emailRedirectTo: await getAuthCallbackUrl("/perfil?status=conta-confirmada"),
-    },
-  });
-
-  if (error) {
-    return {
-      status: "error",
-      message:
-        error.status === 429
-          ? "Muitas tentativas foram feitas. Aguarde alguns minutos antes de tentar novamente."
-          : "Não foi possível criar a conta agora. Tente novamente em instantes.",
-    };
-  }
-
-  if (data.session) {
-    revalidatePath("/", "layout");
-    redirect("/perfil?status=conta-criada");
-  }
-
-  return {
-    status: "success",
-    message:
-      "Cadastro recebido! Enviamos um link de confirmação para o seu e-mail. Abra-o para ativar a conta.",
-  };
-}
-
-export async function requestPasswordResetAction(
-  _previousState: AuthActionState,
-  formData: FormData,
-): Promise<AuthActionState> {
-  const result = recoverySchema.safeParse({ email: formData.get("email") });
-
-  if (!result.success) return validationError(result.error);
-
-  const supabase = await createServerSupabaseClient();
-
-  if (!supabase) return configurationError();
-
-  const { error } = await supabase.auth.resetPasswordForEmail(result.data.email, {
-    redirectTo: await getAuthCallbackUrl("/nova-senha"),
-  });
-
-  if (error?.status === 429) {
-    return {
-      status: "error",
-      message: "Aguarde um minuto antes de solicitar outro e-mail de recuperação.",
-    };
-  }
-
-  if (error) {
-    return {
-      status: "error",
-      message: "Não foi possível enviar o link agora. Atualize a página e tente novamente.",
-    };
-  }
-
-  return {
-    status: "success",
-    message:
-      "Se existir uma conta com esse e-mail, você receberá um link para criar uma nova senha.",
   };
 }
 
@@ -219,6 +59,7 @@ export async function updatePasswordAction(
     };
   }
 
+  (await cookies()).delete(recoveryIntentCookieName);
   revalidatePath("/", "layout");
   redirect("/perfil?status=senha-alterada");
 }

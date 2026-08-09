@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
   const code = url.searchParams.get("code");
   const tokenHash = url.searchParams.get("token_hash");
   const requestedType = url.searchParams.get("type");
+  const flowId = url.searchParams.get("sb_flow_id");
   const nextPath = getSafeRedirectPath(url.searchParams.get("next"));
   const recoveryFlow = requestedType === "recovery" || nextPath === "/nova-senha";
   const supabase = await createServerSupabaseClient();
@@ -29,7 +30,10 @@ export async function GET(request: NextRequest) {
   let error: Error | null = null;
 
   if (code) {
-    const result = await supabase.auth.exchangeCodeForSession(code);
+    const result = await supabase.auth.exchangeCodeForSession(
+      code,
+      flowId ? { flowId } : undefined,
+    );
     error = result.error;
   } else if (tokenHash && requestedType && otpTypes.includes(requestedType as EmailOtpType)) {
     const result = await supabase.auth.verifyOtp({

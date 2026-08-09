@@ -8838,3 +8838,58 @@ body[data-rank]:has(.arena-page) .player-nav,
   border-color: var(--action-color);
   box-shadow: inset 3px 0 0 var(--action-color), 0 8px 24px color-mix(in srgb, var(--action-color) 12%, transparent);
 }
+
+/* Códice público de raças e classes */
+.codex-page { min-height:100vh; color:#e6f2ec; background:linear-gradient(180deg,#06150f,#020806); }
+.codex-page__inner { padding-block:50px 90px; }
+.codex-hero { max-width:800px; margin-bottom:36px; }
+.codex-hero h1 { margin:8px 0 12px; color:#f4e8d2; font:400 clamp(3rem,7vw,6rem) Georgia,serif; }
+.codex-hero p { color:#789b8d; line-height:1.7; }
+.codex-catalog { display:grid; gap:12px; }
+.codex-entry { overflow:hidden; border:1px solid rgba(88,205,163,.18); border-radius:12px; background:#071711; }
+.codex-entry[open] { border-color:rgba(88,205,163,.4); box-shadow:0 20px 60px rgba(0,0,0,.25); }
+.codex-entry summary { display:flex; align-items:center; justify-content:space-between; gap:25px; padding:24px 28px; cursor:pointer; list-style:none; }
+.codex-entry summary::-webkit-details-marker { display:none; }
+.codex-entry summary > div { max-width:850px; }
+.codex-entry summary small { color:#60d6ad; font-size:.58rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+.codex-entry summary h2 { margin:6px 0; color:#f3e5ca; font:400 2rem Georgia,serif; }
+.codex-entry summary p { display:-webkit-box; overflow:hidden; margin:0; color:#78998d; line-height:1.55; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+.codex-entry summary > span { flex:0 0 auto; color:#55caa2; font-size:.62rem; font-weight:900; text-transform:uppercase; }
+.codex-entry__body { display:grid; grid-template-columns:260px 1fr; gap:26px; padding:28px; border-top:1px solid rgba(88,205,163,.14); background:#040e0a; }
+.codex-entry__body aside { display:grid; align-content:start; gap:5px; padding:20px; border:1px solid rgba(88,205,163,.13); border-radius:8px; background:#081b14; }
+.codex-entry__body aside b { margin-top:11px; color:#5f8e7c; font-size:.55rem; letter-spacing:.09em; text-transform:uppercase; }
+.codex-entry__body aside strong { color:#e5f0eb; font-size:.76rem; line-height:1.5; }
+.codex-entry__body aside p { color:#749487; font-size:.72rem; line-height:1.6; }
+.codex-entry__body section { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+.codex-entry__body section > h3 { grid-column:1/-1; margin:15px 0 4px; color:#d8c9aa; font:400 1.35rem Georgia,serif; }
+.codex-entry__body article { display:grid; align-content:start; gap:6px; padding:16px; border:1px solid rgba(88,205,163,.12); border-radius:7px; background:#081711; }
+.codex-entry__body article small { color:#58c9a2; font-size:.52rem; font-weight:900; text-transform:uppercase; }
+.codex-entry__body article strong { color:#e8f2ed; }
+.codex-entry__body article p { margin:0; color:#78968a; font-size:.72rem; line-height:1.55; white-space:pre-line; }
+.codex-entry__body article em { color:#b99b63; font-size:.62rem; font-style:normal; }
+.codex-paths { display:grid; grid-column:1/-1; grid-template-columns:repeat(2,1fr); gap:9px; }
+
+/* Portal e resultados dos modos de Arena */
+.arena-mode-select > header { margin-bottom:26px; text-align:center; }
+.arena-mode-select > header h1,.pvp-lobby h1 { margin:8px 0; color:#f3e5ca; font:400 clamp(2.8rem,6vw,5rem) Georgia,serif; }
+.arena-mode-select > header p,.pvp-lobby > p { color:#76978a; }
+.arena-mode-select > div { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+.arena-mode-select a { display:grid; min-height:350px; align-content:end; gap:8px; padding:28px; border:1px solid rgba(85,202,160,.2); border-radius:12px; color:#e4f0eb; background:radial-gradient(circle at 50% 22%,rgba(73,202,154,.18),transparent 25%),linear-gradient(145deg,#0a261b,#04100c); transition:180ms ease; }
+.arena-mode-select a:nth-child(2){background:radial-gradient(circle at 50% 22%,rgba(211,144,67,.18),transparent 25%),linear-gradient(145deg,#281d0d,#0d0904);border-color:rgba(218,159,78,.25)}
+.arena-mode-select a:nth-child(3){background:radial-gradient(circle at 50% 22%,rgba(159,91,215,.18),transparent 25%),linear-gradient(145deg,#21132b,#0c0710);border-color:rgba(168,100,220,.25)}
+.arena-mode-select a:hover { transform:translateY(-5px); box-shadow:0 25px 60px rgba(0,0,0,.35); }
+.arena-mode-select a > span { align-self:center; margin-bottom:auto; color:#63d8ae; font:700 4rem Georgia,serif; text-align:center; filter:drop-shadow(0 0 20px currentColor); }
+.arena-mode-select a small { color:#659181; font-size:.55rem; font-weight:900; text-transform:uppercase; }
+.arena-mode-select a strong { color:#f1e2c5; font:400 2rem Georgia,serif; }
+.arena-mode-select a p { min-height:48px; margin:0; color:#78968a; font-size:.76rem; line-height:1.55; }
+.arena-mode-select a b { color:#61d5ac; font-size:.65rem; text-transform:uppercase; }
+.arena-mode-back { display:inline-flex; margin-bottom:12px; color:#64cfa9; font-size:.65rem; font-weight:900; text-transform:uppercase; }
+.pvp-lobby { display:grid; min-height:620px; place-items:center; align-content:center; gap:15px; padding:50px; border:1px solid rgba(163,102,219,.25); border-radius:14px; text-align:center; background:radial-gradient(circle,rgba(157,86,215,.14),transparent 31%),#08050c; }
+.pvp-lobby__crest { color:#bc7ce9; font-size:5rem; filter:drop-shadow(0 0 25px #8f4bbd); }
+.pvp-lobby > div { display:grid; width:min(650px,100%); grid-template-columns:repeat(3,1fr); gap:8px; }
+.pvp-lobby article { display:grid; gap:5px; padding:16px; border:1px solid rgba(164,100,218,.18); background:#110a17; }
+.pvp-lobby article small { color:#8c689e; font-size:.52rem; text-transform:uppercase; }.pvp-lobby article strong{color:#e3ccee;font-size:.74rem}.pvp-lobby em{color:#b78cd0;font-style:normal}
+.arena-result { display:grid; place-items:center; gap:12px; padding:38px; border:1px solid rgba(82,211,159,.35); border-radius:10px; text-align:center; background:radial-gradient(circle,rgba(65,203,148,.17),transparent 42%),#05130e; box-shadow:0 0 60px rgba(57,201,144,.12); }
+.arena-result.is-defeat { border-color:rgba(218,80,94,.35); background:radial-gradient(circle,rgba(199,53,68,.17),transparent 42%),#170609; }
+.arena-result > span { color:#5de0ae; font-size:.65rem;font-weight:900;letter-spacing:.3em}.arena-result.is-defeat>span{color:#e16471}.arena-result h2{margin:0;color:#f2e2c3;font:400 2.5rem Georgia,serif}.arena-result p{margin:0;color:#78988b}.arena-result>div{display:flex;gap:18px;align-items:center}.arena-result>div strong{color:#f0cd77}.arena-result>div small{color:#6e9484}.arena-result__error{color:#e87983}
+@media(max-width:760px){.codex-entry__body{grid-template-columns:1fr}.codex-entry__body section,.codex-paths,.arena-mode-select>div{grid-template-columns:1fr}.pvp-lobby>div{grid-template-columns:1fr}.arena-mode-select a{min-height:280px}}

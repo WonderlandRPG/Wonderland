@@ -88,6 +88,7 @@ export default async function NewCharacterPage() {
             resourceName: entry.payload.resource.name,
             passiveName: entry.payload.passive.name,
             passiveDescription: entry.payload.passive.description,
+            paths: entry.payload.paths.map((path) => ({ key: path.key, name: path.name, description: path.description })),
           }))}
         />
       </div>

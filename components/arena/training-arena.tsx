@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { claimArenaVictoryAction } from "@/app/arena/actions";
 
 import {
   createCombatant,
@@ -15,10 +16,13 @@ import {
   type CombatantState,
 } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
+import { arenaMonsters, arenaRewards, buildAdaptiveMonsterAttributes, type ArenaMode } from "@/lib/game/arena";
 
 interface ArenaCharacter {
   id: string;
   name: string;
+  level: number;
+  adventureRank: string;
   imageUrl: string;
   raceName: string;
   className: string;
@@ -50,10 +54,16 @@ export function TrainingArena({
   characters,
   initialCharacterId,
   rules,
+  mode,
+  monsterIndex,
+  sessionId,
 }: {
   characters: ArenaCharacter[];
   initialCharacterId?: string;
   rules: CombatRules;
+  mode: Exclude<ArenaMode, "pvp">;
+  monsterIndex: number;
+  sessionId?: string;
 }) {
   const firstId = characters.some((entry) => entry.id === initialCharacterId)
     ? initialCharacterId!
@@ -79,6 +89,9 @@ export function TrainingArena({
       character={selected}
       options={characters}
       rules={rules}
+      mode={mode}
+      monsterIndex={monsterIndex}
+      sessionId={sessionId}
       onChange={setSelectedId}
       onReset={() => setResetKey((value) => value + 1)}
     />
@@ -89,23 +102,36 @@ function Battle({
   character,
   options,
   rules,
+  mode,
+  monsterIndex,
+  sessionId,
   onChange,
   onReset,
 }: {
   character: ArenaCharacter;
   options: ArenaCharacter[];
   rules: CombatRules;
+  mode: Exclude<ArenaMode, "pvp">;
+  monsterIndex: number;
+  sessionId?: string;
   onChange(id: string): void;
   onReset(): void;
 }) {
-  const initial = useMemo(() => createBattle(character, rules), [character, rules]);
+  const initial = useMemo(() => createBattle(character, rules, mode, monsterIndex), [character, rules, mode, monsterIndex]);
   const [player, setPlayer] = useState(initial.player);
   const [enemy, setEnemy] = useState(initial.enemy);
   const [turn, setTurn] = useState(1);
   const [actions, setActions] = useState<TurnActions>(freshActions);
   const [newCooldowns, setNewCooldowns] = useState<string[]>([]);
   const [message, setMessage] = useState("Escolha sua primeira ação.");
+  const [reward, setReward] = useState<{ xp: number; wg: number } | null>(null);
+  const [rewardError, setRewardError] = useState("");
+  const [claiming, startClaim] = useTransition();
   const finished = player.hp <= 0 || enemy.hp <= 0;
+  function claimReward() {
+    if (!sessionId || reward || claiming) return;
+    startClaim(async () => { const result = await claimArenaVictoryAction(sessionId); if (result.ok) setReward({ xp: result.xp, wg: result.wg }); else setRewardError(result.message); });
+  }
 
   function applyPlayerAction(
     nextPlayer: CombatantState,
@@ -189,8 +215,8 @@ function Battle({
     <section className="arena-console">
       <header className="arena-toolbar arena-game-header">
         <div>
-          <span className="eyebrow">Campo de treinamento</span>
-          <h1>Duelo de Arena</h1>
+          <span className="eyebrow">{mode === "pve" ? "Expedição PvE" : "Campo de treinamento"}</span>
+          <h1>{mode === "pve" ? initial.title : "Duelo de Arena"}</h1>
           <p>Use até uma ação de cada grupo antes de encerrar a rodada.</p>
         </div>
         <label>
@@ -208,7 +234,7 @@ function Battle({
       <div className="arena-stage arena-duel-board">
         <Fighter combatant={player} imageUrl={character.imageUrl} side="player" subtitle={`${character.raceName} · ${character.className}`} />
         <div className="arena-versus"><small>Rodada {turn}</small><b>VS</b><span>Treino</span></div>
-        <Fighter combatant={enemy} imageUrl="" side="enemy" subtitle="Autômato de treino" />
+        <Fighter combatant={enemy} imageUrl="" side="enemy" sigil={initial.sigil} subtitle={`Nível ${character.level} · ${initial.title}`} />
       </div>
       <p className="arena-message" role="status">
         <span>Registro de combate</span>{message}
@@ -335,19 +361,25 @@ function Battle({
         </button>
       ) : null}
       {finished ? (
-        <button className="button button--primary" onClick={onReset} type="button">
-          Treinar novamente
-        </button>
+        <section className={`arena-result ${enemy.hp <= 0 ? "is-victory" : "is-defeat"}`}>
+          <span>{enemy.hp <= 0 ? "VITÓRIA" : "DERROTA"}</span>
+          <h2>{enemy.hp <= 0 ? `${initial.title} foi derrotado` : "Seu personagem caiu em combate"}</h2>
+          <p>{enemy.hp <= 0 ? "Sua sequência dominou o confronto." : "Revise sua ordem de ações, atributos e equipamentos antes de tentar novamente."}</p>
+          {enemy.hp <= 0 && mode === "pve" ? <div><strong>+{arenaRewards[character.adventureRank as keyof typeof arenaRewards].xp.toLocaleString("pt-BR")} XP</strong><strong>+{arenaRewards[character.adventureRank as keyof typeof arenaRewards].wg.toLocaleString("pt-BR")} WG</strong><small>{reward ? "Recompensa recebida" : `Recompensa do Rank ${character.adventureRank}`}</small></div> : null}
+          {enemy.hp <= 0 && mode === "pve" && !reward ? <button className="button button--primary" disabled={claiming || !sessionId} onClick={claimReward} type="button">{claiming ? "Entregando…" : "Receber recompensa"}</button> : null}
+          {rewardError ? <small className="arena-result__error">{rewardError}</small> : null}
+          <button className="button button--primary" onClick={onReset} type="button">Lutar novamente</button>
+        </section>
       ) : null}
     </section>
   );
 }
 
-function Fighter({ combatant, subtitle, side, imageUrl }: { combatant: CombatantState; subtitle: string; side: "player" | "enemy"; imageUrl: string }) {
+function Fighter({ combatant, subtitle, side, imageUrl, sigil = "鬼" }: { combatant: CombatantState; subtitle: string; side: "player" | "enemy"; imageUrl: string; sigil?: string }) {
   return (
     <article className={`arena-fighter is-${side}`}>
       <div className={`arena-fighter__portrait ${imageUrl ? "is-image" : ""}`} style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}>
-        {imageUrl ? "" : side === "player" ? combatant.name.slice(0, 2).toUpperCase() : "鬼"}
+        {imageUrl ? "" : side === "player" ? combatant.name.slice(0, 2).toUpperCase() : sigil}
         <span>{side === "player" ? "JOGADOR" : "OPONENTE"}</span>
       </div>
       <div className="arena-fighter__status">
@@ -395,7 +427,7 @@ function Fighter({ combatant, subtitle, side, imageUrl }: { combatant: Combatant
   );
 }
 
-function createBattle(character: ArenaCharacter, rules: CombatRules) {
+function createBattle(character: ArenaCharacter, rules: CombatRules, mode: Exclude<ArenaMode, "pvp">, monsterIndex: number) {
   const text = character.combatLore
     .map((entry) => `${entry.name} ${entry.description}`)
     .join(" ")
@@ -412,7 +444,7 @@ function createBattle(character: ArenaCharacter, rules: CombatRules) {
   if (/cura|escudo|suporte/.test(text)) attributes.ARC = Math.round(attributes.ARC * 1.1);
   if (/mana|arcano|magia/.test(text)) attributes.INT = Math.round(attributes.INT * 1.05);
   const player = createCombatant({ ...character, attributes, rules });
-  const enemyAttributes: CombatAttributes = {
+  const trainingAttributes: CombatAttributes = {
     FOR: Math.max(35, Math.round(character.attributes.FOR * 0.55)),
     DEF: Math.max(25, Math.round(character.attributes.DEF * 0.65)),
     RES: Math.max(25, Math.round(character.attributes.RES * 0.65)),
@@ -420,15 +452,17 @@ function createBattle(character: ArenaCharacter, rules: CombatRules) {
     INT: 20,
     ARC: 0,
   };
+  const monster = mode === "pve" ? arenaMonsters[monsterIndex % arenaMonsters.length] : null;
+  const enemyAttributes = monster ? buildAdaptiveMonsterAttributes(character.attributes, monster.weights) : trainingAttributes;
   const enemy = createCombatant({
-    id: "training",
-    name: "Boneco Rúnico",
+    id: monster?.key ?? "training",
+    name: monster?.name ?? "Boneco Rúnico",
     attributes: enemyAttributes,
-    baseHp: Math.max(450, Math.round(player.maxHp * 0.7)),
-    baseMana: 0,
+    baseHp: monster ? character.baseHp : Math.max(450, Math.round(player.maxHp * 0.7)),
+    baseMana: monster ? character.baseMana : 0,
     rules,
   });
-  return { player, enemy };
+  return { player, enemy, title: monster?.title ?? "Autômato de treino", sigil: monster?.sigil ?? "鬼" };
 }
 
 function combatModifierLabel(description: string) {

@@ -48,6 +48,75 @@ interface ClassSeed {
   skills: SkillSeed[];
 }
 
+const classPaths: Record<string, Array<{ key: string; name: string; description: string; passive: string }>> = {
+  barbaro: [
+    { key: "berserker", name: "Berserker", description: "Converte Fúria em pressão ofensiva e execuções.", passive: "Dano físico aumenta enquanto a Fúria estiver acima da metade." },
+    { key: "guardiao-totemico", name: "Guardião Totêmico", description: "Transforma Fúria em resistência e proteção do grupo.", passive: "Ao receber dano elevado, concede proteção temporária a si." },
+  ],
+  guerreiro: [
+    { key: "mestre-de-armas", name: "Mestre de Armas", description: "Especialista em sequências técnicas e dano consistente.", passive: "Alternar habilidades ofensivas reduz a recarga da próxima técnica." },
+    { key: "comandante", name: "Comandante", description: "Controla a linha de frente e fortalece aliados.", passive: "A primeira habilidade de suporte da rodada tem efeito ampliado." },
+  ],
+  paladino: [
+    { key: "juramento-da-luz", name: "Juramento da Luz", description: "Cura, escudos e proteção sagrada.", passive: "Escudos aplicados em alvos feridos ficam mais fortes." },
+    { key: "juramento-da-vinganca", name: "Juramento da Vingança", description: "Persegue e pune inimigos marcados.", passive: "Causa dano adicional contra o último inimigo que feriu um aliado." },
+  ],
+  cavaleiro: [
+    { key: "bastiao", name: "Bastião", description: "Defesa absoluta, provocação e bloqueio.", passive: "Recebe menos dano enquanto protege um aliado." },
+    { key: "cavaleiro-negro", name: "Cavaleiro Negro", description: "Sacrifica proteção para aplicar pressão sombria.", passive: "Perder HP fortalece o próximo ataque físico." },
+  ],
+  arqueiro: [
+    { key: "atirador", name: "Atirador", description: "Precisão extrema e dano em alvo único.", passive: "Ataques a longa distância acumulam Precisão." },
+    { key: "cacador", name: "Caçador", description: "Marcas, armadilhas e controle de território.", passive: "Alvos marcados não podem ocultar sua posição." },
+  ],
+  assassino: [
+    { key: "executor", name: "Executor", description: "Explosão de dano contra inimigos enfraquecidos.", passive: "Dano aumenta contra alvos abaixo de 35% do HP." },
+    { key: "sombra", name: "Sombra", description: "Mobilidade, furtividade e ataques de oportunidade.", passive: "Reposicionar-se fortalece o próximo golpe." },
+  ],
+  ladino: [
+    { key: "duelista", name: "Duelista", description: "Combate ágil, contra-ataques e precisão.", passive: "Esquivar habilita uma reação ofensiva." },
+    { key: "trapaceiro", name: "Trapaceiro", description: "Debuffs, itens e manipulação do campo.", passive: "O primeiro item de cada combate não consome a ação de item." },
+  ],
+  monge: [
+    { key: "punho-de-ferro", name: "Punho de Ferro", description: "Combos físicos e quebra de postura.", passive: "Golpes consecutivos aumentam o dano do combo." },
+    { key: "caminho-espiritual", name: "Caminho Espiritual", description: "Ki defensivo, cura e purificação.", passive: "Gastar Ki em suporte recupera uma pequena quantidade de HP." },
+  ],
+  mago: [
+    { key: "elementalista", name: "Elementalista", description: "Domina áreas e interações elementais.", passive: "Alternar elementos aplica uma reação elemental adicional." },
+    { key: "arcanista", name: "Arcanista", description: "Controle de Mana, escudos e magia pura.", passive: "Ao terminar a rodada com Mana, recebe escudo arcano." },
+  ],
+  feiticeiro: [
+    { key: "linhagem-draconica", name: "Linhagem Dracônica", description: "Poder elemental estável e resistência mágica.", passive: "Habilidades elementais concedem resistência temporária." },
+    { key: "caos-arcano", name: "Caos Arcano", description: "Magia imprevisível de alto risco e recompensa.", passive: "Efeitos com chance bem-sucedidos geram poder adicional." },
+  ],
+  bruxo: [
+    { key: "pacto-infernal", name: "Pacto Infernal", description: "Dano contínuo, fogo e contratos de poder.", passive: "Inimigos com debuff recebem dano mágico adicional." },
+    { key: "pacto-abissal", name: "Pacto Abissal", description: "Controle, medo e enfraquecimento.", passive: "Aplicar controle recupera parte do recurso de pacto." },
+  ],
+  clerigo: [
+    { key: "dominio-da-vida", name: "Domínio da Vida", description: "Cura intensiva e remoção de efeitos negativos.", passive: "A primeira cura em um alvo ferido é ampliada." },
+    { key: "dominio-da-guerra", name: "Domínio da Guerra", description: "Bênçãos ofensivas e combate sagrado.", passive: "Curar um aliado fortalece o próximo ataque do Clérigo." },
+  ],
+  druida: [
+    { key: "circulo-da-lua", name: "Círculo da Lua", description: "Transformações e combate bestial.", passive: "Transformações preservam parte dos efeitos defensivos ativos." },
+    { key: "circulo-da-terra", name: "Círculo da Terra", description: "Controle natural, cura e terreno.", passive: "Efeitos de terreno duram uma rodada adicional." },
+  ],
+  bardo: [
+    { key: "colegio-da-guerra", name: "Colégio da Guerra", description: "Inspiração ofensiva e liderança de batalha.", passive: "Inspirar um aliado também fortalece o próprio Bardo." },
+    { key: "colegio-do-glamour", name: "Colégio do Glamour", description: "Encanto, ilusão e controle social.", passive: "O primeiro controle aplicado em combate tem chance aumentada." },
+  ],
+};
+
+function buildPaths(slug: string) {
+  return (classPaths[slug] ?? []).map((path) => ({
+    key: path.key,
+    name: path.name,
+    description: path.description,
+    passive: { name: `Doutrina: ${path.name}`, description: path.passive },
+    skills: [],
+  }));
+}
+
 function affinities(primary: AttributeKey[]) {
   return Object.fromEntries(
     (["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const).map((key) => [
@@ -162,7 +231,7 @@ function buildClass(seed: ClassSeed) {
         description: seed.passive.description,
       },
       progression,
-      paths: [],
+      paths: buildPaths(seed.slug),
     }),
   };
 }

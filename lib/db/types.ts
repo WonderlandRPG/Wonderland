@@ -333,6 +333,12 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_admin_history"]["Insert"]>;
         Relationships: [];
       };
+      v2_arena_sessions: {
+        Row: { id: string; user_id: string; character_id: string; mode: string; status: string; created_at: string; completed_at: string | null };
+        Insert: { id?: string; user_id: string; character_id: string; mode: string; status?: string; created_at?: string; completed_at?: string | null };
+        Update: Partial<Database["public"]["Tables"]["v2_arena_sessions"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -350,6 +356,8 @@ export interface Database {
       };
       v2_set_player_role: { Args: { p_user_id: string; p_role: string }; Returns: undefined };
       v2_claim_daily_reward: { Args: Record<PropertyKey, never>; Returns: Json };
+      v2_start_arena_session: { Args: { p_character_id: string; p_mode: string }; Returns: string };
+      v2_claim_arena_victory: { Args: { p_session_id: string }; Returns: Json };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
       v2_select_character: { Args: { p_character_id: string }; Returns: undefined };
       v2_character_ranking: {
@@ -388,6 +396,7 @@ export interface Database {
           p_image_url: string;
           p_kingdom: string;
           p_adventure_rank: string;
+          p_class_path_key: string;
         };
         Returns: Database["public"]["Tables"]["v2_characters"]["Row"];
       };

@@ -15,6 +15,8 @@ export async function PlayerNav() {
         <BrandMark inverse />
       </Link>
       <nav aria-label="Portal dos jogadores">
+        <Link href="/racas">Raças</Link>
+        <Link href="/classes">Classes</Link>
         {activeCharacterId ? (
           <>
             <Link href="/personagens">Jogar</Link>

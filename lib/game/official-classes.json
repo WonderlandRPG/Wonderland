@@ -9,7 +9,10 @@
       "difficulty": 2,
       "complexity": "2/5 estrelas",
       "specialization": "Dano físico e sobrevivência",
-      "primaryAttributes": ["FOR", "RES"],
+      "primaryAttributes": [
+        "FOR",
+        "RES"
+      ],
       "affinities": {
         "FOR": 5,
         "DEF": 3,
@@ -26,11 +29,15 @@
         "name": "Fúria",
         "initial": 0,
         "maximum": 100,
-        "generationRules": ["Ganha 10 Fúria ao causar dano e 5 ao receber dano, uma vez por ação."],
+        "generationRules": [
+          "Ganha 10 Fúria ao causar dano e 5 ao receber dano, uma vez por ação."
+        ],
         "consumptionRules": [
           "Habilidades consomem Fúria; o valor nunca fica abaixo de 0 nem acima de 100."
         ],
-        "resetRules": ["No início do combate, Fúria retorna a 0."],
+        "resetRules": [
+          "No início do combate, Fúria retorna a 0."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -55,6 +62,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -62,7 +70,9 @@
           "duration": 0,
           "scaling": [],
           "reachText": "0 casa(s)",
-          "conditions": ["Ao receber dano."],
+          "conditions": [
+            "Ao receber dano."
+          ],
           "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute REACTION com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
           "playerDescription": "Ao receber dano, ganha 5 Fúria, limitado a uma ativação por ação inimiga.",
           "chance": 100,
@@ -95,6 +105,7 @@
           "damageType": "physical",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 1,
           "range": 1,
@@ -145,6 +156,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 25,
           "cooldown": 3,
           "range": 0,
@@ -195,6 +207,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 35,
           "cooldown": 4,
           "range": 0,
@@ -235,6 +248,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 100,
           "cooldown": 6,
           "range": 0,
@@ -265,7 +279,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "berserker",
+          "name": "Berserker",
+          "description": "Converte Fúria em pressão ofensiva e execuções.",
+          "passive": {
+            "name": "Doutrina: Berserker",
+            "description": "Dano físico aumenta enquanto a Fúria estiver acima da metade."
+          },
+          "skills": []
+        },
+        {
+          "key": "guardiao-totemico",
+          "name": "Guardião Totêmico",
+          "description": "Transforma Fúria em resistência e proteção do grupo.",
+          "passive": {
+            "name": "Doutrina: Guardião Totêmico",
+            "description": "Ao receber dano elevado, concede proteção temporária a si."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -278,7 +313,10 @@
       "difficulty": 2,
       "complexity": "2/5 estrelas",
       "specialization": "Combate adaptável",
-      "primaryAttributes": ["FOR", "DEF"],
+      "primaryAttributes": [
+        "FOR",
+        "DEF"
+      ],
       "affinities": {
         "FOR": 5,
         "DEF": 5,
@@ -298,8 +336,12 @@
         "generationRules": [
           "Ganha 10 Ímpeto ao acertar um ataque básico e 10 ao bloquear dano com escudo."
         ],
-        "consumptionRules": ["Técnicas consomem Ímpeto após a validação do alvo."],
-        "resetRules": ["No início do combate, Ímpeto retorna a 20."],
+        "consumptionRules": [
+          "Técnicas consomem Ímpeto após a validação do alvo."
+        ],
+        "resetRules": [
+          "No início do combate, Ímpeto retorna a 20."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -324,6 +366,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -364,6 +407,7 @@
           "damageType": "physical",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 15,
           "cooldown": 1,
           "range": 1,
@@ -414,6 +458,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 2,
           "range": 0,
@@ -464,6 +509,7 @@
           "damageType": "physical",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 30,
           "cooldown": 3,
           "range": 3,
@@ -514,6 +560,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 80,
           "cooldown": 6,
           "range": 0,
@@ -553,7 +600,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "mestre-de-armas",
+          "name": "Mestre de Armas",
+          "description": "Especialista em sequências técnicas e dano consistente.",
+          "passive": {
+            "name": "Doutrina: Mestre de Armas",
+            "description": "Alternar habilidades ofensivas reduz a recarga da próxima técnica."
+          },
+          "skills": []
+        },
+        {
+          "key": "comandante",
+          "name": "Comandante",
+          "description": "Controla a linha de frente e fortalece aliados.",
+          "passive": {
+            "name": "Doutrina: Comandante",
+            "description": "A primeira habilidade de suporte da rodada tem efeito ampliado."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -566,7 +634,10 @@
       "difficulty": 3,
       "complexity": "3/5 estrelas",
       "specialization": "Proteção, cura e julgamento",
-      "primaryAttributes": ["ARC", "DEF"],
+      "primaryAttributes": [
+        "ARC",
+        "DEF"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 5,
@@ -583,9 +654,15 @@
         "name": "Fervor",
         "initial": 25,
         "maximum": 100,
-        "generationRules": ["Ganha 10 Fervor ao aplicar escudo ou cura e 5 ao sofrer dano."],
-        "consumptionRules": ["Milagres consomem Fervor depois da escolha válida de alvo."],
-        "resetRules": ["No início do combate, Fervor retorna a 25."],
+        "generationRules": [
+          "Ganha 10 Fervor ao aplicar escudo ou cura e 5 ao sofrer dano."
+        ],
+        "consumptionRules": [
+          "Milagres consomem Fervor depois da escolha válida de alvo."
+        ],
+        "resetRules": [
+          "No início do combate, Fervor retorna a 25."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -610,6 +687,7 @@
           "damageType": "none",
           "target": "ally",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 1,
           "range": 2,
@@ -650,6 +728,7 @@
           "damageType": "magic",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 1,
           "range": 1,
@@ -700,6 +779,7 @@
           "damageType": "none",
           "target": "ally",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 25,
           "cooldown": 2,
           "range": 3,
@@ -750,6 +830,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 40,
           "cooldown": 4,
           "range": 0,
@@ -800,6 +881,7 @@
           "damageType": "true",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 100,
           "cooldown": 6,
           "range": 4,
@@ -840,7 +922,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "juramento-da-luz",
+          "name": "Juramento da Luz",
+          "description": "Cura, escudos e proteção sagrada.",
+          "passive": {
+            "name": "Doutrina: Juramento da Luz",
+            "description": "Escudos aplicados em alvos feridos ficam mais fortes."
+          },
+          "skills": []
+        },
+        {
+          "key": "juramento-da-vinganca",
+          "name": "Juramento da Vingança",
+          "description": "Persegue e pune inimigos marcados.",
+          "passive": {
+            "name": "Doutrina: Juramento da Vingança",
+            "description": "Causa dano adicional contra o último inimigo que feriu um aliado."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -853,7 +956,10 @@
       "difficulty": 3,
       "complexity": "3/5 estrelas",
       "specialization": "Defesa e controle de espaço",
-      "primaryAttributes": ["DEF", "RES"],
+      "primaryAttributes": [
+        "DEF",
+        "RES"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 5,
@@ -870,9 +976,15 @@
         "name": "Guarda",
         "initial": 50,
         "maximum": 100,
-        "generationRules": ["Ganha 10 Guarda ao receber dano e 15 ao usar TAUNT com sucesso."],
-        "consumptionRules": ["Manobras defensivas consomem Guarda; excedentes são descartados."],
-        "resetRules": ["No início do combate, Guarda retorna a 50."],
+        "generationRules": [
+          "Ganha 10 Guarda ao receber dano e 15 ao usar TAUNT com sucesso."
+        ],
+        "consumptionRules": [
+          "Manobras defensivas consomem Guarda; excedentes são descartados."
+        ],
+        "resetRules": [
+          "No início do combate, Guarda retorna a 50."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -897,6 +1009,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 1,
           "range": 0,
@@ -937,6 +1050,7 @@
           "damageType": "physical",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 1,
           "range": 1,
@@ -987,6 +1101,7 @@
           "damageType": "none",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 3,
           "range": 3,
@@ -1027,6 +1142,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 40,
           "cooldown": 4,
           "range": 0,
@@ -1067,6 +1183,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 100,
           "cooldown": 6,
           "range": 0,
@@ -1107,7 +1224,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "bastiao",
+          "name": "Bastião",
+          "description": "Defesa absoluta, provocação e bloqueio.",
+          "passive": {
+            "name": "Doutrina: Bastião",
+            "description": "Recebe menos dano enquanto protege um aliado."
+          },
+          "skills": []
+        },
+        {
+          "key": "cavaleiro-negro",
+          "name": "Cavaleiro Negro",
+          "description": "Sacrifica proteção para aplicar pressão sombria.",
+          "passive": {
+            "name": "Doutrina: Cavaleiro Negro",
+            "description": "Perder HP fortalece o próximo ataque físico."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -1120,7 +1258,10 @@
       "difficulty": 3,
       "complexity": "3/5 estrelas",
       "specialization": "Dano físico à distância",
-      "primaryAttributes": ["INI", "FOR"],
+      "primaryAttributes": [
+        "INI",
+        "FOR"
+      ],
       "affinities": {
         "FOR": 5,
         "DEF": 3,
@@ -1137,9 +1278,15 @@
         "name": "Foco",
         "initial": 30,
         "maximum": 100,
-        "generationRules": ["Ganha 10 Foco ao causar dano a 3 ou mais casas de distância."],
-        "consumptionRules": ["Disparos especiais consomem Foco no momento da execução."],
-        "resetRules": ["No início do combate, Foco retorna a 30."],
+        "generationRules": [
+          "Ganha 10 Foco ao causar dano a 3 ou mais casas de distância."
+        ],
+        "consumptionRules": [
+          "Disparos especiais consomem Foco no momento da execução."
+        ],
+        "resetRules": [
+          "No início do combate, Foco retorna a 30."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -1164,6 +1311,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -1204,6 +1352,7 @@
           "damageType": "physical",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 15,
           "cooldown": 1,
           "range": 6,
@@ -1254,6 +1403,7 @@
           "damageType": "none",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 25,
           "cooldown": 3,
           "range": 6,
@@ -1294,6 +1444,7 @@
           "damageType": "physical",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 45,
           "cooldown": 4,
           "range": 5,
@@ -1344,6 +1495,7 @@
           "damageType": "true",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 100,
           "cooldown": 6,
           "range": 10,
@@ -1384,7 +1536,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "atirador",
+          "name": "Atirador",
+          "description": "Precisão extrema e dano em alvo único.",
+          "passive": {
+            "name": "Doutrina: Atirador",
+            "description": "Ataques a longa distância acumulam Precisão."
+          },
+          "skills": []
+        },
+        {
+          "key": "cacador",
+          "name": "Caçador",
+          "description": "Marcas, armadilhas e controle de território.",
+          "passive": {
+            "name": "Doutrina: Caçador",
+            "description": "Alvos marcados não podem ocultar sua posição."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -1397,7 +1570,10 @@
       "difficulty": 4,
       "complexity": "4/5 estrelas",
       "specialization": "Explosão e execução",
-      "primaryAttributes": ["INI", "FOR"],
+      "primaryAttributes": [
+        "INI",
+        "FOR"
+      ],
       "affinities": {
         "FOR": 5,
         "DEF": 3,
@@ -1414,9 +1590,15 @@
         "name": "Sombra",
         "initial": 40,
         "maximum": 100,
-        "generationRules": ["Ganha 15 Sombra ao atacar um alvo que ainda não agiu na rodada."],
-        "consumptionRules": ["Técnicas furtivas consomem Sombra após a validação da condição."],
-        "resetRules": ["No início do combate, Sombra retorna a 40."],
+        "generationRules": [
+          "Ganha 15 Sombra ao atacar um alvo que ainda não agiu na rodada."
+        ],
+        "consumptionRules": [
+          "Técnicas furtivas consomem Sombra após a validação da condição."
+        ],
+        "resetRules": [
+          "No início do combate, Sombra retorna a 40."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -1441,6 +1623,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 1,
           "range": 0,
@@ -1481,6 +1664,7 @@
           "damageType": "physical",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 1,
           "range": 1,
@@ -1531,6 +1715,7 @@
           "damageType": "none",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 25,
           "cooldown": 3,
           "range": 5,
@@ -1571,6 +1756,7 @@
           "damageType": "none",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 35,
           "cooldown": 4,
           "range": 3,
@@ -1611,6 +1797,7 @@
           "damageType": "true",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 100,
           "cooldown": 6,
           "range": 1,
@@ -1623,7 +1810,9 @@
             }
           ],
           "reachText": "1 casa(s)",
-          "conditions": ["O alvo deve estar com 35% ou menos do HP máximo."],
+          "conditions": [
+            "O alvo deve estar com 35% ou menos do HP máximo."
+          ],
           "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
           "playerDescription": "Contra alvo com até 35% de HP, causa 1,8x INI de dano verdadeiro.",
           "chance": 100,
@@ -1651,7 +1840,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "executor",
+          "name": "Executor",
+          "description": "Explosão de dano contra inimigos enfraquecidos.",
+          "passive": {
+            "name": "Doutrina: Executor",
+            "description": "Dano aumenta contra alvos abaixo de 35% do HP."
+          },
+          "skills": []
+        },
+        {
+          "key": "sombra",
+          "name": "Sombra",
+          "description": "Mobilidade, furtividade e ataques de oportunidade.",
+          "passive": {
+            "name": "Doutrina: Sombra",
+            "description": "Reposicionar-se fortalece o próximo golpe."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -1664,7 +1874,10 @@
       "difficulty": 4,
       "complexity": "4/5 estrelas",
       "specialization": "Controle e oportunismo",
-      "primaryAttributes": ["INI", "ARC"],
+      "primaryAttributes": [
+        "INI",
+        "ARC"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 3,
@@ -1684,8 +1897,12 @@
         "generationRules": [
           "Ganha 1 Oportunidade quando um inimigo recebe um debuff, máximo de uma por ação."
         ],
-        "consumptionRules": ["Truques consomem unidades inteiras de Oportunidade."],
-        "resetRules": ["No início do combate, Oportunidade retorna a 2."],
+        "consumptionRules": [
+          "Truques consomem unidades inteiras de Oportunidade."
+        ],
+        "resetRules": [
+          "No início do combate, Oportunidade retorna a 2."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -1710,6 +1927,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -1750,6 +1968,7 @@
           "damageType": "physical",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 1,
           "range": 1,
@@ -1800,6 +2019,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 3,
           "range": 3,
@@ -1840,6 +2060,7 @@
           "damageType": "none",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 2,
           "cooldown": 3,
           "range": 4,
@@ -1880,6 +2101,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 5,
           "cooldown": 6,
           "range": 0,
@@ -1910,7 +2132,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "duelista",
+          "name": "Duelista",
+          "description": "Combate ágil, contra-ataques e precisão.",
+          "passive": {
+            "name": "Doutrina: Duelista",
+            "description": "Esquivar habilita uma reação ofensiva."
+          },
+          "skills": []
+        },
+        {
+          "key": "trapaceiro",
+          "name": "Trapaceiro",
+          "description": "Debuffs, itens e manipulação do campo.",
+          "passive": {
+            "name": "Doutrina: Trapaceiro",
+            "description": "O primeiro item de cada combate não consome a ação de item."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -1923,7 +2166,11 @@
       "difficulty": 4,
       "complexity": "4/5 estrelas",
       "specialization": "Combos e mobilidade",
-      "primaryAttributes": ["FOR", "ARC", "INI"],
+      "primaryAttributes": [
+        "FOR",
+        "ARC",
+        "INI"
+      ],
       "affinities": {
         "FOR": 5,
         "DEF": 3,
@@ -1940,9 +2187,15 @@
         "name": "Chi",
         "initial": 3,
         "maximum": 6,
-        "generationRules": ["Ganha 1 Chi ao usar ataque básico, limitado a uma vez por rodada."],
-        "consumptionRules": ["Técnicas consomem Chi; ao fim do combate o Chi retorna a 3."],
-        "resetRules": ["No início do combate, Chi retorna a 3."],
+        "generationRules": [
+          "Ganha 1 Chi ao usar ataque básico, limitado a uma vez por rodada."
+        ],
+        "consumptionRules": [
+          "Técnicas consomem Chi; ao fim do combate o Chi retorna a 3."
+        ],
+        "resetRules": [
+          "No início do combate, Chi retorna a 3."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -1967,6 +2220,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 1,
           "range": 0,
@@ -2007,6 +2261,7 @@
           "damageType": "physical",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 1,
           "range": 1,
@@ -2057,6 +2312,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 2,
           "range": 0,
@@ -2097,6 +2353,7 @@
           "damageType": "none",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 2,
           "cooldown": 4,
           "range": 1,
@@ -2137,6 +2394,7 @@
           "damageType": "true",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 6,
           "cooldown": 6,
           "range": 1,
@@ -2177,7 +2435,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "punho-de-ferro",
+          "name": "Punho de Ferro",
+          "description": "Combos físicos e quebra de postura.",
+          "passive": {
+            "name": "Doutrina: Punho de Ferro",
+            "description": "Golpes consecutivos aumentam o dano do combo."
+          },
+          "skills": []
+        },
+        {
+          "key": "caminho-espiritual",
+          "name": "Caminho Espiritual",
+          "description": "Ki defensivo, cura e purificação.",
+          "passive": {
+            "name": "Doutrina: Caminho Espiritual",
+            "description": "Gastar Ki em suporte recupera uma pequena quantidade de HP."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -2190,7 +2469,9 @@
       "difficulty": 3,
       "complexity": "3/5 estrelas",
       "specialization": "Dano mágico e controle",
-      "primaryAttributes": ["INT"],
+      "primaryAttributes": [
+        "INT"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 3,
@@ -2213,7 +2494,9 @@
         "consumptionRules": [
           "Magias avançadas consomem Cargas Arcanas antes de resolver operações."
         ],
-        "resetRules": ["No início do combate, Carga Arcana retorna a 0."],
+        "resetRules": [
+          "No início do combate, Carga Arcana retorna a 0."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -2238,6 +2521,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -2278,6 +2562,7 @@
           "damageType": "magic",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 1,
           "range": 6,
@@ -2328,6 +2613,7 @@
           "damageType": "none",
           "target": "ally",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 3,
           "range": 4,
@@ -2378,6 +2664,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 3,
           "cooldown": 4,
           "range": 5,
@@ -2418,6 +2705,7 @@
           "damageType": "magic",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 5,
           "cooldown": 6,
           "range": 8,
@@ -2458,7 +2746,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "elementalista",
+          "name": "Elementalista",
+          "description": "Domina áreas e interações elementais.",
+          "passive": {
+            "name": "Doutrina: Elementalista",
+            "description": "Alternar elementos aplica uma reação elemental adicional."
+          },
+          "skills": []
+        },
+        {
+          "key": "arcanista",
+          "name": "Arcanista",
+          "description": "Controle de Mana, escudos e magia pura.",
+          "passive": {
+            "name": "Doutrina: Arcanista",
+            "description": "Ao terminar a rodada com Mana, recebe escudo arcano."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -2471,7 +2780,10 @@
       "difficulty": 5,
       "complexity": "5/5 estrelas",
       "specialization": "Magia instável e explosiva",
-      "primaryAttributes": ["INT", "INI"],
+      "primaryAttributes": [
+        "INT",
+        "INI"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 3,
@@ -2488,11 +2800,15 @@
         "name": "Instabilidade",
         "initial": 0,
         "maximum": 100,
-        "generationRules": ["Ganha 15 Instabilidade ao causar dano mágico, uma vez por ação."],
+        "generationRules": [
+          "Ganha 15 Instabilidade ao causar dano mágico, uma vez por ação."
+        ],
         "consumptionRules": [
           "Feitiços consomem Instabilidade; chances são roladas antes das operações de efeito."
         ],
-        "resetRules": ["No início do combate, Instabilidade retorna a 0."],
+        "resetRules": [
+          "No início do combate, Instabilidade retorna a 0."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -2517,6 +2833,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -2557,6 +2874,7 @@
           "damageType": "magic",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 15,
           "cooldown": 1,
           "range": 5,
@@ -2607,6 +2925,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 3,
           "range": 0,
@@ -2647,6 +2966,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 40,
           "cooldown": 4,
           "range": 5,
@@ -2692,6 +3012,7 @@
           "damageType": "true",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 100,
           "cooldown": 7,
           "range": 6,
@@ -2732,7 +3053,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "linhagem-draconica",
+          "name": "Linhagem Dracônica",
+          "description": "Poder elemental estável e resistência mágica.",
+          "passive": {
+            "name": "Doutrina: Linhagem Dracônica",
+            "description": "Habilidades elementais concedem resistência temporária."
+          },
+          "skills": []
+        },
+        {
+          "key": "caos-arcano",
+          "name": "Caos Arcano",
+          "description": "Magia imprevisível de alto risco e recompensa.",
+          "passive": {
+            "name": "Doutrina: Caos Arcano",
+            "description": "Efeitos com chance bem-sucedidos geram poder adicional."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -2745,7 +3087,10 @@
       "difficulty": 4,
       "complexity": "4/5 estrelas",
       "specialization": "Maldições e drenagem",
-      "primaryAttributes": ["ARC", "INT"],
+      "primaryAttributes": [
+        "ARC",
+        "INT"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 3,
@@ -2762,11 +3107,15 @@
         "name": "Selos de Pacto",
         "initial": 1,
         "maximum": 5,
-        "generationRules": ["Ganha 1 Selo ao aplicar um status negativo, máximo uma vez por ação."],
+        "generationRules": [
+          "Ganha 1 Selo ao aplicar um status negativo, máximo uma vez por ação."
+        ],
         "consumptionRules": [
           "Rituais consomem Selos inteiros após a chance de aplicação ser validada."
         ],
-        "resetRules": ["No início do combate, Selos de Pacto retorna a 1."],
+        "resetRules": [
+          "No início do combate, Selos de Pacto retorna a 1."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -2791,6 +3140,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -2831,6 +3181,7 @@
           "damageType": "magic",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 1,
           "range": 5,
@@ -2881,6 +3232,7 @@
           "damageType": "none",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 3,
           "range": 5,
@@ -2930,6 +3282,7 @@
           "damageType": "magic",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 2,
           "cooldown": 4,
           "range": 4,
@@ -2980,6 +3333,7 @@
           "damageType": "none",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 5,
           "cooldown": 7,
           "range": 6,
@@ -3010,7 +3364,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "pacto-infernal",
+          "name": "Pacto Infernal",
+          "description": "Dano contínuo, fogo e contratos de poder.",
+          "passive": {
+            "name": "Doutrina: Pacto Infernal",
+            "description": "Inimigos com debuff recebem dano mágico adicional."
+          },
+          "skills": []
+        },
+        {
+          "key": "pacto-abissal",
+          "name": "Pacto Abissal",
+          "description": "Controle, medo e enfraquecimento.",
+          "passive": {
+            "name": "Doutrina: Pacto Abissal",
+            "description": "Aplicar controle recupera parte do recurso de pacto."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -3023,7 +3398,10 @@
       "difficulty": 3,
       "complexity": "3/5 estrelas",
       "specialization": "Cura e suporte",
-      "primaryAttributes": ["ARC", "RES"],
+      "primaryAttributes": [
+        "ARC",
+        "RES"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 3,
@@ -3043,8 +3421,12 @@
         "generationRules": [
           "Ganha 10 Fé ao curar HP efetivamente ou aplicar escudo, uma vez por ação."
         ],
-        "consumptionRules": ["Milagres consomem Fé; cura excedente não gera recurso."],
-        "resetRules": ["No início do combate, Fé retorna a 30."],
+        "consumptionRules": [
+          "Milagres consomem Fé; cura excedente não gera recurso."
+        ],
+        "resetRules": [
+          "No início do combate, Fé retorna a 30."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -3069,6 +3451,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -3109,6 +3492,7 @@
           "damageType": "none",
           "target": "ally",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 15,
           "cooldown": 1,
           "range": 3,
@@ -3159,6 +3543,7 @@
           "damageType": "none",
           "target": "ally",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 2,
           "range": 4,
@@ -3209,6 +3594,7 @@
           "damageType": "none",
           "target": "ally",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 35,
           "cooldown": 4,
           "range": 4,
@@ -3249,6 +3635,7 @@
           "damageType": "none",
           "target": "ally",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 100,
           "cooldown": 8,
           "range": 3,
@@ -3261,7 +3648,9 @@
             }
           ],
           "reachText": "3 casa(s)",
-          "conditions": ["O alvo deve estar vivo e com até 25% do HP máximo."],
+          "conditions": [
+            "O alvo deve estar vivo e com até 25% do HP máximo."
+          ],
           "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute HEAL com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
           "playerDescription": "Cura em 2x ARC um aliado vivo com até 25% do HP máximo.",
           "chance": 100,
@@ -3289,7 +3678,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "dominio-da-vida",
+          "name": "Domínio da Vida",
+          "description": "Cura intensiva e remoção de efeitos negativos.",
+          "passive": {
+            "name": "Doutrina: Domínio da Vida",
+            "description": "A primeira cura em um alvo ferido é ampliada."
+          },
+          "skills": []
+        },
+        {
+          "key": "dominio-da-guerra",
+          "name": "Domínio da Guerra",
+          "description": "Bênçãos ofensivas e combate sagrado.",
+          "passive": {
+            "name": "Doutrina: Domínio da Guerra",
+            "description": "Curar um aliado fortalece o próximo ataque do Clérigo."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -3302,7 +3712,10 @@
       "difficulty": 4,
       "complexity": "4/5 estrelas",
       "specialization": "Controle natural e sustentação",
-      "primaryAttributes": ["ARC", "RES"],
+      "primaryAttributes": [
+        "ARC",
+        "RES"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 3,
@@ -3319,11 +3732,15 @@
         "name": "Essência",
         "initial": 20,
         "maximum": 100,
-        "generationRules": ["Ganha 10 Essência quando uma habilidade afeta dois ou mais alvos."],
+        "generationRules": [
+          "Ganha 10 Essência quando uma habilidade afeta dois ou mais alvos."
+        ],
         "consumptionRules": [
           "Manifestações naturais consomem Essência após determinar a área afetada."
         ],
-        "resetRules": ["No início do combate, Essência retorna a 20."],
+        "resetRules": [
+          "No início do combate, Essência retorna a 20."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -3348,6 +3765,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -3388,6 +3806,7 @@
           "damageType": "magic",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 15,
           "cooldown": 1,
           "range": 4,
@@ -3438,6 +3857,7 @@
           "damageType": "none",
           "target": "ally",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 20,
           "cooldown": 2,
           "range": 4,
@@ -3488,6 +3908,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 40,
           "cooldown": 4,
           "range": 5,
@@ -3528,6 +3949,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 100,
           "cooldown": 7,
           "range": 1,
@@ -3558,7 +3980,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "circulo-da-lua",
+          "name": "Círculo da Lua",
+          "description": "Transformações e combate bestial.",
+          "passive": {
+            "name": "Doutrina: Círculo da Lua",
+            "description": "Transformações preservam parte dos efeitos defensivos ativos."
+          },
+          "skills": []
+        },
+        {
+          "key": "circulo-da-terra",
+          "name": "Círculo da Terra",
+          "description": "Controle natural, cura e terreno.",
+          "passive": {
+            "name": "Doutrina: Círculo da Terra",
+            "description": "Efeitos de terreno duram uma rodada adicional."
+          },
+          "skills": []
+        }
+      ]
     }
   },
   {
@@ -3571,7 +4014,10 @@
       "difficulty": 4,
       "complexity": "4/5 estrelas",
       "specialization": "Buffs, debuffs e suporte",
-      "primaryAttributes": ["ARC", "INI"],
+      "primaryAttributes": [
+        "ARC",
+        "INI"
+      ],
       "affinities": {
         "FOR": 2,
         "DEF": 3,
@@ -3591,8 +4037,12 @@
         "generationRules": [
           "Ganha 1 Inspiração ao afetar um aliado ou inimigo diferente do alvo da ação anterior."
         ],
-        "consumptionRules": ["Canções consomem Inspiração; repetir o mesmo alvo não gera recurso."],
-        "resetRules": ["No início do combate, Inspiração retorna a 2."],
+        "consumptionRules": [
+          "Canções consomem Inspiração; repetir o mesmo alvo não gera recurso."
+        ],
+        "resetRules": [
+          "No início do combate, Inspiração retorna a 2."
+        ],
         "generationEvents": [
           {
             "trigger": "BASIC_ATTACK_HIT",
@@ -3617,6 +4067,7 @@
           "damageType": "none",
           "target": "self",
           "resource": "none",
+          "resourceKey": "class",
           "cost": 0,
           "cooldown": 0,
           "range": 0,
@@ -3657,6 +4108,7 @@
           "damageType": "magic",
           "target": "enemy",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 1,
           "cooldown": 1,
           "range": 5,
@@ -3707,6 +4159,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 2,
           "cooldown": 3,
           "range": 0,
@@ -3756,6 +4209,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 3,
           "cooldown": 4,
           "range": 4,
@@ -3805,6 +4259,7 @@
           "damageType": "none",
           "target": "area",
           "resource": "special",
+          "resourceKey": "class",
           "cost": 6,
           "cooldown": 7,
           "range": 5,
@@ -3835,7 +4290,28 @@
           ]
         }
       ],
-      "paths": []
+      "paths": [
+        {
+          "key": "colegio-da-guerra",
+          "name": "Colégio da Guerra",
+          "description": "Inspiração ofensiva e liderança de batalha.",
+          "passive": {
+            "name": "Doutrina: Colégio da Guerra",
+            "description": "Inspirar um aliado também fortalece o próprio Bardo."
+          },
+          "skills": []
+        },
+        {
+          "key": "colegio-do-glamour",
+          "name": "Colégio do Glamour",
+          "description": "Encanto, ilusão e controle social.",
+          "passive": {
+            "name": "Doutrina: Colégio do Glamour",
+            "description": "O primeiro controle aplicado em combate tem chance aumentada."
+          },
+          "skills": []
+        }
+      ]
     }
   }
 ]

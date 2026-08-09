@@ -53,6 +53,9 @@ export default async function CharacterSheetPage({
       .map((item) => [item.equippedSlot, item]),
   );
   const rank = getAdventureRank(character.adventure_rank);
+  const classPath = character.characterClass.payload.paths?.find(
+    (path) => path.key === character.class_path_key,
+  );
   const renderEquipmentSlot = (slot: (typeof equipmentSlots)[number]) => {
     const item = equippedItems.get(slot.key);
     return (
@@ -120,6 +123,10 @@ export default async function CharacterSheetPage({
               <div>
                 <dt>Reino</dt>
                 <dd>{kingdomName(character.kingdom)}</dd>
+              </div>
+              <div>
+                <dt>Caminho</dt>
+                <dd>{classPath?.name ?? "Não definido"}</dd>
               </div>
             </dl>
             <nav className="character-command-hero__actions">

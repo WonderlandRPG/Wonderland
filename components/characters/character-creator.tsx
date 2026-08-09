@@ -32,6 +32,7 @@ interface ClassOption {
   resourceName: string;
   passiveName: string;
   passiveDescription: string;
+  paths: Array<{ key: string; name: string; description: string }>;
 }
 
 export function CharacterCreator({
@@ -56,6 +57,7 @@ export function CharacterCreator({
   const [imageUrl, setImageUrl] = useState("");
   const [activePreset, setActivePreset] = useState<CharacterPreset | "custom">("custom");
   const [codexTab, setCodexTab] = useState<"race" | "class">("race");
+  const [classPathKey, setClassPathKey] = useState(classes[0]?.paths[0]?.key ?? "");
   const selectedRace = useMemo(() => races.find((entry) => entry.id === raceId), [raceId, races]);
   const selectedClass = useMemo(
     () => classes.find((entry) => entry.id === classId),
@@ -97,6 +99,7 @@ export function CharacterCreator({
   function selectClass(nextClassId: string) {
     setClassId(nextClassId);
     const nextClass = classes.find((entry) => entry.id === nextClassId);
+    setClassPathKey(nextClass?.paths[0]?.key ?? "");
     if (activePreset !== "custom" && selectedRace && nextClass) {
       setAllocation(buildCharacterPreset({ preset: activePreset, points, racialBonuses: selectedRace.payload.attributeBonuses, primaryAttributes: nextClass.primaryAttributes }));
     }
@@ -193,6 +196,13 @@ export function CharacterCreator({
             </select>
           </label>
         </div>
+        <label className="race-field character-path-field">
+          <span>Caminho da classe</span>
+          <select name="classPathKey" required value={classPathKey} onChange={(event) => setClassPathKey(event.target.value)}>
+            {selectedClass?.paths.map((path) => <option key={path.key} value={path.key}>{path.name} · {path.description}</option>)}
+          </select>
+          <small>O caminho define a futura especialização desta ficha e poderá ser alterado pelo Painel ADM.</small>
+        </label>
         <div className="character-choice-summary">
           <article>
             <span>Raça escolhida</span>
@@ -250,6 +260,7 @@ export function CharacterCreator({
                 <span>Recurso de classe</span><strong>{selectedClass?.resourceName}</strong>
                 <span>Passiva inicial</span><strong>{selectedClass?.passiveName}</strong>
                 <small>{selectedClass?.passiveDescription}</small>
+                <span>Caminho escolhido</span><strong>{selectedClass?.paths.find((path) => path.key === classPathKey)?.name ?? "—"}</strong>
               </aside>
             </div>
           )}

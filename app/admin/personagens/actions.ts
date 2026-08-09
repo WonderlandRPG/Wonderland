@@ -16,6 +16,7 @@ const schema = z.object({
   imageUrl: z.union([z.literal(""), z.url().refine((value) => /^https?:\/\//.test(value))]),
   kingdom: z.enum(kingdoms.map((entry) => entry.key) as [string, ...string[]]),
   adventureRank: z.enum(adventureRanks.map((entry) => entry.key) as [string, ...string[]]),
+  classPathKey: z.string().trim().min(1),
 });
 
 export async function updateCharacterAdminAction(formData: FormData) {
@@ -28,6 +29,7 @@ export async function updateCharacterAdminAction(formData: FormData) {
     imageUrl: String(formData.get("imageUrl") ?? "").trim(),
     kingdom: formData.get("kingdom"),
     adventureRank: formData.get("adventureRank"),
+    classPathKey: formData.get("classPathKey"),
   });
   if (!parsed.success) redirect("/admin/personagens?status=erro");
   const client = await createServerSupabaseClient();
@@ -40,6 +42,7 @@ export async function updateCharacterAdminAction(formData: FormData) {
     p_image_url: parsed.data.imageUrl,
     p_kingdom: parsed.data.kingdom,
     p_adventure_rank: parsed.data.adventureRank,
+    p_class_path_key: parsed.data.classPathKey,
   });
   if (error) redirect("/admin/personagens?status=erro");
   revalidatePath("/admin/personagens");

@@ -52,6 +52,28 @@ export default async function CharacterSheetPage({
       .map((item) => [item.equippedSlot, item]),
   );
   const rank = getAdventureRank(character.adventure_rank);
+  const renderEquipmentSlot = (slot: (typeof equipmentSlots)[number]) => {
+    const item = equippedItems.get(slot.key);
+    return (
+      <article className={item ? "is-equipped" : ""} key={slot.key}>
+        <span className="equipment-slot__seal" aria-hidden="true">
+          {slot.emoji}
+        </span>
+        <div>
+          <small>{slot.label}</small>
+          <strong>{item?.name ?? "Espaço livre"}</strong>
+        </div>
+        {item ? (
+          <form action={unequipItemAction.bind(null, character.id)}>
+            <input name="inventoryId" type="hidden" value={item.id} />
+            <button>Remover</button>
+          </form>
+        ) : (
+          <i aria-hidden="true">＋</i>
+        )}
+      </article>
+    );
+  };
   return (
     <main className="sheet-page">
       <header className="account-header">
@@ -327,37 +349,59 @@ export default async function CharacterSheetPage({
           </section>
         ) : null}
         {tab === "equipamentos" ? (
-          <section className="sheet-section">
+          <section
+            className="sheet-section inventory-hud"
+            style={{ "--character-rank": rank.color } as React.CSSProperties}
+          >
             <header>
-              <span className="eyebrow">Equipamentos</span>
-              <h2>Inventário de {character.name}</h2>
-              <p>Itens equipados alteram a ficha e os cálculos da Arena.</p>
+              <span className="eyebrow">Arsenal do personagem</span>
+              <h2>Equipamentos de {character.name}</h2>
+              <p>Monte seu conjunto de combate. Cada peça equipada altera a ficha e a Arena.</p>
             </header>
-            <div className="equipment-slot-grid">
-              {equipmentSlots.map((slot) => {
-                const item = equippedItems.get(slot.key);
-                return (
-                  <article className={item ? "is-equipped" : ""} key={slot.key}>
-                    <span aria-hidden="true">{slot.emoji}</span>
-                    <small>{slot.label}</small>
-                    <strong>{item?.name ?? "Vazio"}</strong>
-                    {item ? (
-                      <form action={unequipItemAction.bind(null, character.id)}>
-                        <input name="inventoryId" type="hidden" value={item.id} />
-                        <button>Desequipar</button>
-                      </form>
-                    ) : null}
-                  </article>
-                );
-              })}
+            <div className="inventory-loadout">
+              <div className="equipment-slot-grid is-left">
+                {equipmentSlots.slice(0, 7).map(renderEquipmentSlot)}
+              </div>
+              <div className="inventory-loadout__character">
+                <div
+                  className={character.image_url ? "is-image" : ""}
+                  style={
+                    character.image_url
+                      ? { backgroundImage: `url(${character.image_url})` }
+                      : undefined
+                  }
+                >
+                  {character.image_url ? "" : character.name.slice(0, 2).toUpperCase()}
+                </div>
+                <RankBadge rank={character.adventure_rank} />
+                <span>Conjunto ativo</span>
+                <strong>{character.name}</strong>
+                <small>
+                  {equippedItems.size} / {equipmentSlots.length} espaços ocupados
+                </small>
+              </div>
+              <div className="equipment-slot-grid is-right">
+                {equipmentSlots.slice(7).map(renderEquipmentSlot)}
+              </div>
             </div>
-            <h3 className="inventory-heading">Mochila</h3>
+            <div className="inventory-heading">
+              <div>
+                <span className="eyebrow">Reserva de itens</span>
+                <h3>Mochila</h3>
+              </div>
+              <small>
+                {character.inventory.filter((entry) => !entry.equippedSlot).length} itens
+              </small>
+            </div>
             {character.inventory.length ? (
-              <div className="portal-card-grid inventory-card-grid">
+              <div className="inventory-card-grid">
                 {character.inventory
                   .filter((entry) => !entry.equippedSlot)
                   .map((entry) => (
-                    <article className={`shop-card shop-card--${entry.rarity}`} key={entry.id}>
+                    <article
+                      className={`inventory-item-card shop-card--${entry.rarity}`}
+                      key={entry.id}
+                    >
                       <span className="shop-card__icon" aria-hidden="true">
                         {itemSlotEmoji(entry.slot)}
                       </span>

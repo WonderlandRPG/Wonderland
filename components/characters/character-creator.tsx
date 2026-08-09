@@ -5,6 +5,10 @@ import { useActionState, useMemo, useState } from "react";
 import { createCharacterAction } from "@/app/personagens/actions";
 import { initialCharacterActionState } from "@/lib/game/character-forms";
 import {
+  buildCharacterPreset,
+  type CharacterPreset,
+} from "@/lib/game/character-presets";
+import {
   createEmptyAllocation,
   getAllocatedTotal,
   type AllocatedAttributes,
@@ -43,6 +47,9 @@ export function CharacterCreator({
   const [allocation, setAllocation] = useState(createEmptyAllocation());
   const [raceId, setRaceId] = useState(races[0]?.id ?? "");
   const [classId, setClassId] = useState(classes[0]?.id ?? "");
+  const [name, setName] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [activePreset, setActivePreset] = useState<CharacterPreset | "custom">("custom");
   const selectedRace = useMemo(() => races.find((entry) => entry.id === raceId), [raceId, races]);
   const selectedClass = useMemo(
     () => classes.find((entry) => entry.id === classId),
@@ -57,6 +64,36 @@ export function CharacterCreator({
       ...current,
       [attribute]: Math.max(0, Math.min(points - other, Math.floor(value || 0))),
     }));
+    setActivePreset("custom");
+  }
+
+  function applyPreset(preset: CharacterPreset) {
+    if (!selectedRace || !selectedClass) return;
+    setAllocation(
+      buildCharacterPreset({
+        preset,
+        points,
+        racialBonuses: selectedRace.payload.attributeBonuses,
+        primaryAttributes: selectedClass.primaryAttributes,
+      }),
+    );
+    setActivePreset(preset);
+  }
+
+  function selectRace(nextRaceId: string) {
+    setRaceId(nextRaceId);
+    const nextRace = races.find((entry) => entry.id === nextRaceId);
+    if (activePreset !== "custom" && nextRace && selectedClass) {
+      setAllocation(buildCharacterPreset({ preset: activePreset, points, racialBonuses: nextRace.payload.attributeBonuses, primaryAttributes: selectedClass.primaryAttributes }));
+    }
+  }
+
+  function selectClass(nextClassId: string) {
+    setClassId(nextClassId);
+    const nextClass = classes.find((entry) => entry.id === nextClassId);
+    if (activePreset !== "custom" && selectedRace && nextClass) {
+      setAllocation(buildCharacterPreset({ preset: activePreset, points, racialBonuses: selectedRace.payload.attributeBonuses, primaryAttributes: nextClass.primaryAttributes }));
+    }
   }
 
   return (
@@ -69,7 +106,7 @@ export function CharacterCreator({
         </div>
       ) : null}
 
-      <section className="character-create-section">
+      <section className="character-create-section character-create-identity">
         <header>
           <span>01</span>
           <div>
@@ -77,26 +114,37 @@ export function CharacterCreator({
             <p>Escolha o nome que aparecerá na ficha e na Arena.</p>
           </div>
         </header>
-        <label className="race-field">
-          <span>Nome do personagem</span>
-          <input maxLength={32} minLength={2} name="name" placeholder="Ex.: Aster" required />
-        </label>
-        <label className="race-field">
-          <span>Reino de origem</span>
-          <select name="kingdom" defaultValue={kingdoms[0].key} required>
-            {kingdoms.map((kingdom) => (
-              <option key={kingdom.key} value={kingdom.key}>
-                {kingdom.name} · {kingdom.title}
-              </option>
-            ))}
-          </select>
-          <small>O reino representa a origem e a história do personagem.</small>
-        </label>
-        <label className="race-field">
-          <span>Imagem do personagem (opcional)</span>
-          <input name="imageUrl" type="url" placeholder="https://exemplo.com/personagem.png" />
-          <small>Cole o link direto de uma imagem disponível na internet.</small>
-        </label>
+        <div className="character-identity-layout">
+          <div
+            className={`character-portrait-preview ${imageUrl ? "has-image" : ""}`}
+            style={imageUrl ? { backgroundImage: `url(${JSON.stringify(imageUrl).slice(1, -1)})` } : undefined}
+          >
+            <span>{name.trim().slice(0, 1).toUpperCase() || "?"}</span>
+            <small>Retrato do herói</small>
+          </div>
+          <div className="character-identity-fields">
+            <label className="race-field">
+              <span>Nome do personagem</span>
+              <input maxLength={32} minLength={2} name="name" onChange={(event) => setName(event.target.value)} placeholder="Ex.: Aster" required value={name} />
+            </label>
+            <label className="race-field">
+              <span>Reino de origem</span>
+              <select name="kingdom" defaultValue={kingdoms[0].key} required>
+                {kingdoms.map((kingdom) => (
+                  <option key={kingdom.key} value={kingdom.key}>
+                    {kingdom.name} · {kingdom.title}
+                  </option>
+                ))}
+              </select>
+              <small>Define a origem narrativa do personagem.</small>
+            </label>
+            <label className="race-field">
+              <span>Imagem do personagem (opcional)</span>
+              <input name="imageUrl" onChange={(event) => setImageUrl(event.target.value)} placeholder="https://exemplo.com/personagem.png" type="url" value={imageUrl} />
+              <small>Cole o link direto de uma imagem pública.</small>
+            </label>
+          </div>
+        </div>
       </section>
 
       <section className="character-create-section">
@@ -114,7 +162,7 @@ export function CharacterCreator({
               name="raceId"
               required
               value={raceId}
-              onChange={(event) => setRaceId(event.target.value)}
+              onChange={(event) => selectRace(event.target.value)}
             >
               {races.map((entry) => (
                 <option key={entry.id} value={entry.id}>
@@ -129,7 +177,7 @@ export function CharacterCreator({
               name="classId"
               required
               value={classId}
-              onChange={(event) => setClassId(event.target.value)}
+              onChange={(event) => selectClass(event.target.value)}
             >
               {classes.map((entry) => (
                 <option key={entry.id} value={entry.id}>
@@ -153,6 +201,13 @@ export function CharacterCreator({
             <small>{selectedClass?.specialization ?? "Sem especialização"}</small>
           </article>
         </div>
+        <div className="character-build-preview">
+          <span>Combinação escolhida</span>
+          <strong>{selectedRace?.name} {selectedClass?.name}</strong>
+          <small>
+            Afinidades da classe: {selectedClass?.primaryAttributes.join(" · ") || "—"}
+          </small>
+        </div>
       </section>
 
       <section className="character-create-section">
@@ -170,6 +225,24 @@ export function CharacterCreator({
             <small>restantes</small>
           </div>
         </header>
+        <div className="character-presets">
+          <div>
+            <span className="eyebrow">Distribuição automática</span>
+            <strong>Escolha um estilo de combate</strong>
+            <small>O cálculo combina os bônus de {selectedRace?.name} com as afinidades de {selectedClass?.name}.</small>
+          </div>
+          <div className="character-preset-buttons">
+            <button className={activePreset === "aggressive" ? "is-active" : ""} onClick={() => applyPreset("aggressive")} type="button">
+              <span>⚔</span><strong>Agressivo</strong><small>Prioriza dano e iniciativa</small>
+            </button>
+            <button className={activePreset === "balanced" ? "is-active" : ""} onClick={() => applyPreset("balanced")} type="button">
+              <span>✦</span><strong>Equilibrado</strong><small>Distribuição versátil</small>
+            </button>
+            <button className={activePreset === "defensive" ? "is-active" : ""} onClick={() => applyPreset("defensive")} type="button">
+              <span>◆</span><strong>Defensivo</strong><small>Prioriza DEF e RES</small>
+            </button>
+          </div>
+        </div>
         <div className="character-attribute-grid">
           {attributeKeys.map((attribute) => {
             const racial = selectedRace?.payload.attributeBonuses[attribute] ?? 0;

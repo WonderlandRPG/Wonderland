@@ -34,6 +34,7 @@ export interface CharacterSheet extends CharacterRecord {
     itemId: string;
     name: string;
     description: string;
+    category: string;
     rarity: string;
     slot: string;
     quantity: number;
@@ -68,7 +69,7 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
   const { data: shopRows } = itemIds.length
     ? await client
         .from("v2_shop_items")
-        .select("id,name,description,rarity,slot,attributes")
+        .select("id,name,description,category,rarity,slot,attributes")
         .in("id", itemIds)
     : { data: [] };
   const shop = new Map((shopRows ?? []).map((entry) => [entry.id, entry]));
@@ -92,6 +93,7 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
             itemId: entry.item_id,
             name: item.name,
             description: item.description,
+            category: item.category,
             rarity: item.rarity,
             slot: item.slot,
             quantity: entry.quantity,

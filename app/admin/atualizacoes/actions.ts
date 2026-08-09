@@ -51,3 +51,28 @@ export async function saveUpdateAction(formData: FormData) {
   revalidatePath("/admin/atualizacoes");
   redirect("/admin/atualizacoes?status=salvo");
 }
+
+export async function deleteUpdateAction(formData: FormData) {
+  const account = await requireAdministrativeAccount();
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) redirect("/admin/atualizacoes?status=erro");
+  const client = await createServerSupabaseClient();
+  if (!client) redirect("/admin/atualizacoes?status=erro");
+  const { data, error } = await client
+    .from("v2_updates")
+    .delete()
+    .eq("id", id.data)
+    .select("version")
+    .single();
+  if (error) redirect("/admin/atualizacoes?status=erro");
+  await client.from("v2_admin_history").insert({
+    actor_id: account.id,
+    action: "update.deleted",
+    target_type: "update",
+    target_id: id.data,
+    details: { version: data.version },
+  });
+  revalidatePath("/atualizacoes");
+  revalidatePath("/admin/atualizacoes");
+  redirect("/admin/atualizacoes?status=apagado");
+}

@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { saveUpdateAction } from "./actions";
+import { deleteUpdateAction, saveUpdateAction } from "./actions";
 export const metadata = { title: "Atualizações | Painel ADM" };
 export default async function AdminUpdatesPage({
   searchParams,
@@ -24,7 +24,11 @@ export default async function AdminUpdatesPage({
       </header>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
-          {query.status === "salvo" ? "✓ Atualização salva." : "! Revise os dados."}
+          {query.status === "salvo"
+            ? "✓ Atualização salva."
+            : query.status === "apagado"
+              ? "✓ Atualização apagada."
+              : "! Revise os dados."}
         </div>
       ) : null}
       <section className="admin-editor-card is-new">
@@ -54,6 +58,10 @@ export default async function AdminUpdatesPage({
                   : [],
               }}
             />
+            <form action={deleteUpdateAction} className="admin-delete-form">
+              <input name="id" type="hidden" value={update.id} />
+              <button className="button button--danger">Apagar atualização</button>
+            </form>
           </details>
         ))}
       </section>

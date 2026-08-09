@@ -3,6 +3,7 @@ import { getShopItems } from "@/lib/game/player-portal";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { buyItem } from "./actions";
+import { itemSlotEmoji, itemSlotLabel } from "@/lib/game/equipment";
 
 const rarityLabels: Record<string, string> = {
   common: "Comum",
@@ -30,10 +31,10 @@ export default async function ShopPage() {
           items.map((item) => (
             <article className={`shop-card shop-card--${item.rarity}`} key={item.id}>
               <span className="shop-card__icon" aria-hidden="true">
-                ◆
+                {itemSlotEmoji(item.slot)}
               </span>
               <small className={`rarity rarity--${item.rarity}`}>
-                {rarityLabels[item.rarity] ?? item.rarity} · {item.category}
+                {rarityLabels[item.rarity] ?? item.rarity} · {itemSlotLabel(item.slot)}
               </small>
               <h2>{item.name}</h2>
               <p>{item.description}</p>

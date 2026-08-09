@@ -25,7 +25,7 @@ interface ProfilePageProps {
 }
 
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
-  const { account } = await requireActiveCharacter("/perfil");
+  const { account, characterId: activeCharacterId } = await requireActiveCharacter("/perfil");
   const [characters, characterRules, params] = await Promise.all([
     getCharacterSheets(account.id),
     getCharacterRules(),
@@ -96,19 +96,49 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </span>
               </div>
 
-              <div className="character-slots">
+              <div className="profile-character-grid">
                 {Array.from({ length: characterRules.maximumSlots }, (_, index) => index + 1).map(
                   (slot) => (
-                    <div className="character-slot" key={slot}>
-                      <span>{String(slot).padStart(2, "0")}</span>
-                      <div>
-                        <strong>{characters[slot - 1]?.name ?? "Espaço disponível"}</strong>
-                        <small>
-                          {characters[slot - 1]
-                            ? `${characters[slot - 1].race.name} · ${characters[slot - 1].characterClass.name} · Nível ${characters[slot - 1].level}`
-                            : "Crie um novo herói para entrar na Arena."}
-                        </small>
+                    <article
+                      className={`profile-character-card ${characters[slot - 1]?.id === activeCharacterId ? "is-active" : ""}`}
+                      key={slot}
+                    >
+                      <div className="profile-character-card__portrait">
+                        {characters[slot - 1]?.image_url ? (
+                          <span
+                            style={{ backgroundImage: `url(${characters[slot - 1].image_url})` }}
+                          />
+                        ) : (
+                          <b>
+                            {characters[slot - 1]?.name.slice(0, 2).toUpperCase() ??
+                              String(slot).padStart(2, "0")}
+                          </b>
+                        )}
                       </div>
+                      <small>
+                        {characters[slot - 1]?.id === activeCharacterId
+                          ? "Em jogo"
+                          : `Ficha ${String(slot).padStart(2, "0")}`}
+                      </small>
+                      <h3>{characters[slot - 1]?.name ?? "Espaço disponível"}</h3>
+                      {characters[slot - 1] ? (
+                        <dl>
+                          <div>
+                            <dt>Raça</dt>
+                            <dd>{characters[slot - 1].race.name}</dd>
+                          </div>
+                          <div>
+                            <dt>Classe</dt>
+                            <dd>{characters[slot - 1].characterClass.name}</dd>
+                          </div>
+                          <div>
+                            <dt>Nível</dt>
+                            <dd>{characters[slot - 1].level}</dd>
+                          </div>
+                        </dl>
+                      ) : (
+                        <p>Crie um novo herói para entrar na Arena.</p>
+                      )}
                       <Link
                         href={
                           characters[slot - 1]
@@ -121,9 +151,9 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                             : `Criar personagem no espaço ${slot}`
                         }
                       >
-                        {characters[slot - 1] ? "→" : "＋"}
+                        {characters[slot - 1] ? "Abrir ficha" : "Criar personagem"}
                       </Link>
-                    </div>
+                    </article>
                   ),
                 )}
               </div>

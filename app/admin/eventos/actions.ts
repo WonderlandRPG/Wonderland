@@ -53,3 +53,28 @@ export async function saveEventAction(formData: FormData) {
   revalidatePath("/admin/eventos");
   redirect("/admin/eventos?status=salvo");
 }
+
+export async function deleteEventAction(formData: FormData) {
+  const account = await requireAdministrativeAccount();
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) redirect("/admin/eventos?status=erro");
+  const client = await createServerSupabaseClient();
+  if (!client) redirect("/admin/eventos?status=erro");
+  const { data, error } = await client
+    .from("v2_events")
+    .delete()
+    .eq("id", id.data)
+    .select("title")
+    .single();
+  if (error) redirect("/admin/eventos?status=erro");
+  await client.from("v2_admin_history").insert({
+    actor_id: account.id,
+    action: "event.deleted",
+    target_type: "event",
+    target_id: id.data,
+    details: { title: data.title },
+  });
+  revalidatePath("/eventos");
+  revalidatePath("/admin/eventos");
+  redirect("/admin/eventos?status=apagado");
+}

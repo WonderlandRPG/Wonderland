@@ -39,6 +39,10 @@ export default async function ArenaPage({
               baseMana: character.race.payload.baseMana,
               attributes: character.stats.attributes,
               skills: character.unlockedClassSkills,
+              raceAbilities: character.unlockedRaceAbilities,
+              items: character.inventory
+                .filter((item) => /consum|poção|pocao/i.test(item.category))
+                .map((item) => ({ id: item.id, name: item.name, description: item.description })),
             }))}
           initialCharacterId={query.personagem}
           rules={defaultCombatRules}

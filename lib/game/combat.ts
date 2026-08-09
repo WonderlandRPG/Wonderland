@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import type { ClassSkill } from "@/lib/game/classes";
+import type { RaceProgressionEntry } from "@/lib/game/races";
 import { attributeKeys, attributesSchema, type AttributeKey } from "@/lib/game/schemas";
 
 export const combatRulesSchema = z.object({
@@ -148,16 +149,19 @@ export function resolveBasicAttack(
   target: CombatantState,
   rules: CombatRules = defaultCombatRules,
 ): CombatResolution {
-  const raw = actor.attributes.FOR * rules.basicAttackMultiplier;
-  const amount = calculateDamage(raw, "physical", target.attributes, rules);
+  const isMagical = actor.attributes.INT > actor.attributes.FOR;
+  const damageType: DamageType = isMagical ? "magic" : "physical";
+  const raw =
+    (isMagical ? actor.attributes.INT : actor.attributes.FOR) * rules.basicAttackMultiplier;
+  const amount = calculateDamage(raw, damageType, target.attributes, rules);
   return {
     actor,
     target: applyDamage(target, amount),
     event: {
       kind: "damage",
-      damageType: "physical",
+      damageType,
       amount,
-      message: `${actor.name} usou Ataque básico e causou ${amount} de dano físico.`,
+      message: `${actor.name} usou Ataque básico e causou ${amount} de dano ${isMagical ? "mágico" : "físico"}.`,
     },
   };
 }
@@ -263,6 +267,103 @@ export function resolveSkill(
       message: `${actor.name} usou ${skill.name}: ${skill.effect}`,
     },
   };
+}
+
+function raceAbilityKey(ability: RaceProgressionEntry) {
+  return `race:${ability.level}:${ability.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`;
+}
+
+function descriptionNumber(description: string, label: string) {
+  const match = description.match(new RegExp(`${label}\\s*:\\s*(\\d+)`, "i"));
+  return match ? Number(match[1]) : 0;
+}
+
+export function resolveRaceAbility(
+  actor: CombatantState,
+  target: CombatantState,
+  ability: RaceProgressionEntry,
+  rules: CombatRules = defaultCombatRules,
+): CombatResolution {
+  const key = raceAbilityKey(ability);
+  if ((actor.cooldowns[key] ?? 0) > 0) {
+    return skillError(actor, target, `${ability.title} ainda está em recarga.`);
+  }
+  const manaCost = descriptionNumber(ability.description, "Custo");
+  if (actor.mana < manaCost) {
+    return skillError(actor, target, `Mana insuficiente para usar ${ability.title}.`);
+  }
+  const cooldown = descriptionNumber(ability.description, "Recarga");
+  const paidActor: CombatantState = {
+    ...actor,
+    mana: actor.mana - manaCost,
+    cooldowns: { ...actor.cooldowns, [key]: cooldown },
+  };
+  const scaling = [
+    ...ability.description.matchAll(/(\d+(?:[,.]\d+)?)x\s*(FOR|DEF|RES|INI|INT|ARC)/gi),
+  ].map((match) => ({
+    multiplier: Number(match[1].replace(",", ".")),
+    attribute: match[2].toUpperCase() as AttributeKey,
+  }));
+  const rawPower = calculateScaledPower(actor.attributes, scaling.slice(0, 2));
+  const text = ability.description.toLowerCase();
+
+  if (/cura|recupera hp|recuperando/.test(text)) {
+    const amount = rawPower || rounded(actor.attributes.ARC);
+    const healed = Math.min(amount, paidActor.maxHp - paidActor.hp);
+    return {
+      actor: { ...paidActor, hp: paidActor.hp + healed },
+      target,
+      event: {
+        kind: "heal",
+        amount: healed,
+        message: `${actor.name} usou ${ability.title} e recuperou ${healed} de HP.`,
+      },
+    };
+  }
+  if (/escudo/.test(text) && !/causando dano|dano mágico|dano físico/.test(text)) {
+    const amount = rawPower || rounded(actor.attributes.ARC);
+    return {
+      actor: { ...paidActor, shield: paidActor.shield + amount },
+      target,
+      event: {
+        kind: "shield",
+        amount,
+        message: `${actor.name} usou ${ability.title} e recebeu ${amount} de escudo.`,
+      },
+    };
+  }
+  if (/dano|atinge um inimigo|julgamento/.test(text)) {
+    const type: DamageType = /mágic|\bint\b|\barc\b/.test(text) ? "magic" : "physical";
+    const amount = calculateDamage(
+      rawPower || actor.attributes[type === "magic" ? "INT" : "FOR"],
+      type,
+      target.attributes,
+      rules,
+    );
+    return {
+      actor: paidActor,
+      target: applyDamage(target, amount),
+      event: {
+        kind: "damage",
+        damageType: type,
+        amount,
+        message: `${actor.name} usou ${ability.title} e causou ${amount} de dano ${type === "magic" ? "mágico" : "físico"}.`,
+      },
+    };
+  }
+  return {
+    actor: paidActor,
+    target,
+    event: {
+      kind: "utility",
+      amount: 0,
+      message: `${actor.name} usou ${ability.title}: ${ability.description.split("\n")[0]}`,
+    },
+  };
+}
+
+export function getRaceAbilityCooldown(combatant: CombatantState, ability: RaceProgressionEntry) {
+  return combatant.cooldowns[raceAbilityKey(ability)] ?? 0;
 }
 
 export function combineAttributes(...sources: Partial<CombatAttributes>[]): CombatAttributes {

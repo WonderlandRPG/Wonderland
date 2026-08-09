@@ -5,10 +5,11 @@ import { z } from "zod";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { equipmentSlots, type EquipmentSlot } from "@/lib/game/equipment";
 
 const schema = z.object({
   inventoryId: z.uuid(),
-  slot: z.enum(["weapon", "shield", "head", "torso", "hands", "feet"]),
+  slot: z.custom<EquipmentSlot>((value) => equipmentSlots.some((entry) => entry.key === value)),
 });
 
 export async function equipItemAction(characterId: string, formData: FormData) {

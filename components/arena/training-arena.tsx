@@ -4,7 +4,9 @@ import { useMemo, useState } from "react";
 
 import {
   createCombatant,
+  getRaceAbilityCooldown,
   resolveBasicAttack,
+  resolveRaceAbility,
   resolveSkill,
   tickCooldowns,
   type CombatAttributes,
@@ -12,6 +14,7 @@ import {
   type CombatantState,
 } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
+import type { RaceProgressionEntry } from "@/lib/game/races";
 
 interface ArenaCharacter {
   id: string;
@@ -22,7 +25,12 @@ interface ArenaCharacter {
   baseMana: number;
   attributes: CombatAttributes;
   skills: ClassSkill[];
+  raceAbilities: RaceProgressionEntry[];
+  items: Array<{ id: string; name: string; description: string }>;
 }
+
+type TurnActions = { basic: boolean; race: boolean; class: boolean; item: boolean };
+const freshActions: TurnActions = { basic: false, race: false, class: false, item: false };
 
 export function TrainingArena({
   characters,
@@ -80,37 +88,87 @@ function Battle({
   const [player, setPlayer] = useState(initial.player);
   const [enemy, setEnemy] = useState(initial.enemy);
   const [turn, setTurn] = useState(1);
+  const [actions, setActions] = useState<TurnActions>(freshActions);
+  const [newCooldowns, setNewCooldowns] = useState<string[]>([]);
   const [message, setMessage] = useState("Escolha sua primeira ação.");
   const finished = player.hp <= 0 || enemy.hp <= 0;
 
-  function complete(nextPlayer: CombatantState, nextEnemy: CombatantState, text: string) {
+  function applyPlayerAction(
+    nextPlayer: CombatantState,
+    nextEnemy: CombatantState,
+    text: string,
+    action: keyof TurnActions,
+  ) {
+    setPlayer(nextPlayer);
+    setEnemy(nextEnemy);
+    setNewCooldowns((current) => [
+      ...new Set([
+        ...current,
+        ...Object.keys(nextPlayer.cooldowns).filter(
+          (key) => (nextPlayer.cooldowns[key] ?? 0) > (player.cooldowns[key] ?? 0),
+        ),
+      ]),
+    ]);
+    setActions((current) => ({ ...current, [action]: true }));
     if (nextEnemy.hp <= 0) {
-      setPlayer(nextPlayer);
-      setEnemy(nextEnemy);
       setMessage(`${text} Vitória!`);
       return;
     }
-    const reply = resolveBasicAttack(nextEnemy, nextPlayer, rules);
-    setPlayer(tickCooldowns(reply.target));
+    setMessage(text);
+  }
+
+  function finishTurn() {
+    if (finished || !Object.values(actions).some(Boolean)) return;
+    const reply = resolveBasicAttack(enemy, player, rules);
+    const cooledPlayer = tickCooldowns(reply.target);
+    for (const key of newCooldowns) cooledPlayer.cooldowns[key] = reply.target.cooldowns[key] ?? 0;
+    setPlayer(cooledPlayer);
     setEnemy(reply.actor);
     setTurn((value) => value + 1);
-    setMessage(`${text} ${reply.event.message}`);
+    setActions(freshActions);
+    setNewCooldowns([]);
+    setMessage(
+      reply.target.hp <= 0
+        ? `${reply.event.message} Você foi derrotado.`
+        : `${reply.event.message} Nova rodada: escolha suas ações.`,
+    );
   }
 
   function attack() {
-    if (finished) return;
+    if (finished || actions.basic) return;
     const result = resolveBasicAttack(player, enemy, rules);
-    complete(result.actor, result.target, result.event.message);
+    applyPlayerAction(result.actor, result.target, result.event.message, "basic");
   }
 
   function handleSkill(skill: ClassSkill) {
-    if (finished) return;
+    if (finished || actions.class) return;
     const result = resolveSkill(player, enemy, skill, rules);
     if (result.event.kind === "error") {
       setMessage(result.event.message);
       return;
     }
-    complete(result.actor, result.target, result.event.message);
+    applyPlayerAction(result.actor, result.target, result.event.message, "class");
+  }
+
+  function handleRaceAbility(ability: RaceProgressionEntry) {
+    if (finished || actions.race) return;
+    const result = resolveRaceAbility(player, enemy, ability, rules);
+    if (result.event.kind === "error") return setMessage(result.event.message);
+    applyPlayerAction(result.actor, result.target, result.event.message, "race");
+  }
+
+  function handleItem(item: ArenaCharacter["items"][number]) {
+    if (finished || actions.item) return;
+    const healed = Math.min(
+      Math.max(25, Math.round(player.maxHp * 0.25)),
+      player.maxHp - player.hp,
+    );
+    applyPlayerAction(
+      { ...player, hp: player.hp + healed },
+      enemy,
+      `${character.name} usou ${item.name} e recuperou ${healed} de HP.`,
+      "item",
+    );
   }
 
   return (
@@ -140,17 +198,43 @@ function Battle({
       <p className="arena-message" role="status">
         {message}
       </p>
+      <div className="arena-turn-budget" aria-label="Ações desta rodada">
+        <span className={actions.basic ? "is-used" : ""}>Ataque {actions.basic ? "✓" : "1"}</span>
+        <span className={actions.race ? "is-used" : ""}>Raça {actions.race ? "✓" : "1"}</span>
+        <span className={actions.class ? "is-used" : ""}>Classe {actions.class ? "✓" : "1"}</span>
+        <span className={actions.item ? "is-used" : ""}>Item {actions.item ? "✓" : "1"}</span>
+      </div>
       <div className="arena-actions">
-        <button disabled={finished} onClick={attack} type="button">
+        <button disabled={finished || actions.basic} onClick={attack} type="button">
           <strong>Ataque básico</strong>
-          <span>1x FOR · sem custo</span>
+          <span>
+            1x{" "}
+            {player.attributes.INT > player.attributes.FOR
+              ? "INT · dano mágico"
+              : "FOR · dano físico"}
+          </span>
         </button>
+        {character.raceAbilities.map((ability) => {
+          const cooldown = getRaceAbilityCooldown(player, ability);
+          return (
+            <button
+              disabled={finished || actions.race || cooldown > 0}
+              key={`${ability.level}-${ability.title}`}
+              onClick={() => handleRaceAbility(ability)}
+              type="button"
+            >
+              <strong>{ability.title}</strong>
+              <span>{ability.description.split("\n")[0]}</span>
+              <small>{cooldown ? `Recarga: ${cooldown}` : "Habilidade de raça"}</small>
+            </button>
+          );
+        })}
         {character.skills.map((skill) => {
           const cooldown = player.cooldowns[skill.key] ?? 0;
           const cannotPay = skill.resource === "mana" && player.mana < skill.cost;
           return (
             <button
-              disabled={finished || cooldown > 0 || cannotPay}
+              disabled={finished || actions.class || cooldown > 0 || cannotPay}
               key={skill.key}
               onClick={() => handleSkill(skill)}
               type="button"
@@ -165,7 +249,36 @@ function Battle({
             </button>
           );
         })}
+        {character.items.length ? (
+          character.items.map((item) => (
+            <button
+              disabled={finished || actions.item}
+              key={item.id}
+              onClick={() => handleItem(item)}
+              type="button"
+            >
+              <strong>{item.name}</strong>
+              <span>{item.description}</span>
+              <small>Item consumível</small>
+            </button>
+          ))
+        ) : (
+          <button disabled type="button">
+            <strong>Item</strong>
+            <span>Nenhum consumível no inventário.</span>
+          </button>
+        )}
       </div>
+      {!finished ? (
+        <button
+          className="button button--primary arena-end-turn"
+          disabled={!Object.values(actions).some(Boolean)}
+          onClick={finishTurn}
+          type="button"
+        >
+          Encerrar rodada
+        </button>
+      ) : null}
       {finished ? (
         <button className="button button--primary" onClick={onReset} type="button">
           Treinar novamente

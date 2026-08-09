@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { saveEventAction } from "./actions";
+import { deleteEventAction, saveEventAction } from "./actions";
 
 export const metadata = { title: "Eventos | Painel ADM" };
 export default async function AdminEventsPage({
@@ -25,7 +25,11 @@ export default async function AdminEventsPage({
       </header>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
-          {query.status === "salvo" ? "✓ Evento salvo." : "! Revise os dados."}
+          {query.status === "salvo"
+            ? "✓ Evento salvo."
+            : query.status === "apagado"
+              ? "✓ Evento apagado."
+              : "! Revise os dados."}
         </div>
       ) : null}
       <section className="admin-editor-card is-new">
@@ -45,6 +49,10 @@ export default async function AdminEventsPage({
               <b>{event.active ? "Publicado" : "Oculto"}</b>
             </summary>
             <EventForm event={event} />
+            <form action={deleteEventAction} className="admin-delete-form">
+              <input name="id" type="hidden" value={event.id} />
+              <button className="button button--danger">Apagar evento</button>
+            </form>
           </details>
         ))}
       </section>

@@ -8,6 +8,12 @@ import { getLevelProgress } from "@/lib/game/experience";
 import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
 import {
+  defaultEquipSlot,
+  equipmentSlots,
+  itemSlotEmoji,
+  itemSlotLabel,
+} from "@/lib/game/equipment";
+import {
   claimCharacterPresenceAction,
   equipItemAction,
   unequipItemAction,
@@ -41,6 +47,11 @@ export default async function CharacterSheetPage({
   const futureRaceSkills = character.race.payload.progression
     .filter((skill) => skill.level > character.level)
     .sort((a, b) => a.level - b.level);
+  const equippedItems = new Map(
+    character.inventory
+      .filter((item) => item.equippedSlot)
+      .map((item) => [item.equippedSlot, item]),
+  );
   return (
     <main className="sheet-page">
       <header className="account-header">
@@ -300,35 +311,68 @@ export default async function CharacterSheetPage({
               <h2>Inventário de {character.name}</h2>
               <p>Itens equipados alteram a ficha e os cálculos da Arena.</p>
             </header>
-            {character.inventory.length ? (
-              <div className="portal-card-grid">
-                {character.inventory.map((entry) => (
-                  <article className={`shop-card shop-card--${entry.rarity}`} key={entry.id}>
-                    <small>
-                      {entry.rarity} · {entry.slot}
-                    </small>
-                    <h3>{entry.name}</h3>
-                    <p>{entry.description}</p>
-                    <footer>
-                      <span>
-                        {entry.equippedSlot ? "Equipado" : `Quantidade ${entry.quantity}`}
-                      </span>
-                      <form
-                        action={
-                          entry.equippedSlot
-                            ? unequipItemAction.bind(null, character.id)
-                            : equipItemAction.bind(null, character.id)
-                        }
-                      >
-                        <input name="inventoryId" type="hidden" value={entry.id} />
-                        <input name="slot" type="hidden" value={entry.slot} />
-                        <button className="button button--dark">
-                          {entry.equippedSlot ? "Desequipar" : "Equipar"}
-                        </button>
+            <div className="equipment-slot-grid">
+              {equipmentSlots.map((slot) => {
+                const item = equippedItems.get(slot.key);
+                return (
+                  <article className={item ? "is-equipped" : ""} key={slot.key}>
+                    <span aria-hidden="true">{slot.emoji}</span>
+                    <small>{slot.label}</small>
+                    <strong>{item?.name ?? "Vazio"}</strong>
+                    {item ? (
+                      <form action={unequipItemAction.bind(null, character.id)}>
+                        <input name="inventoryId" type="hidden" value={item.id} />
+                        <button>Desequipar</button>
                       </form>
-                    </footer>
+                    ) : null}
                   </article>
-                ))}
+                );
+              })}
+            </div>
+            <h3 className="inventory-heading">Mochila</h3>
+            {character.inventory.length ? (
+              <div className="portal-card-grid inventory-card-grid">
+                {character.inventory
+                  .filter((entry) => !entry.equippedSlot)
+                  .map((entry) => (
+                    <article className={`shop-card shop-card--${entry.rarity}`} key={entry.id}>
+                      <span className="shop-card__icon" aria-hidden="true">
+                        {itemSlotEmoji(entry.slot)}
+                      </span>
+                      <small>
+                        {entry.rarity} · {itemSlotLabel(entry.slot)}
+                      </small>
+                      <h3>{entry.name}</h3>
+                      <p>{entry.description}</p>
+                      <footer>
+                        <span>Quantidade {entry.quantity}</span>
+                        <form action={equipItemAction.bind(null, character.id)}>
+                          <input name="inventoryId" type="hidden" value={entry.id} />
+                          {entry.slot === "ring" || entry.slot === "earring" ? (
+                            <select
+                              name="slot"
+                              defaultValue={defaultEquipSlot(entry.slot) ?? undefined}
+                            >
+                              {equipmentSlots
+                                .filter((slot) => slot.key.startsWith(entry.slot))
+                                .map((slot) => (
+                                  <option key={slot.key} value={slot.key}>
+                                    {slot.label}
+                                  </option>
+                                ))}
+                            </select>
+                          ) : (
+                            <input
+                              name="slot"
+                              type="hidden"
+                              value={defaultEquipSlot(entry.slot) ?? ""}
+                            />
+                          )}
+                          <button className="button button--dark">Equipar</button>
+                        </form>
+                      </footer>
+                    </article>
+                  ))}
               </div>
             ) : (
               <div className="portal-empty">

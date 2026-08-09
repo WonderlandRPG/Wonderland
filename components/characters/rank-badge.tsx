@@ -5,6 +5,7 @@ export function RankBadge({ rank, compact = false }: { rank: string; compact?: b
   return (
     <span
       className={`rank-badge ${compact ? "is-compact" : ""} ${definition.key === "EX" ? "is-ex" : ""}`}
+      data-rank-tier={definition.key}
       style={{ "--rank-color": definition.color } as React.CSSProperties}
       title={`Rank ${definition.key} · ${definition.colorName}`}
     >

@@ -188,8 +188,9 @@ function Battle({
     <section className="arena-console">
       <header className="arena-toolbar">
         <div>
-          <span className="eyebrow">Simulação sem recompensas</span>
+          <span className="eyebrow">Coliseu de Wonderland</span>
           <h1>Arena de Treinamento</h1>
+          <p>Monte sua sequência e encerre a rodada quando estiver pronto.</p>
         </div>
         <label>
           Personagem
@@ -201,15 +202,15 @@ function Battle({
             ))}
           </select>
         </label>
-        <strong>Turno {turn}</strong>
+        <strong className="arena-turn-counter"><small>Rodada atual</small>{String(turn).padStart(2, "0")}</strong>
       </header>
       <div className="arena-stage">
-        <Fighter combatant={player} subtitle={`${character.raceName} · ${character.className}`} />
-        <b>VS</b>
-        <Fighter combatant={enemy} subtitle="Oponente de treino" />
+        <Fighter combatant={player} side="player" subtitle={`${character.raceName} · ${character.className}`} />
+        <b><small>Confronto</small>VS</b>
+        <Fighter combatant={enemy} side="enemy" subtitle="Autômato de treino" />
       </div>
       <p className="arena-message" role="status">
-        {message}
+        <span>Registro de combate</span>{message}
       </p>
       <div className="arena-turn-budget" aria-label="Ações desta rodada">
         <span className={actions.basic ? "is-used" : ""}>Ataque {actions.basic ? "✓" : "1"}</span>
@@ -231,8 +232,10 @@ function Battle({
           ))}
         </div>
       </section>
+      <section className="arena-command-panel">
+        <header><div><span className="eyebrow">Comandos disponíveis</span><h2>Escolha suas ações</h2></div><small>1 ação de cada categoria por rodada</small></header>
       <div className="arena-actions">
-        <button disabled={finished || actions.basic} onClick={attack} type="button">
+        <button data-action="basic" data-action-label="Ataque" disabled={finished || actions.basic} onClick={attack} type="button">
           <strong>Ataque básico</strong>
           <span>
             1x{" "}
@@ -248,6 +251,8 @@ function Battle({
             ability.resource === "special" && player.raceResource < ability.cost;
           return (
             <button
+              data-action="race"
+              data-action-label="Raça"
               disabled={finished || actions.race || cooldown > 0 || raceCannotPay}
               key={ability.key}
               onClick={() => handleRaceAbility(ability)}
@@ -271,6 +276,8 @@ function Battle({
             (skill.resourceKey === "race" ? player.raceResource : player.classResource) < skill.cost;
           return (
             <button
+              data-action="class"
+              data-action-label="Classe"
               disabled={
                 finished || actions.class || cooldown > 0 || cannotPay || cannotPayClassResource
               }
@@ -291,6 +298,8 @@ function Battle({
         {character.items.length ? (
           character.items.map((item) => (
             <button
+              data-action="item"
+              data-action-label="Item"
               disabled={finished || actions.item}
               key={item.id}
               onClick={() => handleItem(item)}
@@ -302,12 +311,13 @@ function Battle({
             </button>
           ))
         ) : (
-          <button disabled type="button">
+          <button data-action="item" data-action-label="Item" disabled type="button">
             <strong>Item</strong>
             <span>Nenhum consumível no inventário.</span>
           </button>
         )}
       </div>
+      </section>
       {!finished ? (
         <button
           className="button button--primary arena-end-turn"
@@ -327,9 +337,10 @@ function Battle({
   );
 }
 
-function Fighter({ combatant, subtitle }: { combatant: CombatantState; subtitle: string }) {
+function Fighter({ combatant, subtitle, side }: { combatant: CombatantState; subtitle: string; side: "player" | "enemy" }) {
   return (
-    <article className="arena-fighter">
+    <article className={`arena-fighter is-${side}`}>
+      <div className="arena-fighter__sigil">{side === "player" ? "✦" : "◆"}</div>
       <span className="eyebrow">{subtitle}</span>
       <h2>{combatant.name}</h2>
       <p>

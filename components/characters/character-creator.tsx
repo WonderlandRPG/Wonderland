@@ -25,8 +25,13 @@ interface RaceOption {
 interface ClassOption {
   id: string;
   name: string;
+  description: string;
+  difficulty: number;
   specialization: string;
   primaryAttributes: AttributeKey[];
+  resourceName: string;
+  passiveName: string;
+  passiveDescription: string;
 }
 
 export function CharacterCreator({
@@ -50,6 +55,7 @@ export function CharacterCreator({
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [activePreset, setActivePreset] = useState<CharacterPreset | "custom">("custom");
+  const [codexTab, setCodexTab] = useState<"race" | "class">("race");
   const selectedRace = useMemo(() => races.find((entry) => entry.id === raceId), [raceId, races]);
   const selectedClass = useMemo(
     () => classes.find((entry) => entry.id === classId),
@@ -208,6 +214,46 @@ export function CharacterCreator({
             Afinidades da classe: {selectedClass?.primaryAttributes.join(" · ") || "—"}
           </small>
         </div>
+        <section className="character-choice-codex">
+          <header>
+            <div>
+              <span className="eyebrow">Códice do aventureiro</span>
+              <strong>Conheça antes de escolher</strong>
+            </div>
+            <div className="character-choice-codex__tabs" role="tablist" aria-label="Informações da escolha">
+              <button aria-selected={codexTab === "race"} className={codexTab === "race" ? "is-active" : ""} onClick={() => setCodexTab("race")} role="tab" type="button">Sobre a raça</button>
+              <button aria-selected={codexTab === "class"} className={codexTab === "class" ? "is-active" : ""} onClick={() => setCodexTab("class")} role="tab" type="button">Sobre a classe</button>
+            </div>
+          </header>
+          {codexTab === "race" ? (
+            <div className="character-choice-codex__content" role="tabpanel">
+              <div>
+                <small>Raça selecionada · {"★".repeat(selectedRace?.payload.difficulty ?? 1)}</small>
+                <h3>{selectedRace?.name}</h3>
+                <p>{selectedRace?.payload.description}</p>
+              </div>
+              <aside>
+                <span>Especialização</span><strong>{selectedRace?.payload.specialization}</strong>
+                <span>Recurso racial</span><strong>{selectedRace?.payload.resource?.name ?? "Nenhum"}</strong>
+                <span>Traço inicial</span><strong>{selectedRace?.payload.traits[0]?.name ?? "—"}</strong>
+              </aside>
+            </div>
+          ) : (
+            <div className="character-choice-codex__content" role="tabpanel">
+              <div>
+                <small>Classe selecionada · {"★".repeat(selectedClass?.difficulty ?? 1)}</small>
+                <h3>{selectedClass?.name}</h3>
+                <p>{selectedClass?.description}</p>
+              </div>
+              <aside>
+                <span>Especialização</span><strong>{selectedClass?.specialization}</strong>
+                <span>Recurso de classe</span><strong>{selectedClass?.resourceName}</strong>
+                <span>Passiva inicial</span><strong>{selectedClass?.passiveName}</strong>
+                <small>{selectedClass?.passiveDescription}</small>
+              </aside>
+            </div>
+          )}
+        </section>
       </section>
 
       <section className="character-create-section">

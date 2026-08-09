@@ -81,8 +81,13 @@ export default async function NewCharacterPage() {
           classes={classes.map((entry) => ({
             id: entry.id,
             name: entry.name,
+            description: entry.payload.description,
+            difficulty: entry.payload.difficulty,
             specialization: entry.payload.specialization,
             primaryAttributes: entry.payload.primaryAttributes,
+            resourceName: entry.payload.resource.name,
+            passiveName: entry.payload.passive.name,
+            passiveDescription: entry.payload.passive.description,
           }))}
         />
       </div>

@@ -23,9 +23,6 @@ export default async function RanksPage() {
             <span className="rank-guide-card__order">{String(index + 1).padStart(2, "0")}</span>
             <RankBadge rank={rank.key} />
             <div>
-              <small>
-                {rank.colorName} · {rank.color}
-              </small>
               <h2>Rank {rank.key}</h2>
               <p>{rank.description}</p>
             </div>

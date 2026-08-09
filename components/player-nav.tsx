@@ -21,7 +21,6 @@ export async function PlayerNav() {
             <Link href="/arena">Arena</Link>
             <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}>Equipamentos</Link>
             <Link href="/loja">Loja</Link>
-            <Link href="/mapas">Mapa</Link>
             <details className="player-nav__world-menu">
               <summary>
                 Mundo <span aria-hidden="true">⌄</span>

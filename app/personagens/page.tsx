@@ -240,12 +240,12 @@ export default async function CharactersPage({
                 <strong>Visitar a Loja</strong>
                 <i>→</i>
               </Link>
-              <Link className="game-command-card" href="/mapas">
+              <div className="game-command-card is-disabled" aria-disabled="true">
                 <span aria-hidden="true">⌖</span>
-                <small>Exploração</small>
-                <strong>Abrir o Mapa</strong>
-                <i>→</i>
-              </Link>
+                <small>Exploração · em manutenção</small>
+                <strong>Mapa indisponível</strong>
+                <i>×</i>
+              </div>
               <Link className="game-command-card" href="/eventos">
                 <span aria-hidden="true">◇</span>
                 <small>Agenda</small>

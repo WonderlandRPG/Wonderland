@@ -17,7 +17,11 @@ import {
 } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
 import { arenaMonsters, arenaRewards, buildAdaptiveMonsterAttributes, type ArenaMode } from "@/lib/game/arena";
-import { sumItemEffectModifiers, type ItemSpecialEffect } from "@/lib/game/item-effects";
+import {
+  applyBattleStartItemEffects,
+  sumItemEffectModifiers,
+  type ItemSpecialEffect,
+} from "@/lib/game/item-effects";
 
 interface ArenaCharacter {
   id: string;
@@ -444,7 +448,10 @@ function createBattle(character: ArenaCharacter, rules: CombatRules, mode: Exclu
   }
   if (/cura|escudo|suporte/.test(text)) attributes.ARC = Math.round(attributes.ARC * 1.1);
   if (/mana|arcano|magia/.test(text)) attributes.INT = Math.round(attributes.INT * 1.05);
-  const player = createCombatant({ ...character, attributes, rules });
+  const player = applyBattleStartItemEffects(
+    createCombatant({ ...character, attributes, rules }),
+    character.equipmentEffects,
+  );
   const trainingAttributes: CombatAttributes = {
     FOR: Math.max(35, Math.round(character.attributes.FOR * 0.55)),
     DEF: Math.max(25, Math.round(character.attributes.DEF * 0.65)),

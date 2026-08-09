@@ -45,6 +45,11 @@ const schema = z.object({
   effectINT: z.coerce.number().int().min(0).max(999),
   effectARC: z.coerce.number().int().min(0).max(999),
   effectDuration: z.coerce.number().int().min(0).max(99),
+  effectShield: z.coerce.number().int().min(0).max(99999),
+  effectMaxHpPercent: z.coerce.number().min(0).max(100),
+  effectMana: z.coerce.number().int().min(0).max(9999),
+  effectClassResource: z.coerce.number().int().min(0).max(9999),
+  effectRaceResource: z.coerce.number().int().min(0).max(9999),
 });
 
 export async function updateItemAdminAction(formData: FormData) {
@@ -74,6 +79,11 @@ export async function updateItemAdminAction(formData: FormData) {
     effectINT: formData.get("effectINT") ?? 0,
     effectARC: formData.get("effectARC") ?? 0,
     effectDuration: formData.get("effectDuration") ?? 0,
+    effectShield: formData.get("effectShield") ?? 0,
+    effectMaxHpPercent: formData.get("effectMaxHpPercent") ?? 0,
+    effectMana: formData.get("effectMana") ?? 0,
+    effectClassResource: formData.get("effectClassResource") ?? 0,
+    effectRaceResource: formData.get("effectRaceResource") ?? 0,
   });
   if (!parsed.success) redirect("/admin/itens?status=erro");
   const client = await createServerSupabaseClient();
@@ -101,6 +111,11 @@ export async function updateItemAdminAction(formData: FormData) {
         description: parsed.data.effectDescription || "Efeito especial configurado pelo Painel ADM.",
         trigger: "BATTLE_START",
         duration: parsed.data.effectDuration,
+        shield: parsed.data.effectShield,
+        maxHpPercent: parsed.data.effectMaxHpPercent,
+        mana: parsed.data.effectMana,
+        classResource: parsed.data.effectClassResource,
+        raceResource: parsed.data.effectRaceResource,
         modifiers: Object.fromEntries(
           (["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const)
             .filter((attribute) => parsed.data[`effect${attribute}`] > 0)

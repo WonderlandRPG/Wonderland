@@ -55,6 +55,12 @@ export interface CombatantState {
   raceResourceGainOnBasicAttack: number;
 }
 
+export function getConvertedResourceBonus(intelligence: number, maximum: number) {
+  if (maximum <= 0 || intelligence <= 0) return 0;
+  const ratio = Math.min(0.3, intelligence / 400);
+  return Math.min(maximum, Math.max(1, Math.ceil(maximum * ratio)));
+}
+
 export interface CombatEvent {
   kind: "damage" | "heal" | "shield" | "utility" | "error";
   message: string;
@@ -107,27 +113,41 @@ export function createCombatant(input: {
     maximum: number;
     generationEvents?: Array<{ trigger: string; amount: number }>;
   } | null;
+  usesMana?: boolean;
 }): CombatantState {
   const stats = deriveStats(input.attributes, input.baseHp, input.baseMana, input.rules);
+  const usesMana = input.usesMana ?? true;
+  const classResourceBonus = usesMana
+    ? 0
+    : getConvertedResourceBonus(input.attributes.INT, input.classResource?.maximum ?? 0);
+  const raceResourceBonus = usesMana
+    ? 0
+    : getConvertedResourceBonus(input.attributes.INT, input.raceResource?.maximum ?? 0);
   return {
     id: input.id,
     name: input.name,
     attributes: input.attributes,
     maxHp: stats.maxHp,
     hp: stats.maxHp,
-    maxMana: stats.maxMana,
-    mana: stats.maxMana,
+    maxMana: usesMana ? stats.maxMana : 0,
+    mana: usesMana ? stats.maxMana : 0,
     shield: 0,
     cooldowns: {},
     classResourceName: input.classResource?.name ?? "Recurso",
-    classResource: input.classResource?.initial ?? 0,
+    classResource: Math.min(
+      input.classResource?.maximum ?? 0,
+      (input.classResource?.initial ?? 0) + classResourceBonus,
+    ),
     maxClassResource: input.classResource?.maximum ?? 0,
     statuses: {},
     resourceGainOnBasicAttack:
       input.classResource?.generationEvents?.find((entry) => entry.trigger === "BASIC_ATTACK_HIT")
         ?.amount ?? 0,
     raceResourceName: input.raceResource?.name ?? "Recurso racial",
-    raceResource: input.raceResource?.initial ?? 0,
+    raceResource: Math.min(
+      input.raceResource?.maximum ?? 0,
+      (input.raceResource?.initial ?? 0) + raceResourceBonus,
+    ),
     maxRaceResource: input.raceResource?.maximum ?? 0,
     raceResourceGainOnBasicAttack:
       input.raceResource?.generationEvents?.find((entry) => entry.trigger === "BASIC_ATTACK_HIT")

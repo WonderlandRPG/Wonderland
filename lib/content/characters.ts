@@ -14,6 +14,7 @@ import {
 } from "@/lib/game/characters";
 import { parseRacePayload, type RacePayload } from "@/lib/game/races";
 import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
+import { parseItemSpecialEffects, type ItemSpecialEffect } from "@/lib/game/item-effects";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type CharacterRow = Database["public"]["Tables"]["v2_characters"]["Row"];
@@ -40,6 +41,7 @@ export interface CharacterSheet extends CharacterRecord {
     quantity: number;
     equippedSlot: string | null;
     attributes: Partial<AllocatedAttributes>;
+    specialEffects: ItemSpecialEffect[];
   }>;
 }
 
@@ -69,7 +71,7 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
   const { data: shopRows } = itemIds.length
     ? await client
         .from("v2_shop_items")
-        .select("id,name,description,category,rarity,slot,attributes")
+        .select("id,name,description,category,rarity,slot,attributes,special_effects")
         .in("id", itemIds)
     : { data: [] };
   const shop = new Map((shopRows ?? []).map((entry) => [entry.id, entry]));
@@ -99,6 +101,7 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
             quantity: entry.quantity,
             equippedSlot: entry.equipped_slot,
             attributes: parsed.success ? parsed.data : {},
+            specialEffects: parseItemSpecialEffects(item.special_effects),
           },
         ];
       });

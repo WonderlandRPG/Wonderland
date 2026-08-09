@@ -7,6 +7,7 @@ import {
   combineAttributes,
   createCombatant,
   deriveStats,
+  getConvertedResourceBonus,
   resolveBasicAttack,
   resolveSkill,
   tickCooldowns,
@@ -30,6 +31,24 @@ describe("motor de combate", () => {
     expect(calculateDamage(100, "physical", attributes)).toBe(50);
     expect(calculateDamage(100, "magic", attributes)).toBe(50);
     expect(calculateDamage(100, "true", attributes)).toBe(100);
+  });
+
+  it("converte o potencial de Mana em recurso inicial quando a ficha não usa Mana", () => {
+    expect(getConvertedResourceBonus(20, 5)).toBe(1);
+    expect(getConvertedResourceBonus(80, 100)).toBe(20);
+    const fighter = createCombatant({
+      id: "fighter",
+      name: "Guerreiro Leonis",
+      attributes: { ...attributes, INT: 20 },
+      baseHp: 400,
+      baseMana: 70,
+      usesMana: false,
+      classResource: { name: "Ímpeto", initial: 0, maximum: 100 },
+      raceResource: { name: "Bravura", initial: 0, maximum: 5 },
+    });
+    expect(fighter.maxMana).toBe(0);
+    expect(fighter.classResource).toBe(5);
+    expect(fighter.raceResource).toBe(1);
   });
 
   it("consome escudo antes do HP", () => {

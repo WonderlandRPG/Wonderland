@@ -17,6 +17,7 @@ import {
 } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
 import { arenaMonsters, arenaRewards, buildAdaptiveMonsterAttributes, type ArenaMode } from "@/lib/game/arena";
+import { sumItemEffectModifiers, type ItemSpecialEffect } from "@/lib/game/item-effects";
 
 interface ArenaCharacter {
   id: string;
@@ -40,11 +41,13 @@ interface ArenaCharacter {
     maximum: number;
     generationEvents?: Array<{ trigger: string; amount: number }>;
   } | null;
+  usesMana: boolean;
   attributes: CombatAttributes;
   skills: ClassSkill[];
   raceAbilities: ClassSkill[];
   items: Array<{ id: string; name: string; description: string }>;
   combatLore: Array<{ name: string; description: string }>;
+  equipmentEffects: ItemSpecialEffect[];
 }
 
 type TurnActions = { basic: boolean; race: boolean; class: boolean; item: boolean };
@@ -392,13 +395,7 @@ function Fighter({ combatant, subtitle, side, imageUrl, sigil = "鬼" }: { comba
         </strong>
       </p>
       <progress className="is-hp" max={combatant.maxHp} value={combatant.hp} />
-      <p>
-        Mana{" "}
-        <strong>
-          {combatant.mana}/{combatant.maxMana}
-        </strong>
-      </p>
-      <progress className="is-mana" max={combatant.maxMana || 1} value={combatant.mana} />
+      {combatant.maxMana > 0 ? <><p>Mana <strong>{combatant.mana}/{combatant.maxMana}</strong></p><progress className="is-mana" max={combatant.maxMana} value={combatant.mana} /></> : null}
       {combatant.maxClassResource > 0 ? (
         <>
           <p>
@@ -433,6 +430,10 @@ function createBattle(character: ArenaCharacter, rules: CombatRules, mode: Exclu
     .join(" ")
     .toLowerCase();
   const attributes = { ...character.attributes };
+  const equipmentModifiers = sumItemEffectModifiers(character.equipmentEffects);
+  for (const [attribute, value] of Object.entries(equipmentModifiers)) {
+    attributes[attribute as keyof CombatAttributes] += value ?? 0;
+  }
   if (/dano|ofensiv|ataque/.test(text)) {
     attributes.FOR = Math.round(attributes.FOR * 1.08);
     attributes.INT = Math.round(attributes.INT * 1.08);

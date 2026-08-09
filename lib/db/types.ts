@@ -231,6 +231,7 @@ export interface Database {
           attributes: Json;
           two_handed: boolean;
           sort_order: number;
+          special_effects: Json;
           active: boolean;
           created_at: string;
           updated_at: string;
@@ -248,6 +249,7 @@ export interface Database {
           attributes?: Json;
           two_handed?: boolean;
           sort_order?: number;
+          special_effects?: Json;
           active?: boolean;
           created_at?: string;
           updated_at?: string;

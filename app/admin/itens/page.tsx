@@ -2,6 +2,7 @@ import { attributesSchema } from "@/lib/game/schemas";
 import { itemSlotLabel } from "@/lib/game/equipment";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { updateItemAdminAction } from "./actions";
+import { parseItemSpecialEffects } from "@/lib/game/item-effects";
 
 export const metadata = { title: "Itens | Painel ADM" };
 export const dynamic = "force-dynamic";
@@ -23,15 +24,17 @@ const slots = [
 export default async function AdminItemsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; busca?: string; raridade?: string; pagina?: string }>;
 }) {
   const client = await createServerSupabaseClient();
-  const [{ data }, query] = await Promise.all([
-    client
-      ? client.from("v2_shop_items").select("*").order("category").order("sort_order")
-      : Promise.resolve({ data: [] }),
-    searchParams,
-  ]);
+  const query = await searchParams;
+  const page = Math.max(1, Number(query.pagina) || 1);
+  let itemQuery = client?.from("v2_shop_items").select("*", { count: "exact" });
+  if (query.busca) itemQuery = itemQuery?.ilike("name", `%${query.busca}%`);
+  if (query.raridade) itemQuery = itemQuery?.eq("rarity", query.raridade);
+  const { data, count } = itemQuery
+    ? await itemQuery.order("category").order("sort_order").range((page - 1) * 50, page * 50 - 1)
+    : { data: [], count: 0 };
   return (
     <div className="admin-content admin-editor-page">
       <header className="admin-page-title">
@@ -39,8 +42,7 @@ export default async function AdminItemsPage({
           <span className="eyebrow">Economia do reino</span>
           <h2>Editar itens</h2>
           <p>
-            Altere nome, atributos, preço, imagem e o espaço ocupado. Todos os itens permanecem
-            Comuns.
+            Altere nome, raridade, atributos, preço, slot e o efeito especial aplicado na Arena.
           </p>
         </div>
       </header>
@@ -49,16 +51,23 @@ export default async function AdminItemsPage({
           {query.status === "salvo" ? "✓ Item atualizado." : "! Revise os dados do item."}
         </div>
       ) : null}
+      <form className="admin-catalog-filter">
+        <input name="busca" defaultValue={query.busca ?? ""} placeholder="Buscar pelo nome" />
+        <select name="raridade" defaultValue={query.raridade ?? ""}><option value="">Todas as raridades</option><option value="common">Comum</option><option value="uncommon">Incomum</option><option value="rare">Raro</option><option value="epic">Épico</option><option value="legendary">Lendário</option><option value="mythic">Mítico</option></select>
+        <button className="button button--primary">Filtrar itens</button>
+        <span>{count ?? 0} resultados</span>
+      </form>
       <section className="admin-editor-list">
         {(data ?? []).map((item) => {
           const parsed = attributesSchema.partial().safeParse(item.attributes);
           const attributes = parsed.success ? parsed.data : {};
+          const effect = parseItemSpecialEffects(item.special_effects)[0];
           return (
             <details className="admin-editor-card" key={item.id}>
               <summary>
                 <span>
                   <small>
-                    Comum · {itemSlotLabel(item.slot)} · {item.price.toLocaleString("pt-BR")} WG
+                    {item.rarity} · {itemSlotLabel(item.slot)} · {item.price.toLocaleString("pt-BR")} WG
                   </small>
                   <strong>{item.name}</strong>
                 </span>
@@ -66,6 +75,12 @@ export default async function AdminItemsPage({
               </summary>
               <form action={updateItemAdminAction} className="admin-form admin-item-form">
                 <input name="id" type="hidden" value={item.id} />
+                <label>
+                  <span>Raridade</span>
+                  <select name="rarity" defaultValue={item.rarity}>
+                    <option value="common">Comum</option><option value="uncommon">Incomum</option><option value="rare">Raro</option><option value="epic">Épico</option><option value="legendary">Lendário</option><option value="mythic">Mítico</option>
+                  </select>
+                </label>
                 <label>
                   <span>Nome</span>
                   <input name="name" defaultValue={item.name} required />
@@ -120,6 +135,13 @@ export default async function AdminItemsPage({
                     </label>
                   ))}
                 </fieldset>
+                <fieldset>
+                  <legend>Efeito especial de combate</legend>
+                  <label><span>Nome do efeito</span><input name="effectName" defaultValue={effect?.name ?? ""} placeholder="Sem efeito especial" /></label>
+                  <label><span>Descrição</span><input name="effectDescription" defaultValue={effect?.description ?? ""} /></label>
+                  {(["FOR","DEF","RES","INI","INT","ARC"] as const).map((attribute) => <label key={attribute}><span>Bônus de {attribute}</span><input name={`effect${attribute}`} type="number" min="0" defaultValue={effect?.modifiers[attribute] ?? 0} /></label>)}
+                  <label><span>Duração (0 = combate inteiro)</span><input name="effectDuration" type="number" min="0" defaultValue={effect?.duration ?? 0} /></label>
+                </fieldset>
                 <label>
                   <input name="twoHanded" type="checkbox" defaultChecked={item.two_handed} /> Ocupa
                   as duas mãos (bloqueia a arma secundária)
@@ -134,6 +156,7 @@ export default async function AdminItemsPage({
           );
         })}
       </section>
+      {(count ?? 0) > 50 ? <nav className="admin-pagination"><a href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${Math.max(1,page-1)}`}>← Anterior</a><span>Página {page}</span><a href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${page+1}`}>Próxima →</a></nav> : null}
     </div>
   );
 }

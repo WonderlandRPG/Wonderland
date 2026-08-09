@@ -8,12 +8,13 @@ import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { RankBadge } from "@/components/characters/rank-badge";
+import { ItemGlyph } from "@/components/items/item-glyph";
 import { getAdventureRank } from "@/lib/game/ranks";
+import { getConvertedResourceBonus } from "@/lib/game/combat";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
 import {
   defaultEquipSlot,
   equipmentSlots,
-  itemSlotEmoji,
   itemSlotLabel,
 } from "@/lib/game/equipment";
 import {
@@ -58,26 +59,41 @@ export default async function CharacterSheetPage({
   );
   const unlockedPathSkills = (classPath?.skills ?? []).filter((skill) => skill.level <= character.level);
   const futurePathSkills = (classPath?.skills ?? []).filter((skill) => skill.level > character.level);
+  const usesMana = [...character.unlockedClassSkills, ...character.unlockedRaceAbilities].some(
+    (skill) => skill.resource === "mana",
+  );
+  const classResourceBonus = getConvertedResourceBonus(
+    character.stats.attributes.INT,
+    character.characterClass.payload.resource.maximum,
+  );
+  const raceResourceBonus = getConvertedResourceBonus(
+    character.stats.attributes.INT,
+    character.race.payload.resource?.maximum ?? 0,
+  );
   const renderEquipmentSlot = (slot: (typeof equipmentSlots)[number]) => {
     const item = equippedItems.get(slot.key);
+    const catalogSlot = slot.key.startsWith("ring")
+      ? "ring"
+      : slot.key.startsWith("earring")
+        ? "earring"
+        : slot.key;
+    const candidates = character.inventory.filter(
+      (entry) => entry.slot === catalogSlot && entry.id !== item?.id,
+    );
     return (
-      <article className={item ? "is-equipped" : ""} key={slot.key}>
-        <span className="equipment-slot__seal" aria-hidden="true">
-          {slot.emoji}
-        </span>
-        <div>
-          <small>{slot.label}</small>
-          <strong>{item?.name ?? "Espaço livre"}</strong>
+      <details className={`equipment-slot-picker ${item ? "is-equipped" : ""}`} key={slot.key}>
+        <summary>
+          <span className="equipment-slot__seal"><ItemGlyph slot={slot.key} /></span>
+          <div><small>{slot.label}</small><strong>{item?.name ?? "Espaço livre"}</strong></div>
+          <i aria-hidden="true">⌄</i>
+        </summary>
+        <div className="equipment-slot-picker__menu">
+          <header><strong>Equipar em {slot.label}</strong><small>{candidates.length} opções na mochila</small></header>
+          {item ? <form action={unequipItemAction.bind(null, character.id)}><input name="inventoryId" type="hidden" value={item.id} /><span><ItemGlyph slot={item.slot}/><b>{item.name}</b><small>Equipado agora</small></span><button>Remover</button></form> : null}
+          {candidates.map((entry) => <form action={equipItemAction.bind(null, character.id)} key={entry.id}><input name="inventoryId" type="hidden" value={entry.id}/><input name="slot" type="hidden" value={slot.key}/><span><ItemGlyph slot={entry.slot}/><b>{entry.name}</b><small>{entry.rarity}</small></span><button>Equipar</button></form>)}
+          {!item && !candidates.length ? <p>Você ainda não possui itens compatíveis com este espaço.</p> : null}
         </div>
-        {item ? (
-          <form action={unequipItemAction.bind(null, character.id)}>
-            <input name="inventoryId" type="hidden" value={item.id} />
-            <button>Remover</button>
-          </form>
-        ) : (
-          <i aria-hidden="true">＋</i>
-        )}
-      </article>
+      </details>
     );
   };
   return (
@@ -219,8 +235,8 @@ export default async function CharacterSheetPage({
                 <strong>{character.stats.maxHp}</strong>
               </article>
               <article>
-                <span>Mana máxima</span>
-                <strong>{character.stats.maxMana}</strong>
+                <span>{usesMana ? "Mana máxima" : "Recursos iniciais"}</span>
+                <strong>{usesMana ? character.stats.maxMana : `+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}</strong>
               </article>
               <article>
                 <span>Iniciativa</span>
@@ -411,14 +427,13 @@ export default async function CharacterSheetPage({
                       className={`inventory-item-card shop-card--${entry.rarity}`}
                       key={entry.id}
                     >
-                      <span className="shop-card__icon" aria-hidden="true">
-                        {itemSlotEmoji(entry.slot)}
-                      </span>
+                      <ItemGlyph className="shop-card__icon" slot={entry.slot} />
                       <small>
                         {entry.rarity} · {itemSlotLabel(entry.slot)}
                       </small>
                       <h3>{entry.name}</h3>
                       <p>{entry.description}</p>
+                      {entry.specialEffects.map((effect) => <div className="inventory-item-effect" key={effect.key}><b>{effect.name}</b><span>{effect.description}</span></div>)}
                       <footer>
                         <span>Quantidade {entry.quantity}</span>
                         <form action={equipItemAction.bind(null, character.id)}>

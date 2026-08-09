@@ -51,6 +51,10 @@ export default async function ArenaPage({
               baseMana: character.race.payload.baseMana,
               classResource: character.characterClass.payload.resource,
               raceResource: character.race.payload.resource,
+              usesMana: [
+                ...character.unlockedClassSkills,
+                ...character.unlockedRaceAbilities,
+              ].some((skill) => skill.resource === "mana"),
               attributes: character.stats.attributes,
               skills: character.unlockedClassSkills
                 .filter((skill) => !/passiva/i.test(skill.type))
@@ -70,7 +74,13 @@ export default async function ArenaPage({
                   .map((path) => ({ name: path.passive.name, description: path.passive.description })),
                 ...character.race.payload.traits,
                 ...character.race.payload.mechanics,
+                ...character.inventory
+                  .filter((item) => item.equippedSlot)
+                  .flatMap((item) => item.specialEffects.map((effect) => ({ name: effect.name, description: effect.description }))),
               ],
+              equipmentEffects: character.inventory
+                .filter((item) => item.equippedSlot)
+                .flatMap((item) => item.specialEffects),
               items: character.inventory
                 .filter((item) => /consum|poção|pocao/i.test(item.category))
                 .map((item) => ({ id: item.id, name: item.name, description: item.description })),

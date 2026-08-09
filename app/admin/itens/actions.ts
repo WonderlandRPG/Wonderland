@@ -35,6 +35,16 @@ const schema = z.object({
   INI: z.coerce.number().int().min(0).max(999),
   INT: z.coerce.number().int().min(0).max(999),
   ARC: z.coerce.number().int().min(0).max(999),
+  rarity: z.enum(["common", "uncommon", "rare", "epic", "legendary", "mythic"]),
+  effectName: z.string().trim().max(100),
+  effectDescription: z.string().trim().max(500),
+  effectFOR: z.coerce.number().int().min(0).max(999),
+  effectDEF: z.coerce.number().int().min(0).max(999),
+  effectRES: z.coerce.number().int().min(0).max(999),
+  effectINI: z.coerce.number().int().min(0).max(999),
+  effectINT: z.coerce.number().int().min(0).max(999),
+  effectARC: z.coerce.number().int().min(0).max(999),
+  effectDuration: z.coerce.number().int().min(0).max(99),
 });
 
 export async function updateItemAdminAction(formData: FormData) {
@@ -54,6 +64,16 @@ export async function updateItemAdminAction(formData: FormData) {
     INI: formData.get("INI"),
     INT: formData.get("INT"),
     ARC: formData.get("ARC"),
+    rarity: formData.get("rarity"),
+    effectName: formData.get("effectName") ?? "",
+    effectDescription: formData.get("effectDescription") ?? "",
+    effectFOR: formData.get("effectFOR") ?? 0,
+    effectDEF: formData.get("effectDEF") ?? 0,
+    effectRES: formData.get("effectRES") ?? 0,
+    effectINI: formData.get("effectINI") ?? 0,
+    effectINT: formData.get("effectINT") ?? 0,
+    effectARC: formData.get("effectARC") ?? 0,
+    effectDuration: formData.get("effectDuration") ?? 0,
   });
   if (!parsed.success) redirect("/admin/itens?status=erro");
   const client = await createServerSupabaseClient();
@@ -74,7 +94,19 @@ export async function updateItemAdminAction(formData: FormData) {
       image_url: parsed.data.imageUrl || null,
       sort_order: parsed.data.sortOrder,
       attributes,
-      rarity: "common",
+      rarity: parsed.data.rarity,
+      special_effects: parsed.data.effectName ? [{
+        key: `${parsed.data.id}-admin-effect`,
+        name: parsed.data.effectName,
+        description: parsed.data.effectDescription || "Efeito especial configurado pelo Painel ADM.",
+        trigger: "BATTLE_START",
+        duration: parsed.data.effectDuration,
+        modifiers: Object.fromEntries(
+          (["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const)
+            .filter((attribute) => parsed.data[`effect${attribute}`] > 0)
+            .map((attribute) => [attribute, parsed.data[`effect${attribute}`]]),
+        ),
+      }] : [],
       two_handed: formData.get("twoHanded") === "on",
       active: formData.get("active") === "on",
       updated_at: new Date().toISOString(),

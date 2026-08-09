@@ -1,26 +1,20 @@
 export const equipmentSlots = [
-  { key: "head", label: "Cabeça", emoji: "🪖" },
-  { key: "torso", label: "Peitoral", emoji: "🦺" },
-  { key: "hands", label: "Mãos", emoji: "🧤" },
-  { key: "legs", label: "Pernas", emoji: "👖" },
-  { key: "feet", label: "Pés", emoji: "👢" },
-  { key: "main_weapon", label: "Arma principal", emoji: "⚔️" },
-  { key: "off_weapon", label: "Arma secundária", emoji: "🛡️" },
-  { key: "necklace", label: "Colar", emoji: "📿" },
-  { key: "ring_1", label: "Anel I", emoji: "💍" },
-  { key: "ring_2", label: "Anel II", emoji: "💍" },
-  { key: "earring_1", label: "Brinco I", emoji: "💎" },
-  { key: "earring_2", label: "Brinco II", emoji: "💎" },
-  { key: "cape", label: "Capa", emoji: "🧣" },
+  { key: "head", label: "Cabeça" },
+  { key: "torso", label: "Peitoral" },
+  { key: "hands", label: "Mãos" },
+  { key: "legs", label: "Pernas" },
+  { key: "feet", label: "Pés" },
+  { key: "main_weapon", label: "Arma principal" },
+  { key: "off_weapon", label: "Arma secundária" },
+  { key: "necklace", label: "Colar" },
+  { key: "ring_1", label: "Anel I" },
+  { key: "ring_2", label: "Anel II" },
+  { key: "earring_1", label: "Brinco I" },
+  { key: "earring_2", label: "Brinco II" },
+  { key: "cape", label: "Capa" },
 ] as const;
 
 export type EquipmentSlot = (typeof equipmentSlots)[number]["key"];
-
-export function itemSlotEmoji(slot: string) {
-  if (slot === "ring") return "💍";
-  if (slot === "earring") return "💎";
-  return equipmentSlots.find((entry) => entry.key === slot)?.emoji ?? "🎒";
-}
 
 export function itemSlotLabel(slot: string) {
   if (slot === "ring") return "Anel";

@@ -1,6 +1,7 @@
 import { getLevelProgress } from "@/lib/game/experience";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { updateCharacterAdminAction } from "./actions";
+import { kingdoms } from "@/lib/game/kingdoms";
 
 export const metadata = { title: "Personagens | Painel ADM" };
 export const dynamic = "force-dynamic";
@@ -15,7 +16,7 @@ export default async function AdminCharactersPage({
     client
       ? client
           .from("v2_characters")
-          .select("id,name,level,xp,gold,image_url,race_id,class_id,user_id")
+          .select("id,name,level,xp,gold,image_url,kingdom,race_id,class_id,user_id")
           .order("name")
       : Promise.resolve({ data: [] }),
     searchParams,
@@ -82,6 +83,16 @@ export default async function AdminCharactersPage({
                 <label>
                   <span>Wonderland Gold</span>
                   <input name="gold" type="number" min="0" defaultValue={character.gold} required />
+                </label>
+                <label>
+                  <span>Reino de origem</span>
+                  <select name="kingdom" defaultValue={character.kingdom} required>
+                    {kingdoms.map((kingdom) => (
+                      <option key={kingdom.key} value={kingdom.key}>
+                        {kingdom.name}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <label>
                   <span>Link da imagem</span>

@@ -11,6 +11,7 @@ import {
 } from "@/lib/game/characters";
 import { attributeLabels, type RacePayload } from "@/lib/game/races";
 import { attributeKeys, type AttributeKey } from "@/lib/game/schemas";
+import { kingdoms } from "@/lib/game/kingdoms";
 
 interface RaceOption {
   id: string;
@@ -79,6 +80,17 @@ export function CharacterCreator({
         <label className="race-field">
           <span>Nome do personagem</span>
           <input maxLength={32} minLength={2} name="name" placeholder="Ex.: Aster" required />
+        </label>
+        <label className="race-field">
+          <span>Reino de origem</span>
+          <select name="kingdom" defaultValue={kingdoms[0].key} required>
+            {kingdoms.map((kingdom) => (
+              <option key={kingdom.key} value={kingdom.key}>
+                {kingdom.name} · {kingdom.title}
+              </option>
+            ))}
+          </select>
+          <small>O reino representa a origem e a história do personagem.</small>
         </label>
         <label className="race-field">
           <span>Imagem do personagem (opcional)</span>

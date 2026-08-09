@@ -23,8 +23,8 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
           <span className="eyebrow">Portal dos jogadores</span>
           <h2>Todo aventureiro começa com uma identidade.</h2>
           <p>
-            Sua conta será o ponto de entrada para personagens, conquistas, presença diária e todos
-            os sistemas do Wonderland.
+            Sua conta será o ponto de entrada para personagens, presença diária e todos os sistemas
+            do Wonderland.
           </p>
         </div>
 

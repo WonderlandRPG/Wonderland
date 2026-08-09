@@ -1,12 +1,12 @@
 import Link from "next/link";
 
 import { BrandMark } from "@/components/brand-mark";
-import { requireCurrentAccount } from "@/lib/auth/account";
-import { getActiveCharacterId } from "@/lib/content/active-character";
+import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { getLevelProgress } from "@/lib/game/experience";
 import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
+import { kingdomName } from "@/lib/game/kingdoms";
 import {
   defaultEquipSlot,
   equipmentSlots,
@@ -30,12 +30,9 @@ export default async function CharacterSheetPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<{ status?: string; tab?: string }>;
 }) {
-  const account = await requireCurrentAccount("/personagens");
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const [character, activeCharacterId] = await Promise.all([
-    requireCharacterSheet(id),
-    getActiveCharacterId(account.id),
-  ]);
+  const { characterId: activeCharacterId } = await requireActiveCharacter(`/personagens/${id}`);
+  const character = await requireCharacterSheet(id);
   const progress = getLevelProgress(character.xp);
   const tab = ["resumo", "habilidades", "equipamentos"].includes(query.tab ?? "")
     ? query.tab!
@@ -82,7 +79,8 @@ export default async function CharacterSheetPage({
           </div>
           <div>
             <span className="eyebrow">
-              {character.race.name} · {character.characterClass.name}
+              {character.race.name} · {character.characterClass.name} ·{" "}
+              {kingdomName(character.kingdom)}
             </span>
             <h1>{character.name}</h1>
             <p>{character.characterClass.payload.specialization}</p>

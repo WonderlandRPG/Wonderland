@@ -1,7 +1,10 @@
 import { PortalShell } from "@/components/portal-shell";
+import { requireActiveCharacter } from "@/lib/content/active-character";
+import { kingdomName } from "@/lib/game/kingdoms";
 import { getRanking } from "@/lib/game/player-portal";
 export const dynamic = "force-dynamic";
 export default async function RankingPage() {
+  await requireActiveCharacter("/ranking");
   const ranking = await getRanking();
   return (
     <PortalShell
@@ -14,11 +17,20 @@ export default async function RankingPage() {
           ranking.map((character) => (
             <article key={character.id}>
               <strong>#{character.rank}</strong>
-              <span className="portal-avatar">{character.name.slice(0, 2).toUpperCase()}</span>
+              <span
+                className={`portal-avatar ${character.image_url ? "is-image" : ""}`}
+                style={
+                  character.image_url
+                    ? { backgroundImage: `url(${character.image_url})` }
+                    : undefined
+                }
+              >
+                {character.image_url ? "" : character.name.slice(0, 2).toUpperCase()}
+              </span>
               <div>
                 <h2>{character.name}</h2>
                 <p>
-                  {character.race_name} · {character.class_name}
+                  {character.race_name} · {character.class_name} · {kingdomName(character.kingdom)}
                 </p>
               </div>
               <b>Nível {character.level}</b>

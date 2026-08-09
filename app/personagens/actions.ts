@@ -10,6 +10,7 @@ import type { Json } from "@/lib/db/types";
 import type { CharacterActionState } from "@/lib/game/character-forms";
 import { allocatedAttributesSchema, getAllocatedTotal } from "@/lib/game/characters";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { kingdoms } from "@/lib/game/kingdoms";
 
 const creationSchema = z.object({
   name: z
@@ -19,6 +20,9 @@ const creationSchema = z.object({
     .max(32, "Use no máximo 32 caracteres."),
   raceId: z.uuid("Escolha uma raça."),
   classId: z.uuid("Escolha uma classe."),
+  kingdom: z.enum(kingdoms.map((entry) => entry.key) as [string, ...string[]], {
+    error: "Escolha um reino.",
+  }),
   imageUrl: z.union([
     z.literal(""),
     z
@@ -41,6 +45,7 @@ export async function createCharacterAction(
     name: formData.get("name"),
     raceId: formData.get("raceId"),
     classId: formData.get("classId"),
+    kingdom: formData.get("kingdom"),
     imageUrl: String(formData.get("imageUrl") ?? "").trim(),
     allocation: formData.get("allocation"),
   });
@@ -91,6 +96,7 @@ export async function createCharacterAction(
       name: submission.data.name,
       race_id: submission.data.raceId,
       class_id: submission.data.classId,
+      kingdom: submission.data.kingdom,
       image_url: submission.data.imageUrl || null,
       allocated_attributes: allocation.data as unknown as Json,
     })

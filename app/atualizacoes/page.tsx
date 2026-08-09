@@ -1,7 +1,9 @@
 import { PortalShell } from "@/components/portal-shell";
 import { getPortalUpdates } from "@/lib/game/player-portal";
+import { requireActiveCharacter } from "@/lib/content/active-character";
 export const dynamic = "force-dynamic";
 export default async function UpdatesPage() {
+  await requireActiveCharacter("/atualizacoes");
   const updates = await getPortalUpdates();
   const date = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",

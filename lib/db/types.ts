@@ -91,6 +91,7 @@ export interface Database {
           image_url: string | null;
           last_daily_claim: string | null;
           daily_streak: number;
+          kingdom: string;
           allocated_attributes: Json;
           created_at: string;
           updated_at: string;
@@ -108,6 +109,7 @@ export interface Database {
           image_url?: string | null;
           last_daily_claim?: string | null;
           daily_streak?: number;
+          kingdom?: string;
           allocated_attributes: Json;
           created_at?: string;
           updated_at?: string;
@@ -307,12 +309,6 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_inventory"]["Insert"]>;
         Relationships: [];
       };
-      v2_player_achievements: {
-        Row: { user_id: string; achievement_slug: string; unlocked_at: string };
-        Insert: { user_id: string; achievement_slug: string; unlocked_at?: string };
-        Update: Partial<Database["public"]["Tables"]["v2_player_achievements"]["Insert"]>;
-        Relationships: [];
-      };
       v2_admin_history: {
         Row: {
           id: number;
@@ -364,6 +360,8 @@ export interface Database {
           xp: number;
           race_name: string;
           class_name: string;
+          image_url: string | null;
+          kingdom: string;
         }>;
       };
       v2_equip_inventory_item: {
@@ -385,6 +383,7 @@ export interface Database {
           p_xp: number;
           p_gold: number;
           p_image_url: string;
+          p_kingdom: string;
         };
         Returns: Database["public"]["Tables"]["v2_characters"]["Row"];
       };

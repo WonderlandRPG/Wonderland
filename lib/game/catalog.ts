@@ -48,12 +48,6 @@ export const contentCatalog = [
     glyph: "XP",
   },
   {
-    key: "achievement",
-    label: "Conquistas",
-    description: "Metas individuais, títulos e recompensas.",
-    glyph: "CQ",
-  },
-  {
     key: "event",
     label: "Eventos",
     description: "Calendário, presença e metas da comunidade.",

@@ -2,28 +2,6 @@ import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export const achievements = [
-  {
-    slug: "primeiros-passos",
-    icon: "✦",
-    name: "Primeiros passos",
-    description: "Crie sua conta em Wonderland.",
-  },
-  {
-    slug: "sete-dias",
-    icon: "☼",
-    name: "Companheiro fiel",
-    description: "Mantenha uma sequência de 7 dias.",
-  },
-  { slug: "nivel-dez", icon: "♜", name: "Aventureiro", description: "Alcance o nível 10." },
-  {
-    slug: "colecionador",
-    icon: "◆",
-    name: "Colecionador",
-    description: "Adquira 5 itens na loja.",
-  },
-];
-
 export async function getRanking() {
   const client = await createServerSupabaseClient();
   if (!client) return [];

@@ -8,6 +8,7 @@ import { isAdministrativeRole, roleLabels } from "@/lib/auth/account";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
+import { kingdomName } from "@/lib/game/kingdoms";
 
 export const metadata: Metadata = { title: "Minha conta" };
 
@@ -134,6 +135,10 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                           <div>
                             <dt>Nível</dt>
                             <dd>{characters[slot - 1].level}</dd>
+                          </div>
+                          <div>
+                            <dt>Reino</dt>
+                            <dd>{kingdomName(characters[slot - 1].kingdom)}</dd>
                           </div>
                         </dl>
                       ) : (

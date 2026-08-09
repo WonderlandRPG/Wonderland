@@ -31,7 +31,7 @@ export function RecoveryForm() {
       <SubmitButton idleLabel="Enviar link de recuperação" pendingLabel="Enviando" />
 
       <p className="auth-form__switch">
-        Lembrou a senha? <Link href="/entrar">Voltar para o login</Link>
+        Lembrou a senha? <Link href="/">Voltar para o login</Link>
       </p>
     </form>
   );

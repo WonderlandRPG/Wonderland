@@ -51,7 +51,7 @@ export async function requireCurrentAccount(nextPath = "/perfil") {
   const account = await getCurrentAccount();
 
   if (!account) {
-    redirect(`/entrar?next=${encodeURIComponent(nextPath)}`);
+    redirect(`/?next=${encodeURIComponent(nextPath)}`);
   }
 
   return account;

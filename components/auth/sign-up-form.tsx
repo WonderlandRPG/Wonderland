@@ -85,7 +85,7 @@ export function SignUpForm() {
       <SubmitButton idleLabel="Criar minha conta" pendingLabel="Criando conta" />
 
       <p className="auth-form__switch">
-        Já tem uma conta? <Link href="/entrar">Entrar</Link>
+        Já tem uma conta? <Link href="/">Entrar</Link>
       </p>
     </form>
   );

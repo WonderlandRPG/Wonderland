@@ -243,5 +243,5 @@ export async function signOutAction() {
   }
 
   revalidatePath("/", "layout");
-  redirect("/entrar?status=sessao-encerrada");
+  redirect("/?status=sessao-encerrada");
 }

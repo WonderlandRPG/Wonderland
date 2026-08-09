@@ -17,7 +17,7 @@ export async function SiteHeader() {
         {account && isAdministrativeRole(account.role) ? (
           <Link href="/admin">Painel ADM</Link>
         ) : null}
-        <Link className="button button--small button--glass" href={account ? "/perfil" : "/entrar"}>
+        <Link className="button button--small button--glass" href={account ? "/perfil" : "/"}>
           {account ? "Minha conta" : "Entrar"}
         </Link>
       </nav>

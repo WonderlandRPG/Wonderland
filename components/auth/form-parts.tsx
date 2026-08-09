@@ -22,6 +22,7 @@ export function FormNotice({ state }: { state: AuthActionState }) {
   return (
     <div
       className={`form-notice form-notice--${state.status}`}
+      data-sfx-on-mount={state.status === "success" ? "confirm" : "error"}
       role={state.status === "error" ? "alert" : "status"}
     >
       <span aria-hidden="true">{state.status === "success" ? "✓" : "!"}</span>

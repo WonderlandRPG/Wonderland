@@ -703,6 +703,22 @@ body {
   animation: audio-pulse 1.8s ease-in-out infinite;
 }
 
+.audio-control.is-blocked {
+  border-color: rgba(119, 225, 181, 0.52);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.28),
+    0 0 22px rgba(119, 225, 181, 0.12);
+}
+
+.audio-control.has-error {
+  border-color: rgba(231, 154, 126, 0.48);
+}
+
+.audio-control.has-error > span {
+  color: #e7a081;
+  border-color: rgba(231, 154, 126, 0.35);
+}
+
 .audio-control small {
   font-size: 0.62rem;
   font-weight: 800;

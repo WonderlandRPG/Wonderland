@@ -2,15 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-type SoundEffect = "open" | "click" | "confirm" | "error" | "close";
+import { effectSources, themeSource } from "@/lib/audio/sources";
+import type { SoundEffect } from "@/lib/audio/sources";
 
-const effectSources: Record<SoundEffect, string> = {
-  open: "/assets/effects/Abrir%20Menu%20%20ou%20Janela.mp3",
-  click: "/assets/effects/Click.mp3",
-  confirm: "/assets/effects/Confirmar.mp3",
-  error: "/assets/effects/Erro.mp3",
-  close: "/assets/effects/Fechar%20Menu%20%20Janela.mp3",
-};
+type ThemeStatus = "loading" | "blocked" | "playing" | "paused" | "error";
 
 const musicEnabledKey = "wonderland:music-enabled";
 const musicPositionKey = "wonderland:music-position";
@@ -19,91 +14,136 @@ function isSoundEffect(value: unknown): value is SoundEffect {
   return typeof value === "string" && value in effectSources;
 }
 
+function readStoredValue(key: string) {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function storeValue(key: string, value: string) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // O áudio continua funcionando mesmo quando o navegador bloqueia o armazenamento local.
+  }
+}
+
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const themeRef = useRef<HTMLAudioElement | null>(null);
-  const effectsRef = useRef<Partial<Record<SoundEffect, HTMLAudioElement>>>({});
+  const effectsRef = useRef<Partial<Record<SoundEffect, HTMLAudioElement | null>>>({});
   const playedNotices = useRef(new WeakSet<Element>());
+  const enabledRef = useRef(true);
   const [enabled, setEnabled] = useState(true);
-  const [playing, setPlaying] = useState(false);
+  const [effectsUnavailable, setEffectsUnavailable] = useState(false);
+  const [status, setStatus] = useState<ThemeStatus>("loading");
 
   const playTheme = useCallback(async () => {
     const theme = themeRef.current;
-    if (!theme) return;
+
+    if (!theme || !enabledRef.current) return false;
+
     try {
       await theme.play();
-      setPlaying(true);
-    } catch {
-      setPlaying(false);
+      setStatus("playing");
+      return true;
+    } catch (error) {
+      const blocked = error instanceof DOMException && error.name === "NotAllowedError";
+      setStatus(blocked || !theme.error ? "blocked" : "error");
+      return false;
     }
   }, []);
 
   const playEffect = useCallback((effect: SoundEffect) => {
     const source = effectsRef.current[effect];
+
     if (!source) return;
-    const instance = source.cloneNode() as HTMLAudioElement;
-    instance.volume = effect === "click" ? 0.28 : 0.42;
-    void instance.play().catch(() => undefined);
+
+    const instance = source.cloneNode(true) as HTMLAudioElement;
+    instance.currentTime = 0;
+    instance.volume = effect === "click" ? 0.55 : 0.65;
+    void instance.play().catch(() => {
+      if (instance.error) setEffectsUnavailable(true);
+    });
   }, []);
 
   useEffect(() => {
-    const theme = new Audio("/assets/music/tema.mp3");
-    theme.loop = true;
-    theme.preload = "auto";
-    theme.volume = 0.25;
-    const savedPosition = Number(window.localStorage.getItem(musicPositionKey));
-    if (Number.isFinite(savedPosition) && savedPosition > 0) theme.currentTime = savedPosition;
-    const savedEnabled = window.localStorage.getItem(musicEnabledKey) !== "false";
-    const restorePreference = window.setTimeout(() => setEnabled(savedEnabled), 0);
-    themeRef.current = theme;
+    const theme = themeRef.current;
 
-    (Object.keys(effectSources) as SoundEffect[]).forEach((key) => {
-      const audio = new Audio(effectSources[key]);
-      audio.preload = "auto";
-      effectsRef.current[key] = audio;
-    });
+    if (!theme) return;
 
-    if (savedEnabled)
-      void theme
-        .play()
-        .then(() => setPlaying(true))
-        .catch(() => setPlaying(false));
+    const savedEnabled = readStoredValue(musicEnabledKey) !== "false";
+    const savedPosition = Number(readStoredValue(musicPositionKey));
+    enabledRef.current = savedEnabled;
+    setEnabled(savedEnabled);
+    setStatus(savedEnabled ? "loading" : "paused");
 
-    const unlock = () => {
-      if (savedEnabled && theme.paused)
-        void theme
-          .play()
-          .then(() => setPlaying(true))
-          .catch(() => undefined);
+    const restorePosition = () => {
+      if (!Number.isFinite(savedPosition) || savedPosition <= 0) return;
+
+      try {
+        theme.currentTime = Number.isFinite(theme.duration)
+          ? savedPosition % theme.duration
+          : savedPosition;
+      } catch {
+        // Alguns navegadores só permitem restaurar a posição depois de mais dados carregarem.
+      }
     };
-    window.addEventListener("pointerdown", unlock, { once: true, capture: true });
-    window.addEventListener("keydown", unlock, { once: true, capture: true });
+
+    if (theme.readyState >= HTMLMediaElement.HAVE_METADATA) restorePosition();
+    else theme.addEventListener("loadedmetadata", restorePosition, { once: true });
+
+    const autoplay = savedEnabled
+      ? window.setTimeout(() => {
+          void playTheme();
+        }, 0)
+      : null;
+
+    const unlock = (event: Event) => {
+      const target =
+        event.target instanceof Element ? event.target.closest(".audio-control") : null;
+
+      if (!target && enabledRef.current && theme.paused) void playTheme();
+    };
+
+    window.addEventListener("pointerdown", unlock, true);
+    window.addEventListener("keydown", unlock, true);
 
     const savePosition = window.setInterval(() => {
-      if (Number.isFinite(theme.currentTime))
-        window.localStorage.setItem(musicPositionKey, String(theme.currentTime));
+      if (Number.isFinite(theme.currentTime)) {
+        storeValue(musicPositionKey, String(theme.currentTime));
+      }
     }, 1500);
 
     return () => {
       window.clearInterval(savePosition);
-      window.clearTimeout(restorePreference);
-      window.localStorage.setItem(musicPositionKey, String(theme.currentTime || 0));
+      if (autoplay !== null) window.clearTimeout(autoplay);
+      storeValue(musicPositionKey, String(theme.currentTime || 0));
       theme.pause();
+      theme.removeEventListener("loadedmetadata", restorePosition);
       window.removeEventListener("pointerdown", unlock, true);
       window.removeEventListener("keydown", unlock, true);
-      themeRef.current = null;
-      effectsRef.current = {};
     };
-  }, []);
+  }, [playTheme]);
 
   function toggleTheme() {
-    const next = !enabled;
-    setEnabled(next);
-    window.localStorage.setItem(musicEnabledKey, String(next));
-    if (next) void playTheme();
-    else {
-      themeRef.current?.pause();
-      setPlaying(false);
+    const theme = themeRef.current;
+
+    if (status === "playing" && theme) {
+      enabledRef.current = false;
+      setEnabled(false);
+      storeValue(musicEnabledKey, "false");
+      theme.pause();
+      setStatus("paused");
+      return;
     }
+
+    enabledRef.current = true;
+    setEnabled(true);
+    storeValue(musicEnabledKey, "true");
+    setStatus("loading");
+    void playTheme();
   }
 
   useEffect(() => {
@@ -112,14 +152,18 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         event.target instanceof Element
           ? event.target.closest("button, a, [role='button'], input[type='submit']")
           : null;
+
       if (!target) return;
+
       const requested = target.getAttribute("data-sfx");
       playEffect(isSoundEffect(requested) ? requested : "click");
     };
+
     const handleCustom = (event: Event) => {
       const requested = (event as CustomEvent<unknown>).detail;
       if (isSoundEffect(requested)) playEffect(requested);
     };
+
     const playMountedNotices = (root: ParentNode) => {
       root.querySelectorAll?.("[data-sfx-on-mount]").forEach((element) => {
         if (playedNotices.current.has(element)) return;
@@ -128,21 +172,23 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         if (isSoundEffect(requested)) playEffect(requested);
       });
     };
+
     playMountedNotices(document);
+
     const observer = new MutationObserver((mutations) =>
       mutations.forEach((mutation) =>
         mutation.addedNodes.forEach((node) => {
-          if (node instanceof Element) {
-            playMountedNotices(node);
-            if (node.matches("[data-sfx-on-mount]"))
-              playMountedNotices(node.parentNode ?? document);
-          }
+          if (!(node instanceof Element)) return;
+          if (node.matches("[data-sfx-on-mount]")) playMountedNotices(node.parentNode ?? document);
+          playMountedNotices(node);
         }),
       ),
     );
+
     observer.observe(document.body, { childList: true, subtree: true });
     document.addEventListener("click", handleClick, true);
     window.addEventListener("wonderland:sfx", handleCustom);
+
     return () => {
       observer.disconnect();
       document.removeEventListener("click", handleClick, true);
@@ -150,20 +196,52 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [playEffect]);
 
+  const controlLabel =
+    status === "playing"
+      ? effectsUnavailable
+        ? "Tema tocando · efeitos indisponíveis"
+        : "Tema tocando"
+      : status === "paused" || !enabled
+        ? "Tema pausado"
+        : status === "error"
+          ? "Áudio indisponível"
+          : "Ativar som";
+
   return (
     <>
       {children}
+      <audio
+        aria-hidden="true"
+        hidden
+        loop
+        onError={() => setStatus("error")}
+        onPlaying={() => setStatus("playing")}
+        preload="auto"
+        ref={themeRef}
+        src={themeSource}
+      />
+      {(Object.entries(effectSources) as [SoundEffect, string][]).map(([effect, source]) => (
+        <audio
+          aria-hidden="true"
+          hidden
+          key={effect}
+          onError={() => setEffectsUnavailable(true)}
+          preload="auto"
+          ref={(element) => {
+            effectsRef.current[effect] = element;
+          }}
+          src={source}
+        />
+      ))}
       <button
-        aria-label={enabled ? "Pausar música tema" : "Tocar música tema"}
-        aria-pressed={enabled}
-        className={`audio-control ${playing ? "is-playing" : ""}`}
+        aria-label={status === "playing" ? "Pausar música tema" : "Ativar música tema"}
+        aria-pressed={status === "playing"}
+        className={`audio-control ${status === "playing" ? "is-playing" : ""} ${status === "blocked" ? "is-blocked" : ""} ${status === "error" || effectsUnavailable ? "has-error" : ""}`}
         onClick={toggleTheme}
         type="button"
       >
-        <span aria-hidden="true">{enabled ? "♫" : "♪"}</span>
-        <small>
-          {enabled ? (playing ? "Tema tocando" : "Som no primeiro clique") : "Tema pausado"}
-        </small>
+        <span aria-hidden="true">{status === "playing" ? "♫" : "♪"}</span>
+        <small>{controlLabel}</small>
       </button>
     </>
   );

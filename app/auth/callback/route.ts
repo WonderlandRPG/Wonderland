@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const supabase = await createServerSupabaseClient();
 
   if (!supabase) {
-    return NextResponse.redirect(new URL("/entrar?status=configuracao-indisponivel", url));
+    return NextResponse.redirect(new URL("/?status=configuracao-indisponivel", url));
   }
 
   let error: Error | null = null;
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (error) {
-    return NextResponse.redirect(new URL("/entrar?status=link-invalido", url));
+    return NextResponse.redirect(new URL("/?status=link-invalido", url));
   }
 
   return NextResponse.redirect(new URL(nextPath, url));

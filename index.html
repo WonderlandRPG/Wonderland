@@ -182,6 +182,19 @@
         border-radius: 50%;
       }
 
+      .audio-control.is-playing > span {
+        box-shadow: 0 0 16px rgba(121, 235, 194, 0.48);
+      }
+
+      .audio-control.has-error {
+        border-color: rgba(231, 154, 126, 0.48);
+      }
+
+      .audio-control.has-error > span {
+        color: #e7a081;
+        border-color: rgba(231, 154, 126, 0.35);
+      }
+
       .audio-control small {
         font-size: 0.62rem;
         font-weight: 800;
@@ -247,26 +260,26 @@
       <footer>Wonderland RPG · 2026</footer>
     </main>
     <button
-      aria-label="Pausar música tema"
-      aria-pressed="true"
+      aria-label="Ativar música tema"
+      aria-pressed="false"
       class="audio-control"
       data-sfx="click"
       id="audio-control"
       type="button"
     >
       <span aria-hidden="true">♫</span>
-      <small>Som no primeiro clique</small>
+      <small>Ativar som</small>
     </button>
     <script>
       (() => {
         const musicEnabledKey = "wonderland:music-enabled";
         const musicPositionKey = "wonderland:music-position";
         const effectSources = {
-          open: "assets/effects/Abrir Menu  ou Janela.mp3",
-          click: "assets/effects/Click.mp3",
-          confirm: "assets/effects/Confirmar.mp3",
-          error: "assets/effects/Erro.mp3",
-          close: "assets/effects/Fechar Menu  Janela.mp3",
+          open: "assets/effects/open.mp3",
+          click: "assets/effects/click.mp3",
+          confirm: "assets/effects/confirm.mp3",
+          error: "assets/effects/error.mp3",
+          close: "assets/effects/close.mp3",
         };
         const theme = new Audio("assets/music/tema.mp3");
         const control = document.querySelector("#audio-control");
@@ -275,49 +288,76 @@
           Object.entries(effectSources).map(([key, source]) => [key, new Audio(source)]),
         );
         let enabled = localStorage.getItem(musicEnabledKey) !== "false";
+        let playing = false;
+        let unavailable = false;
         const savedPosition = Number(localStorage.getItem(musicPositionKey));
 
         theme.loop = true;
         theme.preload = "auto";
         theme.volume = 0.25;
-        if (Number.isFinite(savedPosition) && savedPosition > 0) theme.currentTime = savedPosition;
 
-        function updateControl(playing) {
-          control.setAttribute("aria-pressed", String(enabled));
-          control.setAttribute("aria-label", enabled ? "Pausar música tema" : "Tocar música tema");
-          label.textContent = enabled
-            ? playing
+        const restorePosition = () => {
+          if (!Number.isFinite(savedPosition) || savedPosition <= 0) return;
+          theme.currentTime = Number.isFinite(theme.duration)
+            ? savedPosition % theme.duration
+            : savedPosition;
+        };
+
+        if (theme.readyState >= HTMLMediaElement.HAVE_METADATA) restorePosition();
+        else theme.addEventListener("loadedmetadata", restorePosition, { once: true });
+
+        function updateControl() {
+          control.classList.toggle("is-playing", playing);
+          control.classList.toggle("has-error", unavailable);
+          control.setAttribute("aria-pressed", String(playing));
+          control.setAttribute("aria-label", playing ? "Pausar música tema" : "Ativar música tema");
+          label.textContent = unavailable
+            ? "Áudio indisponível"
+            : playing
               ? "Tema tocando"
-              : "Som no primeiro clique"
-            : "Tema pausado";
+              : enabled
+                ? "Ativar som"
+                : "Tema pausado";
         }
 
         async function playTheme() {
           if (!enabled) return;
           try {
             await theme.play();
-            updateControl(true);
-          } catch {
-            updateControl(false);
+            playing = true;
+          } catch (error) {
+            playing = false;
+            unavailable = error.name !== "NotAllowedError" && Boolean(theme.error);
           }
+          updateControl();
         }
 
         function playEffect(name) {
           const source = effects[name];
           if (!source) return;
-          const instance = source.cloneNode();
-          instance.volume = name === "click" ? 0.28 : 0.42;
-          instance.play().catch(() => undefined);
+          const instance = source.cloneNode(true);
+          instance.currentTime = 0;
+          instance.volume = name === "click" ? 0.55 : 0.65;
+          instance.play().catch(() => {
+            if (instance.error) {
+              unavailable = true;
+              updateControl();
+            }
+          });
         }
 
         control.addEventListener("click", () => {
-          enabled = !enabled;
-          localStorage.setItem(musicEnabledKey, String(enabled));
-          if (enabled) playTheme();
-          else {
+          if (playing && !theme.paused) {
+            enabled = false;
+            playing = false;
             theme.pause();
-            updateControl(false);
+          } else {
+            enabled = true;
+            unavailable = false;
+            playTheme();
           }
+          localStorage.setItem(musicEnabledKey, String(enabled));
+          updateControl();
         });
 
         document.addEventListener(
@@ -332,14 +372,22 @@
           true,
         );
 
-        const unlock = () => playTheme();
-        window.addEventListener("pointerdown", unlock, { once: true, capture: true });
-        window.addEventListener("keydown", unlock, { once: true, capture: true });
+        const unlock = (event) => {
+          if (event.target.closest?.("#audio-control")) return;
+          if (enabled && theme.paused) playTheme();
+        };
+        window.addEventListener("pointerdown", unlock, true);
+        window.addEventListener("keydown", unlock, true);
+        theme.addEventListener("error", () => {
+          unavailable = true;
+          playing = false;
+          updateControl();
+        });
         window.setInterval(() => {
           if (Number.isFinite(theme.currentTime))
             localStorage.setItem(musicPositionKey, String(theme.currentTime));
         }, 1500);
-        updateControl(false);
+        updateControl();
         playTheme();
       })();
     </script>

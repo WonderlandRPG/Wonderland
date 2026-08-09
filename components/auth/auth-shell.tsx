@@ -6,10 +6,19 @@ interface AuthShellProps {
   eyebrow: string;
   title: string;
   description: string;
+  backHref?: string | null;
+  backLabel?: string;
   children: React.ReactNode;
 }
 
-export function AuthShell({ eyebrow, title, description, children }: AuthShellProps) {
+export function AuthShell({
+  eyebrow,
+  title,
+  description,
+  backHref = "/",
+  backLabel = "Voltar para entrar",
+  children,
+}: AuthShellProps) {
   return (
     <main className="auth-shell">
       <section className="auth-visual">
@@ -39,10 +48,12 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
 
       <section className="auth-panel">
         <div className="auth-panel__inner">
-          <Link className="auth-back-link" href="/">
-            <span aria-hidden="true">←</span>
-            Voltar ao portal
-          </Link>
+          {backHref ? (
+            <Link className="auth-back-link" href={backHref}>
+              <span aria-hidden="true">←</span>
+              {backLabel}
+            </Link>
+          ) : null}
           <header className="auth-heading">
             <span>{eyebrow}</span>
             <h1>{title}</h1>

@@ -1,0 +1,275 @@
+import { z } from "zod";
+
+import type { ClassSkill } from "@/lib/game/classes";
+import { attributeKeys, attributesSchema, type AttributeKey } from "@/lib/game/schemas";
+
+export const combatRulesSchema = z.object({
+  hpPerResistance: z.number().finite().min(0),
+  manaPerIntelligence: z.number().finite().min(0),
+  physicalMitigationConstant: z.number().finite().positive(),
+  magicalMitigationConstant: z.number().finite().positive(),
+  basicAttackMultiplier: z.number().finite().positive(),
+  minimumDamage: z.number().int().min(0),
+});
+
+export type CombatRules = z.infer<typeof combatRulesSchema>;
+export type CombatAttributes = z.infer<typeof attributesSchema>;
+export type DamageType = "physical" | "magic" | "true";
+
+export const defaultCombatRules: CombatRules = {
+  hpPerResistance: 5,
+  manaPerIntelligence: 3,
+  physicalMitigationConstant: 100,
+  magicalMitigationConstant: 100,
+  basicAttackMultiplier: 1,
+  minimumDamage: 1,
+};
+
+export interface DerivedStats {
+  maxHp: number;
+  maxMana: number;
+  initiative: number;
+  physicalPower: number;
+  magicalPower: number;
+  supportPower: number;
+}
+
+export interface CombatantState {
+  id: string;
+  name: string;
+  attributes: CombatAttributes;
+  maxHp: number;
+  hp: number;
+  maxMana: number;
+  mana: number;
+  shield: number;
+  cooldowns: Record<string, number>;
+}
+
+export interface CombatEvent {
+  kind: "damage" | "heal" | "shield" | "utility" | "error";
+  message: string;
+  amount: number;
+  damageType?: DamageType;
+}
+
+export interface CombatResolution {
+  actor: CombatantState;
+  target: CombatantState;
+  event: CombatEvent;
+}
+
+function rounded(value: number) {
+  return Math.max(0, Math.round(value));
+}
+
+export function deriveStats(
+  attributes: CombatAttributes,
+  baseHp: number,
+  baseMana: number,
+  rules: CombatRules = defaultCombatRules,
+): DerivedStats {
+  return {
+    maxHp: rounded(baseHp + attributes.RES * rules.hpPerResistance),
+    maxMana: rounded(baseMana + attributes.INT * rules.manaPerIntelligence),
+    initiative: rounded(attributes.INI),
+    physicalPower: rounded(attributes.FOR),
+    magicalPower: rounded(attributes.INT),
+    supportPower: rounded(attributes.ARC),
+  };
+}
+
+export function createCombatant(input: {
+  id: string;
+  name: string;
+  attributes: CombatAttributes;
+  baseHp: number;
+  baseMana: number;
+  rules?: CombatRules;
+}): CombatantState {
+  const stats = deriveStats(input.attributes, input.baseHp, input.baseMana, input.rules);
+  return {
+    id: input.id,
+    name: input.name,
+    attributes: input.attributes,
+    maxHp: stats.maxHp,
+    hp: stats.maxHp,
+    maxMana: stats.maxMana,
+    mana: stats.maxMana,
+    shield: 0,
+    cooldowns: {},
+  };
+}
+
+export function calculateScaledPower(
+  attributes: CombatAttributes,
+  scaling: Array<{ attribute: AttributeKey; multiplier: number }>,
+) {
+  return rounded(
+    scaling.reduce((total, entry) => total + attributes[entry.attribute] * entry.multiplier, 0),
+  );
+}
+
+export function calculateDamage(
+  rawDamage: number,
+  type: DamageType,
+  defender: CombatAttributes,
+  rules: CombatRules = defaultCombatRules,
+) {
+  if (type === "true") return Math.max(rules.minimumDamage, rounded(rawDamage));
+  const defense = type === "physical" ? defender.DEF : defender.RES;
+  const constant =
+    type === "physical" ? rules.physicalMitigationConstant : rules.magicalMitigationConstant;
+  const mitigated = rawDamage * (constant / (constant + Math.max(0, defense)));
+  return Math.max(rules.minimumDamage, rounded(mitigated));
+}
+
+export function applyDamage(target: CombatantState, amount: number) {
+  const absorbed = Math.min(target.shield, amount);
+  const hpDamage = Math.max(0, amount - absorbed);
+  return {
+    ...target,
+    shield: target.shield - absorbed,
+    hp: Math.max(0, target.hp - hpDamage),
+  };
+}
+
+export function tickCooldowns(combatant: CombatantState): CombatantState {
+  return {
+    ...combatant,
+    cooldowns: Object.fromEntries(
+      Object.entries(combatant.cooldowns).map(([key, value]) => [key, Math.max(0, value - 1)]),
+    ),
+  };
+}
+
+export function resolveBasicAttack(
+  actor: CombatantState,
+  target: CombatantState,
+  rules: CombatRules = defaultCombatRules,
+): CombatResolution {
+  const raw = actor.attributes.FOR * rules.basicAttackMultiplier;
+  const amount = calculateDamage(raw, "physical", target.attributes, rules);
+  return {
+    actor,
+    target: applyDamage(target, amount),
+    event: {
+      kind: "damage",
+      damageType: "physical",
+      amount,
+      message: `${actor.name} usou Ataque básico e causou ${amount} de dano físico.`,
+    },
+  };
+}
+
+function primaryScaling(skill: ClassSkill) {
+  let scaling = skill.scaling;
+  if (skill.kind === "damage") {
+    const expected =
+      skill.damageType === "physical" ? "FOR" : skill.damageType === "magic" ? "INT" : null;
+    if (expected) {
+      const typed = scaling.filter((entry) => entry.attribute === expected);
+      if (typed.length > 0) scaling = typed;
+    }
+    if (/Se cumprir/i.test(skill.effect) && scaling.length > 1) scaling = scaling.slice(0, -1);
+  }
+  return scaling;
+}
+
+function skillError(
+  actor: CombatantState,
+  target: CombatantState,
+  message: string,
+): CombatResolution {
+  return { actor, target, event: { kind: "error", amount: 0, message } };
+}
+
+export function resolveSkill(
+  actor: CombatantState,
+  target: CombatantState,
+  skill: ClassSkill,
+  rules: CombatRules = defaultCombatRules,
+): CombatResolution {
+  if ((actor.cooldowns[skill.key] ?? 0) > 0) {
+    return skillError(actor, target, `${skill.name} ainda está em recarga.`);
+  }
+  if (skill.resource === "mana" && actor.mana < skill.cost) {
+    return skillError(actor, target, `Mana insuficiente para usar ${skill.name}.`);
+  }
+  if (skill.resource === "life" && actor.hp <= skill.cost) {
+    return skillError(actor, target, `HP insuficiente para usar ${skill.name}.`);
+  }
+
+  const paidActor: CombatantState = {
+    ...actor,
+    mana: skill.resource === "mana" ? actor.mana - skill.cost : actor.mana,
+    hp: skill.resource === "life" ? actor.hp - skill.cost : actor.hp,
+    cooldowns: { ...actor.cooldowns, [skill.key]: skill.cooldown },
+  };
+  const rawPower = calculateScaledPower(actor.attributes, primaryScaling(skill));
+
+  if (skill.kind === "damage") {
+    const type: DamageType = skill.damageType === "none" ? "physical" : skill.damageType;
+    const amount = calculateDamage(rawPower, type, target.attributes, rules);
+    return {
+      actor: paidActor,
+      target: applyDamage(target, amount),
+      event: {
+        kind: "damage",
+        damageType: type,
+        amount,
+        message: `${actor.name} usou ${skill.name} e causou ${amount} de dano ${type === "magic" ? "mágico" : type === "true" ? "verdadeiro" : "físico"}.`,
+      },
+    };
+  }
+
+  if (skill.kind === "heal") {
+    const amount = rawPower || rounded(actor.maxHp * 0.08);
+    const receiver = skill.target === "enemy" ? target : paidActor;
+    const healed = Math.min(amount, receiver.maxHp - receiver.hp);
+    const next = { ...receiver, hp: receiver.hp + healed };
+    return {
+      actor: receiver.id === paidActor.id ? next : paidActor,
+      target: receiver.id === target.id ? next : target,
+      event: {
+        kind: "heal",
+        amount: healed,
+        message: `${actor.name} usou ${skill.name} e recuperou ${healed} de HP.`,
+      },
+    };
+  }
+
+  if (skill.kind === "shield") {
+    const amount = rawPower || rounded(actor.attributes.ARC);
+    const receiver = skill.target === "enemy" ? target : paidActor;
+    const next = { ...receiver, shield: receiver.shield + amount };
+    return {
+      actor: receiver.id === paidActor.id ? next : paidActor,
+      target: receiver.id === target.id ? next : target,
+      event: {
+        kind: "shield",
+        amount,
+        message: `${actor.name} usou ${skill.name} e recebeu ${amount} de escudo.`,
+      },
+    };
+  }
+
+  return {
+    actor: paidActor,
+    target,
+    event: {
+      kind: "utility",
+      amount: 0,
+      message: `${actor.name} usou ${skill.name}: ${skill.effect}`,
+    },
+  };
+}
+
+export function combineAttributes(...sources: Partial<CombatAttributes>[]): CombatAttributes {
+  return Object.fromEntries(
+    attributeKeys.map((attribute) => [
+      attribute,
+      sources.reduce((total, source) => total + (source[attribute] ?? 0), 0),
+    ]),
+  ) as unknown as CombatAttributes;
+}

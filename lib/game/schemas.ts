@@ -102,13 +102,65 @@ export const racePayloadSchema = z
     ],
   }));
 
+export const classSkillScalingSchema = z.object({
+  attribute: z.enum(attributeKeys),
+  multiplier: finiteNumberSchema.min(0),
+});
+
+export const classSkillSchema = z.object({
+  key: z
+    .string()
+    .trim()
+    .min(1)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  name: requiredTextSchema,
+  level: z.number().int().min(1).max(100),
+  category: requiredTextSchema,
+  type: requiredTextSchema.default("Ativa"),
+  effect: requiredTextSchema,
+  kind: z.enum(["damage", "heal", "shield", "utility"]),
+  damageType: z.enum(["physical", "magic", "true", "none"]),
+  target: z.enum(["self", "ally", "enemy", "area"]),
+  resource: z.enum(["mana", "life", "special", "none"]),
+  cost: nonNegativeNumberSchema,
+  cooldown: nonNegativeIntegerSchema,
+  range: nonNegativeIntegerSchema,
+  area: nonNegativeIntegerSchema,
+  duration: nonNegativeIntegerSchema,
+  scaling: z.array(classSkillScalingSchema),
+});
+
+export const classPathSchema = z.object({
+  key: z
+    .string()
+    .trim()
+    .min(1)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  name: requiredTextSchema,
+  description: requiredTextSchema,
+  passive: z.object({ name: requiredTextSchema, description: requiredTextSchema }),
+  skills: z.array(classSkillSchema),
+});
+
 export const classPayloadSchema = z.object({
   description: requiredTextSchema,
+  imageUrl: z.union([z.literal(""), z.url()]).default(""),
   difficulty: z.number().int().min(1).max(5),
+  complexity: requiredTextSchema,
   specialization: requiredTextSchema,
   primaryAttributes: z.array(z.enum(attributeKeys)).min(1),
-  strengths: z.array(requiredTextSchema),
-  weaknesses: z.array(requiredTextSchema),
+  affinities: z.object({
+    FOR: z.number().int().min(1).max(5),
+    DEF: z.number().int().min(1).max(5),
+    RES: z.number().int().min(1).max(5),
+    INI: z.number().int().min(1).max(5),
+    INT: z.number().int().min(1).max(5),
+    ARC: z.number().int().min(1).max(5),
+  }),
+  mechanic: z.object({ name: requiredTextSchema, description: requiredTextSchema }),
+  passive: z.object({ name: requiredTextSchema, description: requiredTextSchema }),
+  progression: z.array(classSkillSchema),
+  paths: z.array(classPathSchema),
 });
 
 export const skillPayloadSchema = z.object({

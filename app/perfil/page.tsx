@@ -7,6 +7,8 @@ import { BrandMark } from "@/components/brand-mark";
 import { isAdministrativeRole, requireCurrentAccount, roleLabels } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { claimDailyReward } from "./player-actions";
+import { getCharacterRules } from "@/lib/content/character-settings";
+import { getCharacterSheets } from "@/lib/content/characters";
 
 export const metadata: Metadata = { title: "Minha conta" };
 
@@ -26,18 +28,22 @@ interface ProfilePageProps {
 export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   const account = await requireCurrentAccount();
   const client = await createServerSupabaseClient();
-  const { data: progress } = client
-    ? await client
-        .from("v2_player_progress")
-        .select("level,experience,coins,daily_streak,last_daily_claim")
-        .eq("user_id", account.id)
-        .maybeSingle()
-    : { data: null };
+  const [{ data: progress }, characters, characterRules, params] = await Promise.all([
+    client
+      ? client
+          .from("v2_player_progress")
+          .select("level,experience,coins,daily_streak,last_daily_claim")
+          .eq("user_id", account.id)
+          .maybeSingle()
+      : Promise.resolve({ data: null }),
+    getCharacterSheets(account.id),
+    getCharacterRules(),
+    searchParams,
+  ]);
   const level = progress?.level ?? 1;
   const experience = progress?.experience ?? 0;
   const nextLevelXp = Math.round(100 * Math.pow(1.18, level - 1));
   const claimedToday = progress?.last_daily_claim === new Date().toISOString().slice(0, 10);
-  const params = await searchParams;
   const joinedAt = new Intl.DateTimeFormat("pt-BR", {
     day: "2-digit",
     month: "long",
@@ -58,6 +64,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
         </div>
         <nav aria-label="Navegação da conta">
           <Link href="/">Portal</Link>
+          <Link href="/personagens">Personagens</Link>
           {isAdministrativeRole(account.role) ? <Link href="/admin">Painel ADM</Link> : null}
           <SignOutButton compact />
         </nav>
@@ -123,26 +130,41 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                   <span className="eyebrow">Personagens</span>
                   <h2>Suas fichas</h2>
                 </div>
-                <span className="account-card__counter">0 / 3</span>
+                <span className="account-card__counter">
+                  {characters.length} / {characterRules.maximumSlots}
+                </span>
               </div>
 
               <div className="character-slots">
-                {[1, 2, 3].map((slot) => (
-                  <div className="character-slot" key={slot}>
-                    <span>{String(slot).padStart(2, "0")}</span>
-                    <div>
-                      <strong>Espaço disponível</strong>
-                      <small>Reserve este espaço para um novo herói.</small>
+                {Array.from({ length: characterRules.maximumSlots }, (_, index) => index + 1).map(
+                  (slot) => (
+                    <div className="character-slot" key={slot}>
+                      <span>{String(slot).padStart(2, "0")}</span>
+                      <div>
+                        <strong>{characters[slot - 1]?.name ?? "Espaço disponível"}</strong>
+                        <small>
+                          {characters[slot - 1]
+                            ? `${characters[slot - 1].race.name} · ${characters[slot - 1].characterClass.name} · Nível ${characters[slot - 1].level}`
+                            : "Crie um novo herói para entrar na Arena."}
+                        </small>
+                      </div>
+                      <Link
+                        href={
+                          characters[slot - 1]
+                            ? `/personagens/${characters[slot - 1].id}`
+                            : "/personagens/novo"
+                        }
+                        aria-label={
+                          characters[slot - 1]
+                            ? `Ver ${characters[slot - 1].name}`
+                            : `Criar personagem no espaço ${slot}`
+                        }
+                      >
+                        {characters[slot - 1] ? "→" : "＋"}
+                      </Link>
                     </div>
-                    <button
-                      type="button"
-                      disabled
-                      aria-label={`Criar personagem no espaço ${slot}`}
-                    >
-                      ＋
-                    </button>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </article>
 
@@ -171,7 +193,9 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </div>
                 <div>
                   <dt>Personagens</dt>
-                  <dd>0 de 3</dd>
+                  <dd>
+                    {characters.length} de {characterRules.maximumSlots}
+                  </dd>
                 </div>
                 <div>
                   <dt>Status</dt>
@@ -181,12 +205,15 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
             </article>
 
             <article className="account-card account-coming-soon">
-              <span>Explore o portal</span>
-              <h2>Sua jornada já começou</h2>
+              <span>Prepare-se para a Arena</span>
+              <h2>Monte sua primeira ficha</h2>
               <p>
-                Acompanhe eventos, conquistas, ranking e recompensas enquanto prepara seu
-                personagem.
+                Escolha raça e classe, distribua seus atributos e conheça as habilidades que serão
+                liberadas durante a progressão.
               </p>
+              <Link className="button button--primary" href="/personagens">
+                Ver personagens
+              </Link>
             </article>
           </aside>
         </section>

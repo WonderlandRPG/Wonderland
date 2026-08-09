@@ -77,6 +77,58 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_content_revisions"]["Insert"]>;
         Relationships: [];
       };
+      v2_characters: {
+        Row: {
+          id: string;
+          user_id: string;
+          name: string;
+          race_id: string;
+          class_id: string;
+          class_path_key: string | null;
+          level: number;
+          xp: number;
+          allocated_attributes: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          race_id: string;
+          class_id: string;
+          class_path_key?: string | null;
+          level?: number;
+          xp?: number;
+          allocated_attributes: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_characters"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_character_inventory: {
+        Row: {
+          id: string;
+          character_id: string;
+          item_id: string;
+          quantity: number;
+          equipped_slot: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          character_id: string;
+          item_id: string;
+          quantity?: number;
+          equipped_slot?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_character_inventory"]["Insert"]>;
+        Relationships: [];
+      };
       v2_game_settings: {
         Row: {
           key: string;

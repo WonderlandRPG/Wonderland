@@ -64,13 +64,15 @@ export function TrainingArena({
   mode,
   monsterIndex,
   sessionId,
+  opponent,
 }: {
   characters: ArenaCharacter[];
   initialCharacterId?: string;
   rules: CombatRules;
-  mode: Exclude<ArenaMode, "pvp">;
+  mode: ArenaMode;
   monsterIndex: number;
   sessionId?: string;
+  opponent?: ArenaCharacter;
 }) {
   const firstId = characters.some((entry) => entry.id === initialCharacterId)
     ? initialCharacterId!
@@ -99,6 +101,7 @@ export function TrainingArena({
       mode={mode}
       monsterIndex={monsterIndex}
       sessionId={sessionId}
+      opponent={opponent}
       onChange={setSelectedId}
       onReset={() => setResetKey((value) => value + 1)}
     />
@@ -112,19 +115,21 @@ function Battle({
   mode,
   monsterIndex,
   sessionId,
+  opponent,
   onChange,
   onReset,
 }: {
   character: ArenaCharacter;
   options: ArenaCharacter[];
   rules: CombatRules;
-  mode: Exclude<ArenaMode, "pvp">;
+  mode: ArenaMode;
   monsterIndex: number;
   sessionId?: string;
+  opponent?: ArenaCharacter;
   onChange(id: string): void;
   onReset(): void;
 }) {
-  const initial = useMemo(() => createBattle(character, rules, mode, monsterIndex), [character, rules, mode, monsterIndex]);
+  const initial = useMemo(() => createBattle(character, rules, mode, monsterIndex, opponent), [character, rules, mode, monsterIndex, opponent]);
   const [player, setPlayer] = useState(initial.player);
   const [enemy, setEnemy] = useState(initial.enemy);
   const [turn, setTurn] = useState(1);
@@ -226,8 +231,8 @@ function Battle({
     <section className="arena-console">
       <header className="arena-toolbar arena-game-header">
         <div>
-          <span className="eyebrow">{mode === "pve" ? "Expedição PvE" : "Campo de treinamento"}</span>
-          <h1>{mode === "pve" ? initial.title : "Duelo de Arena"}</h1>
+          <span className="eyebrow">{mode === "pve" ? "Expedição PvE" : mode === "pvp" ? "Confronto PvP" : "Campo de treinamento"}</span>
+          <h1>{mode === "pve" ? initial.title : mode === "pvp" ? `Duelo contra ${initial.enemy.name}` : "Duelo de Arena"}</h1>
           <p>Use até uma ação de cada grupo antes de encerrar a rodada.</p>
         </div>
         <label>
@@ -432,7 +437,7 @@ function Fighter({ combatant, subtitle, side, imageUrl, sigil = "鬼" }: { comba
   );
 }
 
-function createBattle(character: ArenaCharacter, rules: CombatRules, mode: Exclude<ArenaMode, "pvp">, monsterIndex: number) {
+function createBattle(character: ArenaCharacter, rules: CombatRules, mode: ArenaMode, monsterIndex: number, opponent?: ArenaCharacter) {
   const text = character.combatLore
     .map((entry) => `${entry.name} ${entry.description}`)
     .join(" ")
@@ -465,16 +470,19 @@ function createBattle(character: ArenaCharacter, rules: CombatRules, mode: Exclu
     ARC: 0,
   };
   const monster = mode === "pve" ? arenaMonsters[monsterIndex % arenaMonsters.length] : null;
-  const enemyAttributes = monster ? buildAdaptiveMonsterAttributes(character.attributes, monster.weights) : trainingAttributes;
+  const enemyAttributes = opponent ? opponent.attributes : monster ? buildAdaptiveMonsterAttributes(character.attributes, monster.weights) : trainingAttributes;
   const enemy = createCombatant({
-    id: monster?.key ?? "training",
-    name: monster?.name ?? "Boneco Rúnico",
+    id: opponent?.id ?? monster?.key ?? "training",
+    name: opponent?.name ?? monster?.name ?? "Boneco Rúnico",
     attributes: enemyAttributes,
-    baseHp: monster ? character.baseHp : Math.max(450, Math.round(player.maxHp * 0.7)),
-    baseMana: monster ? character.baseMana : 0,
+    baseHp: opponent?.baseHp ?? (monster ? character.baseHp : Math.max(450, Math.round(player.maxHp * 0.7))),
+    baseMana: opponent?.baseMana ?? (monster ? character.baseMana : 0),
+    classResource: opponent?.classResource,
+    raceResource: opponent?.raceResource,
+    usesMana: opponent?.usesMana,
     rules,
   });
-  return { player, enemy, title: monster?.title ?? "Autômato de treino", sigil: monster?.sigil ?? "鬼" };
+  return { player, enemy, title: opponent ? "Duelo entre aventureiros" : monster?.title ?? "Autômato de treino", sigil: opponent ? "対" : monster?.sigil ?? "鬼" };
 }
 
 function combatModifierLabel(description: string) {

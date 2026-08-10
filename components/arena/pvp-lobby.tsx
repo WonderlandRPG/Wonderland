@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { cancelPvpQueueAction, joinPvpQueueAction, pollPvpQueueAction } from "@/app/arena/pvp-actions";
 
 type QueueState = {
@@ -14,6 +15,13 @@ export function PvpLobby({ characterId, characterName, rank }: { characterId: st
   const [queue, setQueue] = useState<QueueState | null>(null);
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (queue?.status === "matched" && queue.matchId) {
+      router.replace(`/arena?modo=pvp&partida=${queue.matchId}`);
+    }
+  }, [queue, router]);
 
   useEffect(() => {
     if (!queue || queue.status !== "searching") return;
@@ -50,7 +58,7 @@ export function PvpLobby({ characterId, characterName, rank }: { characterId: st
     <h1>{matched ? "Confronto encontrado" : "PvP de Wonderland"}</h1>
     <p>{matched ? "Os dois aventureiros foram conectados na mesma sala de duelo." : "A fila compara somente o Rank do personagem. Não há filtro de nível, classe ou reino."}</p>
     <div><article><small>Seu personagem</small><strong>{characterName}</strong></article><article><small>Balanceamento</small><strong>Somente Rank {rank}</strong></article><article><small>Formato</small><strong>Duelo 1 × 1</strong></article></div>
-    {matched && queue.opponent ? <div className="pvp-match-card"><span className={queue.opponent.imageUrl ? "is-image" : ""} style={queue.opponent.imageUrl ? { backgroundImage: `url(${queue.opponent.imageUrl})` } : undefined}>{queue.opponent.imageUrl ? "" : queue.opponent.name.slice(0,2).toUpperCase()}</span><div><small>OPONENTE · RANK {queue.opponent.rank}</small><strong>{queue.opponent.name}</strong><p>Nível {queue.opponent.level}</p></div><b>VS</b></div> : null}
+    {matched && queue.opponent ? <div className="pvp-match-card"><span className={queue.opponent.imageUrl ? "is-image" : ""} style={queue.opponent.imageUrl ? { backgroundImage: `url(${queue.opponent.imageUrl})` } : undefined}>{queue.opponent.imageUrl ? "" : queue.opponent.name.slice(0,2).toUpperCase()}</span><div><small>OPONENTE · RANK {queue.opponent.rank}</small><strong>{queue.opponent.name}</strong><p>Preparando a Arena…</p></div><b>VS</b></div> : null}
     {!queue || queue.status === "cancelled" || queue.status === "expired" ? <button className="button button--primary" disabled={pending} onClick={join} type="button">{pending ? "Entrando…" : `Buscar oponente Rank ${rank}`}</button> : null}
     {queue?.status === "searching" ? <><button className="button button--dark" disabled={pending} onClick={cancel} type="button">Cancelar busca</button><em><span className="signal-dot"/> Procurando outro personagem Rank {rank}…</em></> : null}
     {message ? <p className="arena-result__error">{message}</p> : null}

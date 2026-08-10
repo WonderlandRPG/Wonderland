@@ -6,8 +6,8 @@ import { cancelPvpQueueAction, joinPvpQueueAction, pollPvpQueueAction } from "@/
 type QueueState = {
   queueId: string;
   status: "searching" | "matched" | "cancelled" | "expired";
-  matchId: string | null;
-  opponent: { id: string; name: string; level: number; rank: string; imageUrl: string | null } | null;
+  matchId?: string | null;
+  opponent?: { id: string; name: string; level: number; rank: string; imageUrl?: string | null } | null;
 };
 
 export function PvpLobby({ characterId, characterName, rank }: { characterId: string; characterName: string; rank: string }) {

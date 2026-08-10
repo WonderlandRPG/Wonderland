@@ -386,11 +386,8 @@ export default async function CharacterSheetPage({
               <h2>Equipamentos de {character.name}</h2>
               <p>Monte seu conjunto de combate. Cada peça equipada altera a ficha e a Arena.</p>
             </header>
-            <div className="inventory-loadout">
-              <div className="equipment-slot-grid is-left">
-                {equipmentSlots.slice(0, 7).map(renderEquipmentSlot)}
-              </div>
-              <div className="inventory-loadout__character">
+            <div className="inventory-workbench">
+              <aside className="inventory-loadout__character">
                 <div
                   className={character.image_url ? "is-image" : ""}
                   style={
@@ -407,9 +404,15 @@ export default async function CharacterSheetPage({
                 <small>
                   {equippedItems.size} / {equipmentSlots.length} espaços ocupados
                 </small>
-              </div>
-              <div className="equipment-slot-grid is-right">
-                {equipmentSlots.slice(7).map(renderEquipmentSlot)}
+              </aside>
+              <div className="inventory-equipment-panel">
+                <header>
+                  <div><span className="eyebrow">Conjunto equipado</span><h3>13 espaços de combate</h3></div>
+                  <small>Clique em um espaço para escolher um item compatível.</small>
+                </header>
+                <div className="equipment-slot-grid">
+                  {equipmentSlots.map(renderEquipmentSlot)}
+                </div>
               </div>
             </div>
             <div className="inventory-heading">

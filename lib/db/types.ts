@@ -141,6 +141,12 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_character_inventory"]["Insert"]>;
         Relationships: [];
       };
+      v2_pvp_queue: {
+        Row: { id: string; user_id: string; character_id: string; rank: string; status: string; opponent_character_id: string | null; match_id: string | null; joined_at: string; matched_at: string | null };
+        Insert: { id?: string; user_id: string; character_id: string; rank: string; status?: string; opponent_character_id?: string | null; match_id?: string | null; joined_at?: string; matched_at?: string | null };
+        Update: Partial<Database["public"]["Tables"]["v2_pvp_queue"]["Insert"]>;
+        Relationships: [];
+      };
       v2_active_characters: {
         Row: { user_id: string; character_id: string; selected_at: string };
         Insert: { user_id: string; character_id: string; selected_at?: string };
@@ -360,6 +366,9 @@ export interface Database {
       v2_claim_daily_reward: { Args: Record<PropertyKey, never>; Returns: Json };
       v2_start_arena_session: { Args: { p_character_id: string; p_mode: string }; Returns: string };
       v2_claim_arena_victory: { Args: { p_session_id: string }; Returns: Json };
+      v2_join_pvp_queue: { Args: { p_character_id: string }; Returns: Json };
+      v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };
+      v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
       v2_select_character: { Args: { p_character_id: string }; Returns: undefined };
       v2_character_ranking: {

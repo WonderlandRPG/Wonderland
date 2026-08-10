@@ -136,7 +136,11 @@ function Battle({
   const [claiming, startClaim] = useTransition();
   const finished = player.hp <= 0 || enemy.hp <= 0;
   function claimReward() {
-    if (!sessionId || reward || claiming) return;
+    if (!sessionId) {
+      setRewardError("Esta batalha não foi registrada. Volte aos modos da Arena e inicie um novo combate.");
+      return;
+    }
+    if (reward || claiming) return;
     startClaim(async () => { const result = await claimArenaVictoryAction(sessionId); if (result.ok) setReward({ xp: result.xp, wg: result.wg }); else setRewardError(result.message); });
   }
 
@@ -373,7 +377,7 @@ function Battle({
           <h2>{enemy.hp <= 0 ? `${initial.title} foi derrotado` : "Seu personagem caiu em combate"}</h2>
           <p>{enemy.hp <= 0 ? "Sua sequência dominou o confronto." : "Revise sua ordem de ações, atributos e equipamentos antes de tentar novamente."}</p>
           {enemy.hp <= 0 && mode === "pve" ? <div><strong>+{arenaRewards[character.adventureRank as keyof typeof arenaRewards].xp.toLocaleString("pt-BR")} XP</strong><strong>+{arenaRewards[character.adventureRank as keyof typeof arenaRewards].wg.toLocaleString("pt-BR")} WG</strong><small>{reward ? "Recompensa recebida" : `Recompensa do Rank ${character.adventureRank}`}</small></div> : null}
-          {enemy.hp <= 0 && mode === "pve" && !reward ? <button className="button button--primary" disabled={claiming || !sessionId} onClick={claimReward} type="button">{claiming ? "Entregando…" : "Receber recompensa"}</button> : null}
+          {enemy.hp <= 0 && mode === "pve" && !reward ? <button className="button button--primary" disabled={claiming} onClick={claimReward} type="button">{claiming ? "Entregando…" : "Receber recompensa"}</button> : null}
           {rewardError ? <small className="arena-result__error">{rewardError}</small> : null}
           <button className="button button--primary" onClick={onReset} type="button">Lutar novamente</button>
         </section>

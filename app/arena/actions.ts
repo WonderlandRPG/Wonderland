@@ -14,6 +14,7 @@ export async function claimArenaVictoryAction(sessionId: string) {
   if (error || !data || Array.isArray(data) || typeof data !== "object") return { ok: false as const, message: error?.message ?? "Não foi possível entregar a recompensa." };
   revalidatePath("/arena");
   revalidatePath("/personagens");
+  if (typeof data.character_id === "string") revalidatePath(`/personagens/${data.character_id}`);
   revalidatePath("/ranking");
   return { ok: true as const, xp: Number(data.xp ?? 0), wg: Number(data.wg ?? 0) };
 }

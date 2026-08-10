@@ -33,7 +33,7 @@ export default async function ArenaPage({
           <Link href="/arena?modo=pve"><span>獣</span><small>10 monstros adaptativos</small><strong>PvE</strong><p>Enfrente um monstro do seu nível e com o mesmo total de atributos.</p><b>{activeCharacter ? `+${arenaRewards[activeCharacter.adventure_rank as keyof typeof arenaRewards].xp.toLocaleString("pt-BR")} XP` : "Entrar"} →</b></Link>
           <Link href="/arena?modo=pvp"><span>対</span><small>Estrutura competitiva</small><strong>PvP</strong><p>Entre na fila para duelos balanceados entre aventureiros.</p><b>Ver fila →</b></Link>
         </div></section> : null}
-        {mode === "pvp" ? <PvpLobby /> : null}
+        {mode === "pvp" && activeCharacter ? <PvpLobby characterId={activeCharacter.id} characterName={activeCharacter.name} rank={activeCharacter.adventure_rank} /> : null}
         {mode && mode !== "pvp" ? <>
         <Link className="arena-mode-back" href="/arena">← Trocar modo</Link>
         <TrainingArena

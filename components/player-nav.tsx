@@ -17,6 +17,8 @@ export async function PlayerNav() {
       <nav aria-label="Portal dos jogadores">
         <Link href="/racas">Raças</Link>
         <Link href="/classes">Classes</Link>
+        <Link href="/historia">História</Link>
+        <Link href="/reinos">Reinos</Link>
         {activeCharacterId ? (
           <>
             <Link href="/personagens">Jogar</Link>
@@ -33,6 +35,7 @@ export async function PlayerNav() {
                 <Link href="/ranks">Ranks</Link>
                 <Link href="/eventos">Eventos</Link>
                 <small>Informações</small>
+                <Link href="/mapas">Mapa</Link>
                 <Link href="/atualizacoes">Atualizações</Link>
                 <Link href="/perfil">Minha conta</Link>
                 {account && isAdministrativeRole(account.role) ? (

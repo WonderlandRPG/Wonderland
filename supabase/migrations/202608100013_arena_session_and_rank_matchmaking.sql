@@ -1,3 +1,4 @@
+-- Checkpoint de publicação: Arena e Atlas de Wonderland.
 begin;
 
 create or replace function public.v2_start_arena_session(p_character_id uuid,p_mode text)

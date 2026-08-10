@@ -1,17 +1,5 @@
-import { PortalShell } from "@/components/portal-shell";
+import { PlayerNav } from "@/components/player-nav";
+import { WorldMap } from "@/components/world/world-map";
 import { requireActiveCharacter } from "@/lib/content/active-character";
-
-export const metadata = { title: "Mapas" };
-
-export default async function MapsPage() {
-  await requireActiveCharacter("/mapas");
-  return (
-    <PortalShell
-      eyebrow="Exploração em manutenção"
-      title="O mapa está temporariamente fechado"
-      description="Estamos reconstruindo a exploração de Wonderland. O acesso será reaberto quando a nova experiência estiver pronta."
-    >
-      <section className="map-disabled-state"><span>⌖</span><strong>Região não mapeada</strong><p>Continue evoluindo seu personagem pela Arena, loja e eventos enquanto a exploração é preparada.</p></section>
-    </PortalShell>
-  );
-}
+export const metadata={title:"Mapa de Wonderland"};
+export default async function MapsPage(){await requireActiveCharacter("/mapas");return <main className="lore-page"><PlayerNav/><div className="page-container world-lore-shell"><header className="world-lore-hero"><span className="eyebrow">Cartografia da Arena</span><h1>Mapa de Wonderland</h1><p>Selecione um território para abrir seu arquivo completo no Atlas dos Reinos.</p></header><WorldMap/></div></main>}

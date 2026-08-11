@@ -10,25 +10,32 @@ export async function PlayerNav() {
   const activeCharacterId = account ? await getActiveCharacterId(account.id) : null;
   const activeCharacter = activeCharacterId ? await getCharacterSheet(activeCharacterId) : null;
   return (
-    <header className="player-nav page-container">
-      <Link href={activeCharacter ? "/personagens" : "/"}>
-        <BrandMark inverse />
-      </Link>
+    <aside className="player-nav">
+      <div className="player-nav__crest">
+        <Link href={activeCharacter ? "/personagens" : "/"}>
+          <BrandMark inverse />
+        </Link>
+        <small>O grimório vivo</small>
+      </div>
       <nav aria-label="Portal dos jogadores">
-        <Link href="/racas">Raças</Link>
-        <Link href="/classes">Classes</Link>
-        <Link href="/historia">História</Link>
-        <Link href="/reinos">Reinos</Link>
+        <div className="player-nav__group">
+          <span>Crônicas</span>
+          <Link href="/racas"><i>◈</i>Raças</Link>
+          <Link href="/classes"><i>✦</i>Classes</Link>
+          <Link href="/historia"><i>⌁</i>História</Link>
+          <Link href="/reinos"><i>◇</i>Reinos</Link>
+        </div>
         {activeCharacterId ? (
-          <>
-            <Link href="/personagens">Jogar</Link>
-            <Link href="/arena">Arena</Link>
-            <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}>Equipamentos</Link>
-            <Link href="/loja">Loja</Link>
-            <Link href="/presenca">Presença</Link>
+          <div className="player-nav__group">
+            <span>Jornada</span>
+            <Link href="/personagens"><i>♜</i>Jogar</Link>
+            <Link href="/arena"><i>⚔</i>Arena</Link>
+            <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}><i>⬡</i>Equipamentos</Link>
+            <Link href="/loja"><i>◉</i>Loja</Link>
+            <Link href="/presenca"><i>✧</i>Presença</Link>
             <details className="player-nav__world-menu">
               <summary>
-                Mundo <span aria-hidden="true">⌄</span>
+                <i>⌘</i>Mundo <span aria-hidden="true">＋</span>
               </summary>
               <div>
                 <small>Comunidade</small>
@@ -45,7 +52,7 @@ export async function PlayerNav() {
                 <SignOutButton compact />
               </div>
             </details>
-          </>
+          </div>
         ) : null}
         {!activeCharacterId && account && isAdministrativeRole(account.role) ? (
           <Link href="/admin">Painel ADM</Link>
@@ -76,6 +83,7 @@ export async function PlayerNav() {
           </Link>
         )}
       </nav>
-    </header>
+      <div className="player-nav__seal" aria-hidden="true">W</div>
+    </aside>
   );
 }

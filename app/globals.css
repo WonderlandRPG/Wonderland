@@ -29,11 +29,11 @@
 
 html[data-theme="classic"] {
   color-scheme: dark;
-  --game-bg: #050812;
-  --game-bg-deep: #02040a;
-  --game-panel: #0b1322;
-  --game-panel-strong: #101a2c;
-  --game-panel-soft: rgba(14, 24, 40, 0.82);
+  --game-bg: #06110d;
+  --game-bg-deep: #010704;
+  --game-panel: #0a1712;
+  --game-panel-strong: #10221b;
+  --game-panel-soft: rgba(11, 28, 21, 0.84);
   --game-text: #f2ead9;
   --game-muted: #a5b0bc;
   --game-muted-soft: #788697;
@@ -43,9 +43,9 @@ html[data-theme="classic"] {
   --game-line-strong: rgba(214, 181, 107, 0.48);
   --game-shadow: 0 24px 70px rgba(0, 0, 0, 0.46);
   --game-page-background:
-    radial-gradient(circle at 17% -8%, rgba(49, 91, 147, 0.26), transparent 34rem),
+    radial-gradient(circle at 17% -8%, rgba(36, 114, 79, 0.24), transparent 34rem),
     radial-gradient(circle at 88% 2%, rgba(187, 138, 60, 0.12), transparent 28rem),
-    linear-gradient(180deg, #080d19 0%, #050812 58%, #02040a 100%);
+    linear-gradient(180deg, #07140f 0%, #04100b 58%, #010704 100%);
 }
 
 html[data-theme="accessible"] {
@@ -172,7 +172,7 @@ body > section {
 .admin-topbar {
   color: var(--game-text);
   border-color: var(--game-line);
-  background: rgba(5, 8, 18, 0.78);
+  background: rgba(3, 13, 9, 0.8);
   box-shadow: 0 14px 44px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(18px);
 }
@@ -307,7 +307,7 @@ body > section {
 }
 .admin-sidebar {
   border-color: var(--game-line);
-  background: linear-gradient(180deg, #080d19, #03050b);
+  background: linear-gradient(180deg, #07140f, #010704);
 }
 .admin-topbar__path,
 .connection-status,
@@ -805,6 +805,12 @@ html[data-theme="accessible"] .site-header,
 html[data-theme="accessible"] .admin-topbar,
 html[data-theme="accessible"] .theme-control__toggle {
   backdrop-filter: none;
+}
+html[data-theme="accessible"] .auth-visual {
+  background: #010503 !important;
+}
+html[data-theme="accessible"] .auth-panel {
+  background: #03050a !important;
 }
 html[data-theme="accessible"] .rank-badge,
 html[data-theme="accessible"] .rank-badge::before,
@@ -14815,7 +14821,7 @@ body[data-rank] {
 .admin-topbar {
   color: var(--game-text);
   border-color: var(--game-line);
-  background: rgba(5, 8, 18, 0.86);
+  background: rgba(3, 13, 9, 0.88);
   box-shadow: 0 14px 44px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(18px);
 }
@@ -14939,7 +14945,7 @@ body[data-rank] {
 }
 .admin-sidebar {
   border-color: var(--game-line);
-  background: linear-gradient(180deg, #080d19, #03050b);
+  background: linear-gradient(180deg, #07140f, #010704);
 }
 .admin-topbar__path,
 .connection-status,

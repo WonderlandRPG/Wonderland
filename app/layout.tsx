@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { AudioProvider } from "@/components/audio/audio-provider";
 import { RankAtmosphere } from "@/components/characters/rank-atmosphere";
 import { getCurrentAccount } from "@/lib/auth/account";
-import { getActiveCharacterId } from "@/lib/content/active-character";
-import { getCharacterSheet } from "@/lib/content/characters";
+import { getActiveCharacterRank } from "@/lib/content/active-character";
 import { getAdventureRank } from "@/lib/game/ranks";
 import { ThemeControl } from "@/components/theme/theme-control";
 import { getThemeAvailability } from "@/lib/content/themes";
@@ -24,13 +23,12 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const account = await getCurrentAccount();
-  const activeCharacterId = account ? await getActiveCharacterId(account.id) : null;
-  const activeCharacter = activeCharacterId ? await getCharacterSheet(activeCharacterId) : null;
-  const [rank, themeAvailability] = await Promise.all([
-    Promise.resolve(activeCharacter ? getAdventureRank(activeCharacter.adventure_rank) : null),
+  const [account, themeAvailability] = await Promise.all([
+    getCurrentAccount(),
     getThemeAvailability(),
   ]);
+  const activeRank = account ? await getActiveCharacterRank(account.id) : null;
+  const rank = activeRank ? getAdventureRank(activeRank) : null;
 
   return (
     <html data-theme="classic" lang="pt-BR">
@@ -46,7 +44,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <RankAtmosphere rank={rank?.key} />
         <AudioProvider>
           {children}
-          <ThemeControl availability={themeAvailability} isAdmin={Boolean(account && isAdministrativeRole(account.role))} />
+          <ThemeControl
+            availability={themeAvailability}
+            isAdmin={Boolean(account && isAdministrativeRole(account.role))}
+          />
         </AudioProvider>
       </body>
     </html>

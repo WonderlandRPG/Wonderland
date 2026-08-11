@@ -1,8 +1,8 @@
 import { TrainingArena } from "@/components/arena/training-arena";
 import { PlayerNav } from "@/components/player-nav";
 import {
-  getCharacterSheet,
   getCharacterSheets,
+  getPvpOpponentSheet,
   type CharacterSheet,
 } from "@/lib/content/characters";
 import { requireActiveCharacter } from "@/lib/content/active-character";
@@ -55,27 +55,12 @@ export default async function ArenaPage({
         remaining: Number(rawPveStatus.remaining ?? 5),
       }
     : null;
-  const pvpClient = mode === "pvp" && query.partida ? await createServerSupabaseClient() : null;
-  const pvpQueueResult =
-    pvpClient && query.partida
-      ? await pvpClient
-          .from("v2_pvp_queue")
-          .select("opponent_character_id,match_id,status")
-          .eq("match_id", query.partida)
-          .eq("user_id", account.id)
-          .eq("status", "matched")
-          .maybeSingle()
-      : { data: null };
-  const pvpQueue = pvpQueueResult.data;
-  const opponent = pvpQueue?.opponent_character_id
-    ? await getCharacterSheet(pvpQueue.opponent_character_id)
-    : null;
+  const opponent =
+    mode === "pvp" && query.partida ? await getPvpOpponentSheet(query.partida) : null;
   const pvpMatchError =
-    query.partida && (!pvpQueue || ("error" in pvpQueueResult && pvpQueueResult.error))
-      ? "A partida PvP não pôde ser carregada. Ela pode ter expirado ou sido encerrada."
-      : pvpQueue?.opponent_character_id && !opponent
-        ? "O adversário foi encontrado, mas a ficha dele não pôde ser carregada."
-        : null;
+    query.partida && !opponent
+      ? "A sala foi encontrada, mas não foi possível carregar o adversário. Volte à fila e tente novamente."
+      : null;
   const toArenaCharacter = (character: CharacterSheet) => {
     const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
     return {
@@ -84,11 +69,13 @@ export default async function ArenaPage({
       level: character.level,
       adventureRank: character.adventure_rank,
       imageUrl: character.image_url ?? "",
-      equippedTitle: equippedTitle ? {
-        name: equippedTitle.name,
-        rarity: equippedTitle.rarity,
-        titleStyle: equippedTitle.titleStyle,
-      } : null,
+      equippedTitle: equippedTitle
+        ? {
+            name: equippedTitle.name,
+            rarity: equippedTitle.rarity,
+            titleStyle: equippedTitle.titleStyle,
+          }
+        : null,
       raceName: character.race.name,
       className: character.characterClass.name,
       baseHp: character.race.payload.baseHp,

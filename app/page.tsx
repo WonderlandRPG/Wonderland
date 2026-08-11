@@ -2,11 +2,12 @@ import Link from "next/link";
 
 import { PlayerNav } from "@/components/player-nav";
 import { getCurrentAccount } from "@/lib/auth/account";
+import { getPortalHeadline } from "@/lib/content/portal-settings";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const account = await getCurrentAccount();
+  const [account, headline] = await Promise.all([getCurrentAccount(), getPortalHeadline()]);
   return (
     <main className="home-shell player-home home-minimal">
       <section className="hero player-hero">
@@ -22,13 +23,13 @@ export default async function Home() {
           </div>
           <p className="hero__kicker">Uma nova era começa em Wonderland</p>
           <h1>
-            Atravesse o véu.
+            {headline.firstLine}
             <br />
-            <span>Escreva sua lenda.</span>
+            <span>{headline.secondLine}</span>
           </h1>
           <p className="hero__lead">
-            Entre em um mundo quebrado por magia, crie seu herói e transforme cada escolha em
-            parte da história viva de Wonderland.
+            Entre em um mundo quebrado por magia, crie seu herói e transforme cada escolha em parte
+            da história viva de Wonderland.
           </p>
           <div className="hero__actions">
             <Link className="button button--primary" href={account ? "/personagens" : "/cadastro"}>

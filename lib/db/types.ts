@@ -450,6 +450,7 @@ export interface Database {
       v2_join_pvp_queue: { Args: { p_character_id: string }; Returns: Json };
       v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };
       v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };
+      v2_get_pvp_opponent: { Args: { p_match_id: string }; Returns: Json };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
       v2_select_character: { Args: { p_character_id: string }; Returns: undefined };
       v2_character_ranking: {

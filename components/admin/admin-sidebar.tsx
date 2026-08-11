@@ -13,6 +13,7 @@ const navigation = [
   {
     group: "Comunidade",
     items: [
+      { label: "Tela principal", glyph: "◈", href: "/admin/portal" },
       { label: "Publicar evento", glyph: "＋", href: "/admin/eventos#novo-evento" },
       { label: "Publicar atualização", glyph: "＋", href: "/admin/atualizacoes#nova-atualizacao" },
       { label: "Jogadores", glyph: "02", href: "/admin/jogadores" },

@@ -1,6 +1,7 @@
 import { PortalShell } from "@/components/portal-shell";
 import { getPortalUpdates } from "@/lib/game/player-portal";
 import { requireActiveCharacter } from "@/lib/content/active-character";
+import { UpdateBlocks } from "@/components/updates/update-blocks";
 export const dynamic = "force-dynamic";
 export default async function UpdatesPage() {
   await requireActiveCharacter("/atualizacoes");
@@ -25,11 +26,7 @@ export default async function UpdatesPage() {
               <time>{date.format(new Date(`${update.published_on}T00:00:00Z`))}</time>
             </header>
             <h2>{update.title}</h2>
-            <ul>
-              {update.notes.map((note) => (
-                <li key={note}>{note}</li>
-              ))}
-            </ul>
+            <UpdateBlocks blocks={update.notes} />
           </article>
         ))}
       </div>

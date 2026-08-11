@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { parseUpdateBlocksJson } from "@/lib/game/update-content";
 
 const schema = z.object({
   id: z.union([z.literal(""), z.uuid()]),
@@ -25,13 +26,12 @@ export async function saveUpdateAction(formData: FormData) {
   if (!parsed.success) redirect("/admin/atualizacoes?status=erro");
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/atualizacoes?status=erro");
+  const blocks = parseUpdateBlocksJson(parsed.data.notes);
+  if (!blocks.success) redirect("/admin/atualizacoes?status=erro");
   const payload = {
     version: parsed.data.version,
     title: parsed.data.title,
-    notes: parsed.data.notes
-      .split("\n")
-      .map((note) => note.trim())
-      .filter(Boolean),
+    notes: blocks.data,
     published_on: parsed.data.publishedOn,
     active: formData.get("active") === "on",
     updated_at: new Date().toISOString(),

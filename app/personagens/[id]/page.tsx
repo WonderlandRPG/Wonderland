@@ -8,23 +8,12 @@ import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { RankBadge } from "@/components/characters/rank-badge";
-import { ItemGlyph } from "@/components/items/item-glyph";
+import { InventoryWorkbench } from "@/components/inventory/inventory-workbench";
 import { getAdventureRank } from "@/lib/game/ranks";
 import { getConvertedResourceBonus } from "@/lib/game/combat";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
-import {
-  canEquipItemInSlot,
-  compatibleEquipSlots,
-  defaultEquipSlot,
-  equipmentSlots,
-  itemSlotLabel,
-} from "@/lib/game/equipment";
-import {
-  claimCharacterPresenceAction,
-  equipItemAction,
-  unequipItemAction,
-  updateCharacterImageAction,
-} from "./equipment-actions";
+import { compatibleEquipSlots, equipmentSlots, itemSlotLabel } from "@/lib/game/equipment";
+import { claimCharacterPresenceAction, updateCharacterImageAction } from "./equipment-actions";
 
 export const metadata = { title: "Ficha do Personagem" };
 export const dynamic = "force-dynamic";
@@ -85,72 +74,6 @@ export default async function CharacterSheetPage({
     character.stats.attributes.INT,
     character.race.payload.resource?.maximum ?? 0,
   );
-  const renderEquipmentSlot = (slot: (typeof equipmentSlots)[number]) => {
-    const item = equippedItems.get(slot.key);
-    const isTwoHandedReservation = Boolean(item?.twoHanded && item.equippedSlot !== slot.key);
-    const candidates = character.inventory.filter(
-      (entry) =>
-        !entry.equippedSlot &&
-        entry.id !== item?.id &&
-        canEquipItemInSlot(entry.slot, entry.twoHanded, slot.key),
-    );
-    return (
-      <details
-        className={`equipment-slot-picker ${item ? "is-equipped" : ""} ${isTwoHandedReservation ? "is-two-handed-reservation" : ""}`}
-        key={slot.key}
-      >
-        <summary>
-          <span className="equipment-slot__seal">
-            <ItemGlyph slot={slot.key} />
-          </span>
-          <div>
-            <small>{slot.label}</small>
-            <strong>{item?.name ?? "Espaço livre"}</strong>
-            {isTwoHandedReservation ? <em>Ocupado pela arma de duas mãos</em> : null}
-          </div>
-          <i aria-hidden="true">⌄</i>
-        </summary>
-        <div className="equipment-slot-picker__menu">
-          <header>
-            <strong>
-              {isTwoHandedReservation ? "Espaço reservado" : `Equipar em ${slot.label}`}
-            </strong>
-            <small>
-              {isTwoHandedReservation
-                ? "Remova a arma principal para liberar"
-                : `${candidates.length} opções na mochila`}
-            </small>
-          </header>
-          {item && !isTwoHandedReservation ? (
-            <form action={unequipItemAction.bind(null, character.id)}>
-              <input name="inventoryId" type="hidden" value={item.id} />
-              <span>
-                <ItemGlyph slot={item.slot} />
-                <b>{item.name}</b>
-                <small>Equipado agora</small>
-              </span>
-              <button>Remover</button>
-            </form>
-          ) : null}
-          {candidates.map((entry) => (
-            <form action={equipItemAction.bind(null, character.id)} key={entry.id}>
-              <input name="inventoryId" type="hidden" value={entry.id} />
-              <input name="slot" type="hidden" value={slot.key} />
-              <span>
-                <ItemGlyph slot={entry.slot} />
-                <b>{entry.name}</b>
-                <small>{entry.rarity}</small>
-              </span>
-              <button>Equipar</button>
-            </form>
-          ))}
-          {!item && !candidates.length ? (
-            <p>Você ainda não possui itens compatíveis com este espaço.</p>
-          ) : null}
-        </div>
-      </details>
-    );
-  };
   return (
     <main className="sheet-page">
       <PlayerNav />
@@ -454,107 +377,48 @@ export default async function CharacterSheetPage({
               <h2>Equipamentos de {character.name}</h2>
               <p>Monte seu conjunto de combate. Cada peça equipada altera a ficha e a Arena.</p>
             </header>
-            <div className="inventory-workbench">
-              <aside className="inventory-loadout__character">
-                <div
-                  className={character.image_url ? "is-image" : ""}
-                  style={
-                    character.image_url
-                      ? { backgroundImage: `url(${character.image_url})` }
-                      : undefined
-                  }
-                >
-                  {character.image_url ? "" : character.name.slice(0, 2).toUpperCase()}
-                </div>
-                <RankBadge rank={character.adventure_rank} />
-                <span>Conjunto ativo</span>
-                <strong>{character.name}</strong>
-                <small>
-                  {equippedItems.size} / {equipmentSlots.length} espaços ocupados
-                </small>
-              </aside>
-              <div className="inventory-equipment-panel">
-                <header>
-                  <div>
-                    <span className="eyebrow">Conjunto equipado</span>
-                    <h3>13 espaços de combate</h3>
-                  </div>
-                  <small>Clique em um espaço para escolher um item compatível.</small>
-                </header>
-                <div className="equipment-slot-grid">{equipmentSlots.map(renderEquipmentSlot)}</div>
-              </div>
-            </div>
-            <div className="inventory-heading">
-              <div>
-                <span className="eyebrow">Reserva de itens</span>
-                <h3>Mochila</h3>
-              </div>
-              <small>
-                {character.inventory.filter((entry) => !entry.equippedSlot).length} itens
-              </small>
-            </div>
-            {character.inventory.length ? (
-              <div className="inventory-card-grid">
-                {character.inventory
-                  .filter((entry) => !entry.equippedSlot)
-                  .map((entry) => (
-                    <article
-                      className={`inventory-item-card shop-card--${entry.rarity}`}
-                      key={entry.id}
-                    >
-                      <ItemGlyph className="shop-card__icon" slot={entry.slot} />
-                      <small>
-                        {entry.rarity} · {itemSlotLabel(entry.slot)}
-                      </small>
-                      <h3>{entry.name}</h3>
-                      <p>{entry.description}</p>
-                      {entry.specialEffects.map((effect) => (
-                        <div className="inventory-item-effect" key={effect.key}>
-                          <b>{effect.name}</b>
-                          <span>{effect.description}</span>
-                        </div>
-                      ))}
-                      <footer>
-                        <span>Quantidade {entry.quantity}</span>
-                        <form action={equipItemAction.bind(null, character.id)}>
-                          <input name="inventoryId" type="hidden" value={entry.id} />
-                          {compatibleEquipSlots(entry.slot, entry.twoHanded).length > 1 ? (
-                            <select
-                              name="slot"
-                              defaultValue={defaultEquipSlot(entry.slot) ?? undefined}
-                            >
-                              {equipmentSlots
-                                .filter((slot) =>
-                                  compatibleEquipSlots(entry.slot, entry.twoHanded).includes(
-                                    slot.key,
-                                  ),
-                                )
-                                .map((slot) => (
-                                  <option key={slot.key} value={slot.key}>
-                                    {slot.label}
-                                  </option>
-                                ))}
-                            </select>
-                          ) : (
-                            <input
-                              name="slot"
-                              type="hidden"
-                              value={defaultEquipSlot(entry.slot) ?? ""}
-                            />
-                          )}
-                          <button className="button button--dark">Equipar</button>
-                        </form>
-                      </footer>
-                    </article>
-                  ))}
-              </div>
-            ) : (
-              <div className="portal-empty">
-                <span>◆</span>
-                <h3>Inventário vazio</h3>
-                <p>Compre equipamentos na Loja usando WG.</p>
-              </div>
-            )}
+            <InventoryWorkbench
+              character={{
+                id: character.id,
+                name: character.name,
+                imageUrl: character.image_url,
+                rank: character.adventure_rank,
+              }}
+              slots={equipmentSlots.map((slot) => {
+                const item = equippedItems.get(slot.key);
+                return {
+                  key: slot.key,
+                  label: slot.label,
+                  itemId: item?.id ?? null,
+                  reserved: Boolean(item?.twoHanded && item.equippedSlot !== slot.key),
+                };
+              })}
+              items={character.inventory.map((entry) => ({
+                id: entry.id,
+                name: entry.name,
+                description: entry.description,
+                rarity: entry.rarity,
+                rarityLabel:
+                  (
+                    {
+                      common: "Comum",
+                      uncommon: "Incomum",
+                      rare: "Raro",
+                      epic: "Épico",
+                      legendary: "Lendário",
+                      mythic: "Mítico",
+                    } as Record<string, string>
+                  )[entry.rarity] ?? entry.rarity,
+                slot: entry.slot,
+                slotLabel: itemSlotLabel(entry.slot),
+                quantity: entry.quantity,
+                equippedSlot: entry.equippedSlot,
+                attributes: entry.attributes as Record<string, number>,
+                effects: entry.specialEffects,
+                twoHanded: entry.twoHanded,
+                compatibleSlots: compatibleEquipSlots(entry.slot, entry.twoHanded),
+              }))}
+            />
           </section>
         ) : null}
       </div>

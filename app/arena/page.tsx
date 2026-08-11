@@ -13,7 +13,6 @@ import { arenaRewards, type ArenaMode } from "@/lib/game/arena";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getBasicAttackRange } from "@/lib/game/equipment";
-import { applyAdventureRankEffect, getAdventureRank } from "@/lib/game/ranks";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -29,9 +28,9 @@ export default async function ArenaPage({
     ? (query.modo as ArenaMode)
     : null;
   const activeCharacter = characters.find((character) => character.id === characterId);
-  const client = mode === "pve" ? await createServerSupabaseClient() : null;
+  const client = activeCharacter ? await createServerSupabaseClient() : null;
   const arenaSessionResult =
-    client && activeCharacter
+    client && activeCharacter && mode === "pve"
       ? await client.rpc("v2_start_arena_session", {
           p_character_id: activeCharacter.id,
           p_mode: "pve",
@@ -39,6 +38,23 @@ export default async function ArenaPage({
       : { data: null };
   const arenaSessionId = arenaSessionResult.data;
   const arenaSessionError = "error" in arenaSessionResult ? arenaSessionResult.error : null;
+  const pveStatusResult =
+    client && activeCharacter
+      ? await client.rpc("v2_get_pve_daily_status", { p_character_id: activeCharacter.id })
+      : { data: null };
+  const rawPveStatus =
+    pveStatusResult.data &&
+    !Array.isArray(pveStatusResult.data) &&
+    typeof pveStatusResult.data === "object"
+      ? pveStatusResult.data
+      : null;
+  const pveStatus = rawPveStatus
+    ? {
+        limit: Number(rawPveStatus.limit ?? 5),
+        used: Number(rawPveStatus.used ?? 0),
+        remaining: Number(rawPveStatus.remaining ?? 5),
+      }
+    : null;
   const pvpClient = mode === "pvp" && query.partida ? await createServerSupabaseClient() : null;
   const pvpQueueResult =
     pvpClient && query.partida
@@ -61,7 +77,6 @@ export default async function ArenaPage({
         ? "O adversário foi encontrado, mas a ficha dele não pôde ser carregada."
         : null;
   const toArenaCharacter = (character: CharacterSheet) => {
-    const rank = getAdventureRank(character.adventure_rank);
     return {
       id: character.id,
       name: character.name,
@@ -78,16 +93,12 @@ export default async function ArenaPage({
         (skill) => skill.resource === "mana",
       ),
       basicAttackRange: getBasicAttackRange(character.inventory),
-      attributes: applyAdventureRankEffect(character.stats.attributes, character.adventure_rank),
+      attributes: character.stats.attributes,
       skills: character.unlockedClassSkills
         .filter((skill) => !/passiva/i.test(skill.type))
         .map(prepareArenaSkill),
       raceAbilities: character.unlockedRaceAbilities,
       combatLore: [
-        {
-          name: `Rank ${rank.key} · ${rank.effect.name}`,
-          description: rank.effect.summary,
-        },
         {
           name: character.characterClass.payload.passive.name,
           description: character.characterClass.payload.passive.description,
@@ -138,18 +149,32 @@ export default async function ArenaPage({
                 <p>Teste habilidades e sequências contra o Boneco Rúnico.</p>
                 <b>Entrar →</b>
               </Link>
-              <Link href="/arena?modo=pve">
-                <span>獣</span>
-                <small>10 monstros adaptativos</small>
-                <strong>PvE</strong>
-                <p>Enfrente um monstro do seu nível e com o mesmo total de atributos.</p>
-                <b>
-                  {activeCharacter
-                    ? `+${arenaRewards[activeCharacter.adventure_rank as keyof typeof arenaRewards].xp.toLocaleString("pt-BR")} XP`
-                    : "Entrar"}{" "}
-                  →
-                </b>
-              </Link>
+              {pveStatus?.remaining === 0 ? (
+                <article className="arena-mode-locked">
+                  <span>獣</span>
+                  <small>Limite diário atingido</small>
+                  <strong>PvE</strong>
+                  <p>Este personagem já realizou as {pveStatus.limit} expedições de hoje.</p>
+                  <b>Volte amanhã</b>
+                </article>
+              ) : (
+                <Link href="/arena?modo=pve">
+                  <span>獣</span>
+                  <small>
+                    {pveStatus
+                      ? `${pveStatus.remaining} de ${pveStatus.limit} entradas restantes`
+                      : "5 entradas por dia"}
+                  </small>
+                  <strong>PvE</strong>
+                  <p>Enfrente um monstro do seu nível e com o mesmo total de atributos.</p>
+                  <b>
+                    {activeCharacter
+                      ? `+${arenaRewards[activeCharacter.adventure_rank as keyof typeof arenaRewards].xp.toLocaleString("pt-BR")} XP`
+                      : "Entrar"}{" "}
+                    →
+                  </b>
+                </Link>
+              )}
               <Link href="/arena?modo=pvp">
                 <span>対</span>
                 <small>Estrutura competitiva</small>
@@ -165,7 +190,10 @@ export default async function ArenaPage({
             <span>!</span>
             <div>
               <strong>Não foi possível iniciar o PvE</strong>
-              <p>A sessão de combate não foi criada. Tente novamente em alguns instantes.</p>
+              <p>
+                {arenaSessionError.message ||
+                  "A sessão de combate não foi criada. Tente novamente em alguns instantes."}
+              </p>
             </div>
             <Link href="/arena">Voltar aos modos</Link>
           </section>

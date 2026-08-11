@@ -1,6 +1,3 @@
-import type { CombatAttributes } from "@/lib/game/combat";
-import { attributeKeys } from "@/lib/game/schemas";
-
 export const adventureRanks = [
   {
     key: "E",
@@ -10,11 +7,7 @@ export const adventureRanks = [
     description:
       "O primeiro Rank de Wonderland. Representa aventureiros iniciantes que estão começando a enfrentar os perigos do mundo.",
     access: ["Missões E", "Dungeons E", "Recompensas e XP básicos"],
-    effect: {
-      name: "Amparo da Guilda",
-      summary: "A proteção oferecida aos novos aventureiros concede +6 RES em combate.",
-      modifiers: { RES: 6 },
-    },
+    atmosphere: "Poeira de estrada",
   },
   {
     key: "D",
@@ -24,11 +17,7 @@ export const adventureRanks = [
     description:
       "Aventureiros que já adquiriram alguma experiência e estão preparados para desafios além das missões mais básicas.",
     access: ["Missões D", "Dungeons D", "XP superior ao Rank E"],
-    effect: {
-      name: "Passos de Fronteira",
-      summary: "A experiência em expedições concede +6 INI em combate.",
-      modifiers: { INI: 6 },
-    },
+    atmosphere: "Folhas da fronteira",
   },
   {
     key: "C",
@@ -38,11 +27,7 @@ export const adventureRanks = [
     description:
       "Aventureiros experientes, capazes de enfrentar ameaças consideráveis e assumir missões de maior responsabilidade.",
     access: ["Missões C", "Dungeons C", "Maior variedade de recompensas"],
-    effect: {
-      name: "Domínio de Combate",
-      summary: "A versatilidade veterana concede +4 FOR e +4 INT em combate.",
-      modifiers: { FOR: 4, INT: 4 },
-    },
+    atmosphere: "Orbes de mana",
   },
   {
     key: "B",
@@ -52,11 +37,7 @@ export const adventureRanks = [
     description:
       "Aventureiros poderosos que já se destacam entre os demais e são preparados para missões de alto risco.",
     access: ["Missões B", "Dungeons B", "Chefes de elite"],
-    effect: {
-      name: "Postura da Elite",
-      summary: "O treinamento de elite concede +6 DEF em combate.",
-      modifiers: { DEF: 6 },
-    },
+    atmosphere: "Chuva de aço",
   },
   {
     key: "A",
@@ -66,11 +47,7 @@ export const adventureRanks = [
     description:
       "Aventureiros excepcionais, reconhecidos por grandes feitos e capazes de enfrentar ameaças que colocam regiões em perigo.",
     access: ["Missões A", "Dungeons A", "Incursões de alto risco"],
-    effect: {
-      name: "Presença Lendária",
-      summary: "A autoridade de uma lenda concede +6 ARC em combate.",
-      modifiers: { ARC: 6 },
-    },
+    atmosphere: "Runas ametistas",
   },
   {
     key: "S",
@@ -80,11 +57,7 @@ export const adventureRanks = [
     description:
       "O maior Rank alcançável pela progressão normal, reservado aos aventureiros mais poderosos e lendários de Wonderland.",
     access: ["Missões S", "Dungeons S", "Eventos mundiais"],
-    effect: {
-      name: "Bênção dos Cinco Reinos",
-      summary: "O reconhecimento dos reinos concede +3 em todos os atributos durante o combate.",
-      modifiers: { FOR: 3, DEF: 3, RES: 3, INI: 3, INT: 3, ARC: 3 },
-    },
+    atmosphere: "Constelação dourada",
   },
   {
     key: "EX",
@@ -94,11 +67,7 @@ export const adventureRanks = [
     description:
       "Um Rank que não pode ser conquistado por missões. É concedido apenas àqueles cujas ações mudaram o curso da história de Wonderland.",
     access: ["Sem requisitos públicos", "Concedido por feitos únicos", "Reconhecimento narrativo"],
-    effect: {
-      name: "Ruptura do Destino",
-      summary: "Quem ultrapassa a medição recebe +7 em todos os atributos durante o combate.",
-      modifiers: { FOR: 7, DEF: 7, RES: 7, INI: 7, INT: 7, ARC: 7 },
-    },
+    atmosphere: "Fendas do destino",
   },
 ] as const;
 
@@ -141,17 +110,4 @@ export type AdventureRank = (typeof adventureRanks)[number]["key"];
 
 export function getAdventureRank(value: string) {
   return adventureRanks.find((rank) => rank.key === value) ?? adventureRanks[0];
-}
-
-export function applyAdventureRankEffect(
-  attributes: CombatAttributes,
-  rank: string,
-): CombatAttributes {
-  const modifiers = getAdventureRank(rank).effect.modifiers as Partial<CombatAttributes>;
-  return Object.fromEntries(
-    attributeKeys.map((attribute) => [
-      attribute,
-      attributes[attribute] + (modifiers[attribute] ?? 0),
-    ]),
-  ) as CombatAttributes;
 }

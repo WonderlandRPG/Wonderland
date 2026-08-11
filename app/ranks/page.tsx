@@ -38,14 +38,9 @@ export default async function RanksPage() {
               <small>{rank.title}</small>
               <h2>Rank {rank.key}</h2>
               <p>{rank.description}</p>
-              <aside className="rank-guide-card__effect">
-                <span aria-hidden="true">✦</span>
-                <div>
-                  <small>Efeito exclusivo</small>
-                  <strong>{rank.effect.name}</strong>
-                  <p>{rank.effect.summary}</p>
-                </div>
-              </aside>
+              <small className="rank-guide-card__atmosphere">
+                Assinatura visual · {rank.atmosphere}
+              </small>
               <ul>
                 {rank.access.map((item) => (
                   <li key={item}>{item}</li>

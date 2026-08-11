@@ -78,6 +78,7 @@ export function InventoryWorkbench({
     [items, search, slotFilter, view],
   );
   const occupied = slots.filter((slot) => slot.itemId).length;
+  const equippedTitle = items.find((item) => item.equippedSlot === "title") ?? null;
   useEffect(() => {
     if (!activeSlotKey) return;
     const close = (event: KeyboardEvent) => {
@@ -111,6 +112,11 @@ export function InventoryWorkbench({
             {character.imageUrl ? "" : character.name.slice(0, 2).toUpperCase()}
           </div>
           <RankBadge rank={character.rank} />
+          {equippedTitle ? (
+            <div className="character-equipped-title" data-title={equippedTitle.rarity}>
+              ✦ {equippedTitle.name}
+            </div>
+          ) : null}
           <span>CONJUNTO ATIVO</span>
           <strong>{character.name}</strong>
           <small>
@@ -413,7 +419,11 @@ export function InventoryWorkbench({
                 <div className="inventory-empty">
                   <ItemGlyph slot={activeSlot.key} />
                   <strong>Nenhum {activeSlot.label.toLocaleLowerCase("pt-BR")} na mochila</strong>
-                  <p>Visite a Loja para encontrar um equipamento compatível.</p>
+                  <p>
+                    {activeSlot.key === "title"
+                      ? "Títulos são concedidos exclusivamente pela administração."
+                      : "Visite a Loja para encontrar um equipamento compatível."}
+                  </p>
                 </div>
               )}
             </div>

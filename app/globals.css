@@ -154,6 +154,64 @@ body > section {
   z-index: 1;
 }
 
+/* Acabamento visual 2026-08-11: equipamentos, títulos e console ADM. */
+.character-equipped-title {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 82px;
+  width: max-content;
+  max-width: 92%;
+  padding: 7px 14px;
+  transform: translateX(-50%);
+  color: #fff3b4;
+  border: 1px solid rgba(246, 204, 92, .64);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(8,45,31,.86), rgba(154,111,21,.9), rgba(8,45,31,.86));
+  box-shadow: 0 0 22px rgba(239,190,64,.42), inset 0 0 12px rgba(255,255,255,.12);
+  font: 700 .74rem Cinzel, serif;
+  letter-spacing: .08em;
+  text-align: center;
+  animation: title-awakened-pulse 2.4s ease-in-out infinite;
+}
+@keyframes title-awakened-pulse { 50% { filter: brightness(1.28); box-shadow: 0 0 35px rgba(239,190,64,.7), 0 0 10px rgba(58,190,126,.55); transform: translateX(-50%) scale(1.035); } }
+
+.inventory-classic-card > div:first-child,
+.inventory-inspector__glyph,
+.equipment-modal__glyph {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--rarity-color, #d4b45f) 32%, transparent), transparent 48%),
+    linear-gradient(145deg, rgba(255,255,255,.13), rgba(4,20,14,.32));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rarity-color, #d4b45f) 42%, transparent), inset 0 -18px 35px rgba(0,0,0,.18);
+}
+.inventory-classic-card > div:first-child::after,
+.inventory-inspector__glyph::after,
+.equipment-modal__glyph::after { content:""; position:absolute; inset:-45%; background:linear-gradient(110deg, transparent 42%, rgba(255,255,255,.25) 49%, transparent 56%); transform:translateX(-70%) rotate(8deg); transition:transform .65s ease; }
+.inventory-classic-card:hover > div:first-child::after { transform:translateX(70%) rotate(8deg); }
+.inventory-classic-card svg,.inventory-inspector__glyph svg,.equipment-modal__glyph svg { position:relative; z-index:1; filter:drop-shadow(0 7px 8px rgba(0,0,0,.35)); }
+
+.admin-reward-console { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:24px; padding:28px; }
+.admin-console-chat,.admin-command-help { border:1px solid var(--game-line); border-radius:22px; background:var(--game-panel); box-shadow:var(--game-shadow); padding:24px; }
+.admin-console-history { min-height:180px; margin:22px 0; padding:18px; border-radius:14px; background:var(--game-panel-strong); }
+.admin-command-input { position:relative; }
+.admin-command-input textarea { width:100%; min-height:92px; padding:16px; resize:vertical; border:1px solid var(--game-line-strong); border-radius:14px; background:var(--game-panel-strong); color:var(--game-text); font:600 1rem ui-monospace, monospace; }
+.admin-command-suggestions { position:absolute; z-index:8; right:8px; bottom:calc(100% + 8px); left:8px; overflow:auto; max-height:270px; padding:7px; border:1px solid var(--game-line-strong); border-radius:14px; background:var(--game-panel); box-shadow:var(--game-shadow); }
+.admin-command-suggestions button { display:flex; width:100%; align-items:center; gap:10px; padding:9px; border:0; border-radius:9px; color:var(--game-text); background:transparent; text-align:left; }
+.admin-command-suggestions button:hover { background:color-mix(in srgb,var(--game-gold) 12%,transparent); }
+.admin-command-suggestions span { display:grid; width:34px; height:34px; place-items:center; border-radius:50%; color:#fff; background:#175a3b; }
+.admin-command-help code { display:block; margin:11px 0; padding:12px; border-left:3px solid var(--game-gold); background:var(--game-panel-strong); white-space:normal; }
+.admin-console-rewards { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
+.admin-console-rewards button { padding:6px 9px; border:1px solid var(--game-line); border-radius:8px; color:var(--game-text); background:var(--game-panel-strong); }
+@media(max-width:900px){.admin-reward-console{grid-template-columns:1fr;padding:14px}.character-equipped-title{bottom:72px;font-size:.66rem}}
+
+/* Atmosferas mais nítidas; o Rank A agora usa selos arcanos sempre visíveis. */
+.rank-atmosphere[data-rank-atmosphere] { opacity:.82; filter:saturate(1.18); }
+.rank-atmosphere[data-rank-atmosphere="A"] i { display:grid; top:calc((var(--particle-index) * 9%) - 12%); bottom:auto; left:calc((var(--particle-index) * 17%) - 8%); width:34px; height:34px; place-items:center; color:#e3adff; opacity:0; animation:rank-a-seal 8s ease-in-out infinite; animation-delay:calc(var(--particle-index) * -.41s); }
+.rank-atmosphere[data-rank-atmosphere="A"] i span::before { content:"✧"; display:grid; width:30px; height:30px; place-items:center; border:1px solid currentColor; border-radius:50%; transform:none; background:radial-gradient(circle,rgba(195,98,255,.3),transparent 66%); box-shadow:0 0 8px #d58cff,0 0 28px rgba(169,63,255,.7); }
+@keyframes rank-a-seal { 0%,100%{opacity:0;transform:translateY(35px) scale(.45) rotate(-25deg)} 22%,68%{opacity:.78} 55%{transform:translateY(-42px) scale(1.18) rotate(22deg)} }
+
 .home-shell,
 .auth-shell,
 .admin-shell,

@@ -470,6 +470,15 @@ export interface Database {
         };
         Returns: Database["public"]["Tables"]["v2_characters"]["Row"];
       };
+      v2_admin_grant_reward_command: {
+        Args: {
+          p_target_name: string;
+          p_reward_type: string;
+          p_reward_name: string;
+          p_amount: number;
+        };
+        Returns: number;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

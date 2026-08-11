@@ -9,8 +9,7 @@ import { ThemeControl } from "@/components/theme/theme-control";
 import { getThemeAvailability } from "@/lib/content/themes";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 
-import "./globals.css";
-import "./theme-overrides.css";
+import "./relic-ui.css";
 
 export const metadata: Metadata = {
   title: {
@@ -38,11 +37,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         data-rank={rank?.key}
         style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}
       >
-        <div className="dream-atmosphere" aria-hidden="true">
-          <span className="dream-atmosphere__moon" />
-          <span className="dream-atmosphere__veil" />
-          <span className="dream-atmosphere__runes" />
-          <span className="dream-atmosphere__dust" />
+        <div className="world-atmosphere" aria-hidden="true">
+          <span className="world-atmosphere__sky" />
+          <span className="world-atmosphere__mist" />
+          <span className="world-atmosphere__stars" />
         </div>
         <RankAtmosphere rank={rank?.key} />
         <AudioProvider>

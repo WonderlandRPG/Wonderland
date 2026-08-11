@@ -10,14 +10,17 @@ export default async function Home() {
   return (
     <main className="home-shell player-home home-minimal">
       <section className="hero player-hero">
-        <div className="hero__backdrop" />
-        <div className="hero__grid" />
+        <div className="hero__art" aria-hidden="true">
+          <span className="hero__portal" />
+          <span className="hero__castle" />
+          <span className="hero__wanderer" />
+        </div>
         <PlayerNav />
         <div className="hero__content page-container">
-          <div className="hero__status"><span className="signal-dot" /> O mundo voltou a sonhar</div>
-          <p className="hero__kicker">Wonderland RPG · Uma crônica viva</p>
+          <div className="hero__chapter">Prólogo <span>MMXXVI</span></div>
+          <p className="hero__kicker">Uma crônica moldada pelos jogadores</p>
           <h1>
-            Todo sonho deixa <span>uma cicatriz.</span>
+            Atravesse o véu.<br/><span>Torne-se lenda.</span>
           </h1>
           <p className="hero__lead">
             Forje um herói, atravesse os reinos partidos e escreva seu nome em um mundo que
@@ -29,9 +32,9 @@ export default async function Home() {
             </Link>
           </div>
           <div className="hero__chronicle" aria-label="Destaques de Wonderland">
-            <Link href="/racas"><small>01 · ORIGENS</small><strong>Escolha sua raça</strong><span>Onze povos despertos →</span></Link>
-            <Link href="/classes"><small>02 · CAMINHOS</small><strong>Defina sua classe</strong><span>Domine seu estilo de batalha →</span></Link>
-            <Link href="/historia"><small>03 · CRÔNICAS</small><strong>Conheça o mundo</strong><span>Descubra as eras de Wonderland →</span></Link>
+            <Link href="/racas"><small>I</small><span><strong>Descubra sua origem</strong>Onze povos despertos</span></Link>
+            <Link href="/classes"><small>II</small><span><strong>Escolha seu caminho</strong>Combate, magia e destino</span></Link>
+            <Link href="/historia"><small>III</small><span><strong>Leia as crônicas</strong>Sete eras de história</span></Link>
           </div>
         </div>
       </section>

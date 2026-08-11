@@ -4159,3 +4159,318 @@ dd {
   .rank-guide-card .rank-badge { grid-column: 1 !important; grid-row: 1; }
   .rank-guide-card > div { grid-column: 2 !important; grid-row: 1; }
 }
+
+/* ================================================================
+   ARENA V4 — campo tático em três colunas, sem escala ou compressão
+   ================================================================ */
+.arena-page .page-container.arena-page__inner {
+  width: min(1600px, calc(100% - 32px)) !important;
+  max-width: none !important;
+}
+
+.arena-console {
+  width: 100%;
+  padding: clamp(14px, 1.7vw, 26px) !important;
+  overflow: visible;
+}
+
+.arena-game-header {
+  display: grid !important;
+  grid-template-columns: minmax(280px, 1fr) minmax(210px, auto) 104px 104px;
+  align-items: center;
+  gap: 14px;
+}
+
+.arena-game-header > div:first-child p {
+  max-width: 640px;
+  margin: 0;
+  color: var(--ui-muted);
+  font-size: .88rem;
+  line-height: 1.55;
+}
+
+.arena-selected-fighter {
+  min-width: 0 !important;
+  padding: 12px 16px !important;
+}
+
+.arena-battlefield-shell {
+  display: grid !important;
+  grid-template-columns: minmax(250px, 300px) minmax(540px, 1fr) minmax(250px, 300px) !important;
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.arena-fighter {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: minmax(190px, 240px) 1fr;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.arena-fighter.is-enemy {
+  border-color: color-mix(in srgb, var(--ui-red) 45%, var(--ui-line));
+}
+
+.arena-fighter__portrait {
+  position: relative;
+  display: grid;
+  min-height: 190px;
+  place-items: center;
+  overflow: hidden;
+  border-bottom: 1px solid var(--ui-line);
+  color: var(--ui-cyan);
+  background:
+    radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--ui-blue) 28%, transparent), transparent 45%),
+    linear-gradient(155deg, var(--ui-panel-3), var(--ui-deep));
+  background-position: center;
+  background-size: cover;
+  font: 700 clamp(1.8rem, 3vw, 3rem) Georgia, serif;
+}
+
+.arena-fighter.is-enemy .arena-fighter__portrait {
+  color: var(--ui-red);
+  background:
+    radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--ui-red) 24%, transparent), transparent 45%),
+    linear-gradient(155deg, color-mix(in srgb, var(--ui-red) 12%, var(--ui-panel-2)), var(--ui-deep));
+}
+
+.arena-fighter__portrait > span:first-of-type {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  left: 12px;
+  color: var(--ui-faint);
+  font: 900 .58rem/1 sans-serif;
+  letter-spacing: .16em;
+  text-align: center;
+}
+
+.arena-fighter__status {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 6px;
+  padding: 18px !important;
+}
+
+.arena-fighter__status h2 {
+  margin: 2px 0 8px;
+  font: 600 clamp(1.25rem, 1.7vw, 1.7rem)/1.1 Georgia, serif;
+}
+
+.arena-fighter__status p {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 5px 0 2px;
+  color: var(--ui-muted);
+  font-size: .68rem;
+  font-weight: 850;
+  letter-spacing: .06em;
+}
+
+.arena-fighter__status progress {
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  accent-color: var(--ui-green);
+}
+
+.arena-fighter__status progress.is-mana { accent-color: var(--ui-blue); }
+.arena-fighter__status progress.is-class-resource { accent-color: var(--ui-gold); }
+.arena-fighter__status progress.is-race-resource { accent-color: var(--ui-purple); }
+
+.arena-attributes {
+  display: block !important;
+  margin-top: 12px;
+  border-top: 1px solid var(--ui-line);
+}
+
+.arena-attributes summary {
+  padding: 11px 0 8px;
+  color: var(--ui-gold);
+  cursor: pointer;
+  font-size: .63rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.arena-attributes > div {
+  display: grid !important;
+  min-height: 0 !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.arena-attributes > div > span {
+  display: grid;
+  min-width: 0;
+  min-height: 48px;
+  place-items: center;
+  padding: 6px 4px;
+  border: 1px solid var(--ui-line);
+  background: var(--ui-deep);
+}
+
+.arena-attributes > div > span b { color: var(--ui-faint); font-size: .58rem; }
+.arena-attributes > div > span strong { font-size: .82rem; }
+.arena-attributes > div > span small { color: var(--ui-green); font-size: .55rem; }
+
+.arena-map {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  overflow: hidden !important;
+  border: 1px solid var(--ui-line-gold);
+  background: var(--ui-deep);
+}
+
+.arena-map > header {
+  display: flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--ui-line);
+  background: var(--ui-panel-2);
+}
+
+.arena-map > header span { color: var(--ui-gold); font-size: .72rem; font-weight: 900; }
+.arena-map > header small { color: var(--ui-muted); font-size: .66rem; }
+
+.arena-map__grid {
+  display: grid !important;
+  width: 100%;
+  min-width: 0 !important;
+  grid-template-columns: repeat(var(--arena-grid-width), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--arena-grid-height), minmax(0, 1fr));
+  aspect-ratio: 20 / 14;
+  overflow: hidden !important;
+  border: 0 !important;
+}
+
+.arena-map__grid > button {
+  position: relative;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0 !important;
+  border-right: 1px solid var(--ui-line) !important;
+  border-bottom: 1px solid var(--ui-line) !important;
+  border-radius: 0;
+}
+
+.arena-map__grid > button > span {
+  position: absolute;
+  inset: 12%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--ui-gold);
+  border-radius: 50%;
+  color: var(--ui-deep);
+  background: var(--ui-gold);
+  font-size: clamp(.4rem, .65vw, .7rem);
+  font-weight: 950;
+  box-shadow: 0 0 15px color-mix(in srgb, var(--ui-gold) 48%, transparent);
+}
+
+.arena-map__grid > button.has-enemy > span {
+  border-color: var(--ui-red);
+  background: var(--ui-red);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--ui-red) 48%, transparent);
+}
+
+.arena-map__grid > button.is-reachable {
+  background: color-mix(in srgb, var(--ui-cyan) 20%, var(--ui-deep)) !important;
+  box-shadow: inset 0 0 10px color-mix(in srgb, var(--ui-cyan) 25%, transparent);
+}
+
+.arena-message {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin: 14px 0 8px;
+}
+
+.arena-turn-budget {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 7px;
+  padding: 8px;
+  border: 1px solid var(--ui-line);
+  background: var(--ui-deep);
+}
+
+.arena-turn-budget span {
+  padding: 9px;
+  border: 1px solid var(--ui-line);
+  color: var(--ui-muted);
+  background: var(--ui-panel-2);
+  font-size: .68rem;
+  text-align: center;
+}
+
+.arena-turn-budget span.is-used { color: var(--ui-deep); background: var(--ui-green); }
+
+.arena-command-panel {
+  position: static !important;
+  margin-top: 12px;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.arena-command-panel > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--ui-line);
+}
+
+.arena-command-panel h2 { margin: 3px 0 0; }
+.arena-actions { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 12px; }
+.arena-action-group { align-content: start; padding: 10px; }
+.arena-action-group > header { display: flex; align-items: center; gap: 8px; min-height: 38px; }
+.arena-actions button { display: grid; gap: 5px; min-height: 118px; align-content: start; padding: 13px !important; }
+.arena-actions button > strong { font-size: .88rem; }
+.arena-actions button > span { color: var(--ui-muted); font-size: .72rem; line-height: 1.45; }
+.arena-actions button > small { color: var(--ui-cyan); font-size: .62rem; }
+
+@media (max-width: 1250px) {
+  .arena-game-header { grid-template-columns: minmax(260px, 1fr) minmax(190px, .65fr) 90px 90px; }
+  .arena-battlefield-shell { grid-template-columns: minmax(210px, 250px) minmax(500px, 1fr) minmax(210px, 250px) !important; }
+  .arena-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 980px) {
+  .arena-game-header { grid-template-columns: 1fr 1fr; }
+  .arena-game-header > div:first-child { grid-column: 1 / -1; }
+  .arena-battlefield-shell { grid-template-columns: 1fr 1fr !important; }
+  .arena-map { grid-column: 1 / -1; grid-row: 1; }
+  .arena-fighter { grid-template-columns: 120px minmax(0, 1fr); grid-template-rows: 1fr; }
+  .arena-fighter__portrait { min-height: 230px; border-right: 1px solid var(--ui-line); border-bottom: 0; }
+}
+
+@media (max-width: 680px) {
+  .arena-page .page-container.arena-page__inner { width: calc(100% - 16px) !important; }
+  .arena-game-header { grid-template-columns: 1fr 1fr; }
+  .arena-selected-fighter { grid-column: 1 / -1; }
+  .arena-battlefield-shell { display: flex !important; flex-direction: column; }
+  .arena-map { order: -1; width: 100%; overflow-x: auto !important; }
+  .arena-map__grid { width: 660px; min-width: 660px !important; }
+  .arena-fighter { grid-template-columns: 105px minmax(0, 1fr); }
+  .arena-fighter__portrait { min-height: 220px; }
+  .arena-turn-budget { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .arena-command-panel > header { align-items: flex-start; flex-direction: column; }
+  .arena-actions { grid-template-columns: 1fr; }
+}

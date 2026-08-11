@@ -7,7 +7,8 @@ export function RankAtmosphere({ rank }: RankAtmosphereProps) {
 
   return (
     <div className="rank-atmosphere" data-rank-atmosphere={rank} aria-hidden="true">
-      {Array.from({ length: 18 }, (_, index) => (
+      <span className="rank-atmosphere__veil" />
+      {Array.from({ length: 24 }, (_, index) => (
         <i key={index} style={{ "--particle-index": index } as React.CSSProperties}>
           <span />
         </i>

@@ -18,7 +18,9 @@ export function EquippedTitle({ title }: { title: EquippedTitleData | null }) {
         "--title-glow": title.titleStyle?.glow ?? "#d7ad45",
       } as CSSProperties}
     >
-      ✦ {title.name}
+      <span className="equipped-title__wing" aria-hidden="true">◆</span>
+      <span className="equipped-title__name">✦ {title.name} ✦</span>
+      <span className="equipped-title__wing" aria-hidden="true">◆</span>
     </div>
   );
 }

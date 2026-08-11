@@ -11,49 +11,24 @@ export default async function Home() {
   return (
     <main className="home-shell player-home home-minimal">
       <section className="hero player-hero">
-        <div className="hero__art" aria-hidden="true">
-          <span className="hero__portal" />
-          <span className="hero__castle" />
-          <span className="hero__wanderer" />
-        </div>
+        <div className="hero__backdrop" />
+        <div className="hero__grid" />
         <PlayerNav />
         <div className="hero__content page-container">
-          <div className="hero__chapter">
-            Portal oficial <span>As Fraturas despertaram</span>
+          <div className="hero__status">
+            <span className="signal-dot" /> Temporada inaugural aberta
           </div>
-          <p className="hero__kicker">Uma nova era começa em Wonderland</p>
+          <p className="hero__kicker">Wonderland RPG // Crie sua lenda</p>
           <h1>
-            {headline.firstLine}
-            <br />
-            <span>{headline.secondLine}</span>
+            {headline.firstLine} <span>{headline.secondLine}</span>
           </h1>
           <p className="hero__lead">
-            Entre em um mundo quebrado por magia, crie seu herói e transforme cada escolha em parte
-            da história viva de Wonderland.
+            Escolha seu caminho, conheça outros aventureiros e escreva uma história capaz de
+            atravessar todos os reinos.
           </p>
           <div className="hero__actions">
             <Link className="button button--primary" href={account ? "/personagens" : "/cadastro"}>
               {account ? "Continuar minha jornada" : "Começar minha jornada"} <span>→</span>
-            </Link>
-          </div>
-          <div className="hero__chronicle" aria-label="Destaques de Wonderland">
-            <Link href="/racas">
-              <small>I</small>
-              <span>
-                <strong>Descubra sua origem</strong>Onze povos despertos
-              </span>
-            </Link>
-            <Link href="/classes">
-              <small>II</small>
-              <span>
-                <strong>Escolha seu caminho</strong>Combate, magia e destino
-              </span>
-            </Link>
-            <Link href="/historia">
-              <small>III</small>
-              <span>
-                <strong>Leia as crônicas</strong>Sete eras de história
-              </span>
             </Link>
           </div>
         </div>

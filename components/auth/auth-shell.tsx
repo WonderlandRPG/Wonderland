@@ -19,7 +19,22 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
           <BrandMark inverse />
         </div>
 
-        <div className="auth-visual__content" aria-hidden="true" />
+        <div className="auth-visual__content">
+          <span className="eyebrow">Portal dos jogadores</span>
+          <h2>Todo aventureiro começa com uma identidade.</h2>
+          <p>
+            Sua conta será o ponto de entrada para personagens, presença diária e todos os sistemas
+            do Wonderland.
+          </p>
+        </div>
+
+        <div className="auth-visual__security">
+          <span className="signal-dot" />
+          <div>
+            <strong>Conexão protegida</strong>
+            <small>Senha criptografada pelo Supabase Auth</small>
+          </div>
+        </div>
       </section>
 
       <section className="auth-panel">

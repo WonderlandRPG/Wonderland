@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { equipItemAction, unequipItemAction } from "@/app/personagens/[id]/equipment-actions";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { RankBadge } from "@/components/characters/rank-badge";
@@ -35,7 +35,29 @@ export function InventoryWorkbench({
   const [search, setSearch] = useState("");
   const [slotFilter, setSlotFilter] = useState("");
   const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
+  const [activeSlotKey, setActiveSlotKey] = useState<string | null>(null);
   const selected = items.find((item) => item.id === selectedId) ?? null;
+  const activeSlot = slots.find((slot) => slot.key === activeSlotKey) ?? null;
+  const activeSlotItem = activeSlot
+    ? (items.find((item) => item.id === activeSlot.itemId) ?? null)
+    : null;
+  const compatibleItems = useMemo(
+    () =>
+      activeSlot
+        ? items
+            .filter(
+              (item) =>
+                item.compatibleSlots.includes(activeSlot.key) ||
+                item.equippedSlot === activeSlot.key,
+            )
+            .sort((left, right) => {
+              const leftEquipped = left.id === activeSlot.itemId ? 1 : 0;
+              const rightEquipped = right.id === activeSlot.itemId ? 1 : 0;
+              return rightEquipped - leftEquipped || left.name.localeCompare(right.name, "pt-BR");
+            })
+        : [],
+    [activeSlot, items],
+  );
   const visible = useMemo(
     () =>
       items.filter(
@@ -56,12 +78,24 @@ export function InventoryWorkbench({
     [items, search, slotFilter, view],
   );
   const occupied = slots.filter((slot) => slot.itemId).length;
+  useEffect(() => {
+    if (!activeSlotKey) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActiveSlotKey(null);
+    };
+    document.body.classList.add("has-equipment-modal");
+    window.addEventListener("keydown", close);
+    return () => {
+      document.body.classList.remove("has-equipment-modal");
+      window.removeEventListener("keydown", close);
+    };
+  }, [activeSlotKey]);
+
   const selectSlot = (slot: Slot) => {
-    setSlotFilter(slot.key);
-    setView("all");
+    setActiveSlotKey(slot.key);
     const candidate =
       items.find((item) => item.id === slot.itemId) ??
-      items.find((item) => !item.equippedSlot && item.compatibleSlots.includes(slot.key));
+      items.find((item) => item.compatibleSlots.includes(slot.key));
     if (candidate) setSelectedId(candidate.id);
   };
   return (
@@ -89,7 +123,7 @@ export function InventoryWorkbench({
               <span className="eyebrow">Conjunto equipado</span>
               <h3>Espaços de combate</h3>
             </div>
-            <small>Selecione um espaço para filtrar equipamentos compatíveis.</small>
+            <small>Selecione um espaço para abrir seus equipamentos compatíveis.</small>
           </header>
           <div className="inventory-slot-grid">
             {slots.map((slot) => {
@@ -107,7 +141,7 @@ export function InventoryWorkbench({
                     <strong>{item?.name ?? "Espaço livre"}</strong>
                     {slot.reserved ? <em>Reservado por arma de duas mãos</em> : null}
                   </span>
-                  <i>›</i>
+                  <i aria-hidden="true">›</i>
                 </button>
               );
             })}
@@ -270,6 +304,128 @@ export function InventoryWorkbench({
           )}
         </aside>
       </section>
+      {activeSlot ? (
+        <div
+          className="equipment-modal"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.currentTarget === event.target) setActiveSlotKey(null);
+          }}
+        >
+          <section
+            aria-labelledby="equipment-modal-title"
+            aria-modal="true"
+            className="equipment-modal__dialog"
+            role="dialog"
+          >
+            <header className="equipment-modal__header">
+              <div>
+                <span className="eyebrow">Escolher equipamento</span>
+                <h3 id="equipment-modal-title">{activeSlot.label}</h3>
+                <p>
+                  {activeSlotItem
+                    ? `${activeSlotItem.name} está equipado neste espaço.`
+                    : `Escolha um dos ${compatibleItems.length} itens compatíveis da mochila.`}
+                </p>
+              </div>
+              <button
+                aria-label="Fechar seleção de equipamento"
+                onClick={() => setActiveSlotKey(null)}
+                type="button"
+              >
+                ×
+              </button>
+            </header>
+            {activeSlot.reserved && activeSlotItem ? (
+              <div className="equipment-modal__two-handed">
+                <ItemGlyph slot={activeSlotItem.slot} />
+                <span>
+                  <strong>Espaço reservado por arma de duas mãos</strong>
+                  <small>
+                    Equipar outra arma aqui substituirá {activeSlotItem.name} e liberará os dois
+                    espaços.
+                  </small>
+                </span>
+              </div>
+            ) : null}
+            <div className="equipment-modal__list">
+              {compatibleItems.length ? (
+                compatibleItems.map((item) => {
+                  const equippedHere = item.id === activeSlot.itemId;
+                  const equippedElsewhere = Boolean(item.equippedSlot && !equippedHere);
+                  return (
+                    <article
+                      className={equippedHere ? "is-equipped" : ""}
+                      data-rarity={item.rarity}
+                      key={item.id}
+                    >
+                      <div className="equipment-modal__glyph">
+                        <ItemGlyph slot={item.slot} />
+                        {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
+                      </div>
+                      <div className="equipment-modal__item-copy">
+                        <small>
+                          {item.rarityLabel} · {item.twoHanded ? "Duas mãos" : item.slotLabel}
+                        </small>
+                        <strong>{item.name}</strong>
+                        <p>{item.description}</p>
+                        <div>
+                          {Object.entries(item.attributes).map(([key, value]) => (
+                            <span key={key}>
+                              {key} <b>+{value}</b>
+                            </span>
+                          ))}
+                          {item.effects.map((effect) => (
+                            <span className="is-effect" key={effect.key} title={effect.description}>
+                              ✦ {effect.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="equipment-modal__action">
+                        {equippedHere ? (
+                          <>
+                            <span>✓ Equipado</span>
+                            <form action={unequipItemAction.bind(null, character.id)}>
+                              <input name="inventoryId" type="hidden" value={item.id} />
+                              <button className="button button--dark">Desequipar</button>
+                            </form>
+                          </>
+                        ) : (
+                          <form action={equipItemAction.bind(null, character.id)}>
+                            <input name="inventoryId" type="hidden" value={item.id} />
+                            <input name="slot" type="hidden" value={activeSlot.key} />
+                            {equippedElsewhere ? (
+                              <small>
+                                Em {slots.find((slot) => slot.key === item.equippedSlot)?.label}
+                              </small>
+                            ) : null}
+                            <button className="button button--primary">
+                              {equippedElsewhere ? "Mover para cá" : "Equipar"}
+                            </button>
+                          </form>
+                        )}
+                      </div>
+                    </article>
+                  );
+                })
+              ) : (
+                <div className="inventory-empty">
+                  <ItemGlyph slot={activeSlot.key} />
+                  <strong>Nenhum {activeSlot.label.toLocaleLowerCase("pt-BR")} na mochila</strong>
+                  <p>Visite a Loja para encontrar um equipamento compatível.</p>
+                </div>
+              )}
+            </div>
+            <footer className="equipment-modal__footer">
+              <span>{compatibleItems.length} itens compatíveis</span>
+              <button className="button button--dark" onClick={() => setActiveSlotKey(null)}>
+                Voltar ao inventário
+              </button>
+            </footer>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }

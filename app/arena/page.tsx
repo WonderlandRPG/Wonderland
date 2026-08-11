@@ -13,6 +13,7 @@ import { arenaRewards, type ArenaMode } from "@/lib/game/arena";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getBasicAttackRange } from "@/lib/game/equipment";
+import { applyAdventureRankEffect, getAdventureRank } from "@/lib/game/ranks";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -59,57 +60,64 @@ export default async function ArenaPage({
       : pvpQueue?.opponent_character_id && !opponent
         ? "O adversário foi encontrado, mas a ficha dele não pôde ser carregada."
         : null;
-  const toArenaCharacter = (character: CharacterSheet) => ({
-    id: character.id,
-    name: character.name,
-    level: character.level,
-    adventureRank: character.adventure_rank,
-    imageUrl: character.image_url ?? "",
-    raceName: character.race.name,
-    className: character.characterClass.name,
-    baseHp: character.race.payload.baseHp,
-    baseMana: character.race.payload.baseMana,
-    classResource: character.characterClass.payload.resource,
-    raceResource: character.race.payload.resource,
-    usesMana: [...character.unlockedClassSkills, ...character.unlockedRaceAbilities].some(
-      (skill) => skill.resource === "mana",
-    ),
-    basicAttackRange: getBasicAttackRange(character.inventory),
-    attributes: character.stats.attributes,
-    skills: character.unlockedClassSkills
-      .filter((skill) => !/passiva/i.test(skill.type))
-      .map(prepareArenaSkill),
-    raceAbilities: character.unlockedRaceAbilities,
-    combatLore: [
-      {
-        name: character.characterClass.payload.passive.name,
-        description: character.characterClass.payload.passive.description,
-      },
-      {
-        name: character.characterClass.payload.mechanic.name,
-        description: character.characterClass.payload.mechanic.description,
-      },
-      ...character.characterClass.payload.paths
-        .filter((path) => path.key === character.class_path_key)
-        .map((path) => ({ name: path.passive.name, description: path.passive.description })),
-      ...character.race.payload.traits,
-      ...character.race.payload.mechanics,
-      ...character.inventory
+  const toArenaCharacter = (character: CharacterSheet) => {
+    const rank = getAdventureRank(character.adventure_rank);
+    return {
+      id: character.id,
+      name: character.name,
+      level: character.level,
+      adventureRank: character.adventure_rank,
+      imageUrl: character.image_url ?? "",
+      raceName: character.race.name,
+      className: character.characterClass.name,
+      baseHp: character.race.payload.baseHp,
+      baseMana: character.race.payload.baseMana,
+      classResource: character.characterClass.payload.resource,
+      raceResource: character.race.payload.resource,
+      usesMana: [...character.unlockedClassSkills, ...character.unlockedRaceAbilities].some(
+        (skill) => skill.resource === "mana",
+      ),
+      basicAttackRange: getBasicAttackRange(character.inventory),
+      attributes: applyAdventureRankEffect(character.stats.attributes, character.adventure_rank),
+      skills: character.unlockedClassSkills
+        .filter((skill) => !/passiva/i.test(skill.type))
+        .map(prepareArenaSkill),
+      raceAbilities: character.unlockedRaceAbilities,
+      combatLore: [
+        {
+          name: `Rank ${rank.key} · ${rank.effect.name}`,
+          description: rank.effect.summary,
+        },
+        {
+          name: character.characterClass.payload.passive.name,
+          description: character.characterClass.payload.passive.description,
+        },
+        {
+          name: character.characterClass.payload.mechanic.name,
+          description: character.characterClass.payload.mechanic.description,
+        },
+        ...character.characterClass.payload.paths
+          .filter((path) => path.key === character.class_path_key)
+          .map((path) => ({ name: path.passive.name, description: path.passive.description })),
+        ...character.race.payload.traits,
+        ...character.race.payload.mechanics,
+        ...character.inventory
+          .filter((item) => item.equippedSlot)
+          .flatMap((item) =>
+            item.specialEffects.map((effect) => ({
+              name: effect.name,
+              description: effect.description,
+            })),
+          ),
+      ],
+      equipmentEffects: character.inventory
         .filter((item) => item.equippedSlot)
-        .flatMap((item) =>
-          item.specialEffects.map((effect) => ({
-            name: effect.name,
-            description: effect.description,
-          })),
-        ),
-    ],
-    equipmentEffects: character.inventory
-      .filter((item) => item.equippedSlot)
-      .flatMap((item) => item.specialEffects),
-    items: character.inventory
-      .filter((item) => /consum|poção|pocao/i.test(item.category))
-      .map((item) => ({ id: item.id, name: item.name, description: item.description })),
-  });
+        .flatMap((item) => item.specialEffects),
+      items: character.inventory
+        .filter((item) => /consum|poção|pocao/i.test(item.category))
+        .map((item) => ({ id: item.id, name: item.name, description: item.description })),
+    };
+  };
 
   return (
     <main className="arena-page">

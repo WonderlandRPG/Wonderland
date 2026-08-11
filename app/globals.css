@@ -174,6 +174,74 @@ body > section {
   text-align: center;
   animation: title-awakened-pulse 2.4s ease-in-out infinite;
 }
+
+.character-card__portrait > .character-equipped-title,
+.arena-fighter__portrait > .character-equipped-title,
+.character-command-hero__art > .character-equipped-title,
+.account-active-character__portrait > .character-equipped-title,
+.public-profile-portrait > .character-equipped-title {
+  top: auto;
+  right: auto;
+  bottom: 10px;
+  left: 50%;
+  z-index: 7;
+  height: auto;
+  min-height: 0;
+  font-size: .62rem;
+  line-height: 1.2;
+}
+.character-command-hero__art > .character-equipped-title { bottom: 18px; }
+.account-active-character__portrait > .character-equipped-title { bottom: 8px; font-size: .55rem; }
+.public-profile-portrait { position: relative; display: inline-grid; flex: 0 0 auto; }
+.public-profile-portrait > .portal-avatar { display: grid; }
+.public-profile-portrait > .character-equipped-title { bottom: -8px; }
+
+.arena-fighter__portrait { overflow: visible; isolation: isolate; }
+.arena-fighter__portrait.is-image { background-size: cover; background-position: center; }
+.arena-combat-float {
+  position: absolute !important;
+  z-index: 12;
+  top: 32% !important;
+  left: 50%;
+  width: max-content;
+  transform: translate(-50%, 0);
+  pointer-events: none;
+  font: 900 1.5rem Cinzel, Georgia, serif !important;
+  letter-spacing: .05em;
+  text-shadow: 0 3px 0 #050705, 0 0 18px currentColor;
+  animation: arena-float-feedback .95s ease-out both;
+}
+.arena-combat-float.is-damage { color: #ff6d78; }
+.arena-combat-float.is-heal { color: #65f0aa; }
+.arena-combat-float.is-shield { color: #79d9ff; font-size: .85rem !important; }
+.arena-combat-float.is-attack { color: #f4d476; font-size: .85rem !important; }
+@keyframes arena-float-feedback { 0% { opacity: 0; transform: translate(-50%, 18px) scale(.6); } 24% { opacity: 1; transform: translate(-50%, -4px) scale(1.18); } 100% { opacity: 0; transform: translate(-50%, -58px) scale(.92); } }
+.arena-fighter__portrait.has-damage { animation: arena-hit .42s ease-out; }
+.arena-fighter__portrait.has-heal { animation: arena-heal 1s ease-out; }
+.arena-fighter__portrait.has-shield { animation: arena-shield 1s ease-out; }
+.arena-fighter__portrait.has-attack { animation: arena-attack .48s ease-out; }
+@keyframes arena-hit { 25% { transform: translateX(-8px); filter: brightness(1.7) saturate(1.8); box-shadow: inset 0 0 45px rgba(255,48,66,.8), 0 0 26px rgba(255,48,66,.65); } 55% { transform: translateX(6px); } }
+@keyframes arena-heal { 45% { filter: brightness(1.3); box-shadow: inset 0 -10px 45px rgba(48,235,145,.65), 0 0 34px rgba(48,235,145,.62); } }
+@keyframes arena-shield { 35%,70% { box-shadow: inset 0 0 0 5px rgba(113,219,255,.82), inset 0 0 45px rgba(70,170,255,.5), 0 0 38px rgba(70,170,255,.72); } }
+@keyframes arena-attack { 45% { transform: scale(1.045); filter: brightness(1.35); box-shadow: 0 0 34px rgba(244,212,118,.65); } }
+
+.arena-status-icons { gap: 8px; }
+.arena-status-icons > span {
+  display: grid;
+  grid-template-columns: 28px minmax(64px,auto);
+  width: auto;
+  min-width: 104px;
+  height: 38px;
+  justify-content: start;
+  padding: 4px 22px 4px 5px;
+  border-radius: 9px;
+  box-shadow: inset 0 0 16px rgba(78,224,167,.1), 0 4px 12px rgba(0,0,0,.2);
+}
+.arena-status-icons > span.is-debuff { box-shadow: inset 0 0 16px rgba(239,87,104,.14), 0 4px 12px rgba(0,0,0,.2); }
+.arena-status-icons > span > b { display:grid; width:26px; height:26px; place-items:center; border-radius:7px; background:rgba(255,255,255,.08); font-size:.85rem; }
+.arena-status-icons small { position: static; overflow: visible; width: auto; height: auto; clip: auto; color: currentColor; font-size: .57rem; font-weight: 900; line-height: 1.05; text-transform: uppercase; }
+.arena-status-icons i { right: 4px; bottom: 4px; }
+@media (prefers-reduced-motion: reduce) { .arena-combat-float,.arena-fighter__portrait.has-damage,.arena-fighter__portrait.has-heal,.arena-fighter__portrait.has-shield,.arena-fighter__portrait.has-attack { animation-duration: .01ms !important; } }
 @keyframes title-awakened-pulse { 50% { filter: brightness(1.28); box-shadow: 0 0 35px rgba(239,190,64,.7), 0 0 10px rgba(58,190,126,.55); transform: translateX(-50%) scale(1.035); } }
 
 .inventory-classic-card > div:first-child,

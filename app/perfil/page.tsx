@@ -8,6 +8,7 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { RankBadge } from "@/components/characters/rank-badge";
 import { getAdventureRank } from "@/lib/game/ranks";
+import { EquippedTitle } from "@/components/characters/equipped-title";
 
 export const metadata: Metadata = { title: "Minha conta" };
 
@@ -42,6 +43,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
     .map((part) => part[0]?.toUpperCase())
     .join("");
   const activeRank = getAdventureRank(activeCharacter.adventure_rank);
+  const equippedTitle = activeCharacter.inventory.find((item) => item.equippedSlot === "title") ?? null;
 
   return (
     <main className="account-shell">
@@ -134,6 +136,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 {activeCharacter.image_url ? "" : activeCharacter.name.slice(0, 2).toUpperCase()}
                 <span>Online</span>
                 <RankBadge compact rank={activeCharacter.adventure_rank} />
+                <EquippedTitle title={equippedTitle} />
               </div>
               <small>Personagem em jogo</small>
               <h2>{activeCharacter.name}</h2>

@@ -14,6 +14,7 @@ import { getConvertedResourceBonus } from "@/lib/game/combat";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
 import { compatibleEquipSlots, equipmentSlots, itemSlotLabel } from "@/lib/game/equipment";
 import { updateCharacterImageAction } from "./equipment-actions";
+import { EquippedTitle } from "@/components/characters/equipped-title";
 
 export const metadata = { title: "Ficha do Personagem" };
 export const dynamic = "force-dynamic";
@@ -53,6 +54,7 @@ export default async function CharacterSheetPage({
     equippedItems.set("off_weapon", twoHandedWeapon);
   }
   const rank = getAdventureRank(character.adventure_rank);
+  const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
   const classPath = character.characterClass.payload.paths?.find(
     (path) => path.key === character.class_path_key,
   );
@@ -99,6 +101,7 @@ export default async function CharacterSheetPage({
               <span>{character.name.slice(0, 2).toUpperCase()}</span>
             )}
             <RankBadge rank={character.adventure_rank} />
+            <EquippedTitle title={equippedTitle} />
           </div>
           <div className="character-command-hero__identity">
             <span className="eyebrow">Personagem online · {kingdomName(character.kingdom)}</span>

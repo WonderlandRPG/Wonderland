@@ -77,12 +77,18 @@ export default async function ArenaPage({
         ? "O adversário foi encontrado, mas a ficha dele não pôde ser carregada."
         : null;
   const toArenaCharacter = (character: CharacterSheet) => {
+    const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
     return {
       id: character.id,
       name: character.name,
       level: character.level,
       adventureRank: character.adventure_rank,
       imageUrl: character.image_url ?? "",
+      equippedTitle: equippedTitle ? {
+        name: equippedTitle.name,
+        rarity: equippedTitle.rarity,
+        titleStyle: equippedTitle.titleStyle,
+      } : null,
       raceName: character.race.name,
       className: character.characterClass.name,
       baseHp: character.race.payload.baseHp,

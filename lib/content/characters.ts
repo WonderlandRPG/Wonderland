@@ -5,7 +5,12 @@ import { notFound } from "next/navigation";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import { defaultCombatRules } from "@/lib/game/combat";
 import type { Database } from "@/lib/db/types";
-import { parseClassPayload, getUnlockedClassSkills, getUnlockedPathSkills, type ClassPayload } from "@/lib/game/classes";
+import {
+  parseClassPayload,
+  getUnlockedClassSkills,
+  getUnlockedPathSkills,
+  type ClassPayload,
+} from "@/lib/game/classes";
 import {
   allocatedAttributesSchema,
   buildCharacterStats,
@@ -73,7 +78,9 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
   const { data: shopRows } = itemIds.length
     ? await client
         .from("v2_shop_items")
-        .select("id,name,description,category,rarity,slot,attributes,special_effects,title_style,two_handed")
+        .select(
+          "id,name,description,category,rarity,slot,attributes,special_effects,title_style,two_handed",
+        )
         .in("id", itemIds)
     : { data: [] };
   const shop = new Map((shopRows ?? []).map((entry) => [entry.id, entry]));
@@ -105,7 +112,9 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
             attributes: parsed.success ? parsed.data : {},
             specialEffects: parseItemSpecialEffects(item.special_effects),
             titleStyle:
-              item.title_style && typeof item.title_style === "object" && !Array.isArray(item.title_style)
+              item.title_style &&
+              typeof item.title_style === "object" &&
+              !Array.isArray(item.title_style)
                 ? {
                     primary: String(item.title_style.primary ?? "#fff1b5"),
                     secondary: String(item.title_style.secondary ?? "#1f7a4c"),
@@ -200,6 +209,14 @@ export async function getCharacterSheet(id: string) {
   }
   if (!data) return null;
   return (await loadSheets([data]))[0] ?? null;
+}
+
+export async function getPvpOpponentSheet(matchId: string) {
+  const client = await createServerSupabaseClient();
+  if (!client) return null;
+  const { data, error } = await client.rpc("v2_get_pvp_opponent", { p_match_id: matchId });
+  if (error || !data || Array.isArray(data) || typeof data !== "object") return null;
+  return (await loadSheets([data as unknown as CharacterRow]))[0] ?? null;
 }
 
 export async function requireCharacterSheet(id: string) {

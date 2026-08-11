@@ -17,14 +17,18 @@ export default async function Home() {
         </div>
         <PlayerNav />
         <div className="hero__content page-container">
-          <div className="hero__chapter">Prólogo <span>MMXXVI</span></div>
-          <p className="hero__kicker">Uma crônica moldada pelos jogadores</p>
+          <div className="hero__chapter">
+            Portal oficial <span>As Fraturas despertaram</span>
+          </div>
+          <p className="hero__kicker">Uma nova era começa em Wonderland</p>
           <h1>
-            Atravesse o véu.<br/><span>Torne-se lenda.</span>
+            Atravesse o véu.
+            <br />
+            <span>Escreva sua lenda.</span>
           </h1>
           <p className="hero__lead">
-            Forje um herói, atravesse os reinos partidos e escreva seu nome em um mundo que
-            muda com as escolhas de seus jogadores.
+            Entre em um mundo quebrado por magia, crie seu herói e transforme cada escolha em
+            parte da história viva de Wonderland.
           </p>
           <div className="hero__actions">
             <Link className="button button--primary" href={account ? "/personagens" : "/cadastro"}>
@@ -32,9 +36,24 @@ export default async function Home() {
             </Link>
           </div>
           <div className="hero__chronicle" aria-label="Destaques de Wonderland">
-            <Link href="/racas"><small>I</small><span><strong>Descubra sua origem</strong>Onze povos despertos</span></Link>
-            <Link href="/classes"><small>II</small><span><strong>Escolha seu caminho</strong>Combate, magia e destino</span></Link>
-            <Link href="/historia"><small>III</small><span><strong>Leia as crônicas</strong>Sete eras de história</span></Link>
+            <Link href="/racas">
+              <small>I</small>
+              <span>
+                <strong>Descubra sua origem</strong>Onze povos despertos
+              </span>
+            </Link>
+            <Link href="/classes">
+              <small>II</small>
+              <span>
+                <strong>Escolha seu caminho</strong>Combate, magia e destino
+              </span>
+            </Link>
+            <Link href="/historia">
+              <small>III</small>
+              <span>
+                <strong>Leia as crônicas</strong>Sete eras de história
+              </span>
+            </Link>
           </div>
         </div>
       </section>

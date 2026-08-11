@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireCurrentAccount } from "@/lib/auth/account";
-import { requireActiveCharacter } from "@/lib/content/active-character";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { equipmentSlots, type EquipmentSlot } from "@/lib/game/equipment";
 
@@ -53,13 +52,4 @@ export async function updateCharacterImageAction(characterId: string, formData: 
     });
   revalidatePath(`/personagens/${characterId}`);
   revalidatePath("/personagens");
-}
-
-export async function claimCharacterPresenceAction(characterId: string) {
-  const { characterId: activeId } = await requireActiveCharacter(`/personagens/${characterId}`);
-  if (activeId !== characterId) return;
-  const client = await createServerSupabaseClient();
-  if (client) await client.rpc("v2_claim_daily_reward", {});
-  revalidatePath(`/personagens/${characterId}`);
-  revalidatePath("/perfil");
 }

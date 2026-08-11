@@ -14,7 +14,11 @@ import {
   resolveSkill,
   tickCooldowns,
 } from "@/lib/game/combat";
-import { applyBattleStartItemEffects, itemSpecialEffectSchema } from "@/lib/game/item-effects";
+import {
+  applyBattleStartItemEffects,
+  itemSpecialEffectSchema,
+  resolvePeriodicItemDamage,
+} from "@/lib/game/item-effects";
 
 const attributes = { FOR: 100, DEF: 100, RES: 100, INI: 60, INT: 80, ARC: 70 };
 
@@ -132,6 +136,82 @@ describe("motor de combate", () => {
     expect(resolution.target.hp).toBeLessThan(target.hp);
     expect(resolveSkill(resolution.actor, resolution.target, projectile).event.kind).toBe("error");
     expect(tickCooldowns(resolution.actor).cooldowns[projectile.key]).toBe(0);
+  });
+
+  it("aplica Envenenamento na Arena e causa dano ao fim da rodada", () => {
+    const poison = itemSpecialEffectSchema.parse({
+      key: "gelo-verde",
+      name: "Veneno Persistente",
+      description: "Aplica Envenenamento.",
+      kind: "POISON",
+      trigger: "ON_DAMAGE_DEALT",
+      duration: 3,
+      power: 8,
+    });
+    const actor = createCombatant({
+      id: "venenoso",
+      name: "Ladino",
+      attributes,
+      baseHp: 300,
+      baseMana: 0,
+      itemEffects: [poison],
+    });
+    const target = createCombatant({
+      id: "alvo-veneno",
+      name: "Alvo",
+      attributes,
+      baseHp: 300,
+      baseMana: 0,
+    });
+    const hit = resolveBasicAttack(actor, target);
+    expect(Object.values(hit.target.statuses)[0]).toMatchObject({
+      name: "Envenenamento",
+      duration: 3,
+      periodicDamage: 8,
+    });
+    expect(resolvePeriodicItemDamage(hit.target).combatant.hp).toBe(hit.target.hp - 8);
+  });
+
+  it("faz roubo de vida e reduz a recarga de habilidades por equipamento", () => {
+    const lifeSteal = itemSpecialEffectSchema.parse({
+      key: "sede-vital",
+      name: "Sede Vital",
+      description: "Recupera parte do dano causado.",
+      kind: "LIFE_STEAL",
+      trigger: "ON_DAMAGE_DEALT",
+      power: 20,
+    });
+    const cooldown = itemSpecialEffectSchema.parse({
+      key: "tempo-fraturado",
+      name: "Tempo Fraturado",
+      description: "Reduz recargas.",
+      kind: "COOLDOWN_REDUCTION",
+      trigger: "ON_SKILL_USE",
+      power: 2,
+    });
+    const actor = {
+      ...createCombatant({
+        id: "vampirico",
+        name: "Duelista",
+        attributes,
+        baseHp: 300,
+        baseMana: 100,
+        classResource: { name: "Carga Arcana", initial: 5, maximum: 5 },
+        itemEffects: [lifeSteal, cooldown],
+      }),
+      hp: 300,
+    };
+    const target = createCombatant({
+      id: "alvo-roubo",
+      name: "Alvo",
+      attributes,
+      baseHp: 300,
+      baseMana: 0,
+    });
+    expect(resolveBasicAttack(actor, target).actor.hp).toBe(310);
+    const mage = officialClasses.find((entry) => entry.slug === "mago")!;
+    const projectile = mage.payload.progression.find((skill) => skill.key === "projetil-arcano")!;
+    expect(resolveSkill(actor, target, projectile).actor.cooldowns[projectile.key]).toBe(0);
   });
 
   it("aplica buffs nos atributos durante a duração cadastrada", () => {

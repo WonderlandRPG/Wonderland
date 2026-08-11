@@ -7,6 +7,7 @@ import {
   combineAttributes,
   createCombatant,
   deriveStats,
+  getEffectiveAttributes,
   getConvertedResourceBonus,
   resolveBasicAttack,
   resolveSkill,
@@ -114,6 +115,38 @@ describe("motor de combate", () => {
     expect(resolution.target.hp).toBeLessThan(target.hp);
     expect(resolveSkill(resolution.actor, resolution.target, projectile).event.kind).toBe("error");
     expect(tickCooldowns(resolution.actor).cooldowns[projectile.key]).toBe(0);
+  });
+
+  it("aplica buffs nos atributos durante a duração cadastrada", () => {
+    const actor = createCombatant({
+      id: "barbaro",
+      name: "Bárbaro",
+      attributes,
+      baseHp: 500,
+      baseMana: 0,
+      classResource: { name: "Fúria", initial: 100, maximum: 100 },
+    });
+    const target = createCombatant({
+      id: "alvo",
+      name: "Alvo",
+      attributes,
+      baseHp: 500,
+      baseMana: 0,
+    });
+    const barbarian = officialClasses.find((entry) => entry.slug === "barbaro")!;
+    const buff = barbarian.payload.paths
+      .flatMap((path) => path.skills)
+      .find((skill) => skill.key === "berserker-1")!;
+    const result = resolveSkill(actor, target, buff);
+    expect(getEffectiveAttributes(result.actor).FOR).toBe(attributes.FOR + 10);
+    expect(Object.values(result.actor.statuses)[0]).toMatchObject({
+      duration: 2,
+      beneficial: true,
+    });
+    expect(getEffectiveAttributes(tickCooldowns(result.actor)).FOR).toBe(attributes.FOR + 10);
+    expect(getEffectiveAttributes(tickCooldowns(tickCooldowns(result.actor))).FOR).toBe(
+      attributes.FOR,
+    );
   });
 
   it("combina base, pontos livres e bônus raciais", () => {

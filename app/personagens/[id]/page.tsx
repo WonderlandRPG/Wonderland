@@ -13,6 +13,8 @@ import { getAdventureRank } from "@/lib/game/ranks";
 import { getConvertedResourceBonus } from "@/lib/game/combat";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
 import {
+  canEquipItemInSlot,
+  compatibleEquipSlots,
   defaultEquipSlot,
   equipmentSlots,
   itemSlotLabel,
@@ -53,14 +55,25 @@ export default async function CharacterSheetPage({
       .filter((item) => item.equippedSlot)
       .map((item) => [item.equippedSlot, item]),
   );
-  const twoHandedMain = equippedItems.get("main_weapon");
-  if (twoHandedMain?.twoHanded) equippedItems.set("off_weapon", twoHandedMain);
+  const twoHandedWeapon = equippedItems.get("main_weapon")?.twoHanded
+    ? equippedItems.get("main_weapon")
+    : equippedItems.get("off_weapon")?.twoHanded
+      ? equippedItems.get("off_weapon")
+      : null;
+  if (twoHandedWeapon) {
+    equippedItems.set("main_weapon", twoHandedWeapon);
+    equippedItems.set("off_weapon", twoHandedWeapon);
+  }
   const rank = getAdventureRank(character.adventure_rank);
   const classPath = character.characterClass.payload.paths?.find(
     (path) => path.key === character.class_path_key,
   );
-  const unlockedPathSkills = (classPath?.skills ?? []).filter((skill) => skill.level <= character.level);
-  const futurePathSkills = (classPath?.skills ?? []).filter((skill) => skill.level > character.level);
+  const unlockedPathSkills = (classPath?.skills ?? []).filter(
+    (skill) => skill.level <= character.level,
+  );
+  const futurePathSkills = (classPath?.skills ?? []).filter(
+    (skill) => skill.level > character.level,
+  );
   const usesMana = [...character.unlockedClassSkills, ...character.unlockedRaceAbilities].some(
     (skill) => skill.resource === "mana",
   );
@@ -74,27 +87,66 @@ export default async function CharacterSheetPage({
   );
   const renderEquipmentSlot = (slot: (typeof equipmentSlots)[number]) => {
     const item = equippedItems.get(slot.key);
-    const isTwoHandedReservation = slot.key === "off_weapon" && item?.twoHanded;
-    const catalogSlot = slot.key.startsWith("ring")
-      ? "ring"
-      : slot.key.startsWith("earring")
-        ? "earring"
-        : slot.key;
+    const isTwoHandedReservation = Boolean(item?.twoHanded && item.equippedSlot !== slot.key);
     const candidates = character.inventory.filter(
-      (entry) => entry.slot === catalogSlot && entry.id !== item?.id,
+      (entry) =>
+        !entry.equippedSlot &&
+        entry.id !== item?.id &&
+        canEquipItemInSlot(entry.slot, entry.twoHanded, slot.key),
     );
     return (
-      <details className={`equipment-slot-picker ${item ? "is-equipped" : ""} ${isTwoHandedReservation ? "is-two-handed-reservation" : ""}`} key={slot.key}>
+      <details
+        className={`equipment-slot-picker ${item ? "is-equipped" : ""} ${isTwoHandedReservation ? "is-two-handed-reservation" : ""}`}
+        key={slot.key}
+      >
         <summary>
-          <span className="equipment-slot__seal"><ItemGlyph slot={slot.key} /></span>
-          <div><small>{slot.label}</small><strong>{item?.name ?? "Espaço livre"}</strong>{isTwoHandedReservation ? <em>Ocupado pela arma de duas mãos</em> : null}</div>
+          <span className="equipment-slot__seal">
+            <ItemGlyph slot={slot.key} />
+          </span>
+          <div>
+            <small>{slot.label}</small>
+            <strong>{item?.name ?? "Espaço livre"}</strong>
+            {isTwoHandedReservation ? <em>Ocupado pela arma de duas mãos</em> : null}
+          </div>
           <i aria-hidden="true">⌄</i>
         </summary>
         <div className="equipment-slot-picker__menu">
-          <header><strong>{isTwoHandedReservation ? "Espaço reservado" : `Equipar em ${slot.label}`}</strong><small>{isTwoHandedReservation ? "Remova a arma principal para liberar" : `${candidates.length} opções na mochila`}</small></header>
-          {item ? <form action={unequipItemAction.bind(null, character.id)}><input name="inventoryId" type="hidden" value={item.id} /><span><ItemGlyph slot={item.slot}/><b>{item.name}</b><small>Equipado agora</small></span><button>Remover</button></form> : null}
-          {candidates.map((entry) => <form action={equipItemAction.bind(null, character.id)} key={entry.id}><input name="inventoryId" type="hidden" value={entry.id}/><input name="slot" type="hidden" value={slot.key}/><span><ItemGlyph slot={entry.slot}/><b>{entry.name}</b><small>{entry.rarity}</small></span><button>Equipar</button></form>)}
-          {!item && !candidates.length ? <p>Você ainda não possui itens compatíveis com este espaço.</p> : null}
+          <header>
+            <strong>
+              {isTwoHandedReservation ? "Espaço reservado" : `Equipar em ${slot.label}`}
+            </strong>
+            <small>
+              {isTwoHandedReservation
+                ? "Remova a arma principal para liberar"
+                : `${candidates.length} opções na mochila`}
+            </small>
+          </header>
+          {item && !isTwoHandedReservation ? (
+            <form action={unequipItemAction.bind(null, character.id)}>
+              <input name="inventoryId" type="hidden" value={item.id} />
+              <span>
+                <ItemGlyph slot={item.slot} />
+                <b>{item.name}</b>
+                <small>Equipado agora</small>
+              </span>
+              <button>Remover</button>
+            </form>
+          ) : null}
+          {candidates.map((entry) => (
+            <form action={equipItemAction.bind(null, character.id)} key={entry.id}>
+              <input name="inventoryId" type="hidden" value={entry.id} />
+              <input name="slot" type="hidden" value={slot.key} />
+              <span>
+                <ItemGlyph slot={entry.slot} />
+                <b>{entry.name}</b>
+                <small>{entry.rarity}</small>
+              </span>
+              <button>Equipar</button>
+            </form>
+          ))}
+          {!item && !candidates.length ? (
+            <p>Você ainda não possui itens compatíveis com este espaço.</p>
+          ) : null}
         </div>
       </details>
     );
@@ -239,7 +291,11 @@ export default async function CharacterSheetPage({
               </article>
               <article>
                 <span>{usesMana ? "Mana máxima" : "Recursos iniciais"}</span>
-                <strong>{usesMana ? character.stats.maxMana : `+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}</strong>
+                <strong>
+                  {usesMana
+                    ? character.stats.maxMana
+                    : `+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}
+                </strong>
               </article>
               <article>
                 <span>Iniciativa</span>
@@ -357,11 +413,15 @@ export default async function CharacterSheetPage({
               />
               <SkillList
                 title="Habilidades da classe"
-                unlocked={character.unlockedClassSkills.filter((entry) => !(classPath?.skills ?? []).some((skill) => skill.key === entry.key)).map((entry) => ({
-                  level: entry.level,
-                  name: entry.name,
-                  description: entry.effect,
-                }))}
+                unlocked={character.unlockedClassSkills
+                  .filter(
+                    (entry) => !(classPath?.skills ?? []).some((skill) => skill.key === entry.key),
+                  )
+                  .map((entry) => ({
+                    level: entry.level,
+                    name: entry.name,
+                    description: entry.effect,
+                  }))}
                 locked={futureClassSkills.map((entry) => ({
                   level: entry.level,
                   name: entry.name,
@@ -370,8 +430,16 @@ export default async function CharacterSheetPage({
               />
               <SkillList
                 title={`Caminho · ${classPath?.name ?? "Não definido"}`}
-                unlocked={unlockedPathSkills.map((entry) => ({ level: entry.level, name: entry.name, description: entry.playerDescription }))}
-                locked={futurePathSkills.map((entry) => ({ level: entry.level, name: entry.name, description: entry.playerDescription }))}
+                unlocked={unlockedPathSkills.map((entry) => ({
+                  level: entry.level,
+                  name: entry.name,
+                  description: entry.playerDescription,
+                }))}
+                locked={futurePathSkills.map((entry) => ({
+                  level: entry.level,
+                  name: entry.name,
+                  description: entry.playerDescription,
+                }))}
               />
             </div>
           </section>
@@ -407,12 +475,13 @@ export default async function CharacterSheetPage({
               </aside>
               <div className="inventory-equipment-panel">
                 <header>
-                  <div><span className="eyebrow">Conjunto equipado</span><h3>13 espaços de combate</h3></div>
+                  <div>
+                    <span className="eyebrow">Conjunto equipado</span>
+                    <h3>13 espaços de combate</h3>
+                  </div>
                   <small>Clique em um espaço para escolher um item compatível.</small>
                 </header>
-                <div className="equipment-slot-grid">
-                  {equipmentSlots.map(renderEquipmentSlot)}
-                </div>
+                <div className="equipment-slot-grid">{equipmentSlots.map(renderEquipmentSlot)}</div>
               </div>
             </div>
             <div className="inventory-heading">
@@ -439,18 +508,27 @@ export default async function CharacterSheetPage({
                       </small>
                       <h3>{entry.name}</h3>
                       <p>{entry.description}</p>
-                      {entry.specialEffects.map((effect) => <div className="inventory-item-effect" key={effect.key}><b>{effect.name}</b><span>{effect.description}</span></div>)}
+                      {entry.specialEffects.map((effect) => (
+                        <div className="inventory-item-effect" key={effect.key}>
+                          <b>{effect.name}</b>
+                          <span>{effect.description}</span>
+                        </div>
+                      ))}
                       <footer>
                         <span>Quantidade {entry.quantity}</span>
                         <form action={equipItemAction.bind(null, character.id)}>
                           <input name="inventoryId" type="hidden" value={entry.id} />
-                          {entry.slot === "ring" || entry.slot === "earring" ? (
+                          {compatibleEquipSlots(entry.slot, entry.twoHanded).length > 1 ? (
                             <select
                               name="slot"
                               defaultValue={defaultEquipSlot(entry.slot) ?? undefined}
                             >
                               {equipmentSlots
-                                .filter((slot) => slot.key.startsWith(entry.slot))
+                                .filter((slot) =>
+                                  compatibleEquipSlots(entry.slot, entry.twoHanded).includes(
+                                    slot.key,
+                                  ),
+                                )
                                 .map((slot) => (
                                   <option key={slot.key} value={slot.key}>
                                     {slot.label}

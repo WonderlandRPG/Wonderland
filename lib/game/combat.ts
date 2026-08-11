@@ -47,12 +47,20 @@ export interface CombatantState {
   classResourceName: string;
   classResource: number;
   maxClassResource: number;
-  statuses: Record<string, { duration: number; stacks: number }>;
+  statuses: Record<string, ActiveCombatStatus>;
   resourceGainOnBasicAttack: number;
   raceResourceName: string;
   raceResource: number;
   maxRaceResource: number;
   raceResourceGainOnBasicAttack: number;
+}
+
+export interface ActiveCombatStatus {
+  name: string;
+  duration: number;
+  stacks: number;
+  modifiers: Partial<CombatAttributes>;
+  beneficial: boolean;
 }
 
 export function getConvertedResourceBonus(intelligence: number, maximum: number) {
@@ -194,7 +202,28 @@ export function tickCooldowns(combatant: CombatantState): CombatantState {
     cooldowns: Object.fromEntries(
       Object.entries(combatant.cooldowns).map(([key, value]) => [key, Math.max(0, value - 1)]),
     ),
+    statuses: Object.fromEntries(
+      Object.entries(combatant.statuses)
+        .map(([key, status]) => [key, { ...status, duration: status.duration - 1 }] as const)
+        .filter(([, status]) => status.duration > 0),
+    ),
   };
+}
+
+export function getEffectiveAttributes(combatant: CombatantState): CombatAttributes {
+  return Object.fromEntries(
+    attributeKeys.map((attribute) => [
+      attribute,
+      Math.max(
+        0,
+        combatant.attributes[attribute] +
+          Object.values(combatant.statuses).reduce(
+            (total, status) => total + (status.modifiers[attribute] ?? 0) * status.stacks,
+            0,
+          ),
+      ),
+    ]),
+  ) as CombatAttributes;
 }
 
 export function resolveBasicAttack(
@@ -202,11 +231,12 @@ export function resolveBasicAttack(
   target: CombatantState,
   rules: CombatRules = defaultCombatRules,
 ): CombatResolution {
-  const isMagical = actor.attributes.INT > actor.attributes.FOR;
+  const actorAttributes = getEffectiveAttributes(actor);
+  const targetAttributes = getEffectiveAttributes(target);
+  const isMagical = actorAttributes.INT > actorAttributes.FOR;
   const damageType: DamageType = isMagical ? "magic" : "physical";
-  const raw =
-    (isMagical ? actor.attributes.INT : actor.attributes.FOR) * rules.basicAttackMultiplier;
-  const amount = calculateDamage(raw, damageType, target.attributes, rules);
+  const raw = (isMagical ? actorAttributes.INT : actorAttributes.FOR) * rules.basicAttackMultiplier;
+  const amount = calculateDamage(raw, damageType, targetAttributes, rules);
   return {
     actor: {
       ...actor,
@@ -227,20 +257,6 @@ export function resolveBasicAttack(
       message: `${actor.name} usou Ataque básico e causou ${amount} de dano ${isMagical ? "mágico" : "físico"}.`,
     },
   };
-}
-
-function primaryScaling(skill: ClassSkill) {
-  let scaling = skill.scaling;
-  if (skill.kind === "damage") {
-    const expected =
-      skill.damageType === "physical" ? "FOR" : skill.damageType === "magic" ? "INT" : null;
-    if (expected) {
-      const typed = scaling.filter((entry) => entry.attribute === expected);
-      if (typed.length > 0) scaling = typed;
-    }
-    if (/Se cumprir/i.test(skill.effect) && scaling.length > 1) scaling = scaling.slice(0, -1);
-  }
-  return scaling;
 }
 
 function skillError(
@@ -294,14 +310,15 @@ export function resolveSkill(
   const primaryOperation = skill.operations[0];
   const operationScaling = primaryOperation?.scaling.length
     ? primaryOperation.scaling
-    : primaryScaling(skill);
+    : skill.scaling;
+  const actorAttributes = getEffectiveAttributes(actor);
   const rawPower =
-    (primaryOperation?.base ?? 0) + calculateScaledPower(actor.attributes, operationScaling);
+    (primaryOperation?.base ?? 0) + calculateScaledPower(actorAttributes, operationScaling);
 
   if (primaryOperation?.operation === "DAMAGE") {
     const type: DamageType =
       primaryOperation.damageType === "none" ? "physical" : primaryOperation.damageType;
-    const amount = calculateDamage(rawPower, type, target.attributes, rules);
+    const amount = calculateDamage(rawPower, type, getEffectiveAttributes(target), rules);
     return {
       actor: paidActor,
       target: applyDamage(target, amount),
@@ -331,7 +348,7 @@ export function resolveSkill(
   }
 
   if (primaryOperation?.operation === "SHIELD") {
-    const amount = rawPower || rounded(actor.attributes.ARC);
+    const amount = rawPower || rounded(actorAttributes.ARC);
     const receiver = skill.target === "enemy" ? target : paidActor;
     const next = { ...receiver, shield: receiver.shield + amount };
     return {
@@ -345,19 +362,59 @@ export function resolveSkill(
     };
   }
 
+  if (primaryOperation?.operation === "REMOVE_STATUS") {
+    const receiver = primaryOperation.target === "enemy" ? target : paidActor;
+    const removableKey = primaryOperation.status
+      ? primaryOperation.status
+      : Object.entries(receiver.statuses).find(([, active]) => !active.beneficial)?.[0];
+    if (!removableKey) {
+      return {
+        actor: paidActor,
+        target,
+        event: {
+          kind: "utility",
+          amount: 0,
+          message: `${actor.name} usou ${skill.name}, mas não havia efeito negativo para remover.`,
+        },
+      };
+    }
+    const statuses = { ...receiver.statuses };
+    delete statuses[removableKey];
+    const next = { ...receiver, statuses };
+    return {
+      actor: receiver.id === paidActor.id ? next : paidActor,
+      target: receiver.id === target.id ? next : target,
+      event: {
+        kind: "utility",
+        amount: 0,
+        message: `${actor.name} usou ${skill.name} e removeu um efeito negativo.`,
+      },
+    };
+  }
+
   const statusTarget = primaryOperation?.target === "self" ? paidActor : target;
-  const status = primaryOperation?.status;
-  const withStatus = status
+  const status = primaryOperation?.status || skill.key;
+  const modifiers = Object.fromEntries(
+    (primaryOperation?.modifiers ?? []).map((modifier) => [modifier.attribute, modifier.value]),
+  ) as Partial<CombatAttributes>;
+  const appliesStatus = Boolean(
+    primaryOperation &&
+    (primaryOperation.duration > 0 || Object.keys(modifiers).length > 0 || primaryOperation.status),
+  );
+  const withStatus = appliesStatus
     ? {
         ...statusTarget,
         statuses: {
           ...statusTarget.statuses,
           [status]: {
-            duration: primaryOperation.duration,
+            name: skill.name,
+            duration: Math.max(1, primaryOperation?.duration ?? skill.duration),
             stacks: Math.min(
-              primaryOperation.maxStacks || 1,
-              (statusTarget.statuses[status]?.stacks ?? 0) + (primaryOperation.stacks || 1),
+              primaryOperation?.maxStacks || 1,
+              (statusTarget.statuses[status]?.stacks ?? 0) + (primaryOperation?.stacks || 1),
             ),
+            modifiers,
+            beneficial: primaryOperation.target === "self",
           },
         },
       }

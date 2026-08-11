@@ -7,6 +7,7 @@ import {
   createCombatant,
   getRaceAbilityCooldown,
   getRaceAbilityArenaMeta,
+  getEffectiveAttributes,
   resolveBasicAttack,
   resolveRaceAbility,
   resolveSkill,
@@ -16,7 +17,12 @@ import {
   type CombatantState,
 } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
-import { arenaMonsters, arenaRewards, buildAdaptiveMonsterAttributes, type ArenaMode } from "@/lib/game/arena";
+import {
+  arenaMonsters,
+  arenaRewards,
+  buildAdaptiveMonsterAttributes,
+  type ArenaMode,
+} from "@/lib/game/arena";
 import {
   applyBattleStartItemEffects,
   sumItemEffectModifiers,
@@ -46,6 +52,7 @@ interface ArenaCharacter {
     generationEvents?: Array<{ trigger: string; amount: number }>;
   } | null;
   usesMana: boolean;
+  basicAttackRange: number;
   attributes: CombatAttributes;
   skills: ClassSkill[];
   raceAbilities: ClassSkill[];
@@ -54,8 +61,31 @@ interface ArenaCharacter {
   equipmentEffects: ItemSpecialEffect[];
 }
 
-type TurnActions = { basic: boolean; race: boolean; class: boolean; item: boolean };
-const freshActions: TurnActions = { basic: false, race: false, class: false, item: false };
+type TurnActions = { move: boolean; basic: boolean; race: boolean; class: boolean; item: boolean };
+type Position = { x: number; y: number };
+const freshActions: TurnActions = {
+  move: false,
+  basic: false,
+  race: false,
+  class: false,
+  item: false,
+};
+const gridWidth = 9;
+const gridHeight = 5;
+const movementRange = 3;
+
+function gridDistance(left: Position, right: Position) {
+  return Math.abs(left.x - right.x) + Math.abs(left.y - right.y);
+}
+
+function stepToward(from: Position, target: Position, maximum: number) {
+  const next = { ...from };
+  for (let step = 0; step < maximum && gridDistance(next, target) > 1; step += 1) {
+    if (next.x !== target.x) next.x += Math.sign(target.x - next.x);
+    else if (next.y !== target.y) next.y += Math.sign(target.y - next.y);
+  }
+  return next;
+}
 
 export function TrainingArena({
   characters,
@@ -129,12 +159,18 @@ function Battle({
   onChange(id: string): void;
   onReset(): void;
 }) {
-  const initial = useMemo(() => createBattle(character, rules, mode, monsterIndex, opponent), [character, rules, mode, monsterIndex, opponent]);
+  const initial = useMemo(
+    () => createBattle(character, rules, mode, monsterIndex, opponent),
+    [character, rules, mode, monsterIndex, opponent],
+  );
   const [player, setPlayer] = useState(initial.player);
   const [enemy, setEnemy] = useState(initial.enemy);
   const [turn, setTurn] = useState(1);
   const [actions, setActions] = useState<TurnActions>(freshActions);
   const [newCooldowns, setNewCooldowns] = useState<string[]>([]);
+  const [playerPosition, setPlayerPosition] = useState<Position>({ x: 1, y: 2 });
+  const [enemyPosition, setEnemyPosition] = useState<Position>({ x: 7, y: 2 });
+  const [moving, setMoving] = useState(false);
   const [message, setMessage] = useState("Escolha sua primeira ação.");
   const [reward, setReward] = useState<{ xp: number; wg: number } | null>(null);
   const [rewardError, setRewardError] = useState("");
@@ -142,11 +178,17 @@ function Battle({
   const finished = player.hp <= 0 || enemy.hp <= 0;
   function claimReward() {
     if (!sessionId) {
-      setRewardError("Esta batalha não foi registrada. Volte aos modos da Arena e inicie um novo combate.");
+      setRewardError(
+        "Esta batalha não foi registrada. Volte aos modos da Arena e inicie um novo combate.",
+      );
       return;
     }
     if (reward || claiming) return;
-    startClaim(async () => { const result = await claimArenaVictoryAction(sessionId); if (result.ok) setReward({ xp: result.xp, wg: result.wg }); else setRewardError(result.message); });
+    startClaim(async () => {
+      const result = await claimArenaVictoryAction(sessionId);
+      if (result.ok) setReward({ xp: result.xp, wg: result.wg });
+      else setRewardError(result.message);
+    });
   }
 
   function applyPlayerAction(
@@ -175,13 +217,28 @@ function Battle({
 
   function finishTurn() {
     if (finished || !Object.values(actions).some(Boolean)) return;
-    const reply = resolveBasicAttack(enemy, player, rules);
+    const nextEnemyPosition = stepToward(enemyPosition, playerPosition, movementRange);
+    const enemyCanAttack = gridDistance(nextEnemyPosition, playerPosition) <= 1;
+    const reply = enemyCanAttack
+      ? resolveBasicAttack(enemy, player, rules)
+      : {
+          actor: enemy,
+          target: player,
+          event: {
+            kind: "utility" as const,
+            amount: 0,
+            message: `${enemy.name} avançou pelo campo de batalha.`,
+          },
+        };
     const cooledPlayer = tickCooldowns(reply.target);
+    const cooledEnemy = tickCooldowns(reply.actor);
     for (const key of newCooldowns) cooledPlayer.cooldowns[key] = reply.target.cooldowns[key] ?? 0;
     setPlayer(cooledPlayer);
-    setEnemy(reply.actor);
+    setEnemy(cooledEnemy);
+    setEnemyPosition(nextEnemyPosition);
     setTurn((value) => value + 1);
     setActions(freshActions);
+    setMoving(false);
     setNewCooldowns([]);
     setMessage(
       reply.target.hp <= 0
@@ -192,12 +249,22 @@ function Battle({
 
   function attack() {
     if (finished || actions.basic) return;
+    if (gridDistance(playerPosition, enemyPosition) > character.basicAttackRange) {
+      setMessage(
+        `O alvo está fora do alcance do ataque básico (${character.basicAttackRange} casa(s)).`,
+      );
+      return;
+    }
     const result = resolveBasicAttack(player, enemy, rules);
     applyPlayerAction(result.actor, result.target, result.event.message, "basic");
   }
 
   function handleSkill(skill: ClassSkill) {
     if (finished || actions.class) return;
+    if (skill.target !== "self" && gridDistance(playerPosition, enemyPosition) > skill.range) {
+      setMessage(`${skill.name} alcança ${skill.range} casa(s). Aproxime-se do alvo.`);
+      return;
+    }
     const result = resolveSkill(player, enemy, skill, rules);
     if (result.event.kind === "error") {
       setMessage(result.event.message);
@@ -208,6 +275,10 @@ function Battle({
 
   function handleRaceAbility(ability: ClassSkill) {
     if (finished || actions.race) return;
+    if (ability.target !== "self" && gridDistance(playerPosition, enemyPosition) > ability.range) {
+      setMessage(`${ability.name} alcança ${ability.range} casa(s). Aproxime-se do alvo.`);
+      return;
+    }
     const result = resolveRaceAbility(player, enemy, ability, rules);
     if (result.event.kind === "error") return setMessage(result.event.message);
     applyPlayerAction(result.actor, result.target, result.event.message, "race");
@@ -227,12 +298,34 @@ function Battle({
     );
   }
 
+  function moveTo(position: Position) {
+    if (!moving || actions.move || finished) return;
+    if (gridDistance(playerPosition, position) > movementRange) return;
+    if (position.x === enemyPosition.x && position.y === enemyPosition.y) return;
+    setPlayerPosition(position);
+    setActions((current) => ({ ...current, move: true }));
+    setMoving(false);
+    setMessage(`${character.name} moveu-se para outra posição do mapa.`);
+  }
+
   return (
     <section className="arena-console">
       <header className="arena-toolbar arena-game-header">
         <div>
-          <span className="eyebrow">{mode === "pve" ? "Expedição PvE" : mode === "pvp" ? "Confronto PvP" : "Campo de treinamento"}</span>
-          <h1>{mode === "pve" ? initial.title : mode === "pvp" ? `Duelo contra ${initial.enemy.name}` : "Duelo de Arena"}</h1>
+          <span className="eyebrow">
+            {mode === "pve"
+              ? "Expedição PvE"
+              : mode === "pvp"
+                ? "Confronto PvP"
+                : "Campo de treinamento"}
+          </span>
+          <h1>
+            {mode === "pve"
+              ? initial.title
+              : mode === "pvp"
+                ? `Duelo contra ${initial.enemy.name}`
+                : "Duelo de Arena"}
+          </h1>
           <p>Use até uma ação de cada grupo antes de encerrar a rodada.</p>
         </div>
         <label>
@@ -245,17 +338,40 @@ function Battle({
             ))}
           </select>
         </label>
-        <strong className="arena-turn-counter"><small>Rodada atual</small>{String(turn).padStart(2, "0")}</strong>
+        <strong className="arena-turn-counter">
+          <small>Rodada atual</small>
+          {String(turn).padStart(2, "0")}
+        </strong>
       </header>
-      <div className="arena-stage arena-duel-board">
-        <Fighter combatant={player} imageUrl={character.imageUrl} side="player" subtitle={`${character.raceName} · ${character.className}`} />
-        <div className="arena-versus"><small>Rodada {turn}</small><b>VS</b><span>Treino</span></div>
-        <Fighter combatant={enemy} imageUrl="" side="enemy" sigil={initial.sigil} subtitle={`Nível ${character.level} · ${initial.title}`} />
+      <div className="arena-battlefield-shell">
+        <Fighter
+          combatant={player}
+          imageUrl={character.imageUrl}
+          side="player"
+          subtitle={`${character.raceName} · ${character.className}`}
+        />
+        <BattleGrid
+          enemy={enemy}
+          enemyPosition={enemyPosition}
+          moving={moving}
+          onMove={moveTo}
+          player={player}
+          playerPosition={playerPosition}
+        />
+        <Fighter
+          combatant={enemy}
+          imageUrl={opponent?.imageUrl ?? ""}
+          side="enemy"
+          sigil={initial.sigil}
+          subtitle={`Nível ${opponent?.level ?? character.level} · ${initial.title}`}
+        />
       </div>
       <p className="arena-message" role="status">
-        <span>Registro de combate</span>{message}
+        <span>Registro de combate</span>
+        {message}
       </p>
       <div className="arena-turn-budget" aria-label="Ações desta rodada">
+        <span className={actions.move ? "is-used" : ""}>Movimento {actions.move ? "✓" : "1"}</span>
         <span className={actions.basic ? "is-used" : ""}>Ataque {actions.basic ? "✓" : "1"}</span>
         <span className={actions.race ? "is-used" : ""}>Raça {actions.race ? "✓" : "1"}</span>
         <span className={actions.class ? "is-used" : ""}>Classe {actions.class ? "✓" : "1"}</span>
@@ -270,193 +386,410 @@ function Battle({
           {character.combatLore.slice(0, 6).map((entry) => (
             <article key={entry.name}>
               <b>{entry.name}</b>
-              <span>{combatModifierLabel(entry.description)}</span>
+              <span>{entry.description}</span>
             </article>
           ))}
         </div>
       </section>
       <section className="arena-command-panel">
-        <header><div><span className="eyebrow">Comandos disponíveis</span><h2>Escolha suas ações</h2></div><small>1 ação de cada categoria por rodada</small></header>
-      <div className="arena-actions">
-        <button data-action="basic" data-action-label="Ataque" disabled={finished || actions.basic} onClick={attack} type="button">
-          <em className="arena-skill-origin"><i>⚔</i>Ação básica</em>
-          <strong>Ataque básico</strong>
-          <span>
-            1x{" "}
-            {player.attributes.INT > player.attributes.FOR
-              ? "INT · dano mágico"
-              : "FOR · dano físico"}
-          </span>
-        </button>
-        {character.raceAbilities.map((ability) => {
-          const cooldown = getRaceAbilityCooldown(player, ability);
-          const meta = getRaceAbilityArenaMeta(ability);
-          const raceCannotPay =
-            ability.resource === "special" && player.raceResource < ability.cost;
-          return (
-            <button
-              data-action="race"
-              data-action-label="Raça"
-              disabled={finished || actions.race || cooldown > 0 || raceCannotPay}
-              key={ability.key}
-              onClick={() => handleRaceAbility(ability)}
-              type="button"
-            >
-              <em className="arena-skill-origin"><i>✦</i>Habilidade racial</em>
-              <strong>{ability.name}</strong>
-              <span>{meta.summary}</span>
-              <small>
-                {cooldown
-                  ? `Recarga: ${cooldown} rodada(s)`
-                  : `${meta.cost} ${ability.resource === "special" ? player.raceResourceName : "Mana"} · Recarga ${meta.cooldown}`}
-              </small>
-            </button>
-          );
-        })}
-        {character.skills.map((skill) => {
-          const cooldown = player.cooldowns[skill.key] ?? 0;
-          const cannotPay = skill.resource === "mana" && player.mana < skill.cost;
-          const cannotPayClassResource =
-            skill.resource === "special" &&
-            (skill.resourceKey === "race" ? player.raceResource : player.classResource) < skill.cost;
-          return (
-            <button
-              data-action="class"
-              data-action-label="Classe"
-              disabled={
-                finished || actions.class || cooldown > 0 || cannotPay || cannotPayClassResource
-              }
-              key={skill.key}
-              onClick={() => handleSkill(skill)}
-              type="button"
-            >
-              <em className="arena-skill-origin"><i>◆</i>Habilidade de classe</em>
-              <strong>{skill.name}</strong>
-              <span>{skill.effect}</span>
-              <small>
-                {cooldown
-                  ? `Recarga: ${cooldown}`
-                  : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "special" ? (skill.resourceKey === "race" ? player.raceResourceName : player.classResourceName) : "HP"} · Recarga ${skill.cooldown}`}
-              </small>
-            </button>
-          );
-        })}
-        {character.items.length ? (
-          character.items.map((item) => (
-            <button
-              data-action="item"
-              data-action-label="Item"
-              disabled={finished || actions.item}
-              key={item.id}
-              onClick={() => handleItem(item)}
-              type="button"
-            >
-              <em className="arena-skill-origin"><i>◈</i>Item equipado</em>
-              <strong>{item.name}</strong>
-              <span>{item.description}</span>
-              <small>Item consumível</small>
-            </button>
-          ))
-        ) : (
-          <button data-action="item" data-action-label="Item" disabled type="button">
-            <em className="arena-skill-origin"><i>◈</i>Item equipado</em>
-            <strong>Item</strong>
-            <span>Nenhum consumível no inventário.</span>
+        <header>
+          <div>
+            <span className="eyebrow">Comandos disponíveis</span>
+            <h2>Escolha suas ações</h2>
+          </div>
+          <small>1 ação de cada categoria por rodada</small>
+        </header>
+        <div className="arena-actions">
+          <button
+            className={moving ? "is-selected" : ""}
+            data-action="basic"
+            data-action-label="Movimento"
+            disabled={finished || actions.move}
+            onClick={() => setMoving((value) => !value)}
+            type="button"
+          >
+            <em className="arena-skill-origin">
+              <i>⌖</i>Movimentação
+            </em>
+            <strong>{moving ? "Escolha uma casa" : "Mover"}</strong>
+            <span>Avance até {movementRange} casas no mapa.</span>
           </button>
-        )}
-      </div>
+          <button
+            data-action="basic"
+            data-action-label="Ataque"
+            disabled={finished || actions.basic}
+            onClick={attack}
+            type="button"
+          >
+            <em className="arena-skill-origin">
+              <i>⚔</i>Ação básica
+            </em>
+            <strong>Ataque básico</strong>
+            <span>
+              1x{" "}
+              {player.attributes.INT > player.attributes.FOR
+                ? "INT · dano mágico"
+                : "FOR · dano físico"}{" "}
+              · alcance {character.basicAttackRange}
+            </span>
+          </button>
+          <button
+            className="arena-end-turn"
+            data-action="basic"
+            data-action-label="Turno"
+            disabled={finished || !Object.values(actions).some(Boolean)}
+            onClick={finishTurn}
+            type="button"
+          >
+            <em className="arena-skill-origin">
+              <i>✓</i>Controle da rodada
+            </em>
+            <strong>Encerrar turno</strong>
+            <span>Confirma as ações e entrega o turno ao adversário.</span>
+          </button>
+          {character.raceAbilities.map((ability) => {
+            const cooldown = getRaceAbilityCooldown(player, ability);
+            const meta = getRaceAbilityArenaMeta(ability);
+            const raceCannotPay =
+              ability.resource === "special" && player.raceResource < ability.cost;
+            return (
+              <button
+                data-action="race"
+                data-action-label="Raça"
+                disabled={finished || actions.race || cooldown > 0 || raceCannotPay}
+                key={ability.key}
+                onClick={() => handleRaceAbility(ability)}
+                type="button"
+              >
+                <em className="arena-skill-origin">
+                  <i>✦</i>Habilidade racial
+                </em>
+                <strong>{ability.name}</strong>
+                <span>{meta.summary}</span>
+                <small>
+                  {cooldown
+                    ? `Recarga: ${cooldown} rodada(s)`
+                    : `${meta.cost} ${ability.resource === "special" ? player.raceResourceName : "Mana"} · Recarga ${meta.cooldown}`}
+                </small>
+              </button>
+            );
+          })}
+          {character.skills.map((skill) => {
+            const cooldown = player.cooldowns[skill.key] ?? 0;
+            const cannotPay = skill.resource === "mana" && player.mana < skill.cost;
+            const cannotPayClassResource =
+              skill.resource === "special" &&
+              (skill.resourceKey === "race" ? player.raceResource : player.classResource) <
+                skill.cost;
+            return (
+              <button
+                data-action="class"
+                data-action-label="Classe"
+                disabled={
+                  finished || actions.class || cooldown > 0 || cannotPay || cannotPayClassResource
+                }
+                key={skill.key}
+                onClick={() => handleSkill(skill)}
+                type="button"
+              >
+                <em className="arena-skill-origin">
+                  <i>◆</i>Habilidade de classe
+                </em>
+                <strong>{skill.name}</strong>
+                <span>{skill.effect}</span>
+                <small>
+                  {cooldown
+                    ? `Recarga: ${cooldown}`
+                    : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "special" ? (skill.resourceKey === "race" ? player.raceResourceName : player.classResourceName) : "HP"} · Recarga ${skill.cooldown}`}
+                </small>
+              </button>
+            );
+          })}
+          {character.items.length ? (
+            character.items.map((item) => (
+              <button
+                data-action="item"
+                data-action-label="Item"
+                disabled={finished || actions.item}
+                key={item.id}
+                onClick={() => handleItem(item)}
+                type="button"
+              >
+                <em className="arena-skill-origin">
+                  <i>◈</i>Item equipado
+                </em>
+                <strong>{item.name}</strong>
+                <span>{item.description}</span>
+                <small>Item consumível</small>
+              </button>
+            ))
+          ) : (
+            <button data-action="item" data-action-label="Item" disabled type="button">
+              <em className="arena-skill-origin">
+                <i>◈</i>Item equipado
+              </em>
+              <strong>Item</strong>
+              <span>Nenhum consumível no inventário.</span>
+            </button>
+          )}
+        </div>
       </section>
-      {!finished ? (
-        <button
-          className="button button--primary arena-end-turn"
-          disabled={!Object.values(actions).some(Boolean)}
-          onClick={finishTurn}
-          type="button"
-        >
-          Encerrar rodada
-        </button>
-      ) : null}
       {finished ? (
         <section className={`arena-result ${enemy.hp <= 0 ? "is-victory" : "is-defeat"}`}>
           <span>{enemy.hp <= 0 ? "VITÓRIA" : "DERROTA"}</span>
-          <h2>{enemy.hp <= 0 ? `${initial.title} foi derrotado` : "Seu personagem caiu em combate"}</h2>
-          <p>{enemy.hp <= 0 ? "Sua sequência dominou o confronto." : "Revise sua ordem de ações, atributos e equipamentos antes de tentar novamente."}</p>
-          {enemy.hp <= 0 && mode === "pve" ? <div><strong>+{arenaRewards[character.adventureRank as keyof typeof arenaRewards].xp.toLocaleString("pt-BR")} XP</strong><strong>+{arenaRewards[character.adventureRank as keyof typeof arenaRewards].wg.toLocaleString("pt-BR")} WG</strong><small>{reward ? "Recompensa recebida" : `Recompensa do Rank ${character.adventureRank}`}</small></div> : null}
-          {enemy.hp <= 0 && mode === "pve" && !reward ? <button className="button button--primary" disabled={claiming} onClick={claimReward} type="button">{claiming ? "Entregando…" : "Receber recompensa"}</button> : null}
+          <h2>
+            {enemy.hp <= 0 ? `${initial.title} foi derrotado` : "Seu personagem caiu em combate"}
+          </h2>
+          <p>
+            {enemy.hp <= 0
+              ? "Sua sequência dominou o confronto."
+              : "Revise sua ordem de ações, atributos e equipamentos antes de tentar novamente."}
+          </p>
+          {enemy.hp <= 0 && mode === "pve" ? (
+            <div>
+              <strong>
+                +
+                {arenaRewards[
+                  character.adventureRank as keyof typeof arenaRewards
+                ].xp.toLocaleString("pt-BR")}{" "}
+                XP
+              </strong>
+              <strong>
+                +
+                {arenaRewards[
+                  character.adventureRank as keyof typeof arenaRewards
+                ].wg.toLocaleString("pt-BR")}{" "}
+                WG
+              </strong>
+              <small>
+                {reward ? "Recompensa recebida" : `Recompensa do Rank ${character.adventureRank}`}
+              </small>
+            </div>
+          ) : null}
+          {enemy.hp <= 0 && mode === "pve" && !reward ? (
+            <button
+              className="button button--primary"
+              disabled={claiming}
+              onClick={claimReward}
+              type="button"
+            >
+              {claiming ? "Entregando…" : "Receber recompensa"}
+            </button>
+          ) : null}
           {rewardError ? <small className="arena-result__error">{rewardError}</small> : null}
-          <button className="button button--primary" onClick={onReset} type="button">Lutar novamente</button>
+          <button className="button button--primary" onClick={onReset} type="button">
+            Lutar novamente
+          </button>
         </section>
       ) : null}
     </section>
   );
 }
 
-function Fighter({ combatant, subtitle, side, imageUrl, sigil = "鬼" }: { combatant: CombatantState; subtitle: string; side: "player" | "enemy"; imageUrl: string; sigil?: string }) {
+function Fighter({
+  combatant,
+  subtitle,
+  side,
+  imageUrl,
+  sigil = "鬼",
+}: {
+  combatant: CombatantState;
+  subtitle: string;
+  side: "player" | "enemy";
+  imageUrl: string;
+  sigil?: string;
+}) {
+  const effectiveAttributes = getEffectiveAttributes(combatant);
   return (
     <article className={`arena-fighter is-${side}`}>
-      <div className={`arena-fighter__portrait ${imageUrl ? "is-image" : ""}`} style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}>
+      <div
+        className={`arena-fighter__portrait ${imageUrl ? "is-image" : ""}`}
+        style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
+      >
         {imageUrl ? "" : side === "player" ? combatant.name.slice(0, 2).toUpperCase() : sigil}
         <span>{side === "player" ? "JOGADOR" : "OPONENTE"}</span>
       </div>
       <div className="arena-fighter__status">
-      <span className="eyebrow">{subtitle}</span>
-      <h2>{combatant.name}</h2>
-      <p>
-        HP{" "}
-        <strong>
-          {combatant.hp}/{combatant.maxHp}
-        </strong>
-      </p>
-      <progress className="is-hp" max={combatant.maxHp} value={combatant.hp} />
-      {combatant.maxMana > 0 ? <><p>Mana <strong>{combatant.mana}/{combatant.maxMana}</strong></p><progress className="is-mana" max={combatant.maxMana} value={combatant.mana} /></> : null}
-      {combatant.maxClassResource > 0 ? (
-        <>
-          <p>
-            {combatant.classResourceName}{" "}
-            <strong>
-              {combatant.classResource}/{combatant.maxClassResource}
-            </strong>
-          </p>
-          <progress className="is-class-resource" max={combatant.maxClassResource} value={combatant.classResource} />
-        </>
-      ) : null}
-      {combatant.maxRaceResource > 0 ? (
-        <>
-          <p>
-            {combatant.raceResourceName}{" "}
-            <strong>
-              {combatant.raceResource}/{combatant.maxRaceResource}
-            </strong>
-          </p>
-          <progress className="is-race-resource" max={combatant.maxRaceResource} value={combatant.raceResource} />
-        </>
-      ) : null}
-      {combatant.shield > 0 ? <small>Escudo: {combatant.shield}</small> : null}
+        <span className="eyebrow">{subtitle}</span>
+        <h2>{combatant.name}</h2>
+        <p>
+          HP{" "}
+          <strong>
+            {combatant.hp}/{combatant.maxHp}
+          </strong>
+        </p>
+        <progress className="is-hp" max={combatant.maxHp} value={combatant.hp} />
+        {combatant.maxMana > 0 ? (
+          <>
+            <p>
+              Mana{" "}
+              <strong>
+                {combatant.mana}/{combatant.maxMana}
+              </strong>
+            </p>
+            <progress className="is-mana" max={combatant.maxMana} value={combatant.mana} />
+          </>
+        ) : null}
+        {combatant.maxClassResource > 0 ? (
+          <>
+            <p>
+              {combatant.classResourceName}{" "}
+              <strong>
+                {combatant.classResource}/{combatant.maxClassResource}
+              </strong>
+            </p>
+            <progress
+              className="is-class-resource"
+              max={combatant.maxClassResource}
+              value={combatant.classResource}
+            />
+          </>
+        ) : null}
+        {combatant.maxRaceResource > 0 ? (
+          <>
+            <p>
+              {combatant.raceResourceName}{" "}
+              <strong>
+                {combatant.raceResource}/{combatant.maxRaceResource}
+              </strong>
+            </p>
+            <progress
+              className="is-race-resource"
+              max={combatant.maxRaceResource}
+              value={combatant.raceResource}
+            />
+          </>
+        ) : null}
+        {combatant.shield > 0 ? <small>Escudo: {combatant.shield}</small> : null}
+        <div className="arena-status-icons" aria-label="Efeitos temporários">
+          {Object.entries(combatant.statuses).map(([key, status]) => (
+            <span
+              className={status.beneficial ? "is-buff" : "is-debuff"}
+              key={key}
+              title={status.name}
+            >
+              <b>{status.beneficial ? "▲" : "▼"}</b>
+              <small>{status.name}</small>
+              <i>{status.duration}</i>
+            </span>
+          ))}
+        </div>
+        <AttributePanel base={combatant.attributes} current={effectiveAttributes} />
       </div>
     </article>
   );
 }
 
-function createBattle(character: ArenaCharacter, rules: CombatRules, mode: ArenaMode, monsterIndex: number, opponent?: ArenaCharacter) {
-  const text = character.combatLore
-    .map((entry) => `${entry.name} ${entry.description}`)
-    .join(" ")
-    .toLowerCase();
+function AttributePanel({ base, current }: { base: CombatAttributes; current: CombatAttributes }) {
+  return (
+    <details className="arena-attributes" open>
+      <summary>Atributos em combate</summary>
+      <div>
+        {(Object.keys(base) as Array<keyof CombatAttributes>).map((attribute) => {
+          const difference = current[attribute] - base[attribute];
+          return (
+            <span
+              className={difference > 0 ? "is-boosted" : difference < 0 ? "is-reduced" : ""}
+              key={attribute}
+            >
+              <b>{attribute}</b>
+              <strong>{current[attribute]}</strong>
+              {difference ? (
+                <small>
+                  {difference > 0 ? "+" : ""}
+                  {difference}
+                </small>
+              ) : null}
+            </span>
+          );
+        })}
+      </div>
+    </details>
+  );
+}
+
+function BattleGrid({
+  enemy,
+  enemyPosition,
+  moving,
+  onMove,
+  player,
+  playerPosition,
+}: {
+  enemy: CombatantState;
+  enemyPosition: Position;
+  moving: boolean;
+  onMove(position: Position): void;
+  player: CombatantState;
+  playerPosition: Position;
+}) {
+  const cells = Array.from({ length: gridWidth * gridHeight }, (_, index) => ({
+    x: index % gridWidth,
+    y: Math.floor(index / gridWidth),
+  }));
+  return (
+    <section
+      className={`arena-map ${moving ? "is-moving" : ""}`}
+      aria-label="Mapa tático de combate"
+    >
+      <header>
+        <span>Mapa de movimentação</span>
+        <small>
+          {moving
+            ? `Escolha uma casa até ${movementRange} espaços`
+            : `Distância: ${gridDistance(playerPosition, enemyPosition)} casas`}
+        </small>
+      </header>
+      <div className="arena-map__grid">
+        {cells.map((position) => {
+          const hasPlayer = position.x === playerPosition.x && position.y === playerPosition.y;
+          const hasEnemy = position.x === enemyPosition.x && position.y === enemyPosition.y;
+          const reachable =
+            moving &&
+            !hasPlayer &&
+            !hasEnemy &&
+            gridDistance(playerPosition, position) <= movementRange;
+          return (
+            <button
+              aria-label={
+                hasPlayer
+                  ? player.name
+                  : hasEnemy
+                    ? enemy.name
+                    : `Casa ${position.x + 1}, ${position.y + 1}`
+              }
+              className={`${reachable ? "is-reachable" : ""} ${hasPlayer ? "has-player" : ""} ${hasEnemy ? "has-enemy" : ""}`}
+              disabled={!reachable}
+              key={`${position.x}-${position.y}`}
+              onClick={() => onMove(position)}
+              type="button"
+            >
+              {hasPlayer ? (
+                <span title={player.name}>{player.name.slice(0, 2).toUpperCase()}</span>
+              ) : null}
+              {hasEnemy ? (
+                <span title={enemy.name}>{enemy.name.slice(0, 2).toUpperCase()}</span>
+              ) : null}
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function createBattle(
+  character: ArenaCharacter,
+  rules: CombatRules,
+  mode: ArenaMode,
+  monsterIndex: number,
+  opponent?: ArenaCharacter,
+) {
   const attributes = { ...character.attributes };
   const equipmentModifiers = sumItemEffectModifiers(character.equipmentEffects);
   for (const [attribute, value] of Object.entries(equipmentModifiers)) {
     attributes[attribute as keyof CombatAttributes] += value ?? 0;
   }
-  if (/dano|ofensiv|ataque/.test(text)) {
-    attributes.FOR = Math.round(attributes.FOR * 1.08);
-    attributes.INT = Math.round(attributes.INT * 1.08);
-  }
-  if (/prote|resist|defesa|reduz.*dano/.test(text)) {
-    attributes.DEF = Math.round(attributes.DEF * 1.08);
-    attributes.RES = Math.round(attributes.RES * 1.08);
-  }
-  if (/cura|escudo|suporte/.test(text)) attributes.ARC = Math.round(attributes.ARC * 1.1);
-  if (/mana|arcano|magia/.test(text)) attributes.INT = Math.round(attributes.INT * 1.05);
   const player = applyBattleStartItemEffects(
     createCombatant({ ...character, attributes, rules }),
     character.equipmentEffects,
@@ -470,27 +803,37 @@ function createBattle(character: ArenaCharacter, rules: CombatRules, mode: Arena
     ARC: 0,
   };
   const monster = mode === "pve" ? arenaMonsters[monsterIndex % arenaMonsters.length] : null;
-  const enemyAttributes = opponent ? opponent.attributes : monster ? buildAdaptiveMonsterAttributes(character.attributes, monster.weights) : trainingAttributes;
-  const enemy = createCombatant({
+  const enemyAttributes = opponent
+    ? { ...opponent.attributes }
+    : monster
+      ? buildAdaptiveMonsterAttributes(character.attributes, monster.weights)
+      : trainingAttributes;
+  if (opponent) {
+    const opponentModifiers = sumItemEffectModifiers(opponent.equipmentEffects);
+    for (const [attribute, value] of Object.entries(opponentModifiers)) {
+      enemyAttributes[attribute as keyof CombatAttributes] += value ?? 0;
+    }
+  }
+  const enemyBase = createCombatant({
     id: opponent?.id ?? monster?.key ?? "training",
     name: opponent?.name ?? monster?.name ?? "Boneco Rúnico",
     attributes: enemyAttributes,
-    baseHp: opponent?.baseHp ?? (monster ? character.baseHp : Math.max(450, Math.round(player.maxHp * 0.7))),
+    baseHp:
+      opponent?.baseHp ??
+      (monster ? character.baseHp : Math.max(450, Math.round(player.maxHp * 0.7))),
     baseMana: opponent?.baseMana ?? (monster ? character.baseMana : 0),
     classResource: opponent?.classResource,
     raceResource: opponent?.raceResource,
     usesMana: opponent?.usesMana,
     rules,
   });
-  return { player, enemy, title: opponent ? "Duelo entre aventureiros" : monster?.title ?? "Autômato de treino", sigil: opponent ? "対" : monster?.sigil ?? "鬼" };
-}
-
-function combatModifierLabel(description: string) {
-  const text = description.toLowerCase();
-  const effects = [];
-  if (/dano|ofensiv|ataque/.test(text)) effects.push("Poder ofensivo +8%");
-  if (/prote|resist|defesa|reduz.*dano/.test(text)) effects.push("DEF e RES +8%");
-  if (/cura|escudo|suporte/.test(text)) effects.push("ARC +10%");
-  if (/mana|arcano|magia/.test(text)) effects.push("INT +5%");
-  return effects.join(" · ") || "Regra narrativa ativa na ficha";
+  const enemy = opponent
+    ? applyBattleStartItemEffects(enemyBase, opponent.equipmentEffects)
+    : enemyBase;
+  return {
+    player,
+    enemy,
+    title: opponent ? "Duelo entre aventureiros" : (monster?.title ?? "Autômato de treino"),
+    sigil: opponent ? "対" : (monster?.sigil ?? "鬼"),
+  };
 }

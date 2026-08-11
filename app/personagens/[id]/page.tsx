@@ -403,6 +403,7 @@ export default async function CharacterSheetPage({
                 equippedSlot: entry.equippedSlot,
                 attributes: entry.attributes as Record<string, number>,
                 effects: entry.specialEffects,
+                titleStyle: entry.titleStyle,
                 twoHanded: entry.twoHanded,
                 compatibleSlots: compatibleEquipSlots(entry.slot, entry.twoHanded),
               }))}

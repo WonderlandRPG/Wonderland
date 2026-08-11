@@ -16403,3 +16403,125 @@ html[data-theme="accessible"]
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================================================== */
+/* Direção cromática definitiva — Marfim, Verde Floresta e Ouro Envelhecido  */
+/* ========================================================================== */
+html[data-theme="classic"] {
+  --game-bg: #f2f0e7;
+  --game-bg-deep: #e7e4d7;
+  --game-panel: #fffdf6;
+  --game-panel-strong: #f7f4e9;
+  --game-panel-soft: rgba(255, 253, 246, 0.94);
+  --game-text: #173629;
+  --game-muted: #607267;
+  --game-muted-soft: #7b897f;
+  --game-gold: #a87921;
+  --game-gold-bright: #c79a3b;
+  --game-line: rgba(30, 91, 61, 0.2);
+  --game-line-strong: rgba(168, 121, 33, 0.52);
+  --game-shadow: 0 24px 64px rgba(24, 59, 42, 0.14);
+  --game-page-background:
+    radial-gradient(circle at 90% 2%, rgba(183, 142, 53, 0.15), transparent 31rem),
+    radial-gradient(circle at 8% 14%, rgba(40, 111, 71, 0.14), transparent 35rem),
+    linear-gradient(145deg, #fffdf8 0%, #f2f0e7 54%, #e5e9df 100%);
+}
+html[data-theme="accessible"] {
+  --game-bg: #090b0a;
+  --game-bg-deep: #030504;
+  --game-panel: #101512;
+  --game-panel-strong: #151d18;
+  --game-panel-soft: rgba(12, 17, 14, 0.96);
+  --game-text: #fffaf0;
+  --game-muted: #c6d0c9;
+  --game-muted-soft: #98a89e;
+  --game-gold: #d5ad55;
+  --game-gold-bright: #f1d184;
+  --game-line: rgba(65, 170, 111, 0.28);
+  --game-line-strong: rgba(213, 173, 85, 0.62);
+  --game-shadow: 0 26px 72px rgba(0, 0, 0, 0.62);
+  --game-page-background:
+    radial-gradient(circle at 84% 0, rgba(30, 121, 73, 0.18), transparent 34rem),
+    radial-gradient(circle at 8% 22%, rgba(193, 142, 44, 0.1), transparent 28rem),
+    linear-gradient(155deg, #101512 0%, #070a08 52%, #020403 100%);
+}
+html[data-theme="classic"] .admin-sidebar {
+  color: #fff9e8 !important;
+  background: linear-gradient(180deg, #183f2d, #0c251a) !important;
+}
+html[data-theme="classic"] :is(.player-nav, .site-header, .admin-topbar, .theme-control__toggle, .theme-control__menu) {
+  color: #173629 !important;
+  border-color: rgba(30, 91, 61, 0.2) !important;
+  background: rgba(255, 253, 246, 0.95) !important;
+  box-shadow: 0 12px 34px rgba(24, 59, 42, 0.1) !important;
+}
+html[data-theme="classic"] :is(
+  .sheet-section, .account-card, .portal-card, .rank-guide-card, .ranks-intro-card,
+  .event-list article, .update-list article, .admin-editor-card, .admin-character-card,
+  .admin-composer, .admin-tool-grid > a, .admin-command-metrics > article,
+  .ranking-board, .ranking-season-banner, .ranking-podium__place, .character-command-hero,
+  .character-progress-strip, .inventory-slot-panel, .inventory-browser__catalog,
+  .inventory-inspector, .shop-controls, .shop-inspector, .arena-toolbar,
+  .arena-command-panel, .arena-message, .arena-turn-budget, .arena-fighter,
+  .arena-mode-select > div > a, .presence-pass, .presence-hero,
+  .presence-admin-grid fieldset, .presence-campaign-settings, .admin-title-create
+) {
+  color: #173629 !important;
+  border-color: rgba(30, 91, 61, 0.2) !important;
+  background: linear-gradient(145deg, #fffdf8, #f4f1e6) !important;
+  box-shadow: var(--game-shadow) !important;
+}
+html[data-theme="classic"] :is(h1, h2, h3, h4, strong, dd) { color: #173629; }
+html[data-theme="classic"] :is(p, small, dt) { color: #607267; }
+html[data-theme="accessible"] :is(.player-nav, .site-header, .admin-topbar, .theme-control__toggle, .theme-control__menu, .admin-sidebar) {
+  color: #fffaf0 !important;
+  border-color: rgba(213, 173, 85, 0.38) !important;
+  background: rgba(9, 13, 10, 0.96) !important;
+}
+html[data-theme="accessible"] :is(.presence-campaign-settings, .admin-title-create) {
+  border-color: var(--game-line-strong);
+  background: linear-gradient(145deg, #151d18, #0b100d);
+}
+
+.character-equipped-title {
+  color: var(--title-primary, #fff1b5);
+  border-color: color-mix(in srgb, var(--title-glow, #d7ad45) 72%, white);
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--title-secondary, #1f7a4c) 82%, #07110d),
+    color-mix(in srgb, var(--title-glow, #d7ad45) 62%, #34250d),
+    color-mix(in srgb, var(--title-secondary, #1f7a4c) 82%, #07110d));
+  box-shadow: 0 0 24px color-mix(in srgb, var(--title-glow, #d7ad45) 58%, transparent);
+}
+
+.presence-campaign-settings,
+.admin-title-create {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) repeat(3, minmax(150px, 0.45fr));
+  align-items: end;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--game-line-strong);
+  border-radius: 18px;
+  background: var(--game-panel);
+}
+.presence-campaign-settings h3, .admin-title-create h3 { margin: 6px 0; color: var(--game-text); }
+.presence-campaign-settings p { margin: 0; color: var(--game-muted); font-size: .78rem; }
+.presence-campaign-settings label, .admin-title-form label { display: grid; gap: 7px; }
+.presence-campaign-settings label > span, .admin-title-form label > span {
+  color: var(--game-muted); font-size: .62rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+}
+.presence-campaign-settings input { min-height: 44px; padding: 0 11px; border: 1px solid var(--game-line); border-radius: 9px; color: var(--game-text); background: var(--game-panel-strong); }
+.admin-title-create { grid-template-columns: 1fr; align-items: stretch; }
+.admin-title-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.admin-title-form .is-wide, .admin-title-form fieldset, .admin-title-form > button { grid-column: 1 / -1; }
+.title-color-editor { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; }
+.title-color-editor input[type="color"] { width: 100%; min-height: 48px; padding: 4px; }
+
+@media (max-width: 980px) {
+  .presence-campaign-settings { grid-template-columns: repeat(2, 1fr); }
+  .presence-campaign-settings > div { grid-column: 1 / -1; }
+}
+@media (max-width: 650px) {
+  .presence-campaign-settings, .admin-title-form, .title-color-editor { grid-template-columns: 1fr !important; }
+  .presence-campaign-settings > div, .admin-title-form .is-wide, .admin-title-form fieldset, .admin-title-form > button { grid-column: auto; }
+}

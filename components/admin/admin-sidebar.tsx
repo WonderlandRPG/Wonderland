@@ -25,6 +25,7 @@ const navigation = [
     items: [
       { label: "Raças e conteúdo", glyph: "04", href: "/admin/racas" },
       { label: "Itens", glyph: "05", href: "/admin/itens" },
+      { label: "Títulos", glyph: "✦", href: "/admin/titulos" },
       { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
       { label: "Presença", glyph: "07", href: "/admin/presenca" },
     ],

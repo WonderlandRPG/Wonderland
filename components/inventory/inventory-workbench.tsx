@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { equipItemAction, unequipItemAction } from "@/app/personagens/[id]/equipment-actions";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { RankBadge } from "@/components/characters/rank-badge";
@@ -17,6 +17,7 @@ type InventoryItem = {
   equippedSlot: string | null;
   attributes: Record<string, number>;
   effects: Array<{ key: string; name: string; description: string }>;
+  titleStyle: { primary: string; secondary: string; glow: string } | null;
   twoHanded: boolean;
   compatibleSlots: string[];
 };
@@ -113,7 +114,17 @@ export function InventoryWorkbench({
           </div>
           <RankBadge rank={character.rank} />
           {equippedTitle ? (
-            <div className="character-equipped-title" data-title={equippedTitle.rarity}>
+            <div
+              className="character-equipped-title"
+              data-title={equippedTitle.rarity}
+              style={
+                {
+                  "--title-primary": equippedTitle.titleStyle?.primary ?? "#fff1b5",
+                  "--title-secondary": equippedTitle.titleStyle?.secondary ?? "#1f7a4c",
+                  "--title-glow": equippedTitle.titleStyle?.glow ?? "#d7ad45",
+                } as CSSProperties
+              }
+            >
               ✦ {equippedTitle.name}
             </div>
           ) : null}

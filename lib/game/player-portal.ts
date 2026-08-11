@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { parseUpdateBlocks } from "@/lib/game/update-content";
 
 export async function getRanking() {
   const client = await createServerSupabaseClient();
@@ -43,8 +44,6 @@ export async function getPortalUpdates() {
     .order("published_on", { ascending: false });
   return (data ?? []).map((entry) => ({
     ...entry,
-    notes: Array.isArray(entry.notes)
-      ? entry.notes.filter((note): note is string => typeof note === "string")
-      : [],
+    notes: parseUpdateBlocks(entry.notes),
   }));
 }

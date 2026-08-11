@@ -1,4 +1,6 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { UpdateComposer } from "@/components/admin/update-composer";
+import { parseUpdateBlocks, type UpdateBlock } from "@/lib/game/update-content";
 import { deleteUpdateAction, saveUpdateAction } from "./actions";
 export const metadata = { title: "Atualizações | Painel ADM" };
 export default async function AdminUpdatesPage({
@@ -21,7 +23,9 @@ export default async function AdminUpdatesPage({
           <h2>Atualizações</h2>
           <p>Publique versões e altere as notas exibidas aos jogadores.</p>
         </div>
-        <a className="button button--primary" href="#nova-atualizacao">＋ Publicar atualização</a>
+        <a className="button button--primary" href="#nova-atualizacao">
+          ＋ Publicar atualização
+        </a>
       </header>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
@@ -33,40 +37,51 @@ export default async function AdminUpdatesPage({
         </div>
       ) : null}
       <section className="admin-composer" id="nova-atualizacao">
-        <header><span>01</span><div><small>NOVA PUBLICAÇÃO</small><h2>Nova atualização</h2><p>Organize as notas por linha e escolha quando elas ficam visíveis.</p></div></header>
+        <header>
+          <span>01</span>
+          <div>
+            <small>NOVA PUBLICAÇÃO</small>
+            <h2>Nova atualização</h2>
+            <p>Organize as notas por linha e escolha quando elas ficam visíveis.</p>
+          </div>
+        </header>
         <UpdateForm />
       </section>
       <section className="admin-publication-section">
-        <header><div><small>HISTÓRICO PÚBLICO</small><h2>Atualizações cadastradas</h2></div><span>{data?.length ?? 0} publicações</span></header>
+        <header>
+          <div>
+            <small>HISTÓRICO PÚBLICO</small>
+            <h2>Atualizações cadastradas</h2>
+          </div>
+          <span>{data?.length ?? 0} publicações</span>
+        </header>
         <div className="admin-editor-list">
-        {(data ?? []).map((update) => (
-          <details className="admin-editor-card" key={update.id}>
-            <summary>
-              <span>
-                <small>
-                  v{update.version} ·{" "}
-                  {new Date(`${update.published_on}T00:00:00Z`).toLocaleDateString("pt-BR", {
-                    timeZone: "UTC",
-                  })}
-                </small>
-                <strong>{update.title}</strong>
-              </span>
-              <b>{update.active ? "Publicado" : "Oculto"}</b>
-            </summary>
-            <UpdateForm
-              update={{
-                ...update,
-                notes: Array.isArray(update.notes)
-                  ? update.notes.filter((note): note is string => typeof note === "string")
-                  : [],
-              }}
-            />
-            <form action={deleteUpdateAction} className="admin-delete-form">
-              <input name="id" type="hidden" value={update.id} />
-              <button className="button button--danger">Apagar atualização</button>
-            </form>
-          </details>
-        ))}
+          {(data ?? []).map((update) => (
+            <details className="admin-editor-card" key={update.id}>
+              <summary>
+                <span>
+                  <small>
+                    v{update.version} ·{" "}
+                    {new Date(`${update.published_on}T00:00:00Z`).toLocaleDateString("pt-BR", {
+                      timeZone: "UTC",
+                    })}
+                  </small>
+                  <strong>{update.title}</strong>
+                </span>
+                <b>{update.active ? "Publicado" : "Oculto"}</b>
+              </summary>
+              <UpdateForm
+                update={{
+                  ...update,
+                  notes: parseUpdateBlocks(update.notes),
+                }}
+              />
+              <form action={deleteUpdateAction} className="admin-delete-form">
+                <input name="id" type="hidden" value={update.id} />
+                <button className="button button--danger">Apagar atualização</button>
+              </form>
+            </details>
+          ))}
         </div>
       </section>
     </div>
@@ -79,7 +94,7 @@ function UpdateForm({
     id: string;
     version: string;
     title: string;
-    notes: string[];
+    notes: UpdateBlock[];
     published_on: string;
     active: boolean;
   };
@@ -104,10 +119,7 @@ function UpdateForm({
           required
         />
       </label>
-      <label>
-        <span>Notas (uma por linha)</span>
-        <textarea name="notes" defaultValue={update?.notes.join("\n")} rows={5} required />
-      </label>
+      <UpdateComposer initial={update?.notes} />
       <label>
         <input name="active" type="checkbox" defaultChecked={update?.active ?? true} /> Visível aos
         jogadores

@@ -9,7 +9,8 @@ import { ThemeControl } from "@/components/theme/theme-control";
 import { getThemeAvailability } from "@/lib/content/themes";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 
-import "./relic-ui.css";
+import "./globals.css";
+import "./rpg-ui.css";
 
 export const metadata: Metadata = {
   title: {
@@ -37,15 +38,18 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         data-rank={rank?.key}
         style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}
       >
-        <div className="world-atmosphere" aria-hidden="true">
-          <span className="world-atmosphere__sky" />
-          <span className="world-atmosphere__mist" />
-          <span className="world-atmosphere__stars" />
+        <div className="game-world-atmosphere" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </div>
         <RankAtmosphere rank={rank?.key} />
         <AudioProvider>
           {children}
-          <ThemeControl availability={themeAvailability} isAdmin={Boolean(account && isAdministrativeRole(account.role))} />
+          <ThemeControl
+            availability={themeAvailability}
+            isAdmin={Boolean(account && isAdministrativeRole(account.role))}
+          />
         </AudioProvider>
       </body>
     </html>

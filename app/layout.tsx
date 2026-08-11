@@ -38,10 +38,11 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         data-rank={rank?.key}
         style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}
       >
-        <div className="game-world-atmosphere" aria-hidden="true">
-          <span />
-          <span />
-          <span />
+        <div className="dream-atmosphere" aria-hidden="true">
+          <span className="dream-atmosphere__moon" />
+          <span className="dream-atmosphere__veil" />
+          <span className="dream-atmosphere__runes" />
+          <span className="dream-atmosphere__dust" />
         </div>
         <RankAtmosphere rank={rank?.key} />
         <AudioProvider>

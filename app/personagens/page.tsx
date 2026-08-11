@@ -9,6 +9,7 @@ import { getActiveCharacterId } from "@/lib/content/active-character";
 import { selectCharacterAction } from "./select-actions";
 import { RankBadge } from "@/components/characters/rank-badge";
 import { getAdventureRank } from "@/lib/game/ranks";
+import { EquippedTitle } from "@/components/characters/equipped-title";
 
 export const metadata = { title: "Meus Personagens" };
 export const dynamic = "force-dynamic";
@@ -87,6 +88,7 @@ export default async function CharactersPage({
           <section className={`character-card-grid ${selecting ? "is-selecting" : "is-lobby"}`}>
             {visibleCharacters.map((character) => {
               const rank = getAdventureRank(character.adventure_rank);
+              const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
               return (
                 <article
                   className="character-card"
@@ -107,6 +109,7 @@ export default async function CharactersPage({
                     )}
                     <small>Nível {character.level}</small>
                     <RankBadge compact rank={character.adventure_rank} />
+                    <EquippedTitle title={equippedTitle} />
                   </div>
                   <div className="character-card__body">
                     <span className="eyebrow">Herói de Wonderland</span>

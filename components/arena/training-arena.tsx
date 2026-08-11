@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { claimArenaVictoryAction } from "@/app/arena/actions";
 
 import {
@@ -32,6 +32,7 @@ import {
   sumItemEffectModifiers,
   type ItemSpecialEffect,
 } from "@/lib/game/item-effects";
+import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
 
 interface ArenaCharacter {
   id: string;
@@ -39,6 +40,7 @@ interface ArenaCharacter {
   level: number;
   adventureRank: string;
   imageUrl: string;
+  equippedTitle: EquippedTitleData | null;
   raceName: string;
   className: string;
   baseHp: number;
@@ -74,6 +76,13 @@ type TurnActions = {
   defend: boolean;
 };
 type Position = { x: number; y: number };
+type CombatVisual = {
+  id: number;
+  kind: "damage" | "heal" | "shield" | "attack";
+  amount: number;
+  target: "player" | "enemy";
+  source: "player" | "enemy";
+};
 const freshActions: TurnActions = {
   move: false,
   basic: false,
@@ -186,6 +195,8 @@ function Battle({
   const [reward, setReward] = useState<{ xp: number; wg: number } | null>(null);
   const [rewardError, setRewardError] = useState("");
   const [claiming, startClaim] = useTransition();
+  const [visual, setVisual] = useState<CombatVisual | null>(null);
+  const visualSequence = useRef(0);
   const finished = player.hp <= 0 || enemy.hp <= 0;
   const playerMovementRange = getMovementRange(getEffectiveAttributes(player).INI);
   const rankReward =
@@ -210,6 +221,7 @@ function Battle({
     nextEnemy: CombatantState,
     text: string,
     action: keyof TurnActions,
+    event?: { kind: "damage" | "heal" | "shield" | "utility" | "error"; amount: number },
   ) {
     setPlayer(nextPlayer);
     setEnemy(nextEnemy);
@@ -222,6 +234,19 @@ function Battle({
       ]),
     ]);
     setActions((current) => ({ ...current, [action]: true }));
+    if (event && event.kind !== "utility" && event.kind !== "error") {
+      visualSequence.current += 1;
+      setVisual({
+        id: visualSequence.current,
+        kind: event.kind,
+        amount: event.amount,
+        target: event.kind === "damage" ? "enemy" : "player",
+        source: "player",
+      });
+    } else if (action === "basic") {
+      visualSequence.current += 1;
+      setVisual({ id: visualSequence.current, kind: "attack", amount: 0, target: "enemy", source: "player" });
+    }
     if (nextEnemy.hp <= 0) {
       setMessage(`${text} Vitória!`);
       return;
@@ -267,6 +292,16 @@ function Battle({
             ? `O tempo acabou. ${reply.event.message}`
             : `${reply.event.message}${[...playerPeriodic.messages, ...enemyPeriodic.messages].length ? ` ${[...playerPeriodic.messages, ...enemyPeriodic.messages].join(" ")}` : ""} Nova rodada: escolha suas ações.`,
       );
+      if (reply.event.kind === "damage") {
+        visualSequence.current += 1;
+        setVisual({
+          id: visualSequence.current,
+          kind: "damage",
+          amount: reply.event.amount,
+          target: "player",
+          source: "enemy",
+        });
+      }
     },
     [actions, enemy, enemyPosition, finished, newCooldowns, player, playerPosition, rules],
   );
@@ -293,7 +328,7 @@ function Battle({
       return;
     }
     const result = resolveBasicAttack(player, enemy, rules);
-    applyPlayerAction(result.actor, result.target, result.event.message, "basic");
+    applyPlayerAction(result.actor, result.target, result.event.message, "basic", result.event);
   }
 
   function handleSkill(skill: ClassSkill) {
@@ -307,7 +342,7 @@ function Battle({
       setMessage(result.event.message);
       return;
     }
-    applyPlayerAction(result.actor, result.target, result.event.message, "class");
+    applyPlayerAction(result.actor, result.target, result.event.message, "class", result.event);
   }
 
   function handleRaceAbility(ability: ClassSkill) {
@@ -318,7 +353,7 @@ function Battle({
     }
     const result = resolveRaceAbility(player, enemy, ability, rules);
     if (result.event.kind === "error") return setMessage(result.event.message);
-    applyPlayerAction(result.actor, result.target, result.event.message, "race");
+    applyPlayerAction(result.actor, result.target, result.event.message, "race", result.event);
   }
 
   function handleItem(item: ArenaCharacter["items"][number]) {
@@ -332,6 +367,7 @@ function Battle({
       enemy,
       `${character.name} usou ${item.name} e recuperou ${healed} de HP.`,
       "item",
+      { kind: "heal", amount: healed },
     );
   }
 
@@ -355,6 +391,8 @@ function Battle({
     setActions((current) => ({ ...current, defend: true }));
     setMoving(false);
     setMessage(`${character.name} assumiu postura defensiva e bloqueará o próximo dano.`);
+    visualSequence.current += 1;
+    setVisual({ id: visualSequence.current, kind: "shield", amount: 0, target: "player", source: "player" });
   }
 
   return (
@@ -412,6 +450,14 @@ function Battle({
           imageUrl={character.imageUrl}
           side="player"
           subtitle={`${character.raceName} · ${character.className}`}
+          title={character.equippedTitle}
+          visual={
+            visual?.target === "player"
+              ? visual
+              : visual?.source === "player"
+                ? { ...visual, kind: "attack", amount: 0 }
+                : null
+          }
         />
         <BattleGrid
           enemy={enemy}
@@ -428,6 +474,14 @@ function Battle({
           side="enemy"
           sigil={initial.sigil}
           subtitle={`Nível ${opponent?.level ?? character.level} · ${initial.title}`}
+          title={opponent?.equippedTitle ?? null}
+          visual={
+            visual?.target === "enemy"
+              ? visual
+              : visual?.source === "enemy"
+                ? { ...visual, kind: "attack", amount: 0 }
+                : null
+          }
         />
       </div>
       <p className="arena-message" role="status">
@@ -691,22 +745,33 @@ function Fighter({
   side,
   imageUrl,
   sigil = "鬼",
+  title,
+  visual,
 }: {
   combatant: CombatantState;
   subtitle: string;
   side: "player" | "enemy";
   imageUrl: string;
   sigil?: string;
+  title: EquippedTitleData | null;
+  visual: CombatVisual | null;
 }) {
   const effectiveAttributes = getEffectiveAttributes(combatant);
   return (
     <article className={`arena-fighter is-${side}`}>
       <div
-        className={`arena-fighter__portrait ${imageUrl ? "is-image" : ""}`}
+        key={`${side}-${visual?.id ?? 0}-${visual?.kind ?? "idle"}`}
+        className={`arena-fighter__portrait ${imageUrl ? "is-image" : ""} ${visual ? `has-${visual.kind}` : ""}`}
         style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
       >
         {imageUrl ? "" : side === "player" ? combatant.name.slice(0, 2).toUpperCase() : sigil}
         <span>{side === "player" ? "JOGADOR" : "OPONENTE"}</span>
+        <EquippedTitle title={title} />
+        {visual ? (
+          <span className={`arena-combat-float is-${visual.kind}`} key={visual.id} aria-live="polite">
+            {visual.kind === "damage" ? `−${visual.amount}` : visual.kind === "heal" ? `+${visual.amount}` : visual.kind === "shield" ? "ESCUDO" : "ATAQUE"}
+          </span>
+        ) : null}
       </div>
       <div className="arena-fighter__status">
         <span className="eyebrow">{subtitle}</span>
@@ -767,7 +832,7 @@ function Fighter({
               key={key}
               title={status.name}
             >
-              <b>{status.beneficial ? "▲" : "▼"}</b>
+              <b aria-hidden="true">{status.beneficial ? "✦" : /venen/i.test(status.name) ? "☠" : /sang/i.test(status.name) ? "✚" : /congel|gelo/i.test(status.name) ? "❄" : "▼"}</b>
               <small>{status.name}</small>
               <i>{status.duration}</i>
             </span>

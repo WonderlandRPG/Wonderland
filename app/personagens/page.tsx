@@ -88,7 +88,8 @@ export default async function CharactersPage({
           <section className={`character-card-grid ${selecting ? "is-selecting" : "is-lobby"}`}>
             {visibleCharacters.map((character) => {
               const rank = getAdventureRank(character.adventure_rank);
-              const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
+              const equippedTitle =
+                character.inventory.find((item) => item.equippedSlot === "title") ?? null;
               return (
                 <article
                   className="character-card"
@@ -163,9 +164,22 @@ export default async function CharactersPage({
                         Entrar na arena
                       </Link>
                     )}
-                    <Link className="button button--primary" href={`/personagens/${character.id}`}>
-                      Abrir ficha
-                    </Link>
+                    {selecting ? (
+                      <form action={selectCharacterAction}>
+                        <input name="characterId" type="hidden" value={character.id} />
+                        <input name="next" type="hidden" value={`/personagens/${character.id}`} />
+                        <button className="button button--primary" type="submit">
+                          Abrir ficha
+                        </button>
+                      </form>
+                    ) : (
+                      <Link
+                        className="button button--primary"
+                        href={`/personagens/${character.id}`}
+                      >
+                        Abrir ficha
+                      </Link>
+                    )}
                     {selecting ? (
                       <DeleteCharacterButton id={character.id} name={character.name} />
                     ) : null}

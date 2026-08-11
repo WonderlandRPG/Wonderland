@@ -109,12 +109,12 @@ export async function signUpAction(
   });
 
   if (error) {
+    const rateLimited = error.status === 429 || error.code === "over_email_send_rate_limit";
     return {
       status: "error",
-      message:
-        error.status === 429
-          ? "Muitas tentativas foram feitas. Aguarde alguns minutos antes de tentar novamente."
-          : "Não foi possível criar a conta agora. Tente novamente em instantes.",
+      message: rateLimited
+        ? "O limite geral de e-mails de cadastro do Wonderland foi atingido. Sua tentativa não foi o problema. Aguarde a liberação do serviço e tente novamente mais tarde."
+        : "Não foi possível criar a conta agora. Tente novamente em instantes.",
     };
   }
 

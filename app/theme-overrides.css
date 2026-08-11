@@ -1787,3 +1787,33 @@ html[data-theme="christmas"] .admin-sidebar__nav a:is(:hover, .is-active) {
     animation: none !important;
   }
 }
+
+/* Correções de interação para fichas e controles flutuantes. */
+.character-card footer,
+.account-active-character > div:last-child {
+  position: relative;
+  z-index: 20;
+}
+
+.character-card footer a,
+.account-active-character > div:last-child a {
+  position: relative;
+  z-index: 1;
+  touch-action: manipulation;
+}
+
+.character-card::before,
+.character-card::after,
+.character-card__portrait::after,
+.account-active-character::before,
+.account-active-character::after,
+.account-active-character__portrait::after {
+  pointer-events: none;
+}
+
+@media (max-width: 820px) {
+  .character-page__inner,
+  .account-shell__inner {
+    padding-bottom: 96px;
+  }
+}

@@ -26,6 +26,20 @@ function readPositions(): Record<string, number> {
   }
 }
 
+function shouldDeferAudioDownload() {
+  const connection = (
+    navigator as Navigator & {
+      connection?: { effectiveType?: string; saveData?: boolean };
+    }
+  ).connection;
+  return (
+    connection?.saveData === true ||
+    connection?.effectiveType === "slow-2g" ||
+    connection?.effectiveType === "2g" ||
+    window.matchMedia("(pointer: coarse)").matches
+  );
+}
+
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const trackKey = musicTrackForPath(pathname);
@@ -33,6 +47,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const enabledRef = useRef(true);
   const previousTrackRef = useRef(trackKey);
+  const deferredRef = useRef(false);
   const [enabled, setEnabled] = useState(true);
   const [status, setStatus] = useState<AudioStatus>("loading");
 
@@ -77,6 +92,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     previousTrackRef.current = trackKey;
 
     audio.pause();
+    if (shouldDeferAudioDownload()) {
+      deferredRef.current = true;
+      audio.removeAttribute("src");
+      audio.load();
+      setStatus(enabledRef.current ? "blocked" : "paused");
+      return;
+    }
+    deferredRef.current = false;
     audio.src = track.source;
     audio.load();
     setStatus(enabledRef.current ? "loading" : "paused");
@@ -99,7 +122,16 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const unlock = (event: Event) => {
       if (event.target instanceof Element && event.target.closest(".audio-control")) return;
-      if (enabledRef.current && audioRef.current?.paused) void play();
+      const audio = audioRef.current;
+      if (!audio || !enabledRef.current) return;
+      if (deferredRef.current) {
+        deferredRef.current = false;
+        audio.src = track.source;
+        audio.load();
+        audio.addEventListener("loadedmetadata", () => void play(), { once: true });
+        return;
+      }
+      if (audio.paused) void play();
     };
     window.addEventListener("pointerdown", unlock, { once: true, capture: true });
     window.addEventListener("keydown", unlock, { once: true, capture: true });
@@ -107,7 +139,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("pointerdown", unlock, true);
       window.removeEventListener("keydown", unlock, true);
     };
-  }, [play, trackKey]);
+  }, [play, track.source, trackKey]);
 
   function toggle() {
     const audio = audioRef.current;
@@ -126,6 +158,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         window.localStorage.setItem(enabledKey, "true");
       } catch {}
       setStatus("loading");
+      if (audio && deferredRef.current) {
+        deferredRef.current = false;
+        audio.src = track.source;
+        audio.load();
+        audio.addEventListener("loadedmetadata", () => void play(), { once: true });
+        return;
+      }
       void play();
     }
   }
@@ -139,7 +178,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         loop
         onError={() => setStatus("error")}
         onPlaying={() => setStatus("playing")}
-        preload="auto"
+        preload="metadata"
         ref={audioRef}
       />
       <button

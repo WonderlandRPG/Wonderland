@@ -10,29 +10,44 @@ export async function PlayerNav() {
   const activeCharacterId = account ? await getActiveCharacterId(account.id) : null;
   const activeCharacter = activeCharacterId ? await getCharacterSheet(activeCharacterId) : null;
   return (
-    <aside className="player-nav">
-      <div className="player-nav__crest">
-        <Link href={activeCharacter ? "/personagens" : "/"}>
-          <BrandMark inverse />
-        </Link>
-        <small>O grimório vivo</small>
-      </div>
+    <header className="player-nav page-container">
+      <Link className="player-nav__brand" href={activeCharacter ? "/personagens" : "/"}>
+        <BrandMark inverse />
+      </Link>
       <nav aria-label="Portal dos jogadores">
         <div className="player-nav__group">
-          <span>Crônicas</span>
-          <Link href="/racas"><i>◈</i>Raças</Link>
-          <Link href="/classes"><i>✦</i>Classes</Link>
-          <Link href="/historia"><i>⌁</i>História</Link>
-          <Link href="/reinos"><i>◇</i>Reinos</Link>
+          <span className="player-nav__group-label">Crônicas</span>
+          <Link href="/racas">
+            <i>◈</i>Raças
+          </Link>
+          <Link href="/classes">
+            <i>✦</i>Classes
+          </Link>
+          <Link href="/historia">
+            <i>⌁</i>História
+          </Link>
+          <Link href="/reinos">
+            <i>◇</i>Reinos
+          </Link>
         </div>
         {activeCharacterId ? (
           <div className="player-nav__group">
-            <span>Jornada</span>
-            <Link href="/personagens"><i>♜</i>Jogar</Link>
-            <Link href="/arena"><i>⚔</i>Arena</Link>
-            <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}><i>⬡</i>Equipamentos</Link>
-            <Link href="/loja"><i>◉</i>Loja</Link>
-            <Link href="/presenca"><i>✧</i>Presença</Link>
+            <span className="player-nav__group-label">Jornada</span>
+            <Link href="/personagens">
+              <i>♜</i>Jogar
+            </Link>
+            <Link href="/arena">
+              <i>⚔</i>Arena
+            </Link>
+            <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}>
+              <i>⬡</i>Equipamentos
+            </Link>
+            <Link href="/loja">
+              <i>◉</i>Loja
+            </Link>
+            <Link href="/presenca">
+              <i>✧</i>Presença
+            </Link>
             <details className="player-nav__world-menu">
               <summary>
                 <i>⌘</i>Mundo <span aria-hidden="true">＋</span>
@@ -83,7 +98,6 @@ export async function PlayerNav() {
           </Link>
         )}
       </nav>
-      <div className="player-nav__seal" aria-hidden="true">W</div>
-    </aside>
+    </header>
   );
 }

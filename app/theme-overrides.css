@@ -1318,3 +1318,472 @@ html[data-theme="christmas"] .game-world-atmosphere::before {
     animation: none !important;
   }
 }
+
+
+/* ========================================================================== */
+/* Wonderland UI 4.1 — coerência integral dos temas                           */
+/* Esta camada elimina superfícies escuras herdadas do CSS histórico.         */
+/* ========================================================================== */
+
+html[data-theme="classic"] {
+  color-scheme: light;
+  --ui-bg: #ece9e1;
+  --ui-bg-2: #f7f5ef;
+  --ui-surface: rgba(255, 254, 250, 0.97);
+  --ui-surface-solid: #fffefa;
+  --ui-surface-raised: #f2eee5;
+  --ui-glass: rgba(255, 254, 250, 0.88);
+  --ui-ink: #172b26;
+  --ui-muted: #5d6f68;
+  --ui-faint: #84918c;
+  --ui-gold: #9a762f;
+  --ui-gold-soft: #c49b47;
+  --ui-arcane: #167b82;
+  --ui-arcane-rgb: 22, 123, 130;
+  --ui-danger: #ad3f48;
+  --ui-success: #28734e;
+  --ui-line: rgba(24, 60, 49, 0.15);
+  --ui-line-gold: rgba(154, 118, 47, 0.4);
+  --ui-shadow: 0 24px 64px rgba(31, 49, 42, 0.13);
+  --ui-shadow-small: 0 10px 28px rgba(31, 49, 42, 0.09);
+  --game-bg: var(--ui-bg);
+  --game-bg-deep: #ddd9cf;
+  --game-panel: var(--ui-surface);
+  --game-panel-strong: var(--ui-surface-raised);
+  --game-panel-soft: var(--ui-glass);
+  --game-text: var(--ui-ink);
+  --game-muted: var(--ui-muted);
+  --game-muted-soft: var(--ui-faint);
+  --game-gold: var(--ui-gold);
+  --game-gold-bright: var(--ui-gold-soft);
+  --game-line: var(--ui-line);
+  --game-line-strong: var(--ui-line-gold);
+  --game-shadow: var(--ui-shadow);
+  --game-page-background:
+    radial-gradient(circle at 7% 3%, rgba(22, 123, 130, 0.1), transparent 31rem),
+    radial-gradient(circle at 94% 0, rgba(154, 118, 47, 0.12), transparent 27rem),
+    linear-gradient(145deg, #faf8f2 0%, #efede6 55%, #e3e1d9 100%);
+}
+
+html[data-theme="classic"] body {
+  color: var(--ui-ink) !important;
+  background: var(--game-page-background) fixed !important;
+}
+
+html[data-theme="classic"] .game-world-atmosphere::after {
+  box-shadow: inset 0 0 150px rgba(45, 66, 58, 0.08);
+}
+
+/* As superfícies abaixo possuíam cores noturnas fixas em gerações antigas. */
+html[data-theme="classic"] :is(
+  .player-nav,
+  .site-header,
+  .admin-topbar,
+  .theme-control__toggle,
+  .theme-control__menu,
+  .player-nav__world-menu > div,
+  .portal-card,
+  .account-card,
+  .sheet-section,
+  .sheet-stat-grid article,
+  .sheet-attributes article,
+  .sheet-lore-block article,
+  .grimoire-list article,
+  .character-progress-strip,
+  .account-summary dl > div,
+  .character-command-hero,
+  .character-session-card,
+  .character-create-section,
+  .character-build-preview,
+  .character-choice-summary,
+  .rank-guide-card,
+  .ranks-intro-card,
+  .ranking-board,
+  .ranking-season-banner,
+  .ranking-podium__place,
+  .ranking-table > a,
+  .event-list article,
+  .update-list article,
+  .lore-browser__index,
+  .lore-dossier,
+  .lore-resource,
+  .path-dossier-grid > article,
+  .race-trait-grid > article,
+  .path-passive,
+  .path-technique,
+  .ability-ledger > article,
+  .ability-ledger > article > div,
+  .inventory-slot-panel,
+  .inventory-browser__catalog,
+  .inventory-inspector,
+  .inventory-slot-grid > button,
+  .inventory-search input,
+  .inventory-search > button,
+  .classic-item-card,
+  .shop-controls,
+  .shop-controls input,
+  .shop-controls select,
+  .shop-inspector,
+  .shop-client-pagination button,
+  .arena-toolbar,
+  .arena-command-panel,
+  .arena-message,
+  .arena-turn-budget,
+  .arena-fighter,
+  .arena-action-group > button,
+  .arena-mode-select > div > a,
+  .presence-pass,
+  .presence-hero,
+  .presence-reward-grid article,
+  .presence-admin-grid fieldset,
+  .presence-campaign-settings,
+  .admin-editor-card,
+  .admin-character-card,
+  .admin-composer,
+  .admin-tool-grid > a,
+  .admin-command-metrics > article,
+  .admin-title-create,
+  .admin-theme-card,
+  .race-catalog-card,
+  .race-editor-section,
+  .equipment-modal__dialog,
+  .race-preview-modal__panel
+) {
+  color: var(--ui-ink) !important;
+  border-color: var(--ui-line) !important;
+  background: linear-gradient(145deg, #fffefa, #f4f1e9) !important;
+  box-shadow: var(--ui-shadow-small) !important;
+}
+
+html[data-theme="classic"] :is(
+  .sheet-stat-grid article,
+  .sheet-attributes article,
+  .sheet-lore-block article,
+  .grimoire-list article,
+  .character-progress-strip,
+  .account-summary dl > div,
+  .path-passive,
+  .path-technique,
+  .ability-ledger > article,
+  .ability-ledger > article > div,
+  .inventory-slot-grid > button,
+  .arena-action-group > button,
+  .presence-reward-grid article
+) {
+  background: #f7f4ec !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.9) !important;
+}
+
+html[data-theme="classic"] :is(
+  .sheet-stat-grid span,
+  .sheet-attributes span,
+  .sheet-attributes small,
+  .sheet-lore-block p,
+  .grimoire-list p,
+  .path-dossier-grid p,
+  .race-trait-grid p,
+  .path-passive span,
+  .path-technique span,
+  .ability-ledger p,
+  .inventory-slot-grid small,
+  .inventory-slot-grid em,
+  .classic-item-card p,
+  .classic-item-card small
+) {
+  color: var(--ui-muted) !important;
+}
+
+html[data-theme="classic"] :is(
+  .sheet-stat-grid strong,
+  .sheet-attributes strong,
+  .sheet-lore-block h3,
+  .grimoire-list h3,
+  .path-dossier-grid h4,
+  .race-trait-grid h4,
+  .path-passive b,
+  .path-technique b,
+  .ability-ledger h4,
+  .inventory-slot-grid strong,
+  .classic-item-card h2,
+  .classic-item-card strong
+) {
+  color: var(--ui-ink) !important;
+}
+
+html[data-theme="classic"] :is(
+  .sheet-stat-grid strong,
+  .sheet-attributes strong,
+  .ability-ledger > article > div span,
+  .ability-ledger footer span
+) {
+  color: var(--ui-success) !important;
+}
+
+html[data-theme="classic"] :is(.sheet-tabs, .character-stepper, .character-choice-codex__tabs) {
+  color: var(--ui-ink) !important;
+  border-color: var(--ui-line) !important;
+  background: rgba(255, 254, 250, 0.9) !important;
+}
+
+html[data-theme="classic"] :is(input, select, textarea) {
+  color: var(--ui-ink) !important;
+  border-color: var(--ui-line) !important;
+  background: #fffefa !important;
+}
+
+html[data-theme="classic"] :is(.classic-item-card > footer, .shop-inspector > footer) {
+  border-color: var(--ui-line) !important;
+  background: linear-gradient(180deg, #f3efe5, #ebe5d9) !important;
+}
+
+html[data-theme="classic"] .classic-item-card > footer > strong,
+html[data-theme="classic"] .shop-inspector > footer strong {
+  color: #765718 !important;
+}
+
+html[data-theme="classic"] :is(.classic-item-card footer button, .shop-inspector > footer button) {
+  color: #fff !important;
+  border-color: #17653f !important;
+  background: linear-gradient(135deg, #2d8455, #175c39) !important;
+}
+
+html[data-theme="classic"] :is(
+  .lore-browser__index button:hover,
+  .lore-browser__index button.is-active,
+  .inventory-browser__catalog nav button.is-active,
+  .inventory-slot-grid > button:hover,
+  .inventory-slot-grid > button.is-selected
+) {
+  color: var(--ui-ink) !important;
+  background: #e9e3d6 !important;
+}
+
+html[data-theme="classic"] .admin-sidebar {
+  color: #fdf8e9 !important;
+  background: linear-gradient(180deg, #173f35, #09251d) !important;
+}
+
+/* ========================================================================== */
+/* Solstício de Wonderland — tema natalino completo                           */
+/* Paleta-base enviada pelo criador: vermelho, verde, dourado e branco-neve.  */
+/* ========================================================================== */
+
+html[data-theme="christmas"] {
+  color-scheme: dark;
+  --christmas-red: #b30000;
+  --christmas-red-bright: #e12b2b;
+  --christmas-green: #0b6623;
+  --christmas-green-deep: #051b11;
+  --christmas-green-panel: #0a2b1a;
+  --christmas-gold: #ffd700;
+  --christmas-gold-soft: #ffe98a;
+  --christmas-snow: #fcfcfc;
+  --ui-bg: var(--christmas-green-deep);
+  --ui-bg-2: #07331c;
+  --ui-surface: rgba(7, 43, 25, 0.94);
+  --ui-surface-solid: #092f1d;
+  --ui-surface-raised: #104829;
+  --ui-glass: rgba(5, 27, 17, 0.82);
+  --ui-ink: var(--christmas-snow);
+  --ui-muted: #d1ded5;
+  --ui-faint: #8eaa98;
+  --ui-gold: #e8c638;
+  --ui-gold-soft: var(--christmas-gold);
+  --ui-arcane: #dc3535;
+  --ui-arcane-rgb: 220, 53, 53;
+  --ui-danger: #ff5656;
+  --ui-success: #74df91;
+  --ui-line: rgba(252, 252, 252, 0.14);
+  --ui-line-gold: rgba(255, 215, 0, 0.52);
+  --ui-shadow: 0 26px 74px rgba(0, 8, 4, 0.62);
+  --ui-shadow-small: 0 12px 34px rgba(0, 8, 4, 0.4);
+  --game-bg: var(--ui-bg);
+  --game-bg-deep: #020d08;
+  --game-panel: var(--ui-surface);
+  --game-panel-strong: var(--ui-surface-raised);
+  --game-panel-soft: var(--ui-glass);
+  --game-text: var(--ui-ink);
+  --game-muted: var(--ui-muted);
+  --game-muted-soft: var(--ui-faint);
+  --game-gold: var(--ui-gold);
+  --game-gold-bright: var(--ui-gold-soft);
+  --game-line: var(--ui-line);
+  --game-line-strong: var(--ui-line-gold);
+  --game-shadow: var(--ui-shadow);
+}
+
+html[data-theme="christmas"] body {
+  color: var(--christmas-snow) !important;
+  background:
+    radial-gradient(circle at 10% 0, rgba(179, 0, 0, 0.22), transparent 30rem),
+    radial-gradient(circle at 90% 8%, rgba(255, 215, 0, 0.1), transparent 28rem),
+    linear-gradient(145deg, #07331c, #051b11 55%, #020d08) fixed !important;
+}
+
+html[data-theme="christmas"] body::after {
+  opacity: 0.13;
+  background-image:
+    linear-gradient(rgba(255, 215, 0, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 215, 0, 0.12) 1px, transparent 1px);
+}
+
+/* Três profundidades de neve, sem criar centenas de elementos no navegador. */
+html[data-theme="christmas"] body::before {
+  position: fixed;
+  z-index: 90;
+  inset: -120px 0 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.82;
+  background-image:
+    radial-gradient(circle, rgba(252, 252, 252, 0.96) 0 2.2px, transparent 2.8px),
+    radial-gradient(circle, rgba(229, 247, 255, 0.82) 0 1.4px, transparent 2px),
+    radial-gradient(circle, rgba(252, 252, 252, 0.58) 0 0.8px, transparent 1.3px);
+  background-size: 96px 96px, 61px 61px, 37px 37px;
+  background-position: 7px 12px, 31px 48px, 12px 23px;
+  animation: christmas-snowfall 13s linear infinite;
+}
+
+/* Fio, lâmpadas e halos: o pisca-pisca passa a parecer parte da HUD. */
+html[data-theme="christmas"] .game-world-atmosphere::before {
+  position: fixed;
+  z-index: 91;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  content: "";
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at center, #ff3535 0 4px, #b30000 5px, transparent 8px),
+    radial-gradient(ellipse at center, #ffd700 0 4px, #a88300 5px, transparent 8px),
+    radial-gradient(ellipse at center, #58e87e 0 4px, #0b6623 5px, transparent 8px),
+    radial-gradient(ellipse at center, #f8fbff 0 4px, #9bd9ff 5px, transparent 8px),
+    linear-gradient(176deg, transparent 0 11px, #274a34 12px 14px, transparent 15px);
+  background-size: 124px 28px, 124px 28px, 124px 28px, 124px 28px, 100% 28px;
+  background-position: 0 3px, 31px 3px, 62px 3px, 93px 3px, 0 0;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.72));
+  animation: christmas-lights-glow 2.2s steps(2, end) infinite;
+}
+
+html[data-theme="christmas"] :is(.player-nav, .site-header, .admin-topbar) {
+  border-color: rgba(255, 215, 0, 0.42) !important;
+  background:
+    linear-gradient(110deg, rgba(179, 0, 0, 0.18), transparent 35%),
+    linear-gradient(145deg, rgba(7, 50, 28, 0.98), rgba(4, 25, 15, 0.98)) !important;
+  box-shadow:
+    0 18px 45px rgba(0, 8, 4, 0.56),
+    inset 0 -2px rgba(179, 0, 0, 0.34) !important;
+}
+
+html[data-theme="christmas"] :is(
+  .portal-card,
+  .account-card,
+  .sheet-section,
+  .sheet-stat-grid article,
+  .sheet-attributes article,
+  .sheet-lore-block article,
+  .grimoire-list article,
+  .character-progress-strip,
+  .character-command-hero,
+  .rank-guide-card,
+  .ranking-board,
+  .event-list article,
+  .update-list article,
+  .lore-browser__index,
+  .lore-dossier,
+  .lore-resource,
+  .path-passive,
+  .path-technique,
+  .ability-ledger > article,
+  .ability-ledger > article > div,
+  .inventory-slot-panel,
+  .inventory-browser__catalog,
+  .inventory-inspector,
+  .inventory-slot-grid > button,
+  .classic-item-card,
+  .shop-controls,
+  .shop-inspector,
+  .arena-toolbar,
+  .arena-command-panel,
+  .arena-message,
+  .arena-turn-budget,
+  .arena-fighter,
+  .presence-pass,
+  .presence-hero,
+  .presence-reward-grid article,
+  .admin-editor-card,
+  .admin-character-card,
+  .admin-tool-grid > a,
+  .admin-theme-card
+) {
+  color: var(--christmas-snow) !important;
+  border-color: rgba(255, 215, 0, 0.2) !important;
+  background:
+    linear-gradient(135deg, rgba(179, 0, 0, 0.08), transparent 35%),
+    linear-gradient(150deg, rgba(10, 49, 29, 0.97), rgba(4, 27, 16, 0.97)) !important;
+  box-shadow:
+    0 14px 38px rgba(0, 8, 4, 0.45),
+    inset 0 1px rgba(255, 255, 255, 0.04) !important;
+}
+
+html[data-theme="christmas"] :is(
+  .button--primary,
+  .classic-item-card footer button,
+  .shop-inspector > footer button
+) {
+  color: #fff !important;
+  border-color: #ff5a5a !important;
+  background: linear-gradient(135deg, #d82424, #930000) !important;
+  box-shadow: 0 10px 28px rgba(179, 0, 0, 0.32) !important;
+}
+
+html[data-theme="christmas"] :is(.eyebrow, .hero__kicker, .brand-mark__copy span) {
+  color: var(--christmas-gold) !important;
+}
+
+html[data-theme="christmas"] :is(.classic-item-card > footer, .shop-inspector > footer) {
+  border-color: rgba(255, 215, 0, 0.24) !important;
+  background:
+    linear-gradient(90deg, rgba(179, 0, 0, 0.18), transparent),
+    #04170e !important;
+}
+
+html[data-theme="christmas"] .admin-sidebar {
+  color: var(--christmas-snow) !important;
+  border-right-color: rgba(255, 215, 0, 0.32) !important;
+  background:
+    radial-gradient(circle at 0 0, rgba(179, 0, 0, 0.28), transparent 16rem),
+    linear-gradient(180deg, #07371e, #03150c) !important;
+}
+
+html[data-theme="christmas"] .admin-sidebar__nav a:is(:hover, .is-active) {
+  color: var(--christmas-gold) !important;
+  border-color: rgba(255, 215, 0, 0.34) !important;
+  background: rgba(179, 0, 0, 0.22) !important;
+}
+
+@keyframes christmas-snowfall {
+  to {
+    transform: translate3d(24px, 120px, 0);
+  }
+}
+
+@keyframes christmas-lights-glow {
+  0%,
+  100% {
+    opacity: 0.94;
+    filter: drop-shadow(0 0 9px rgba(255, 215, 0, 0.75));
+  }
+  50% {
+    opacity: 0.68;
+    filter: drop-shadow(0 0 4px rgba(252, 252, 252, 0.7));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="christmas"] body::before,
+  html[data-theme="christmas"] .game-world-atmosphere::before {
+    animation: none !important;
+  }
+}

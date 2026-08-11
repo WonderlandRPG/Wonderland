@@ -9,6 +9,7 @@ import {
   deriveStats,
   getEffectiveAttributes,
   getConvertedResourceBonus,
+  guardCombatant,
   resolveBasicAttack,
   resolveSkill,
   tickCooldowns,
@@ -88,6 +89,22 @@ describe("motor de combate", () => {
     const next = applyDamage(target, 75);
     expect(next.shield).toBe(0);
     expect(next.hp).toBe(target.maxHp - 35);
+  });
+
+  it("Defender bloqueia integralmente o próximo dano e entra em recarga", () => {
+    const target = createCombatant({
+      id: "guardiao",
+      name: "Guardião",
+      attributes,
+      baseHp: 300,
+      baseMana: 0,
+    });
+    const guarded = guardCombatant(target);
+    const blocked = applyDamage(guarded, 999);
+    expect(blocked.hp).toBe(target.hp);
+    expect(blocked.statuses["defesa-total"]).toBeUndefined();
+    expect(guarded.cooldowns["defesa-total"]).toBe(5);
+    expect(applyDamage(blocked, 50).hp).toBe(target.hp - 50);
   });
 
   it("resolve ataque básico, habilidade, Mana e recarga", () => {

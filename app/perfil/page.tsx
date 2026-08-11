@@ -83,8 +83,8 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
                 </div>
               </div>
               <p>
-                Gerencie apenas os dados da sua conta aqui. Personagem, inventário, nível e presença
-                ficam concentrados na ficha em jogo.
+                Gerencie apenas os dados da sua conta aqui. Personagem, inventário e nível ficam na
+                ficha; as recompensas diárias ficam na aba Presença.
               </p>
             </article>
 

@@ -1,82 +1,53 @@
+import { PresenceRewardEditor } from "@/components/admin/presence-reward-editor";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { savePresenceRewardsAction } from "./actions";
+
 export const metadata = { title: "Presença | Painel ADM" };
+export const dynamic = "force-dynamic";
+
+const defaultRewards = Array.from({ length: 15 }, (_, index) => ({
+  day_number: index + 1,
+  reward_type: (index % 2 ? "xp" : "wg") as "xp" | "wg" | "item",
+  amount: 100 + index * 50,
+  item_id: null,
+}));
+
 export default async function PresenceAdminPage({
   searchParams,
 }: {
   searchParams: Promise<{ status?: string }>;
 }) {
   const client = await createServerSupabaseClient();
-  const [{ data }, query] = await Promise.all([
+  const [rewardResult, itemResult, query] = await Promise.all([
+    client
+      ? client.from("v2_presence_rewards").select("*").order("day_number")
+      : Promise.resolve({ data: [] }),
     client
       ? client
-          .from("v2_game_settings")
-          .select("key,value")
-          .in("key", [
-            "economy.daily_base_reward",
-            "economy.daily_streak_bonus",
-            "economy.daily_streak_cap",
-            "progression.daily_xp_reward",
-          ])
+          .from("v2_shop_items")
+          .select("id,name,rarity")
+          .eq("active", true)
+          .order("rarity")
+          .order("name")
       : Promise.resolve({ data: [] }),
     searchParams,
   ]);
-  const values = new Map((data ?? []).map((x) => [x.key, Number(x.value)]));
+  const stored = new Map((rewardResult.data ?? []).map((reward) => [reward.day_number, reward]));
+  const rewards = defaultRewards.map((fallback) => stored.get(fallback.day_number) ?? fallback);
   return (
-    <div className="admin-content">
+    <div className="admin-content admin-presence-page">
       <header className="admin-page-title">
         <div>
           <span className="eyebrow">Retenção diária</span>
-          <h2>Recompensas de presença</h2>
-          <p>Defina quanto cada personagem recebe ao marcar presença e manter sua sequência.</p>
+          <h2>Passe de Presença</h2>
+          <p>Escolha a recompensa de cada dia entre XP, WG ou qualquer item ativo da loja.</p>
         </div>
       </header>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
-          {query.status === "salvo" ? "✓ Recompensas atualizadas." : "! Revise os valores."}
+          {query.status === "salvo" ? "✓ Passe atualizado." : "! Revise as recompensas."}
         </div>
       ) : null}
-      <section className="admin-editor-card presence-reward-card">
-        <form action={savePresenceRewardsAction} className="admin-form">
-          <label>
-            <span>WG base</span>
-            <input
-              name="base"
-              type="number"
-              min="0"
-              defaultValue={values.get("economy.daily_base_reward") ?? 50}
-            />
-          </label>
-          <label>
-            <span>WG por dia de sequência</span>
-            <input
-              name="bonus"
-              type="number"
-              min="0"
-              defaultValue={values.get("economy.daily_streak_bonus") ?? 10}
-            />
-          </label>
-          <label>
-            <span>Limite de dias do bônus</span>
-            <input
-              name="cap"
-              type="number"
-              min="1"
-              defaultValue={values.get("economy.daily_streak_cap") ?? 7}
-            />
-          </label>
-          <label>
-            <span>XP diário</span>
-            <input
-              name="xp"
-              type="number"
-              min="0"
-              defaultValue={values.get("progression.daily_xp_reward") ?? 25}
-            />
-          </label>
-          <button className="button button--primary">Salvar recompensas</button>
-        </form>
-      </section>
+      <PresenceRewardEditor items={itemResult.data ?? []} rewards={rewards} />
     </div>
   );
 }

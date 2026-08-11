@@ -13,7 +13,7 @@ import { getAdventureRank } from "@/lib/game/ranks";
 import { getConvertedResourceBonus } from "@/lib/game/combat";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
 import { compatibleEquipSlots, equipmentSlots, itemSlotLabel } from "@/lib/game/equipment";
-import { claimCharacterPresenceAction, updateCharacterImageAction } from "./equipment-actions";
+import { updateCharacterImageAction } from "./equipment-actions";
 
 export const metadata = { title: "Ficha do Personagem" };
 export const dynamic = "force-dynamic";
@@ -26,13 +26,12 @@ export default async function CharacterSheetPage({
   searchParams: Promise<{ status?: string; tab?: string }>;
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const { characterId: activeCharacterId } = await requireActiveCharacter(`/personagens/${id}`);
+  await requireActiveCharacter(`/personagens/${id}`);
   const character = await requireCharacterSheet(id);
   const progress = getLevelProgress(character.xp);
   const tab = ["resumo", "habilidades", "equipamentos"].includes(query.tab ?? "")
     ? query.tab!
     : "resumo";
-  const claimedToday = character.last_daily_claim === new Date().toISOString().slice(0, 10);
   const futureClassSkills = character.characterClass.payload.progression
     .filter((skill) => skill.level > character.level)
     .sort((a, b) => a.level - b.level);
@@ -172,18 +171,6 @@ export default async function CharacterSheetPage({
             <small>WG de {character.name}</small>
             <strong>◆ {character.gold.toLocaleString("pt-BR")}</strong>
           </div>
-          <form action={claimCharacterPresenceAction.bind(null, character.id)}>
-            <button
-              className="button button--primary"
-              disabled={claimedToday || activeCharacterId !== character.id}
-            >
-              {claimedToday
-                ? `Sequência: ${character.daily_streak} dias`
-                : activeCharacterId === character.id
-                  ? "Marcar presença"
-                  : "Selecione para jogar"}
-            </button>
-          </form>
         </section>
         <nav className="sheet-tabs" aria-label="Seções da ficha">
           <Link

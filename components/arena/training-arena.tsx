@@ -28,6 +28,7 @@ import {
 } from "@/lib/game/arena";
 import {
   applyBattleStartItemEffects,
+  resolvePeriodicItemDamage,
   sumItemEffectModifiers,
   type ItemSpecialEffect,
 } from "@/lib/game/item-effects";
@@ -245,8 +246,10 @@ function Battle({
               message: `${enemy.name} avançou pelo campo de batalha.`,
             },
           };
-      const cooledPlayer = tickCooldowns(reply.target);
-      const cooledEnemy = tickCooldowns(reply.actor);
+      const playerPeriodic = resolvePeriodicItemDamage(reply.target);
+      const enemyPeriodic = resolvePeriodicItemDamage(reply.actor);
+      const cooledPlayer = tickCooldowns(playerPeriodic.combatant);
+      const cooledEnemy = tickCooldowns(enemyPeriodic.combatant);
       for (const key of newCooldowns)
         cooledPlayer.cooldowns[key] = reply.target.cooldowns[key] ?? 0;
       setPlayer(cooledPlayer);
@@ -262,7 +265,7 @@ function Battle({
           ? `${reply.event.message} Você foi derrotado.`
           : timedOut
             ? `O tempo acabou. ${reply.event.message}`
-            : `${reply.event.message} Nova rodada: escolha suas ações.`,
+            : `${reply.event.message}${[...playerPeriodic.messages, ...enemyPeriodic.messages].length ? ` ${[...playerPeriodic.messages, ...enemyPeriodic.messages].join(" ")}` : ""} Nova rodada: escolha suas ações.`,
       );
     },
     [actions, enemy, enemyPosition, finished, newCooldowns, player, playerPosition, rules],
@@ -897,7 +900,12 @@ function createBattle(
     attributes[attribute as keyof CombatAttributes] += value ?? 0;
   }
   const player = applyBattleStartItemEffects(
-    createCombatant({ ...character, attributes, rules }),
+    createCombatant({
+      ...character,
+      attributes,
+      rules,
+      itemEffects: character.equipmentEffects,
+    }),
     character.equipmentEffects,
   );
   const trainingAttributes: CombatAttributes = {
@@ -931,6 +939,7 @@ function createBattle(
     classResource: opponent?.classResource,
     raceResource: opponent?.raceResource,
     usesMana: opponent?.usesMana,
+    itemEffects: opponent?.equipmentEffects ?? [],
     rules,
   });
   const enemy = opponent

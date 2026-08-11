@@ -14,15 +14,15 @@ const themes: Array<{
 }> = [
   {
     key: "classic",
-    label: "Wonderland",
-    description: "Azul-petróleo, dourado e atmosfera do jogo.",
-    icon: "✦",
+    label: "Claro Real",
+    description: "Branco, verde e dourado.",
+    icon: "☀",
   },
   {
     key: "accessible",
-    label: "Alto contraste",
-    description: "Fundo preto, leitura ampliada e sem animações.",
-    icon: "◐",
+    label: "Noite Esmeralda",
+    description: "Preto, dourado e verde-esmeralda.",
+    icon: "☾",
   },
 ];
 
@@ -100,10 +100,10 @@ export function ThemeControl() {
         onClick={() => setOpen((value) => !value)}
         type="button"
       >
-        <span aria-hidden="true">{theme === "accessible" ? "◐" : "✦"}</span>
+        <span aria-hidden="true">{theme === "accessible" ? "☾" : "☀"}</span>
         <small>
           <b>Tema</b>
-          <em>{theme === "accessible" ? "Alto contraste" : "Wonderland"}</em>
+          <em>{theme === "accessible" ? "Noite Esmeralda" : "Claro Real"}</em>
         </small>
       </button>
     </aside>

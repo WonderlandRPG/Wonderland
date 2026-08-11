@@ -283,6 +283,28 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_shop_items"]["Insert"]>;
         Relationships: [];
       };
+      v2_presence_rewards: {
+        Row: {
+          day_number: number;
+          reward_type: "xp" | "wg" | "item";
+          amount: number;
+          item_id: string | null;
+          active: boolean;
+          updated_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          day_number: number;
+          reward_type: "xp" | "wg" | "item";
+          amount?: number;
+          item_id?: string | null;
+          active?: boolean;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_presence_rewards"]["Insert"]>;
+        Relationships: [];
+      };
       v2_events: {
         Row: {
           id: string;

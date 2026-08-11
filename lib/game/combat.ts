@@ -2,6 +2,11 @@ import { z } from "zod";
 
 import type { ClassSkill } from "@/lib/game/classes";
 import { attributeKeys, attributesSchema, type AttributeKey } from "@/lib/game/schemas";
+import {
+  applyOffensiveItemEffects,
+  getItemCooldownReduction,
+  type ItemSpecialEffect,
+} from "@/lib/game/item-effects";
 
 export const combatRulesSchema = z.object({
   hpPerResistance: z.number().finite().min(0),
@@ -53,6 +58,7 @@ export interface CombatantState {
   raceResource: number;
   maxRaceResource: number;
   raceResourceGainOnBasicAttack: number;
+  itemEffects: ItemSpecialEffect[];
 }
 
 export interface ActiveCombatStatus {
@@ -61,6 +67,8 @@ export interface ActiveCombatStatus {
   stacks: number;
   modifiers: Partial<CombatAttributes>;
   beneficial: boolean;
+  periodicDamage?: number;
+  periodicDamageType?: DamageType;
 }
 
 export function getConvertedResourceBonus(intelligence: number, maximum: number) {
@@ -122,6 +130,7 @@ export function createCombatant(input: {
     generationEvents?: Array<{ trigger: string; amount: number }>;
   } | null;
   usesMana?: boolean;
+  itemEffects?: ItemSpecialEffect[];
 }): CombatantState {
   const stats = deriveStats(input.attributes, input.baseHp, input.baseMana, input.rules);
   const usesMana = input.usesMana ?? true;
@@ -160,6 +169,7 @@ export function createCombatant(input: {
     raceResourceGainOnBasicAttack:
       input.raceResource?.generationEvents?.find((entry) => entry.trigger === "BASIC_ATTACK_HIT")
         ?.amount ?? 0,
+    itemEffects: input.itemEffects ?? [],
   };
 }
 
@@ -260,8 +270,10 @@ export function resolveBasicAttack(
   const damageType: DamageType = isMagical ? "magic" : "physical";
   const raw = (isMagical ? actorAttributes.INT : actorAttributes.FOR) * rules.basicAttackMultiplier;
   const amount = calculateDamage(raw, damageType, targetAttributes, rules);
-  return {
-    actor: {
+  const damagedTarget = applyDamage(target, amount);
+  const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
+  const itemResolution = applyOffensiveItemEffects(
+    {
       ...actor,
       classResource: Math.min(
         actor.maxClassResource,
@@ -272,12 +284,17 @@ export function resolveBasicAttack(
         actor.raceResource + actor.raceResourceGainOnBasicAttack,
       ),
     },
-    target: applyDamage(target, amount),
+    damagedTarget,
+    damageDealt,
+  );
+  return {
+    actor: itemResolution.actor,
+    target: itemResolution.target,
     event: {
       kind: "damage",
       damageType,
       amount,
-      message: `${actor.name} usou Ataque básico e causou ${amount} de dano ${isMagical ? "mágico" : "físico"}.`,
+      message: `${actor.name} usou Ataque básico e causou ${amount} de dano ${isMagical ? "mágico" : "físico"}.${itemResolution.messages.length ? ` ${itemResolution.messages.join(" ")}` : ""}`,
     },
   };
 }
@@ -328,7 +345,10 @@ export function resolveSkill(
       skill.resource === "special" && usesRaceResource
         ? actor.raceResource - skill.cost
         : actor.raceResource,
-    cooldowns: { ...actor.cooldowns, [skill.key]: skill.cooldown },
+    cooldowns: {
+      ...actor.cooldowns,
+      [skill.key]: Math.max(0, skill.cooldown - getItemCooldownReduction(actor.itemEffects)),
+    },
   };
   const primaryOperation = skill.operations[0];
   const operationScaling = primaryOperation?.scaling.length
@@ -342,14 +362,17 @@ export function resolveSkill(
     const type: DamageType =
       primaryOperation.damageType === "none" ? "physical" : primaryOperation.damageType;
     const amount = calculateDamage(rawPower, type, getEffectiveAttributes(target), rules);
+    const damagedTarget = applyDamage(target, amount);
+    const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
+    const itemResolution = applyOffensiveItemEffects(paidActor, damagedTarget, damageDealt);
     return {
-      actor: paidActor,
-      target: applyDamage(target, amount),
+      actor: itemResolution.actor,
+      target: itemResolution.target,
       event: {
         kind: "damage",
         damageType: type,
         amount,
-        message: `${actor.name} usou ${skill.name} e causou ${amount} de dano ${type === "magic" ? "mágico" : type === "true" ? "verdadeiro" : "físico"}.`,
+        message: `${actor.name} usou ${skill.name} e causou ${amount} de dano ${type === "magic" ? "mágico" : type === "true" ? "verdadeiro" : "físico"}.${itemResolution.messages.length ? ` ${itemResolution.messages.join(" ")}` : ""}`,
       },
     };
   }

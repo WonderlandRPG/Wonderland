@@ -33,7 +33,10 @@ export default async function AdminItemsPage({
   if (query.busca) itemQuery = itemQuery?.ilike("name", `%${query.busca}%`);
   if (query.raridade) itemQuery = itemQuery?.eq("rarity", query.raridade);
   const { data, count } = itemQuery
-    ? await itemQuery.order("category").order("sort_order").range((page - 1) * 50, page * 50 - 1)
+    ? await itemQuery
+        .order("category")
+        .order("sort_order")
+        .range((page - 1) * 50, page * 50 - 1)
     : { data: [], count: 0 };
   return (
     <div className="admin-content admin-editor-page">
@@ -53,7 +56,15 @@ export default async function AdminItemsPage({
       ) : null}
       <form className="admin-catalog-filter">
         <input name="busca" defaultValue={query.busca ?? ""} placeholder="Buscar pelo nome" />
-        <select name="raridade" defaultValue={query.raridade ?? ""}><option value="">Todas as raridades</option><option value="common">Comum</option><option value="uncommon">Incomum</option><option value="rare">Raro</option><option value="epic">Épico</option><option value="legendary">Lendário</option><option value="mythic">Mítico</option></select>
+        <select name="raridade" defaultValue={query.raridade ?? ""}>
+          <option value="">Todas as raridades</option>
+          <option value="common">Comum</option>
+          <option value="uncommon">Incomum</option>
+          <option value="rare">Raro</option>
+          <option value="epic">Épico</option>
+          <option value="legendary">Lendário</option>
+          <option value="mythic">Mítico</option>
+        </select>
         <button className="button button--primary">Filtrar itens</button>
         <span>{count ?? 0} resultados</span>
       </form>
@@ -67,7 +78,8 @@ export default async function AdminItemsPage({
               <summary>
                 <span>
                   <small>
-                    {item.rarity} · {itemSlotLabel(item.slot)} · {item.price.toLocaleString("pt-BR")} WG
+                    {item.rarity} · {itemSlotLabel(item.slot)} ·{" "}
+                    {item.price.toLocaleString("pt-BR")} WG
                   </small>
                   <strong>{item.name}</strong>
                 </span>
@@ -78,7 +90,12 @@ export default async function AdminItemsPage({
                 <label>
                   <span>Raridade</span>
                   <select name="rarity" defaultValue={item.rarity}>
-                    <option value="common">Comum</option><option value="uncommon">Incomum</option><option value="rare">Raro</option><option value="epic">Épico</option><option value="legendary">Lendário</option><option value="mythic">Mítico</option>
+                    <option value="common">Comum</option>
+                    <option value="uncommon">Incomum</option>
+                    <option value="rare">Raro</option>
+                    <option value="epic">Épico</option>
+                    <option value="legendary">Lendário</option>
+                    <option value="mythic">Mítico</option>
                   </select>
                 </label>
                 <label>
@@ -137,15 +154,50 @@ export default async function AdminItemsPage({
                 </fieldset>
                 <fieldset>
                   <legend>Efeito especial de combate</legend>
-                  <label><span>Nome do efeito</span><input name="effectName" defaultValue={effect?.name ?? ""} placeholder="Sem efeito especial" /></label>
-                  <label><span>Descrição</span><input name="effectDescription" defaultValue={effect?.description ?? ""} /></label>
-                  {(["FOR","DEF","RES","INI","INT","ARC"] as const).map((attribute) => <label key={attribute}><span>Bônus de {attribute}</span><input name={`effect${attribute}`} type="number" min="0" defaultValue={effect?.modifiers[attribute] ?? 0} /></label>)}
-                  <label><span>Escudo inicial</span><input name="effectShield" type="number" min="0" defaultValue={effect?.shield ?? 0} /></label>
-                  <label><span>HP máximo (%)</span><input name="effectMaxHpPercent" type="number" min="0" max="100" defaultValue={effect?.maxHpPercent ?? 0} /></label>
-                  <label><span>Mana inicial</span><input name="effectMana" type="number" min="0" defaultValue={effect?.mana ?? 0} /></label>
-                  <label><span>Recurso de classe inicial</span><input name="effectClassResource" type="number" min="0" defaultValue={effect?.classResource ?? 0} /></label>
-                  <label><span>Recurso racial inicial</span><input name="effectRaceResource" type="number" min="0" defaultValue={effect?.raceResource ?? 0} /></label>
-                  <label><span>Duração (0 = combate inteiro)</span><input name="effectDuration" type="number" min="0" defaultValue={effect?.duration ?? 0} /></label>
+                  <label>
+                    <span>Tipo de efeito</span>
+                    <select name="effectKind" defaultValue={effect?.kind ?? ""}>
+                      <option value="">Sem efeito</option>
+                      <option value="POISON">Envenenamento</option>
+                      <option value="BLEED">Sangramento</option>
+                      <option value="LIFE_STEAL">Roubo de vida</option>
+                      <option value="COOLDOWN_REDUCTION">Redução de recarga</option>
+                      <option value="FREEZE">Congelamento</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Nome do efeito</span>
+                    <input
+                      name="effectName"
+                      defaultValue={effect?.name ?? ""}
+                      placeholder="Ex.: Gelo Eterno"
+                    />
+                  </label>
+                  <label>
+                    <span>Descrição</span>
+                    <input name="effectDescription" defaultValue={effect?.description ?? ""} />
+                  </label>
+                  <label>
+                    <span>Potência</span>
+                    <input
+                      name="effectPower"
+                      type="number"
+                      min="0"
+                      max="1000"
+                      defaultValue={effect?.power ?? 0}
+                    />
+                  </label>
+                  <label>
+                    <span>Duração em rodadas</span>
+                    <input
+                      name="effectDuration"
+                      type="number"
+                      min="0"
+                      max="20"
+                      defaultValue={effect?.duration ?? 0}
+                    />
+                  </label>
+                  <small>Somente itens Lendários e Míticos podem salvar efeitos especiais.</small>
                 </fieldset>
                 <label>
                   <input name="twoHanded" type="checkbox" defaultChecked={item.two_handed} /> Ocupa
@@ -161,7 +213,21 @@ export default async function AdminItemsPage({
           );
         })}
       </section>
-      {(count ?? 0) > 50 ? <nav className="admin-pagination"><a href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${Math.max(1,page-1)}`}>← Anterior</a><span>Página {page}</span><a href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${page+1}`}>Próxima →</a></nav> : null}
+      {(count ?? 0) > 50 ? (
+        <nav className="admin-pagination">
+          <a
+            href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${Math.max(1, page - 1)}`}
+          >
+            ← Anterior
+          </a>
+          <span>Página {page}</span>
+          <a
+            href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${page + 1}`}
+          >
+            Próxima →
+          </a>
+        </nav>
+      ) : null}
     </div>
   );
 }

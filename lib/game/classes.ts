@@ -116,18 +116,5 @@ export function getUnlockedPathSkills(
 }
 
 export function prepareArenaSkill(skill: ClassSkill): ClassSkill {
-  if (/passiva/i.test(skill.type)) return skill;
-  const derivedCost =
-    20 +
-    Math.ceil(skill.level / 10) * 5 +
-    (skill.kind === "damage" ? 10 : 0) +
-    Math.min(15, skill.area * 5);
-  const derivedCooldown =
-    skill.level >= 80 ? 5 : skill.level >= 50 ? 4 : skill.kind === "utility" ? 3 : 2;
-  return {
-    ...skill,
-    resource: skill.resource === "none" || skill.cost === 0 ? "mana" : skill.resource,
-    cost: skill.cost > 0 ? skill.cost : derivedCost,
-    cooldown: skill.cooldown > 0 ? skill.cooldown : derivedCooldown,
-  };
+  return skill;
 }

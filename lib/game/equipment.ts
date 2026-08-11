@@ -12,6 +12,7 @@ export const equipmentSlots = [
   { key: "earring_1", label: "Brinco I" },
   { key: "earring_2", label: "Brinco II" },
   { key: "cape", label: "Capa" },
+  { key: "title", label: "Título" },
 ] as const;
 
 export type EquipmentSlot = (typeof equipmentSlots)[number]["key"];

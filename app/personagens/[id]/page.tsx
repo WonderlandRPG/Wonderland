@@ -394,6 +394,7 @@ export default async function CharacterSheetPage({
                       epic: "Épico",
                       legendary: "Lendário",
                       mythic: "Mítico",
+                      awakened: "Desperto",
                     } as Record<string, string>
                   )[entry.rarity] ?? entry.rarity,
                 slot: entry.slot,

@@ -10,18 +10,25 @@ import { roleLabels } from "@/lib/auth/roles";
 
 const navigation = [
   { group: "Comando", items: [{ label: "Visão geral", glyph: "01", href: "/admin" }] },
-  { group: "Comunidade", items: [
-    { label: "Publicar evento", glyph: "＋", href: "/admin/eventos#novo-evento" },
-    { label: "Publicar atualização", glyph: "＋", href: "/admin/atualizacoes#nova-atualizacao" },
-    { label: "Jogadores", glyph: "02", href: "/admin/jogadores" },
-    { label: "Personagens", glyph: "03", href: "/admin/personagens" },
-  ] },
-  { group: "Jogo e economia", items: [
-    { label: "Raças e conteúdo", glyph: "04", href: "/admin/racas" },
-    { label: "Itens", glyph: "05", href: "/admin/itens" },
-    { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
-    { label: "Presença", glyph: "07", href: "/admin/presenca" },
-  ] },
+  {
+    group: "Comunidade",
+    items: [
+      { label: "Publicar evento", glyph: "＋", href: "/admin/eventos#novo-evento" },
+      { label: "Publicar atualização", glyph: "＋", href: "/admin/atualizacoes#nova-atualizacao" },
+      { label: "Jogadores", glyph: "02", href: "/admin/jogadores" },
+      { label: "Personagens", glyph: "03", href: "/admin/personagens" },
+      { label: "Console de recompensas", glyph: ">_", href: "/admin/console" },
+    ],
+  },
+  {
+    group: "Jogo e economia",
+    items: [
+      { label: "Raças e conteúdo", glyph: "04", href: "/admin/racas" },
+      { label: "Itens", glyph: "05", href: "/admin/itens" },
+      { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
+      { label: "Presença", glyph: "07", href: "/admin/presenca" },
+    ],
+  },
   { group: "Auditoria", items: [{ label: "Histórico", glyph: "08", href: "/admin/historico" }] },
 ];
 
@@ -36,42 +43,44 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
       </div>
 
       <nav className="admin-sidebar__nav" aria-label="Seções administrativas">
-        {navigation.map((section) => <div className="admin-sidebar__nav-group" key={section.group}>
-          <span className="admin-sidebar__nav-label">{section.group}</span>
-          {section.items.map((item) => {
-          const active = item.href
-            ? item.href === "/admin"
-              ? pathname === item.href
-              : pathname.startsWith(item.href)
-            : false;
+        {navigation.map((section) => (
+          <div className="admin-sidebar__nav-group" key={section.group}>
+            <span className="admin-sidebar__nav-label">{section.group}</span>
+            {section.items.map((item) => {
+              const active = item.href
+                ? item.href === "/admin"
+                  ? pathname === item.href
+                  : pathname.startsWith(item.href)
+                : false;
 
-          if (!item.href) {
-            return (
-              <button
-                className="admin-sidebar__nav-item"
-                key={item.label}
-                type="button"
-                disabled
-                title="Será ativado nas próximas etapas"
-              >
-                <span>{item.glyph}</span>
-                {item.label}
-              </button>
-            );
-          }
+              if (!item.href) {
+                return (
+                  <button
+                    className="admin-sidebar__nav-item"
+                    key={item.label}
+                    type="button"
+                    disabled
+                    title="Será ativado nas próximas etapas"
+                  >
+                    <span>{item.glyph}</span>
+                    {item.label}
+                  </button>
+                );
+              }
 
-          return (
-            <Link
-              className={`admin-sidebar__nav-item ${active ? "is-active" : ""}`}
-              href={item.href}
-              key={item.label}
-            >
-              <span>{item.glyph}</span>
-              {item.label}
-            </Link>
-          );
-          })}
-        </div>)}
+              return (
+                <Link
+                  className={`admin-sidebar__nav-item ${active ? "is-active" : ""}`}
+                  href={item.href}
+                  key={item.label}
+                >
+                  <span>{item.glyph}</span>
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
         {pathname.startsWith("/admin/racas") ? (
           <div className="admin-sidebar__subnav">
             <Link className="is-active" href="/admin/racas">

@@ -3134,6 +3134,539 @@ textarea {
   }
 }
 
+/* ================================================================
+   REFINAMENTO GLOBAL — leitura, códices, combate, ranks e títulos
+   ================================================================ */
+
+/* Ritmo editorial consistente em todas as rotas. */
+:is(.portal-content, .lore-dossier, .sheet-panel, .admin-section, .admin-editor-card) p {
+  line-height: 1.72;
+}
+:is(.lore-page__inner, .portal-shell__inner, .character-page__inner, .arena-page__inner) {
+  padding-bottom: clamp(64px, 9vw, 120px);
+}
+.lore-hero > p,
+.portal-hero > div > p,
+.character-page__header > div > p {
+  max-width: 760px;
+  font-size: clamp(.92rem, 1.2vw, 1.08rem);
+  line-height: 1.7;
+}
+
+/* Códice de classes e raças: navegação e conteúdo deixam de parecer texto bruto. */
+.lore-browser {
+  grid-template-columns: 300px minmax(0, 1fr) !important;
+  gap: 24px !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.lore-browser__index {
+  padding: 16px !important;
+  border-top: 3px solid var(--ui-blue) !important;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, .3);
+}
+.lore-browser__index label > span {
+  color: var(--ui-gold);
+  font-size: .63rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.lore-browser__index nav button {
+  min-height: 64px;
+  border-left: 3px solid transparent !important;
+}
+.lore-browser__index nav button.is-active {
+  border-left-color: var(--ui-gold) !important;
+  box-shadow: inset 12px 0 24px color-mix(in srgb, var(--ui-gold) 8%, transparent);
+}
+.lore-browser__index nav button > b {
+  color: var(--ui-gold);
+  font-size: .55rem;
+  letter-spacing: -.04em;
+  white-space: nowrap;
+}
+.lore-dossier {
+  overflow: hidden;
+  padding: clamp(30px, 4vw, 58px) !important;
+  border-top-color: var(--ui-gold) !important;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--ui-blue) 13%, transparent), transparent 35%),
+    linear-gradient(145deg, var(--ui-panel-2), var(--ui-panel)) !important;
+}
+.lore-dossier > header {
+  grid-template-columns: 84px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.lore-dossier > header p {
+  max-width: 820px;
+  margin: 10px 0 0;
+  font-size: .96rem;
+  line-height: 1.75;
+}
+.lore-dossier > header dl {
+  margin: 26px 0 0;
+  border: 1px solid var(--ui-line);
+  background: transparent;
+}
+.lore-dossier > header dl div {
+  display: grid;
+  gap: 6px;
+  min-height: 78px;
+  align-content: center;
+}
+.lore-dossier > header dt,
+.lore-resource small,
+.path-dossier-grid small,
+.ability-ledger small {
+  color: var(--ui-faint);
+  font-size: .6rem;
+  font-weight: 900;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+.lore-dossier > header dd {
+  margin: 0;
+  font-size: .88rem;
+  font-weight: 800;
+}
+.lore-dossier__sigil {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ui-gold) 18%, transparent), transparent 68%);
+  box-shadow: inset 0 0 24px color-mix(in srgb, var(--ui-gold) 10%, transparent);
+}
+.lore-resource {
+  grid-template-columns: minmax(210px, .65fr) minmax(0, 1.35fr);
+  align-items: center;
+  padding: 24px 26px;
+  border-left: 4px solid var(--ui-cyan) !important;
+}
+.lore-resource h3 {
+  margin: 4px 0;
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+}
+.lore-resource p { margin: 0; }
+.lore-section-title {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ui-line);
+}
+.lore-section-title > span {
+  min-width: 46px;
+  color: color-mix(in srgb, var(--ui-gold) 75%, white);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--ui-gold) 35%, transparent);
+}
+.lore-section-title h3 { margin: 2px 0 0; font-size: 1.35rem; }
+.path-dossier-grid { gap: 18px; }
+.path-dossier-grid > article {
+  position: relative;
+  padding: 0 !important;
+  overflow: hidden;
+  border-top: 3px solid var(--ui-blue);
+  background: linear-gradient(155deg, var(--ui-panel-2), var(--ui-deep));
+}
+.path-dossier-grid > article > header {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 13px;
+  align-items: center;
+  padding: 20px 22px 12px;
+}
+.path-dossier-grid > article > header > span {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid var(--ui-line-gold);
+  color: var(--ui-gold-2);
+  background: var(--ui-deep);
+  font-family: Georgia, serif;
+  font-size: 1.25rem;
+}
+.path-dossier-grid h4 { margin: 3px 0 0; font-size: 1.05rem; }
+.path-dossier-grid > article > p {
+  min-height: 68px;
+  margin: 0;
+  padding: 6px 22px 18px;
+  line-height: 1.65;
+}
+.path-passive,
+.path-technique {
+  display: grid;
+  gap: 7px;
+  margin: 0 18px 14px;
+  padding: 15px 16px;
+  border: 1px solid var(--ui-line);
+  background: color-mix(in srgb, var(--ui-deep) 88%, transparent);
+}
+.path-passive {
+  border-left: 3px solid var(--ui-gold);
+}
+.path-passive b,
+.path-technique b { display: block; font-size: .9rem; }
+.path-passive span,
+.path-technique p {
+  display: block;
+  margin: 0;
+  color: var(--ui-muted);
+  font-size: .82rem;
+  line-height: 1.62;
+}
+.path-technique > span:last-child {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 3px;
+  padding: 5px 8px;
+  border: 1px solid color-mix(in srgb, var(--ui-cyan) 35%, var(--ui-line));
+  color: var(--ui-cyan);
+  font-size: .62rem;
+  font-weight: 850;
+  letter-spacing: .05em;
+}
+.ability-ledger { gap: 12px; }
+.ability-ledger > article {
+  grid-template-columns: 82px minmax(0, 1fr);
+  overflow: hidden;
+  border-left: 3px solid var(--ui-blue);
+}
+.ability-ledger > article > div > span {
+  color: var(--ui-gold-2);
+  font-family: Georgia, serif;
+  font-size: 1.45rem;
+}
+.ability-ledger > article > section { padding: 18px 20px; }
+.ability-ledger header b { font-size: .98rem; }
+.ability-ledger > article p { margin: 10px 0 14px; line-height: 1.65; }
+.ability-ledger footer {
+  justify-content: flex-start;
+  padding-top: 11px;
+  border-top: 1px solid var(--ui-line);
+}
+.ability-ledger footer span {
+  padding: 4px 7px;
+  border: 1px solid var(--ui-line);
+  color: var(--ui-muted);
+}
+
+/* Arena: escala humana, leitura de HUD e comandos separados. */
+.arena-page__inner { width: min(1480px, calc(100% - 36px)) !important; }
+.arena-toolbar {
+  min-height: 88px;
+  padding: 18px 22px;
+  border-top: 3px solid var(--ui-gold);
+}
+.arena-toolbar h1,
+.arena-toolbar h2 { margin: 4px 0; font-size: clamp(1.35rem, 2vw, 2rem); }
+.arena-selected-fighter { min-width: 240px; }
+.arena-turn-timer,
+.arena-turn-counter {
+  display: grid;
+  min-width: 84px;
+  min-height: 54px;
+  place-items: center;
+  padding: 8px 12px;
+  border: 1px solid var(--ui-line);
+  background: var(--ui-deep);
+  font-weight: 900;
+}
+.arena-turn-timer.is-ending { color: var(--ui-red); border-color: var(--ui-red); }
+.arena-battlefield-shell {
+  grid-template-columns: minmax(620px, 1fr) minmax(300px, 360px);
+  gap: 18px;
+}
+.arena-console,
+.arena-command-panel,
+.arena-selected-fighter { border-radius: 3px; }
+.arena-map { min-width: 0; overflow: auto; }
+.arena-map__grid { min-width: 600px; }
+.arena-map__grid > button { min-width: 52px; min-height: 52px; }
+.arena-fighter {
+  padding: 18px;
+  border: 1px solid var(--ui-line);
+  background: linear-gradient(145deg, var(--ui-panel-2), var(--ui-deep));
+}
+.arena-fighter__status { display: grid; gap: 8px; }
+.arena-fighter__status h3 { margin: 2px 0; font-size: 1.1rem; }
+.arena-fighter__status > div[class^="is-"] {
+  min-height: 9px;
+  overflow: hidden;
+  border: 1px solid var(--ui-line);
+  background: var(--ui-deep);
+}
+.arena-attributes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(52px, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+.arena-attributes > span,
+.arena-attributes > div {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  padding: 6px;
+  border: 1px solid var(--ui-line);
+  background: var(--ui-deep);
+  font-size: .68rem;
+}
+.arena-message { font-size: .88rem; line-height: 1.55; }
+.arena-command-panel { position: sticky; top: 86px; align-self: start; }
+.arena-action-group {
+  padding: 12px;
+  border: 1px solid var(--ui-line);
+  background: color-mix(in srgb, var(--ui-deep) 88%, transparent);
+}
+.arena-skill-origin {
+  color: var(--ui-gold);
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.arena-actions button {
+  min-height: 48px;
+  padding: 10px 12px;
+  text-align: left;
+  line-height: 1.35;
+}
+.arena-actions button:hover:not(:disabled) {
+  transform: translateX(3px);
+  border-color: var(--ui-cyan);
+  background: var(--ui-panel-3);
+}
+
+/* Ranks: devolve cor, emblema, assinatura e brilho próprios. */
+.rank-ladder { gap: 18px; }
+.rank-guide-card {
+  grid-template-columns: 48px 86px minmax(0, 1fr) !important;
+  gap: 20px;
+  align-items: start;
+  min-height: 300px;
+  padding: 26px 28px !important;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--rank-color) 46%, var(--ui-line)) !important;
+  border-left: 4px solid var(--rank-color) !important;
+  background:
+    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--rank-color) 18%, transparent), transparent 42%),
+    linear-gradient(145deg, var(--ui-panel-2), var(--ui-deep)) !important;
+  box-shadow:
+    inset 0 0 38px color-mix(in srgb, var(--rank-color) 5%, transparent),
+    0 16px 45px rgba(0,0,0,.28);
+}
+.rank-guide-card::after {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  content: "";
+  background: linear-gradient(90deg, var(--rank-color), transparent 72%);
+  box-shadow: 0 0 18px var(--rank-color);
+}
+.rank-guide-card__order { grid-column: 1; padding-top: 8px; font-size: .76rem; }
+.rank-guide-card .rank-badge { grid-column: 2 !important; grid-row: 1; }
+.rank-guide-card > div { grid-column: 3 !important; grid-row: 1; }
+.rank-guide-card h2 {
+  margin: 5px 0 12px;
+  color: var(--rank-color);
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  text-shadow: 0 0 18px color-mix(in srgb, var(--rank-color) 32%, transparent);
+}
+.rank-guide-card p { max-width: 720px; line-height: 1.72; }
+.rank-guide-card__atmosphere { display: block; margin-top: 16px; color: var(--rank-color) !important; }
+.rank-guide-card ul { display: grid; gap: 7px; margin: 16px 0 0; padding-left: 20px; }
+.rank-guide-card li::marker { color: var(--rank-color); }
+.rank-badge {
+  --rank-color: #7d8790;
+  position: relative;
+  display: inline-grid;
+  width: 78px;
+  height: 78px;
+  place-items: center;
+  align-content: center;
+  border: 1px solid color-mix(in srgb, var(--rank-color) 76%, white 8%);
+  border-radius: 20px 6px 20px 6px;
+  color: var(--rank-color);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--rank-color) 20%, transparent), transparent 55%),
+    var(--ui-deep);
+  box-shadow:
+    inset 0 0 24px color-mix(in srgb, var(--rank-color) 13%, transparent),
+    0 0 22px color-mix(in srgb, var(--rank-color) 20%, transparent);
+  animation: rank-badge-breathe 3.6s ease-in-out infinite;
+}
+.rank-badge::before,
+.rank-badge::after {
+  position: absolute;
+  display: block !important;
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--rank-color);
+  content: "";
+  transform: rotate(45deg);
+  background: var(--ui-deep);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--rank-color) 55%, transparent);
+}
+.rank-badge::before { top: -5px; left: -5px; }
+.rank-badge::after { right: -5px; bottom: -5px; }
+.rank-badge small {
+  color: color-mix(in srgb, var(--rank-color) 70%, var(--ui-muted));
+  font-size: .46rem;
+  font-weight: 900;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+.rank-badge b {
+  color: var(--rank-color);
+  font-family: Georgia, serif;
+  font-size: 2.12rem;
+  line-height: 1;
+  text-shadow: 0 0 17px color-mix(in srgb, var(--rank-color) 68%, transparent);
+}
+.rank-badge.is-compact { width: 48px; height: 48px; border-radius: 13px 4px 13px 4px; }
+.rank-badge.is-compact b { font-size: 1.22rem; }
+.rank-badge.is-compact small { font-size: .34rem; }
+.rank-badge[data-rank-tier="A"],
+.rank-badge[data-rank-tier="S"],
+.rank-badge[data-rank-tier="EX"] { animation-duration: 2.6s; }
+.rank-badge.is-ex {
+  background:
+    radial-gradient(circle at 25% 20%, rgba(255,255,255,.32), transparent 16%),
+    linear-gradient(135deg, rgba(93,235,255,.28), rgba(168,85,247,.18)),
+    var(--ui-deep);
+}
+@keyframes rank-badge-breathe {
+  50% { filter: brightness(1.16); box-shadow: inset 0 0 28px color-mix(in srgb, var(--rank-color) 20%, transparent), 0 0 30px color-mix(in srgb, var(--rank-color) 34%, transparent); }
+}
+
+/* Atmosfera do rank selecionado: partículas distintas por categoria. */
+.rank-atmosphere {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.rank-atmosphere__veil {
+  position: absolute;
+  inset: 0;
+  opacity: .22;
+  background: radial-gradient(circle at 80% 10%, color-mix(in srgb, var(--hud-rank, var(--ui-blue)) 24%, transparent), transparent 42%);
+}
+.rank-atmosphere i {
+  --particle-size: 7px;
+  position: absolute;
+  top: -12vh;
+  left: calc((var(--particle-index) * 4.2%) + 1%);
+  width: var(--particle-size);
+  height: calc(var(--particle-size) * 1.7);
+  border: 1px solid color-mix(in srgb, var(--hud-rank, var(--ui-blue)) 82%, white);
+  opacity: 0;
+  background: var(--hud-rank, var(--ui-blue));
+  box-shadow: 0 0 18px var(--hud-rank, var(--ui-blue));
+  transform: rotate(45deg);
+  animation: rank-particle-fall 12s linear infinite;
+  animation-delay: calc(var(--particle-index) * -.72s);
+}
+.rank-atmosphere[data-rank-atmosphere="E"] i { filter: saturate(.35); opacity: 0; }
+.rank-atmosphere[data-rank-atmosphere="D"] i { border-radius: 70% 0 70% 0; }
+.rank-atmosphere[data-rank-atmosphere="C"] i { animation-duration: 10s; }
+.rank-atmosphere[data-rank-atmosphere="B"] i { height: calc(var(--particle-size) * 2.2); }
+.rank-atmosphere[data-rank-atmosphere="A"] i { border-radius: 50%; animation-name: rank-particle-fall, rank-particle-pulse; animation-duration: 13s, 2.4s; }
+.rank-atmosphere[data-rank-atmosphere="S"] i { border: 0; clip-path: polygon(50% 0,64% 35%,100% 50%,64% 65%,50% 100%,36% 65%,0 50%,36% 35%); }
+.rank-atmosphere[data-rank-atmosphere="EX"] i { background: linear-gradient(145deg,#f1feff,var(--hud-rank, #55eaff) 52%,#a855f7); animation-duration: 8s; }
+@keyframes rank-particle-fall {
+  0% { opacity: 0; transform: translate3d(0,-12vh,0) rotate(0); }
+  12% { opacity: .7; }
+  82% { opacity: .48; }
+  100% { opacity: 0; transform: translate3d(45px,115vh,0) rotate(310deg); }
+}
+@keyframes rank-particle-pulse { 50% { filter: brightness(1.75); } }
+
+/* Títulos equipados voltam a ter brilho e ornamentos conforme a raridade. */
+.character-equipped-title {
+  right: auto !important;
+  left: 50% !important;
+  bottom: 14px !important;
+  width: max-content !important;
+  max-width: calc(100% - 72px) !important;
+  padding: 9px 24px !important;
+  transform: translateX(-50%) !important;
+  overflow: visible !important;
+  border: 0 !important;
+  color: var(--title-primary, #fff1ad) !important;
+  background: linear-gradient(90deg, transparent, rgba(5,4,14,.94) 15%, rgba(5,4,14,.97) 85%, transparent) !important;
+  box-shadow: none !important;
+  font-family: Georgia, serif;
+  font-size: clamp(.6rem, 1vw, .76rem) !important;
+  font-weight: 800;
+  letter-spacing: .1em !important;
+  text-shadow: 0 0 10px var(--title-glow, var(--ui-gold)), 0 2px 3px #000;
+  animation: title-aura 2.8s ease-in-out infinite;
+}
+.equipped-title__name { position: relative; z-index: 2; }
+.equipped-title__wing { color: var(--title-secondary, var(--ui-gold)); text-shadow: 0 0 10px var(--title-glow, var(--ui-gold)); }
+.character-equipped-title::before,
+.character-equipped-title::after {
+  position: absolute;
+  top: 50%;
+  display: block !important;
+  width: 34px;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, var(--title-secondary, var(--ui-gold)));
+  box-shadow: 0 0 10px var(--title-glow, var(--ui-gold));
+}
+.character-equipped-title::before { right: 100%; }
+.character-equipped-title::after { left: 100%; transform: rotate(180deg); }
+.character-equipped-title[data-title="Lendário"],
+.character-equipped-title[data-title="Lendario"],
+.character-equipped-title[data-title="Mítico"],
+.character-equipped-title[data-title="Mitico"] { animation-duration: 1.9s; }
+@keyframes title-aura {
+  50% { filter: brightness(1.22); text-shadow: 0 0 17px var(--title-glow, var(--ui-gold)), 0 0 30px var(--title-secondary, var(--ui-gold)); }
+}
+
+@media (max-width: 1100px) {
+  .arena-battlefield-shell { grid-template-columns: 1fr; }
+  .arena-command-panel { position: static; }
+}
+@media (max-width: 900px) {
+  .lore-browser { grid-template-columns: 1fr !important; }
+  .lore-resource { grid-template-columns: 1fr; }
+  .rank-guide-card { grid-template-columns: 42px 78px minmax(0,1fr) !important; }
+}
+@media (max-width: 640px) {
+  .lore-dossier > header { grid-template-columns: 62px minmax(0,1fr); gap: 15px; }
+  .lore-dossier__sigil { width: 62px; height: 62px; }
+  .lore-dossier > header dl { grid-template-columns: 1fr; }
+  .path-dossier-grid > article > p { min-height: 0; }
+  .ability-ledger > article { grid-template-columns: 58px minmax(0,1fr); }
+  .arena-page__inner { width: min(100% - 16px, 1480px) !important; }
+  .arena-toolbar { align-items: stretch; flex-direction: column; }
+  .arena-selected-fighter { min-width: 0; }
+  .arena-attributes { grid-template-columns: repeat(3,1fr); }
+  .rank-guide-card {
+    grid-template-columns: 38px minmax(0,1fr) !important;
+    min-height: 0;
+  }
+  .rank-guide-card .rank-badge { grid-column: 1 !important; grid-row: 1; transform: scale(.72); transform-origin: top left; }
+  .rank-guide-card__order { display: none; }
+  .rank-guide-card > div { grid-column: 2 !important; }
+  .character-equipped-title { max-width: calc(100% - 54px) !important; padding-inline: 12px !important; }
+  .character-equipped-title::before,
+  .character-equipped-title::after { width: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rank-badge,
+  .character-equipped-title { animation: none !important; }
+  .rank-atmosphere { display: none; }
+}
+
 /* ─────────────────────────────────────────────────────────────
    Correções de interface — lançamento
    Camada final e intencional para remover conflitos da primeira
@@ -3605,4 +4138,24 @@ dd {
   .admin-add-button {
     width: 100%;
   }
+}
+
+/* Garantias finais de cascata responsiva para os componentes refinados. */
+@media (max-width: 900px) {
+  .lore-browser { grid-template-columns: 1fr !important; }
+  .lore-resource { grid-template-columns: 1fr !important; }
+  .arena-battlefield-shell { grid-template-columns: 1fr !important; }
+  .arena-command-panel { position: static !important; }
+  .rank-guide-card { grid-template-columns: 42px 78px minmax(0, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .lore-dossier > header { grid-template-columns: 62px minmax(0, 1fr) !important; }
+  .lore-dossier > header dl { grid-template-columns: 1fr !important; }
+  .lore-dossier__sigil { width: 62px; height: 62px; }
+  .arena-page__inner { width: min(100% - 16px, 1480px) !important; }
+  .arena-attributes { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+  .rank-guide-card { grid-template-columns: 38px minmax(0, 1fr) !important; }
+  .rank-guide-card__order { display: none; }
+  .rank-guide-card .rank-badge { grid-column: 1 !important; grid-row: 1; }
+  .rank-guide-card > div { grid-column: 2 !important; grid-row: 1; }
 }

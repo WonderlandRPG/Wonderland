@@ -24,6 +24,10 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type CharacterRow = Database["public"]["Tables"]["v2_characters"]["Row"];
 type ContentRow = Database["public"]["Tables"]["v2_content"]["Row"];
+type InventoryRow = Pick<
+  Database["public"]["Tables"]["v2_character_inventory"]["Row"],
+  "id" | "character_id" | "item_id" | "quantity" | "equipped_slot"
+>;
 
 export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes"> {
   allocatedAttributes: AllocatedAttributes;
@@ -60,7 +64,10 @@ function parseCharacter(row: CharacterRow): CharacterRecord | null {
   return { ...record, allocatedAttributes: allocated.data };
 }
 
-async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
+async function loadSheets(
+  rows: CharacterRow[],
+  providedInventoryRows?: InventoryRow[],
+): Promise<CharacterSheet[]> {
   const client = await createServerSupabaseClient();
   if (!client || rows.length === 0) return [];
   const records = rows
@@ -70,10 +77,14 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
   const { data } = await client.from("v2_content").select("*").in("id", ids);
   const content = new Map((data ?? []).map((entry) => [entry.id, entry as ContentRow]));
   const characterIds = records.map((entry) => entry.id);
-  const { data: inventoryRows } = await client
-    .from("v2_character_inventory")
-    .select("*")
-    .in("character_id", characterIds);
+  const inventoryRows = providedInventoryRows
+    ? providedInventoryRows
+    : (
+        await client
+          .from("v2_character_inventory")
+          .select("id,character_id,item_id,quantity,equipped_slot")
+          .in("character_id", characterIds)
+      ).data ?? [];
   const itemIds = [...new Set((inventoryRows ?? []).map((entry) => entry.item_id))];
   const { data: shopRows } = itemIds.length
     ? await client
@@ -216,7 +227,21 @@ export async function getPvpOpponentSheet(matchId: string) {
   if (!client) return null;
   const { data, error } = await client.rpc("v2_get_pvp_opponent", { p_match_id: matchId });
   if (error || !data || Array.isArray(data) || typeof data !== "object") return null;
-  return (await loadSheets([data as unknown as CharacterRow]))[0] ?? null;
+  const payload = data as { character?: unknown; equipment?: unknown };
+  if (
+    !payload.character ||
+    Array.isArray(payload.character) ||
+    typeof payload.character !== "object" ||
+    !Array.isArray(payload.equipment)
+  ) {
+    return null;
+  }
+  return (
+    await loadSheets(
+      [payload.character as CharacterRow],
+      payload.equipment as InventoryRow[],
+    )
+  )[0] ?? null;
 }
 
 export async function requireCharacterSheet(id: string) {

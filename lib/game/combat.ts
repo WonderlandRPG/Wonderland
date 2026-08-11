@@ -187,12 +187,35 @@ export function calculateDamage(
 }
 
 export function applyDamage(target: CombatantState, amount: number) {
+  const guardKey = "defesa-total";
+  if (amount > 0 && target.statuses[guardKey]) {
+    const statuses = { ...target.statuses };
+    delete statuses[guardKey];
+    return { ...target, statuses };
+  }
   const absorbed = Math.min(target.shield, amount);
   const hpDamage = Math.max(0, amount - absorbed);
   return {
     ...target,
     shield: target.shield - absorbed,
     hp: Math.max(0, target.hp - hpDamage),
+  };
+}
+
+export function guardCombatant(combatant: CombatantState): CombatantState {
+  return {
+    ...combatant,
+    cooldowns: { ...combatant.cooldowns, ["defesa-total"]: 5 },
+    statuses: {
+      ...combatant.statuses,
+      ["defesa-total"]: {
+        name: "Defesa total",
+        duration: 2,
+        stacks: 1,
+        modifiers: {},
+        beneficial: true,
+      },
+    },
   };
 }
 

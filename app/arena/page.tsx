@@ -29,15 +29,17 @@ export default async function ArenaPage({
     : null;
   const activeCharacter = characters.find((character) => character.id === characterId);
   const client = mode === "pve" ? await createServerSupabaseClient() : null;
-  const { data: arenaSessionId } =
+  const arenaSessionResult =
     client && activeCharacter
       ? await client.rpc("v2_start_arena_session", {
           p_character_id: activeCharacter.id,
           p_mode: "pve",
         })
       : { data: null };
+  const arenaSessionId = arenaSessionResult.data;
+  const arenaSessionError = "error" in arenaSessionResult ? arenaSessionResult.error : null;
   const pvpClient = mode === "pvp" && query.partida ? await createServerSupabaseClient() : null;
-  const { data: pvpQueue } =
+  const pvpQueueResult =
     pvpClient && query.partida
       ? await pvpClient
           .from("v2_pvp_queue")
@@ -47,9 +49,16 @@ export default async function ArenaPage({
           .eq("status", "matched")
           .maybeSingle()
       : { data: null };
+  const pvpQueue = pvpQueueResult.data;
   const opponent = pvpQueue?.opponent_character_id
     ? await getCharacterSheet(pvpQueue.opponent_character_id)
     : null;
+  const pvpMatchError =
+    query.partida && (!pvpQueue || ("error" in pvpQueueResult && pvpQueueResult.error))
+      ? "A partida PvP não pôde ser carregada. Ela pode ter expirado ou sido encerrada."
+      : pvpQueue?.opponent_character_id && !opponent
+        ? "O adversário foi encontrado, mas a ficha dele não pôde ser carregada."
+        : null;
   const toArenaCharacter = (character: CharacterSheet) => ({
     id: character.id,
     name: character.name,
@@ -143,14 +152,34 @@ export default async function ArenaPage({
             </div>
           </section>
         ) : null}
-        {mode === "pvp" && activeCharacter && !opponent ? (
+        {mode === "pve" && arenaSessionError ? (
+          <section className="arena-load-error" role="alert">
+            <span>!</span>
+            <div>
+              <strong>Não foi possível iniciar o PvE</strong>
+              <p>A sessão de combate não foi criada. Tente novamente em alguns instantes.</p>
+            </div>
+            <Link href="/arena">Voltar aos modos</Link>
+          </section>
+        ) : null}
+        {mode === "pvp" && pvpMatchError ? (
+          <section className="arena-load-error" role="alert">
+            <span>!</span>
+            <div>
+              <strong>Partida PvP indisponível</strong>
+              <p>{pvpMatchError}</p>
+            </div>
+            <Link href="/arena?modo=pvp">Voltar para a fila</Link>
+          </section>
+        ) : null}
+        {mode === "pvp" && activeCharacter && !query.partida && !opponent ? (
           <PvpLobby
             characterId={activeCharacter.id}
             characterName={activeCharacter.name}
             rank={activeCharacter.adventure_rank}
           />
         ) : null}
-        {mode && (mode !== "pvp" || opponent) ? (
+        {mode && !(mode === "pve" && arenaSessionError) && (mode !== "pvp" || opponent) ? (
           <>
             <Link className="arena-mode-back" href="/arena">
               ← Trocar modo

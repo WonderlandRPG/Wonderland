@@ -1,30 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-type ThemeName = "classic" | "accessible";
+import { useEffect, useMemo, useState } from "react";
+import { themeDefinitions, type ThemeAvailability, type ThemeName } from "@/lib/content/theme-definitions";
 
 const themeStorageKey = "wonderland:theme";
-
-const themes: Array<{
-  key: ThemeName;
-  label: string;
-  description: string;
-  icon: string;
-}> = [
-  {
-    key: "classic",
-    label: "Claro Real",
-    description: "Branco, verde e dourado.",
-    icon: "☀",
-  },
-  {
-    key: "accessible",
-    label: "Noite Esmeralda",
-    description: "Preto, dourado e verde-esmeralda.",
-    icon: "☾",
-  },
-];
 
 function applyTheme(theme: ThemeName) {
   document.documentElement.dataset.theme = theme;
@@ -35,9 +14,13 @@ function applyTheme(theme: ThemeName) {
   }
 }
 
-export function ThemeControl() {
+export function ThemeControl({ availability, isAdmin }: { availability: ThemeAvailability; isAdmin: boolean }) {
   const [theme, setTheme] = useState<ThemeName>("classic");
   const [open, setOpen] = useState(false);
+  const themes = useMemo(
+    () => themeDefinitions.filter((option) => availability[option.key] || isAdmin),
+    [availability, isAdmin],
+  );
 
   useEffect(() => {
     let stored: string | null = null;
@@ -46,10 +29,11 @@ export function ThemeControl() {
     } catch {
       // O tema clássico continua disponível sem armazenamento local.
     }
-    const current: ThemeName = stored === "accessible" ? "accessible" : "classic";
+    const requested = themeDefinitions.some((entry) => entry.key === stored) ? stored as ThemeName : "classic";
+    const current: ThemeName = availability[requested] || isAdmin ? requested : "classic";
     document.documentElement.dataset.theme = current;
     queueMicrotask(() => setTheme(current));
-  }, []);
+  }, [availability, isAdmin]);
 
   useEffect(() => {
     if (!open) return;
@@ -100,10 +84,10 @@ export function ThemeControl() {
         onClick={() => setOpen((value) => !value)}
         type="button"
       >
-        <span aria-hidden="true">{theme === "accessible" ? "☾" : "☀"}</span>
+        <span aria-hidden="true">{themeDefinitions.find((entry) => entry.key === theme)?.icon ?? "☀"}</span>
         <small>
           <b>Tema</b>
-          <em>{theme === "accessible" ? "Noite Esmeralda" : "Claro Real"}</em>
+          <em>{themeDefinitions.find((entry) => entry.key === theme)?.label ?? "Aurora Real"}</em>
         </small>
       </button>
     </aside>

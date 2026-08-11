@@ -28,6 +28,7 @@ const navigation = [
       { label: "Títulos", glyph: "✦", href: "/admin/titulos" },
       { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
       { label: "Presença", glyph: "07", href: "/admin/presenca" },
+      { label: "Temas", glyph: "◐", href: "/admin/temas" },
     ],
   },
   { group: "Auditoria", items: [{ label: "Histórico", glyph: "08", href: "/admin/historico" }] },

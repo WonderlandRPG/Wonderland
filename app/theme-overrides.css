@@ -1,0 +1,167 @@
+/* === Identidade visual 3.0: fantasia arcana === */
+:root,
+html[data-theme="accessible"] {
+  --game-bg: #070b15;
+  --game-bg-soft: #0d1523;
+  --game-panel: rgba(15, 25, 41, .94);
+  --game-panel-strong: #152238;
+  --game-text: #edf4ff;
+  --game-muted: #9baac0;
+  --game-primary: #d8b866;
+  --game-primary-soft: #f1d98e;
+  --game-accent: #4ed8cd;
+  --game-line: rgba(138, 164, 199, .2);
+  --game-line-strong: rgba(216, 184, 102, .42);
+  --game-shadow: 0 24px 65px rgba(0, 4, 13, .48);
+  color-scheme: dark;
+}
+html[data-theme="classic"] {
+  --game-bg: #eaf0f7;
+  --game-bg-soft: #f7f9fc;
+  --game-panel: rgba(255, 255, 255, .94);
+  --game-panel-strong: #f0f4f9;
+  --game-text: #142033;
+  --game-muted: #586980;
+  --game-primary: #9a7427;
+  --game-primary-soft: #bd9440;
+  --game-accent: #147f83;
+  --game-line: rgba(33, 58, 91, .17);
+  --game-line-strong: rgba(154, 116, 39, .38);
+  --game-shadow: 0 22px 58px rgba(30, 49, 76, .13);
+  color-scheme: light;
+}
+html[data-theme="classic"] body {
+  color: var(--game-text) !important;
+  background:
+    radial-gradient(circle at 17% 7%, rgba(67, 154, 180, .14), transparent 31rem),
+    radial-gradient(circle at 86% 12%, rgba(203, 165, 74, .13), transparent 27rem),
+    linear-gradient(145deg, #f8fafc 0%, #eaf0f7 50%, #dfe7f1 100%) fixed !important;
+}
+html[data-theme="accessible"] body {
+  color: var(--game-text) !important;
+  background:
+    radial-gradient(circle at 14% 4%, rgba(30, 128, 143, .18), transparent 34rem),
+    radial-gradient(circle at 86% 10%, rgba(191, 143, 48, .12), transparent 28rem),
+    linear-gradient(145deg, #060911, #0b1220 52%, #080c16) fixed !important;
+}
+html[data-theme="classic"] .admin-sidebar {
+  color: #edf4ff !important;
+  background: linear-gradient(180deg, #14243a, #0a111e) !important;
+}
+html[data-theme="classic"] :is(.player-nav, .site-header, .admin-topbar, .theme-control__toggle, .theme-control__menu) {
+  color: var(--game-text) !important;
+  border-color: var(--game-line) !important;
+  background: rgba(250, 252, 255, .95) !important;
+  box-shadow: var(--game-shadow) !important;
+}
+html[data-theme="classic"] :is(
+  .sheet-section, .account-card, .portal-card, .rank-guide-card, .ranks-intro-card,
+  .event-list article, .update-list article, .admin-editor-card, .admin-character-card,
+  .admin-composer, .admin-tool-grid > a, .admin-command-metrics > article,
+  .ranking-board, .ranking-season-banner, .ranking-podium__place, .character-command-hero,
+  .character-progress-strip, .inventory-slot-panel, .inventory-browser__catalog,
+  .inventory-inspector, .shop-controls, .shop-inspector, .arena-toolbar,
+  .arena-command-panel, .arena-message, .arena-turn-budget, .arena-fighter,
+  .arena-mode-select > div > a, .presence-pass, .presence-hero,
+  .presence-admin-grid fieldset, .presence-campaign-settings, .admin-title-create
+) {
+  color: var(--game-text) !important;
+  border-color: var(--game-line) !important;
+  background: linear-gradient(145deg, rgba(255,255,255,.97), rgba(239,244,250,.96)) !important;
+  box-shadow: var(--game-shadow) !important;
+}
+html[data-theme="classic"] :is(h1, h2, h3, h4, strong, dd) { color: #142033; }
+html[data-theme="classic"] :is(p, small, dt) { color: #586980; }
+
+/* Tema sazonal: administradores sempre podem visualizá-lo; a liberação pública vem do painel. */
+html[data-theme="christmas"] {
+  --game-bg: #07110e;
+  --game-bg-soft: #0b1b15;
+  --game-panel: rgba(13, 34, 26, .95);
+  --game-panel-strong: #142f25;
+  --game-text: #fff8e7;
+  --game-muted: #c4d2c7;
+  --game-primary: #e7bf58;
+  --game-primary-soft: #ffe49a;
+  --game-accent: #d94343;
+  --game-line: rgba(236, 206, 126, .22);
+  --game-line-strong: rgba(231, 191, 88, .55);
+  --game-shadow: 0 24px 70px rgba(0, 7, 4, .55);
+  color-scheme: dark;
+}
+html[data-theme="christmas"] body {
+  background:
+    radial-gradient(circle at 12% 5%, rgba(190, 35, 48, .22), transparent 30rem),
+    radial-gradient(circle at 88% 6%, rgba(24, 118, 68, .28), transparent 32rem),
+    linear-gradient(145deg, #07110e, #10271d 48%, #220b11) fixed !important;
+}
+html[data-theme="christmas"] body::before {
+  content:""; position:fixed; inset:-80px 0 0; z-index:19; pointer-events:none; opacity:.68;
+  background-image:radial-gradient(circle,#fff 0 2px,transparent 2.5px),radial-gradient(circle,#dff6ff 0 1px,transparent 1.5px);
+  background-size:78px 78px,45px 45px; background-position:0 0,20px 30px;
+  animation:christmas-snow 14s linear infinite;
+}
+html[data-theme="christmas"] .game-world-atmosphere::before {
+  content:""; position:fixed; z-index:20; top:0; left:0; right:0; height:18px; pointer-events:none;
+  background:repeating-linear-gradient(90deg,#ef4050 0 9px,transparent 9px 31px,#f2c95c 31px 40px,transparent 40px 62px,#57d68b 62px 71px,transparent 71px 93px,#61b9ff 93px 102px,transparent 102px 124px);
+  filter:drop-shadow(0 0 8px currentColor); animation:christmas-lights 1.8s steps(2,end) infinite;
+}
+html[data-theme="christmas"] :is(.player-nav,.site-header,.admin-topbar,.theme-control__toggle,.theme-control__menu,.admin-sidebar) {
+  border-color:rgba(231,191,88,.38)!important; background:rgba(10,31,23,.96)!important; color:#fff8e7!important;
+}
+@keyframes christmas-snow { to { transform:translate3d(18px,78px,0); } }
+@keyframes christmas-lights { 50% { opacity:.5; filter:drop-shadow(0 0 3px #fff); } }
+
+/* Atmosferas de Rank reconstruídas */
+.rank-atmosphere[data-rank-atmosphere] { opacity:1; overflow:hidden; mix-blend-mode:screen; }
+.rank-atmosphere__veil { position:fixed; inset:0; pointer-events:none; opacity:.22; }
+.rank-atmosphere[data-rank-atmosphere] i { top:auto!important; bottom:-12vh!important; display:block!important; opacity:0; background:none!important; border:0!important; filter:none!important; }
+.rank-atmosphere[data-rank-atmosphere] i span { display:block; width:100%; height:100%; }
+.rank-atmosphere[data-rank-atmosphere="E"] i { left:calc((var(--particle-index) * 43) % 101 * 1%); width:3px;height:3px;border-radius:50%!important;background:#aeb5bf!important;box-shadow:0 0 7px #fff;animation:rank-e-ascend 8s linear infinite!important;animation-delay:calc(var(--particle-index)*-.37s)!important; }
+.rank-atmosphere[data-rank-atmosphere="D"] i { left:calc((var(--particle-index) * 37) % 107 * 1%); width:28px;height:2px;background:linear-gradient(90deg,transparent,#6cce91,transparent)!important;transform:rotate(-22deg);animation:rank-d-gale 7s ease-in-out infinite!important;animation-delay:calc(var(--particle-index)*-.31s)!important; }
+.rank-atmosphere[data-rank-atmosphere="C"] i { left:calc((var(--particle-index) * 29) % 103 * 1%); width:11px;height:11px;border:1px solid #55d9ff!important;border-radius:50%!important;background:radial-gradient(circle,#b9f4ff,rgba(37,169,255,.25) 45%,transparent 70%)!important;box-shadow:0 0 18px #2cbcff;animation:rank-c-wisp 8s ease-in-out infinite!important;animation-delay:calc(var(--particle-index)*-.43s)!important; }
+.rank-atmosphere[data-rank-atmosphere="B"] i { left:calc((var(--particle-index) * 31) % 109 * 1%); width:2px;height:42px;background:linear-gradient(#fff,#77a9dc,transparent)!important;box-shadow:0 0 9px #82b6ea;animation:rank-b-blade 4s linear infinite!important;animation-delay:calc(var(--particle-index)*-.19s)!important; }
+.rank-atmosphere[data-rank-atmosphere="A"] .rank-atmosphere__veil { background:radial-gradient(circle at 50% 55%,rgba(180,76,255,.18),transparent 45%);animation:rank-a-breathe 5s ease-in-out infinite; }
+.rank-atmosphere[data-rank-atmosphere="A"] i { left:calc((var(--particle-index) * 41) % 101 * 1%); width:42px;height:42px;color:#e7b2ff;animation:rank-a-sigil 9s ease-in-out infinite!important;animation-delay:calc(var(--particle-index)*-.52s)!important; }
+.rank-atmosphere[data-rank-atmosphere="A"] i span::before { content:"✦"!important;display:grid!important;place-items:center;width:100%!important;height:100%!important;border:1px solid currentColor!important;border-radius:50%!important;background:radial-gradient(circle,rgba(183,69,255,.35),transparent 67%)!important;box-shadow:0 0 14px #c755ff,0 0 38px rgba(160,55,255,.6)!important; }
+.rank-atmosphere[data-rank-atmosphere="S"] .rank-atmosphere__veil { background:radial-gradient(circle at 50% 0,rgba(255,209,91,.22),transparent 48%); }
+.rank-atmosphere[data-rank-atmosphere="S"] i { left:calc((var(--particle-index) * 47) % 107 * 1%); width:5px;height:5px;background:#fff7bd!important;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);box-shadow:0 0 20px #ffd75d;animation:rank-s-constellation 6s ease-in-out infinite!important;animation-delay:calc(var(--particle-index)*-.28s)!important; }
+.rank-atmosphere[data-rank-atmosphere="EX"] .rank-atmosphere__veil { background:conic-gradient(from 90deg at 50% 50%,transparent,#6e2cff18,#ff3ee522,transparent);animation:rank-ex-rotate 15s linear infinite; }
+.rank-atmosphere[data-rank-atmosphere="EX"] i { left:calc((var(--particle-index) * 53) % 113 * 1%); width:3px;height:88px;background:linear-gradient(transparent,#fff,#c13cff,#5524ff,transparent)!important;box-shadow:0 0 16px #cb42ff,0 0 34px #5837ff;transform:rotate(24deg);animation:rank-ex-rend 5s steps(3,end) infinite!important;animation-delay:calc(var(--particle-index)*-.23s)!important; }
+@keyframes rank-e-ascend { 0%{opacity:0;transform:translateY(0)} 18%{opacity:.7} 100%{opacity:0;transform:translateY(-112vh)} }
+@keyframes rank-d-gale { 0%{opacity:0;transform:translate(-15vw,0) rotate(-22deg)} 22%{opacity:.7} 100%{opacity:0;transform:translate(28vw,-112vh) rotate(28deg)} }
+@keyframes rank-c-wisp { 0%{opacity:0;transform:translateY(0) scale(.4)} 30%{opacity:.85} 60%{transform:translate(25px,-58vh) scale(1.2)} 100%{opacity:0;transform:translate(-20px,-110vh) scale(.5)} }
+@keyframes rank-b-blade { 0%{opacity:0;transform:translateY(-110vh) rotate(-14deg)} 18%{opacity:.85} 100%{opacity:0;transform:translateY(15vh) rotate(-14deg)} }
+@keyframes rank-a-sigil { 0%{opacity:0;transform:translateY(0) scale(.35) rotate(-30deg)} 28%,68%{opacity:.82} 100%{opacity:0;transform:translateY(-112vh) scale(1.15) rotate(55deg)} }
+@keyframes rank-a-breathe { 50%{opacity:.45;filter:saturate(1.6)} }
+@keyframes rank-s-constellation { 0%{opacity:0;transform:translateY(0) scale(.5)} 35%{opacity:1} 70%{opacity:.45;transform:translateY(-70vh) scale(2)} 100%{opacity:0;transform:translateY(-112vh) scale(.7)} }
+@keyframes rank-ex-rend { 0%,100%{opacity:0;transform:translateY(0) rotate(24deg) scaleY(.2)} 25%,48%{opacity:.9;transform:translateY(-55vh) rotate(24deg) scaleY(1)} 70%{opacity:.25} }
+@keyframes rank-ex-rotate { to{transform:rotate(360deg) scale(1.2)} }
+
+/* Placa de Título sobre os retratos */
+.character-equipped-title {
+  display:flex!important; align-items:center; justify-content:center; gap:7px; width:max-content; max-width:94%; min-width:58%;
+  padding:7px 14px!important; border:1px solid color-mix(in srgb,var(--title-glow) 75%,white)!important; border-radius:4px 4px 12px 12px!important;
+  color:var(--title-primary)!important; background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--title-secondary) 82%,#070b15),color-mix(in srgb,var(--title-glow) 28%,#0a101b),color-mix(in srgb,var(--title-secondary) 82%,#070b15),transparent)!important;
+  box-shadow:0 5px 22px rgba(0,0,0,.55),0 0 22px color-mix(in srgb,var(--title-glow) 48%,transparent),inset 0 0 16px color-mix(in srgb,var(--title-primary) 12%,transparent)!important;
+  font-family:var(--font-display,Georgia,serif); font-size:clamp(.56rem,.9vw,.76rem)!important; font-weight:900; letter-spacing:.07em; line-height:1.2; text-align:center; text-transform:uppercase;
+  backdrop-filter:blur(8px); animation:title-relic-pulse 3.4s ease-in-out infinite!important;
+}
+.character-equipped-title::before { content:"";position:absolute;inset:-4px 12%;border-top:1px solid var(--title-glow);opacity:.75; }
+.equipped-title__wing { color:var(--title-glow);font-size:.52rem;filter:drop-shadow(0 0 6px var(--title-glow)); }
+.equipped-title__name { overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 0 8px var(--title-glow),0 1px 2px #000; }
+@keyframes title-relic-pulse { 0%,100%{transform:translateX(-50%) scale(.98);filter:saturate(.9)} 50%{transform:translateX(-50%) scale(1.035);filter:saturate(1.35) brightness(1.12)} }
+
+.admin-theme-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px; }
+.admin-theme-grid > button { grid-column:1/-1;justify-self:start; }
+.admin-theme-card { position:relative;display:grid;grid-template-columns:78px 1fr auto;align-items:center;gap:16px;padding:18px;border:1px solid var(--game-line);border-radius:16px;background:var(--game-panel);box-shadow:var(--game-shadow);cursor:pointer; }
+.admin-theme-card__preview { display:grid;place-items:center;width:78px;height:64px;border-radius:12px;background:linear-gradient(145deg,#eef4fb,#b8cee0);color:#9a7427;font-size:1.5rem; }
+.admin-theme-card.is-accessible .admin-theme-card__preview { background:linear-gradient(145deg,#07101c,#1a3246);color:#56e1d1; }
+.admin-theme-card.is-christmas .admin-theme-card__preview { background:linear-gradient(145deg,#7c1521,#0d4a31);color:#ffe07c; }
+.admin-theme-card > span:nth-child(2) { display:grid;gap:5px; }.admin-theme-card small{color:var(--game-muted)}.admin-theme-card b{grid-column:2/-1;color:var(--game-primary);font-size:.64rem;text-transform:uppercase;letter-spacing:.08em}
+@media(max-width:1050px){.admin-theme-grid{grid-template-columns:1fr}.admin-theme-card{grid-template-columns:64px 1fr auto}.admin-theme-card__preview{width:64px}}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme="christmas"] body::before, html[data-theme="christmas"] .game-world-atmosphere::before,
+  .rank-atmosphere[data-rank-atmosphere] i, .rank-atmosphere__veil, .character-equipped-title { animation:none!important; }
+}

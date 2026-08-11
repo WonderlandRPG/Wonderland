@@ -125,14 +125,6 @@ export default async function CharacterSheetPage({
                 <dd>{classPath?.name ?? "Não definido"}</dd>
               </div>
             </dl>
-            <aside className="character-rank-effect">
-              <span aria-hidden="true">✦</span>
-              <div>
-                <small>Efeito do Rank {rank.key}</small>
-                <strong>{rank.effect.name}</strong>
-                <p>{rank.effect.summary}</p>
-              </div>
-            </aside>
             <nav className="character-command-hero__actions">
               <Link className="button button--primary" href={`/arena?personagem=${character.id}`}>
                 Entrar na Arena

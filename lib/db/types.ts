@@ -142,8 +142,28 @@ export interface Database {
         Relationships: [];
       };
       v2_pvp_queue: {
-        Row: { id: string; user_id: string; character_id: string; rank: string; status: string; opponent_character_id: string | null; match_id: string | null; joined_at: string; matched_at: string | null };
-        Insert: { id?: string; user_id: string; character_id: string; rank: string; status?: string; opponent_character_id?: string | null; match_id?: string | null; joined_at?: string; matched_at?: string | null };
+        Row: {
+          id: string;
+          user_id: string;
+          character_id: string;
+          rank: string;
+          status: string;
+          opponent_character_id: string | null;
+          match_id: string | null;
+          joined_at: string;
+          matched_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          character_id: string;
+          rank: string;
+          status?: string;
+          opponent_character_id?: string | null;
+          match_id?: string | null;
+          joined_at?: string;
+          matched_at?: string | null;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_pvp_queue"]["Insert"]>;
         Relationships: [];
       };
@@ -342,8 +362,24 @@ export interface Database {
         Relationships: [];
       };
       v2_arena_sessions: {
-        Row: { id: string; user_id: string; character_id: string; mode: string; status: string; created_at: string; completed_at: string | null };
-        Insert: { id?: string; user_id: string; character_id: string; mode: string; status?: string; created_at?: string; completed_at?: string | null };
+        Row: {
+          id: string;
+          user_id: string;
+          character_id: string;
+          mode: string;
+          status: string;
+          created_at: string;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          character_id: string;
+          mode: string;
+          status?: string;
+          created_at?: string;
+          completed_at?: string | null;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_arena_sessions"]["Insert"]>;
         Relationships: [];
       };
@@ -365,6 +401,7 @@ export interface Database {
       v2_set_player_role: { Args: { p_user_id: string; p_role: string }; Returns: undefined };
       v2_claim_daily_reward: { Args: Record<PropertyKey, never>; Returns: Json };
       v2_start_arena_session: { Args: { p_character_id: string; p_mode: string }; Returns: string };
+      v2_get_pve_daily_status: { Args: { p_character_id: string }; Returns: Json };
       v2_claim_arena_victory: { Args: { p_session_id: string }; Returns: Json };
       v2_join_pvp_queue: { Args: { p_character_id: string }; Returns: Json };
       v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };

@@ -14,14 +14,14 @@ const themes: Array<{
 }> = [
   {
     key: "classic",
-    label: "Clássico",
-    description: "Verde profundo, dourado e efeitos do mundo.",
+    label: "Wonderland",
+    description: "Azul-petróleo, dourado e atmosfera do jogo.",
     icon: "✦",
   },
   {
     key: "accessible",
-    label: "Escuro acessível",
-    description: "Mais contraste, menos brilho e movimento.",
+    label: "Alto contraste",
+    description: "Fundo preto, leitura ampliada e sem animações.",
     icon: "◐",
   },
 ];
@@ -103,7 +103,7 @@ export function ThemeControl() {
         <span aria-hidden="true">{theme === "accessible" ? "◐" : "✦"}</span>
         <small>
           <b>Tema</b>
-          <em>{theme === "accessible" ? "Escuro acessível" : "Clássico"}</em>
+          <em>{theme === "accessible" ? "Alto contraste" : "Wonderland"}</em>
         </small>
       </button>
     </aside>

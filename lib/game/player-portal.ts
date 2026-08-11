@@ -13,6 +13,8 @@ export async function getRanking() {
   }));
 }
 
+export type RankingEntry = Awaited<ReturnType<typeof getRanking>>[number];
+
 export async function getShopItems() {
   const client = await createServerSupabaseClient();
   if (!client) return [];

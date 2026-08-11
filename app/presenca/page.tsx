@@ -25,14 +25,20 @@ export default async function PresencePage({
 }) {
   const { characterId } = await requireActiveCharacter("/presenca");
   const client = await createServerSupabaseClient();
-  const [character, query, rewardResult] = await Promise.all([
+  const [character, query, rewardResult, configResult] = await Promise.all([
     requireCharacterSheet(characterId),
     searchParams,
     client
       ? client.from("v2_presence_rewards").select("*").eq("active", true).order("day_number")
       : Promise.resolve({ data: [] }),
+    client
+      ? client.from("v2_presence_pass_config").select("*").eq("id", true).maybeSingle()
+      : Promise.resolve({ data: null }),
   ]);
-  const rewards = rewardResult.data ?? [];
+  const config = configResult.data;
+  const rewards = (rewardResult.data ?? []).filter(
+    (reward) => !config || reward.day_number <= config.day_count,
+  );
   const itemIds = rewards.flatMap((reward) => (reward.item_id ? [reward.item_id] : []));
   const { data: itemRows } =
     client && itemIds.length
@@ -40,6 +46,7 @@ export default async function PresencePage({
       : { data: [] };
   const items = new Map((itemRows ?? []).map((item) => [item.id, item]));
   const today = dateInSaoPaulo();
+  const campaignOpen = Boolean(config && today >= config.starts_on && today <= config.ends_on);
   const yesterday = dateInSaoPaulo(-1);
   const claimedToday = character.last_daily_claim === today;
   const nextStreak =
@@ -65,6 +72,7 @@ export default async function PresencePage({
             <small>Sequência atual</small>
             <strong>{character.daily_streak} dia(s)</strong>
             <span>O ciclo reinicia após a última recompensa.</span>
+            {config ? <span>{config.starts_on.split("-").reverse().join("/")} a {config.ends_on.split("-").reverse().join("/")}</span> : null}
           </aside>
         </header>
 
@@ -86,8 +94,8 @@ export default async function PresencePage({
               <h2>Recompensas da jornada</h2>
             </div>
             <form action={claimPresenceRewardAction}>
-              <button className="button button--primary" disabled={claimedToday || !rewards.length}>
-                {claimedToday ? "Presença marcada hoje" : `Resgatar dia ${cycleDay}`}
+              <button className="button button--primary" disabled={claimedToday || !rewards.length || !campaignOpen}>
+                {!campaignOpen ? "Presença fora do período" : claimedToday ? "Presença marcada hoje" : `Resgatar dia ${cycleDay}`}
               </button>
             </form>
           </header>
@@ -108,19 +116,19 @@ export default async function PresencePage({
                     <b>{state === "claimed" ? "✓" : state === "available" ? "Agora" : ""}</b>
                   </header>
                   <div className="presence-reward-icon" data-type={reward.reward_type}>
-                    {reward.reward_type === "item" ? (
+                    {reward.reward_type === "item" || reward.reward_type === "title" ? (
                       <ItemGlyph slot={item?.slot ?? "necklace"} />
                     ) : (
                       <span>{reward.reward_type === "xp" ? "XP" : "WG"}</span>
                     )}
                   </div>
                   <strong>
-                    {reward.reward_type === "item"
-                      ? (item?.name ?? "Item do arsenal")
+                    {reward.reward_type === "item" || reward.reward_type === "title"
+                      ? `${reward.reward_type === "title" ? "✦ " : ""}${item?.name ?? (reward.reward_type === "title" ? "Título" : "Item do arsenal")}`
                       : `${reward.amount.toLocaleString("pt-BR")} ${reward.reward_type.toUpperCase()}`}
                   </strong>
                   <small>
-                    {reward.reward_type === "item"
+                    {reward.reward_type === "item" || reward.reward_type === "title"
                       ? `${reward.amount}x · ${item?.rarity ?? "equipamento"}`
                       : reward.reward_type === "xp"
                         ? "Experiência do personagem"

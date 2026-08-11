@@ -258,6 +258,7 @@ export interface Database {
           two_handed: boolean;
           sort_order: number;
           special_effects: Json;
+          title_style: Json;
           active: boolean;
           created_at: string;
           updated_at: string;
@@ -276,6 +277,7 @@ export interface Database {
           two_handed?: boolean;
           sort_order?: number;
           special_effects?: Json;
+          title_style?: Json;
           active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -286,7 +288,7 @@ export interface Database {
       v2_presence_rewards: {
         Row: {
           day_number: number;
-          reward_type: "xp" | "wg" | "item";
+          reward_type: "xp" | "wg" | "item" | "title";
           amount: number;
           item_id: string | null;
           active: boolean;
@@ -295,7 +297,7 @@ export interface Database {
         };
         Insert: {
           day_number: number;
-          reward_type: "xp" | "wg" | "item";
+          reward_type: "xp" | "wg" | "item" | "title";
           amount?: number;
           item_id?: string | null;
           active?: boolean;
@@ -303,6 +305,26 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["v2_presence_rewards"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_presence_pass_config: {
+        Row: {
+          id: boolean;
+          starts_on: string;
+          ends_on: string;
+          day_count: number;
+          updated_by: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          id?: boolean;
+          starts_on: string;
+          ends_on: string;
+          day_count?: number;
+          updated_by?: string | null;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_presence_pass_config"]["Insert"]>;
         Relationships: [];
       };
       v2_events: {

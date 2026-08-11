@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { savePresencePassAction } from "@/app/admin/presenca/actions";
 
-type RewardType = "xp" | "wg" | "item";
+type RewardType = "xp" | "wg" | "item" | "title";
 
 type Reward = {
   day_number: number;
@@ -12,17 +12,53 @@ type Reward = {
   item_id: string | null;
 };
 
-type Item = { id: string; name: string; rarity: string };
+type Item = { id: string; name: string; rarity: string; slot: string };
 
-export function PresenceRewardEditor({ rewards, items }: { rewards: Reward[]; items: Item[] }) {
+export function PresenceRewardEditor({
+  rewards,
+  items,
+  config,
+}: {
+  rewards: Reward[];
+  items: Item[];
+  config: { starts_on: string; ends_on: string; day_count: number };
+}) {
+  const [dayCount, setDayCount] = useState(config.day_count);
   const [types, setTypes] = useState<Record<number, RewardType>>(
     Object.fromEntries(rewards.map((reward) => [reward.day_number, reward.reward_type])),
   );
 
   return (
     <form action={savePresencePassAction} className="presence-admin-editor">
+      <section className="presence-campaign-settings">
+        <div>
+          <span className="eyebrow">Período da campanha</span>
+          <h3>Quando a Presença estará disponível</h3>
+          <p>Fora destas datas nenhum jogador poderá marcar presença ou resgatar recompensa.</p>
+        </div>
+        <label>
+          <span>Começa em</span>
+          <input name="startsOn" type="date" defaultValue={config.starts_on} required />
+        </label>
+        <label>
+          <span>Termina em</span>
+          <input name="endsOn" type="date" defaultValue={config.ends_on} required />
+        </label>
+        <label>
+          <span>Dias de recompensa</span>
+          <input
+            name="dayCount"
+            type="number"
+            min="1"
+            max="31"
+            value={dayCount}
+            onChange={(event) => setDayCount(Number(event.target.value))}
+            required
+          />
+        </label>
+      </section>
       <div className="presence-admin-grid">
-        {rewards.map((reward) => {
+        {rewards.slice(0, dayCount).map((reward) => {
           const type = types[reward.day_number] ?? reward.reward_type;
           return (
             <fieldset key={reward.day_number}>
@@ -43,10 +79,11 @@ export function PresenceRewardEditor({ rewards, items }: { rewards: Reward[]; it
                   <option value="xp">XP</option>
                   <option value="wg">WG</option>
                   <option value="item">Item</option>
+                  <option value="title">Título</option>
                 </select>
               </label>
               <label>
-                <span>{type === "item" ? "Quantidade" : "Valor"}</span>
+                <span>{type === "item" || type === "title" ? "Quantidade" : "Valor"}</span>
                 <input
                   defaultValue={reward.amount}
                   min="1"
@@ -54,16 +91,18 @@ export function PresenceRewardEditor({ rewards, items }: { rewards: Reward[]; it
                   type="number"
                 />
               </label>
-              {type === "item" ? (
+              {type === "item" || type === "title" ? (
                 <label className="presence-admin-item-select">
-                  <span>Item do catálogo</span>
+                  <span>{type === "title" ? "Título" : "Item do catálogo"}</span>
                   <select
                     name={`item_${reward.day_number}`}
                     defaultValue={reward.item_id ?? ""}
                     required
                   >
                     <option value="">Escolha um item</option>
-                    {items.map((item) => (
+                    {items
+                      .filter((item) => (type === "title" ? item.slot === "title" : item.slot !== "title"))
+                      .map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.name} · {item.rarity}
                       </option>

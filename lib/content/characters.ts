@@ -42,6 +42,7 @@ export interface CharacterSheet extends CharacterRecord {
     equippedSlot: string | null;
     attributes: Partial<AllocatedAttributes>;
     specialEffects: ItemSpecialEffect[];
+    titleStyle: { primary: string; secondary: string; glow: string } | null;
     twoHanded: boolean;
   }>;
 }
@@ -72,7 +73,7 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
   const { data: shopRows } = itemIds.length
     ? await client
         .from("v2_shop_items")
-        .select("id,name,description,category,rarity,slot,attributes,special_effects,two_handed")
+        .select("id,name,description,category,rarity,slot,attributes,special_effects,title_style,two_handed")
         .in("id", itemIds)
     : { data: [] };
   const shop = new Map((shopRows ?? []).map((entry) => [entry.id, entry]));
@@ -103,6 +104,14 @@ async function loadSheets(rows: CharacterRow[]): Promise<CharacterSheet[]> {
             equippedSlot: entry.equipped_slot,
             attributes: parsed.success ? parsed.data : {},
             specialEffects: parseItemSpecialEffects(item.special_effects),
+            titleStyle:
+              item.title_style && typeof item.title_style === "object" && !Array.isArray(item.title_style)
+                ? {
+                    primary: String(item.title_style.primary ?? "#fff1b5"),
+                    secondary: String(item.title_style.secondary ?? "#1f7a4c"),
+                    glow: String(item.title_style.glow ?? "#d7ad45"),
+                  }
+                : null,
             twoHanded: item.two_handed,
           },
         ];

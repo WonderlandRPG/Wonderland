@@ -15,7 +15,7 @@ const themes: Array<{
   {
     key: "classic",
     label: "Clássico",
-    description: "Azul profundo, dourado e efeitos do mundo.",
+    description: "Verde profundo, dourado e efeitos do mundo.",
     icon: "✦",
   },
   {
@@ -40,10 +40,15 @@ export function ThemeControl() {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const current = document.documentElement.dataset.theme;
-    if (current === "classic" || current === "accessible") {
-      queueMicrotask(() => setTheme(current));
+    let stored: string | null = null;
+    try {
+      stored = window.localStorage.getItem(themeStorageKey);
+    } catch {
+      // O tema clássico continua disponível sem armazenamento local.
     }
+    const current: ThemeName = stored === "accessible" ? "accessible" : "classic";
+    document.documentElement.dataset.theme = current;
+    queueMicrotask(() => setTheme(current));
   }, []);
 
   useEffect(() => {

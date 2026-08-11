@@ -20,8 +20,6 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-const themeBootScript = `(()=>{try{const t=localStorage.getItem("wonderland:theme");document.documentElement.dataset.theme=t==="accessible"?"accessible":"classic"}catch{document.documentElement.dataset.theme="classic"}})()`;
-
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const account = await getCurrentAccount();
   const activeCharacterId = account ? await getActiveCharacterId(account.id) : null;
@@ -29,10 +27,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const rank = activeCharacter ? getAdventureRank(activeCharacter.adventure_rank) : null;
 
   return (
-    <html data-theme="classic" lang="pt-BR" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
-      </head>
+    <html data-theme="classic" lang="pt-BR">
       <body
         data-rank={rank?.key}
         style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}

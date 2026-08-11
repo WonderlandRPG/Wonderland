@@ -9,8 +9,7 @@ import { ThemeControl } from "@/components/theme/theme-control";
 import { getThemeAvailability } from "@/lib/content/themes";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 
-import "./globals.css";
-import "./rpg-ui.css";
+import "./astral-ui.css";
 
 export const metadata: Metadata = {
   title: {
@@ -38,7 +37,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         data-rank={rank?.key}
         style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}
       >
-        <div className="game-world-atmosphere" aria-hidden="true">
+        <div className="astral-atmosphere" aria-hidden="true">
           <span />
           <span />
           <span />

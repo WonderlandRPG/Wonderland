@@ -1,20 +1,20 @@
 export const themeDefinitions = [
   {
     key: "classic",
-    label: "Sonho Estilhaçado",
-    description: "Obsidiana, luar violeta e ouro espectral.",
-    icon: "✦",
+    label: "Crônicas Reais",
+    description: "Pergaminho mineral, bronze e magia azul.",
+    icon: "✧",
   },
   {
     key: "accessible",
-    label: "Aurora dos Reinos",
-    description: "Marfim lunar, ametista e metal antigo.",
-    icon: "☼",
+    label: "Éter Noturno",
+    description: "Obsidiana azulada, ouro e energia arcana.",
+    icon: "◐",
   },
   {
     key: "christmas",
-    label: "Solstício Encantado",
-    description: "Noite de pinheiro, rubi, neve e estrelas.",
+    label: "Solstício de Wonderland",
+    description: "Pinheiro, rubi, ouro, luzes e neve.",
     icon: "❄",
   },
 ] as const;

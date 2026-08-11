@@ -9,7 +9,8 @@ import { ThemeControl } from "@/components/theme/theme-control";
 import { getThemeAvailability } from "@/lib/content/themes";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 
-import "./astral-ui.css";
+import "./globals.css";
+import "./theme-overrides.css";
 
 export const metadata: Metadata = {
   title: {
@@ -37,7 +38,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         data-rank={rank?.key}
         style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}
       >
-        <div className="astral-atmosphere" aria-hidden="true">
+        <div className="game-world-atmosphere" aria-hidden="true">
           <span />
           <span />
           <span />
@@ -45,10 +46,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <RankAtmosphere rank={rank?.key} />
         <AudioProvider>
           {children}
-          <ThemeControl
-            availability={themeAvailability}
-            isAdmin={Boolean(account && isAdministrativeRole(account.role))}
-          />
+          <ThemeControl availability={themeAvailability} isAdmin={Boolean(account && isAdministrativeRole(account.role))} />
         </AudioProvider>
       </body>
     </html>

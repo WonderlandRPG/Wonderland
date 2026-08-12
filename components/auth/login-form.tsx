@@ -7,13 +7,27 @@ import { signInAction } from "@/app/auth/actions";
 import { FieldError, FormNotice, SubmitButton } from "@/components/auth/form-parts";
 import { idleAuthState } from "@/lib/auth/forms";
 
-export function LoginForm({ nextPath }: { nextPath: string }) {
+export function LoginForm({
+  nextPath,
+  maintenance = false,
+}: {
+  nextPath: string;
+  maintenance?: boolean;
+}) {
   const [state, action] = useActionState(signInAction, idleAuthState);
 
   return (
     <form className="auth-form" action={action} noValidate>
       <input name="next" type="hidden" value={nextPath} />
       <FormNotice state={state} />
+      {maintenance ? (
+        <div className="auth-maintenance-notice">
+          <strong>Servidor em manutenção</strong>
+          <span>
+            O acesso comum está bloqueado. Administradores e Fundadores ainda podem entrar abaixo.
+          </span>
+        </div>
+      ) : null}
 
       <label className="form-field">
         <span>E-mail</span>

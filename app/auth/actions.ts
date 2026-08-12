@@ -14,6 +14,7 @@ import {
   signUpSchema,
 } from "@/lib/auth/validation";
 import { getConfiguredSiteUrl } from "@/lib/config/env";
+import { getServerOnline } from "@/lib/content/server-status";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function configurationError(): AuthActionState {
@@ -76,6 +77,23 @@ export async function signInAction(
     };
   }
 
+  if (!(await getServerOnline(supabase))) {
+    const { data: claimsData } = await supabase.auth.getClaims();
+    const userId = typeof claimsData?.claims?.sub === "string" ? claimsData.claims.sub : "";
+    const { data: roleRecord } = userId
+      ? await supabase.from("v2_user_roles").select("role").eq("user_id", userId).maybeSingle()
+      : { data: null };
+
+    if (roleRecord?.role !== "admin" && roleRecord?.role !== "founder") {
+      await supabase.auth.signOut({ scope: "global" });
+      return {
+        status: "error",
+        message:
+          "O servidor está em manutenção. O login dos jogadores foi temporariamente desabilitado.",
+      };
+    }
+  }
+
   revalidatePath("/", "layout");
   redirect("/personagens");
 }
@@ -97,6 +115,13 @@ export async function signUpAction(
   const supabase = await createServerSupabaseClient();
 
   if (!supabase) return configurationError();
+
+  if (!(await getServerOnline(supabase))) {
+    return {
+      status: "error",
+      message: "Novos cadastros estão pausados enquanto o servidor está em manutenção.",
+    };
+  }
 
   const { displayName, email, password } = result.data;
   const { data, error } = await supabase.auth.signUp({

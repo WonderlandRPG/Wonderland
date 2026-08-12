@@ -15,6 +15,22 @@ export async function getRanking() {
 
 export type RankingEntry = Awaited<ReturnType<typeof getRanking>>[number];
 
+export async function getPvpRanking() {
+  const client = await createServerSupabaseClient();
+  if (!client) return [];
+  const { data } = await client.rpc("v2_pvp_ranking", {});
+  return (data ?? []).map((row, index) => ({ ...row, position: index + 1 }));
+}
+
+export type PvpRankingEntry = Awaited<ReturnType<typeof getPvpRanking>>[number];
+
+export async function getPvpHistory(characterId: string) {
+  const client = await createServerSupabaseClient();
+  if (!client) return [];
+  const { data } = await client.rpc("v2_my_pvp_history", { p_character_id: characterId });
+  return data ?? [];
+}
+
 export async function getShopItems() {
   const client = await createServerSupabaseClient();
   if (!client) return [];

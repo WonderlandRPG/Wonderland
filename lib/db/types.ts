@@ -201,6 +201,32 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_pvp_matches"]["Insert"]>;
         Relationships: [];
       };
+      v2_pvp_history: {
+        Row: {
+          id: number;
+          match_id: string;
+          character_id: string;
+          opponent_character_id: string;
+          result: "victory" | "defeat";
+          rank: string;
+          rounds: number;
+          finished_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: number;
+          match_id: string;
+          character_id: string;
+          opponent_character_id: string;
+          result: "victory" | "defeat";
+          rank: string;
+          rounds?: number;
+          finished_at: string;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_pvp_history"]["Insert"]>;
+        Relationships: [];
+      };
       v2_active_characters: {
         Row: { user_id: string; character_id: string; selected_at: string };
         Insert: { user_id: string; character_id: string; selected_at?: string };
@@ -490,6 +516,36 @@ export interface Database {
       v2_update_pvp_match_state: {
         Args: { p_match_id: string; p_expected_version: number; p_state: Json };
         Returns: Json;
+      };
+      v2_pvp_ranking: {
+        Args: Record<PropertyKey, never>;
+        Returns: Array<{
+          id: string;
+          user_id: string;
+          name: string;
+          level: number;
+          image_url: string | null;
+          race_name: string;
+          class_name: string;
+          adventure_rank: string;
+          matches: number;
+          victories: number;
+          defeats: number;
+          win_rate: number;
+        }>;
+      };
+      v2_my_pvp_history: {
+        Args: { p_character_id: string };
+        Returns: Array<{
+          match_id: string;
+          result: "victory" | "defeat";
+          rank: string;
+          rounds: number;
+          finished_at: string;
+          opponent_id: string;
+          opponent_name: string;
+          opponent_image_url: string | null;
+        }>;
       };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
       v2_select_character: { Args: { p_character_id: string }; Returns: undefined };

@@ -56,10 +56,10 @@ export function RaceCodex({ entries }: { entries: Entry[] }) {
           ))}
         </nav>
       </aside>
-      <article className="lore-dossier">
-        <header>
+      <article className="lore-dossier codex-dossier">
+        <header className="codex-showcase">
           <div
-            className={`lore-dossier__sigil ${entry.payload.imageUrl ? "has-image" : ""}`}
+            className={`lore-dossier__sigil codex-showcase__portrait ${entry.payload.imageUrl ? "has-image" : ""}`}
             style={
               entry.payload.imageUrl
                 ? { backgroundImage: `url(${entry.payload.imageUrl})` }
@@ -68,12 +68,13 @@ export function RaceCodex({ entries }: { entries: Entry[] }) {
           >
             {entry.payload.imageUrl ? "" : entry.name.slice(0, 2).toUpperCase()}
           </div>
-          <div>
+          <div className="codex-showcase__identity">
             <span className="eyebrow">Arquivo racial</span>
             <h2>{entry.name}</h2>
+            <strong>{entry.payload.specialization}</strong>
             <p>{entry.payload.description}</p>
           </div>
-          <dl>
+          <dl className="codex-showcase__facts">
             <div>
               <dt>HP base</dt>
               <dd>{entry.payload.baseHp}</dd>

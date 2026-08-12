@@ -804,7 +804,7 @@ function buildClass(seed: ClassSeed) {
     payload: classPayloadSchema.parse({
       engineContractVersion: 1,
       description: seed.description,
-      imageUrl: "",
+      imageUrl: `/images/classes/${seed.slug}.webp`,
       difficulty: seed.difficulty,
       complexity: `${seed.difficulty}/5 estrelas`,
       specialization: seed.specialization,

@@ -58,50 +58,62 @@ export async function saveClassAction(
   if (!client) return { status: "error", message: "A conexão com o banco não está disponível." };
   const { id, expectedRevision, name, slug, intent } = submission.data;
   let classId = id;
-  if (classId) {
-    const { data, error } = await client
-      .from("v2_content")
-      .update({ name, slug, payload: payload.data as unknown as Json, updated_by: account.id })
-      .eq("id", classId)
-      .eq("content_type", "class")
-      .eq("revision", expectedRevision)
-      .select("id")
-      .maybeSingle();
-    if (error?.code === "23505")
-      return { status: "error", message: "Já existe uma classe com esse identificador." };
-    if (error || !data)
-      return {
-        status: "error",
-        message: "A classe foi alterada em outra tela. Atualize a página.",
-      };
-  } else {
-    const { data, error } = await client
-      .from("v2_content")
-      .insert({
-        content_type: "class",
-        name,
-        slug,
-        status: "draft",
-        payload: payload.data as unknown as Json,
-        created_by: account.id,
-        updated_by: account.id,
-      })
-      .select("id")
-      .single();
-    if (error || !data)
-      return {
-        status: "error",
-        message:
-          error?.code === "23505"
-            ? "Já existe uma classe com esse identificador."
-            : "Não foi possível criar a classe.",
-      };
-    classId = data.id;
-  }
-  if (intent === "publish") {
-    const { error } = await client.rpc("v2_publish_content", { p_content_id: classId });
-    if (error)
-      return { status: "error", message: "A classe foi salva, mas não pôde ser publicada." };
+  try {
+    if (classId) {
+      const { data, error } = await client
+        .from("v2_content")
+        .update({ name, slug, payload: payload.data as unknown as Json, updated_by: account.id })
+        .eq("id", classId)
+        .eq("content_type", "class")
+        .eq("revision", expectedRevision)
+        .select("id")
+        .maybeSingle();
+      if (error?.code === "23505")
+        return { status: "error", message: "Já existe uma classe com esse identificador." };
+      if (error || !data)
+        return {
+          status: "error",
+          message: error
+            ? `Não foi possível salvar a classe: ${error.message}`
+            : "A classe foi alterada em outra tela. Atualize a página.",
+        };
+    } else {
+      const { data, error } = await client
+        .from("v2_content")
+        .insert({
+          content_type: "class",
+          name,
+          slug,
+          status: "draft",
+          payload: payload.data as unknown as Json,
+          created_by: account.id,
+          updated_by: account.id,
+        })
+        .select("id")
+        .single();
+      if (error || !data)
+        return {
+          status: "error",
+          message:
+            error?.code === "23505"
+              ? "Já existe uma classe com esse identificador."
+              : `Não foi possível criar a classe${error ? `: ${error.message}` : "."}`,
+        };
+      classId = data.id;
+    }
+    if (intent === "publish") {
+      const { error } = await client.rpc("v2_publish_content", { p_content_id: classId });
+      if (error)
+        return {
+          status: "error",
+          message: `A classe foi salva, mas não pôde ser publicada: ${error.message}`,
+        };
+    }
+  } catch {
+    return {
+      status: "error",
+      message: "A conexão foi interrompida durante o salvamento. Tente novamente.",
+    };
   }
   revalidatePath("/admin/classes");
   revalidatePath(`/admin/classes/${classId}`);

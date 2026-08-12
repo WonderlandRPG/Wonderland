@@ -7,6 +7,7 @@ import { kingdomName } from "@/lib/game/kingdoms";
 import type { RankingEntry } from "@/lib/game/player-portal";
 
 const rankOrder = ["Todos", "E", "D", "C", "B", "A", "S", "EX"] as const;
+const adventureRankOrder = ["E", "D", "C", "B", "A", "S", "EX"] as const;
 
 function Avatar({ entry }: { entry: RankingEntry }) {
   return (
@@ -23,6 +24,18 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
   const [query, setQuery] = useState("");
   const [rank, setRank] = useState<(typeof rankOrder)[number]>("Todos");
   const leaders = entries.slice(0, 3);
+  const podium = [leaders[1], leaders[0], leaders[2]].filter(Boolean).map((entry) => ({
+    entry,
+    position: entries.indexOf(entry) + 1,
+  }));
+  const highestRank = entries.reduce(
+    (highest, entry) =>
+      adventureRankOrder.indexOf(entry.adventure_rank as (typeof adventureRankOrder)[number]) >
+      adventureRankOrder.indexOf(highest as (typeof adventureRankOrder)[number])
+        ? entry.adventure_rank
+        : highest,
+    "E",
+  );
   const normalized = query.trim().toLocaleLowerCase("pt-BR");
   const visible = entries.filter(
     (entry) =>
@@ -62,23 +75,23 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
           </div>
           <div>
             <dt>Rank mais alto</dt>
-            <dd>{entries[0]?.adventure_rank ?? "E"}</dd>
+            <dd>{highestRank}</dd>
           </div>
         </dl>
       </section>
 
       <section className="ranking-podium" aria-label="Pódio dos três melhores jogadores">
-        {leaders.map((entry, index) => (
+        {podium.map(({ entry, position }) => (
           <Link
-            className={`ranking-podium__place is-place-${index + 1}`}
+            className={`ranking-podium__place is-place-${position}`}
             href={`/jogadores/${entry.user_id}`}
             key={entry.id}
           >
-            <b className="ranking-podium__number">{index + 1}</b>
+            <b className="ranking-podium__number">{position}</b>
             <Avatar entry={entry} />
             <RankBadge compact rank={entry.adventure_rank} />
             <div>
-              <small>{index === 0 ? "Líder da temporada" : `${index + 1}º colocado`}</small>
+              <small>{position === 1 ? "Líder da temporada" : `${position}º colocado`}</small>
               <h3>{entry.name}</h3>
               <p>
                 {entry.race_name} · {entry.class_name}

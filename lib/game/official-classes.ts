@@ -324,6 +324,30 @@ const pathTechniques: Record<string, [PathTechniqueSeed, PathTechniqueSeed]> = {
       flavor: "Cerca o inimigo de imagens que confundem seus sentidos.",
     },
   ],
+  "mestre-transmutador": [
+    { name: "Círculo de Conversão", mode: "debuff", flavor: "Desmonta a proteção material do alvo." },
+    { name: "Pedra Filosofal", mode: "buff", flavor: "Estabiliza uma transmutação perfeita." },
+  ],
+  "cirurgiao-quimico": [
+    { name: "Soro Regenerativo", mode: "heal", flavor: "Recompõe tecidos com um composto instável." },
+    { name: "Couraça Mutagênica", mode: "shield", flavor: "Endurece o corpo com mutações controladas." },
+  ],
+  shinobi: [
+    { name: "Salto entre Sombras", mode: "mobility", flavor: "Rompe a linha de visão e muda de posição." },
+    { name: "Execução Silenciosa", mode: "damage", flavor: "Explora a marca deixada pela sequência de selos." },
+  ],
+  "mestre-dos-selos": [
+    { name: "Selo de Imobilização", mode: "control", flavor: "Trava o fluxo corporal do inimigo." },
+    { name: "Mandala dos Seis Selos", mode: "buff", flavor: "Completa uma formação de poder proibida." },
+  ],
+  "senhor-dos-mortos": [
+    { name: "Servo de Ossos", mode: "shield", flavor: "Ergue um lacaio para interceptar o próximo impacto." },
+    { name: "Marcha dos Condenados", mode: "damage", flavor: "Ordena que as almas avancem sobre o inimigo." },
+  ],
+  "pastor-do-veu": [
+    { name: "Pacto Funerário", mode: "heal", flavor: "Sacrifica uma alma para conservar a própria vida." },
+    { name: "Silêncio do Túmulo", mode: "control", flavor: "Fecha o Véu ao redor do alvo." },
+  ],
 };
 
 const classPaths: Record<
@@ -526,6 +550,48 @@ const classPaths: Record<
       passive: "O primeiro controle aplicado em combate tem chance aumentada.",
     },
   ],
+  alquimista: [
+    {
+      key: "mestre-transmutador",
+      name: "Mestre Transmutador",
+      description: "Converte estados e proteções em reações ofensivas encadeadas.",
+      passive: "Usar três categorias diferentes de operação concede 1 Catalisador adicional.",
+    },
+    {
+      key: "cirurgiao-quimico",
+      name: "Cirurgião Químico",
+      description: "Combina cura, mutações temporárias e proteção adaptativa.",
+      passive: "Curar ou conceder escudo a um alvo ferido prolonga o efeito em uma rodada.",
+    },
+  ],
+  ninja: [
+    {
+      key: "shinobi",
+      name: "Shinobi",
+      description: "Especialista em deslocamento, marcação e execução silenciosa.",
+      passive: "Mover-se antes de atacar aumenta em 1 o limite de Selos gerados na rodada.",
+    },
+    {
+      key: "mestre-dos-selos",
+      name: "Mestre dos Selos",
+      description: "Controla o campo preparando sequências de selos e restrições.",
+      passive: "Aplicar controle em um alvo marcado devolve 1 Selo, uma vez por rodada.",
+    },
+  ],
+  necromante: [
+    {
+      key: "senhor-dos-mortos",
+      name: "Senhor dos Mortos",
+      description: "Mantém lacaios, muralhas de ossos e pressão constante.",
+      passive: "A primeira invocação que expira em cada rodada gera 1 Alma adicional.",
+    },
+    {
+      key: "pastor-do-veu",
+      name: "Pastor do Véu",
+      description: "Sacrifica almas para curar, amaldiçoar e controlar inimigos.",
+      passive: "Consumir a última Alma disponível concede escudo de 0,5x ARC.",
+    },
+  ],
 };
 
 function buildPathSkill(
@@ -715,7 +781,12 @@ function buildSkill(seed: SkillSeed, resourceName: string) {
         chance: seed.chance ?? 100,
         stacks: seed.stacks ?? 0,
         maxStacks: seed.maxStacks ?? 0,
-        distance: seed.operation === "PUSH" || seed.operation === "MOVE" ? 2 : 0,
+        distance:
+          seed.operation === "TELEPORT"
+            ? seed.range
+            : seed.operation === "PUSH" || seed.operation === "MOVE"
+              ? 2
+              : 0,
         modifiers: seed.modifiers ?? [],
       },
     ],
@@ -2132,6 +2203,111 @@ const classes: ClassSeed[] = [
         chance: 90,
         description: "Inimigos na área têm 90% de chance de ficar atordoados por 1 rodada.",
       },
+    ],
+  },
+  {
+    name: "Alquimista",
+    slug: "alquimista",
+    difficulty: 5,
+    specialization: "Transmutação, preparação e reações em cadeia",
+    primary: ["INT", "ARC", "RES"],
+    description: "Especialista técnico que alterna fórmulas para transformar o estado do combate.",
+    resource: {
+      name: "Catalisadores",
+      initial: 2,
+      maximum: 8,
+      generation: "Ganha 1 Catalisador ao usar uma categoria de operação diferente da ação anterior, limitado a 2 por rodada.",
+      consumption: "Fórmulas consomem Catalisadores após a validação do alvo; repetir categoria não gera recurso.",
+    },
+    passive: {
+      key: "lei-da-equivalencia",
+      name: "Lei da Equivalência",
+      level: 1,
+      type: "Passiva",
+      category: "Reação",
+      kind: "utility",
+      target: "self",
+      cost: 0,
+      cooldown: 0,
+      range: 0,
+      operation: "REACTION",
+      description: "Alternar entre dano, escudo, cura e debuff gera 1 Catalisador, limitado a 2 por rodada.",
+    },
+    skills: [
+      { key: "frasco-catalitico", name: "Frasco Catalítico", level: 1, category: "Dano", kind: "damage", damageType: "magic", target: "enemy", cost: 1, cooldown: 1, range: 4, attribute: "INT", multiplier: 1.15, operation: "DAMAGE", status: "preparado", description: "Causa 1,15x INT de dano mágico e deixa o alvo Preparado para a próxima fórmula." },
+      { key: "transmutacao-defensiva", name: "Transmutação Defensiva", level: 10, category: "Escudo", kind: "shield", target: "self", cost: 2, cooldown: 3, range: 0, duration: 2, attribute: "RES", multiplier: 1.4, operation: "SHIELD", description: "Converte 2 Catalisadores em escudo de 1,4x RES por 2 rodadas." },
+      { key: "solvente-universal", name: "Solvente Universal", level: 25, category: "Debuff", kind: "utility", target: "enemy", cost: 3, cooldown: 4, range: 4, duration: 2, operation: "DEBUFF", status: "armadura-dissolvida", modifiers: [{ attribute: "DEF", value: -15 }, { attribute: "RES", value: -15 }], description: "Reduz DEF e RES do alvo em 15 por 2 rodadas; em alvo Preparado, remove também um escudo." },
+      { key: "grande-obra", name: "Grande Obra", level: 50, category: "Transformação", kind: "utility", target: "self", cost: 8, cooldown: 8, range: 0, duration: 3, operation: "APPLY_STATUS", status: "pedra-filosofal", description: "Ativa a Pedra Filosofal por 3 rodadas; a primeira fórmula de cada categoria não consome Catalisadores." },
+    ],
+  },
+  {
+    name: "Ninja",
+    slug: "ninja",
+    difficulty: 5,
+    specialization: "Selos, mobilidade e execução",
+    primary: ["INI", "FOR"],
+    description: "Combatente móvel que prepara marcas e sequências antes de executar o alvo.",
+    resource: {
+      name: "Selos",
+      initial: 1,
+      maximum: 6,
+      generation: "Ganha 1 Selo ao mover antes de uma habilidade e 1 ao atingir um alvo marcado, limitado a 2 por rodada.",
+      consumption: "Técnicas consomem Selos depois do deslocamento e da validação da Marca Shinobi.",
+    },
+    passive: {
+      key: "sequencia-de-selos",
+      name: "Sequência de Selos",
+      level: 1,
+      type: "Passiva",
+      category: "Reação",
+      kind: "utility",
+      target: "self",
+      cost: 0,
+      cooldown: 0,
+      range: 0,
+      operation: "REACTION",
+      description: "Mover antes de uma técnica ou atingir um alvo marcado gera Selos, até 2 por rodada.",
+    },
+    skills: [
+      { key: "shuriken-marcada", name: "Shuriken Marcada", level: 1, category: "Dano", kind: "damage", damageType: "physical", target: "enemy", cost: 1, cooldown: 1, range: 5, attribute: "INI", multiplier: 1.1, operation: "DAMAGE", status: "marca-shinobi", description: "Causa 1,1x INI de dano físico e aplica Marca Shinobi." },
+      { key: "passo-sem-sombra", name: "Passo sem Sombra", level: 10, category: "Mobilidade", kind: "utility", target: "self", cost: 2, cooldown: 2, range: 4, operation: "TELEPORT", description: "Teleporta até 4 casas em direção ao alvo, ignorando unidades intermediárias." },
+      { key: "prisao-de-sombras", name: "Prisão de Sombras", level: 25, category: "Controle", kind: "utility", target: "enemy", cost: 3, cooldown: 5, range: 4, duration: 2, operation: "ROOT", status: "preso-pela-sombra", description: "Enraíza por 2 rodadas; contra um alvo marcado, também aplica Silêncio na primeira rodada." },
+      { key: "execucao-dos-seis-selos", name: "Execução dos Seis Selos", level: 50, category: "Dano", kind: "damage", damageType: "true", target: "enemy", cost: 6, cooldown: 9, range: 1, attribute: "INI", multiplier: 2.4, operation: "DAMAGE", condition: "O alvo deve possuir Marca Shinobi.", description: "Consome 6 Selos para causar 2,4x INI de dano verdadeiro a um alvo marcado adjacente." },
+    ],
+  },
+  {
+    name: "Necromante",
+    slug: "necromante",
+    difficulty: 5,
+    specialization: "Invocações, sacrifícios e controle do Véu",
+    primary: ["ARC", "INT", "RES"],
+    description: "Conjurador complexo que administra Almas, lacaios e sacrifícios para dominar confrontos longos.",
+    resource: {
+      name: "Almas",
+      initial: 1,
+      maximum: 8,
+      generation: "Ganha 1 Alma quando uma invocação expira ou uma unidade perde ao menos 20% do HP máximo em uma ação.",
+      consumption: "Rituais consomem Almas e resolvem sacrifícios da invocação mais antiga primeiro.",
+    },
+    passive: {
+      key: "colheita-do-veu",
+      name: "Colheita do Véu",
+      level: 1,
+      type: "Passiva",
+      category: "Reação",
+      kind: "utility",
+      target: "self",
+      cost: 0,
+      cooldown: 0,
+      range: 0,
+      operation: "REACTION",
+      description: "A expiração de uma invocação ou uma perda elevada de HP gera 1 Alma, uma vez por ação.",
+    },
+    skills: [
+      { key: "seta-necrotica", name: "Seta Necrótica", level: 1, category: "Dano", kind: "damage", damageType: "magic", target: "enemy", cost: 1, cooldown: 1, range: 5, duration: 2, attribute: "ARC", multiplier: 1.15, operation: "DAMAGE", status: "decomposicao", description: "Causa 1,15x ARC de dano mágico e aplica Decomposição por 2 rodadas." },
+      { key: "servo-descarnado", name: "Servo Descarnado", level: 10, category: "Invocação", kind: "utility", target: "self", cost: 2, cooldown: 3, range: 1, duration: 3, operation: "SUMMON", status: "servo-descarnado", description: "Invoca um servo por 3 rodadas; ele intercepta o primeiro ataque recebido em cada rodada." },
+      { key: "muralha-de-ossos", name: "Muralha de Ossos", level: 25, category: "Escudo", kind: "shield", target: "self", cost: 4, cooldown: 5, range: 0, duration: 2, attribute: "ARC", multiplier: 1.6, operation: "SHIELD", description: "Concede escudo de 1,6x ARC; cada invocação ativa amplia a duração em 1, até 4 rodadas." },
+      { key: "procissao-do-rei-morto", name: "Procissão do Rei Morto", level: 50, category: "Invocação", kind: "utility", target: "self", cost: 8, cooldown: 10, range: 1, duration: 4, operation: "SUMMON", status: "procissao-profana", description: "Consome 8 Almas e convoca uma procissão por 4 rodadas, alternando dano em área, medo e escudo." },
     ],
   },
 ];

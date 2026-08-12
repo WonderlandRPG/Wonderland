@@ -5,11 +5,11 @@ import { officialClasses } from "@/lib/game/official-classes";
 import { classPayloadSchema } from "@/lib/game/schemas";
 
 describe("catálogo oficial de classes", () => {
-  it("contém as 14 classes do novo roster estruturado", () => {
-    expect(officialClasses).toHaveLength(14);
-    expect(new Set(officialClasses.map((entry) => entry.slug)).size).toBe(14);
+  it("contém as 17 classes do novo roster estruturado", () => {
+    expect(officialClasses).toHaveLength(17);
+    expect(new Set(officialClasses.map((entry) => entry.slug)).size).toBe(17);
     expect(officialClasses.reduce((sum, entry) => sum + entry.payload.progression.length, 0)).toBe(
-      70,
+      85,
     );
     expect(officialClasses.every((entry) => entry.payload.engineContractVersion === 1)).toBe(true);
   });
@@ -22,9 +22,9 @@ describe("catálogo oficial de classes", () => {
 
   it("concede duas técnicas estruturadas por Caminho", () => {
     const paths = officialClasses.flatMap((entry) => entry.payload.paths);
-    expect(paths).toHaveLength(28);
+    expect(paths).toHaveLength(34);
     expect(paths.every((path) => path.skills.length === 2)).toBe(true);
-    expect(paths.flatMap((path) => path.skills)).toHaveLength(56);
+    expect(paths.flatMap((path) => path.skills)).toHaveLength(68);
     const barbarian = officialClasses.find((entry) => entry.slug === "barbaro")!;
     expect(getUnlockedPathSkills(barbarian.payload, "berserker", 14)).toHaveLength(0);
     expect(getUnlockedPathSkills(barbarian.payload, "berserker", 15)).toHaveLength(1);

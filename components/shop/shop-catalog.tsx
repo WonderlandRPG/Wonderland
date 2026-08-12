@@ -36,6 +36,28 @@ const normalize = (value: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
+function ItemEffects({
+  effects,
+  compact = false,
+}: {
+  effects: ShopCatalogItem["effects"];
+  compact?: boolean;
+}) {
+  if (!effects.length) return null;
+
+  return (
+    <div className={compact ? "classic-item-card__effects" : "shop-item-effects"}>
+      {effects.map((effect) => (
+        <article key={effect.key}>
+          <small>{compact ? "PASSIVA" : "PASSIVA DO ITEM"}</small>
+          <strong>{effect.name}</strong>
+          {!compact ? <p>{effect.description}</p> : null}
+        </article>
+      ))}
+    </div>
+  );
+}
+
 export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: number }) {
   const [search, setSearch] = useState("");
   const [rarity, setRarity] = useState("");
@@ -57,9 +79,9 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
         .filter(
           (item) =>
             (!search ||
-              normalize(`${item.name} ${item.category} ${item.description}`).includes(
-                normalize(search),
-              )) &&
+              normalize(
+                `${item.name} ${item.category} ${item.description} ${item.effects.map((effect) => `${effect.name} ${effect.description}`).join(" ")}`,
+              ).includes(normalize(search))) &&
             (!rarity || item.rarity === rarity) &&
             (!slot || item.slot === slot),
         )
@@ -200,6 +222,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                             </b>
                           ))}
                       </div>
+                      <ItemEffects effects={item.effects} compact />
                     </div>
                   </button>
                   <footer>
@@ -274,13 +297,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                   </div>
                 ))}
               </dl>
-              {selected.effects.map((effect) => (
-                <article key={effect.key}>
-                  <small>EFEITO ESPECIAL</small>
-                  <strong>{effect.name}</strong>
-                  <p>{effect.description}</p>
-                </article>
-              ))}
+              <ItemEffects effects={selected.effects} />
               <footer>
                 <div>
                   <small>Valor do equipamento</small>

@@ -19,16 +19,38 @@ export default async function UpdatesPage() {
       description="Todas as mudanças importantes, explicadas para quem vive a aventura."
     >
       <div className="update-list">
-        {updates.map((update) => (
-          <article key={update.version}>
+        {updates.slice(0, 1).map((update) => (
+          <article className="update-featured" key={update.version}>
             <header>
-              <span>v{update.version}</span>
+              <span>Mais recente · v{update.version}</span>
               <time>{date.format(new Date(`${update.published_on}T00:00:00Z`))}</time>
             </header>
             <h2>{update.title}</h2>
             <UpdateBlocks blocks={update.notes} />
           </article>
         ))}
+        {updates.length > 1 ? (
+          <section className="update-archive">
+            <header>
+              <span className="eyebrow">Versões anteriores</span>
+              <h2>Arquivo de atualizações</h2>
+              <p>Clique em uma versão para abrir todas as notas.</p>
+            </header>
+            {updates.slice(1).map((update) => (
+              <details className="update-archive__entry" key={update.version}>
+                <summary>
+                  <span>v{update.version}</span>
+                  <strong>{update.title}</strong>
+                  <time>{date.format(new Date(`${update.published_on}T00:00:00Z`))}</time>
+                  <i aria-hidden="true">＋</i>
+                </summary>
+                <div>
+                  <UpdateBlocks blocks={update.notes} />
+                </div>
+              </details>
+            ))}
+          </section>
+        ) : null}
       </div>
     </PortalShell>
   );

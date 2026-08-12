@@ -10,6 +10,11 @@ const finiteNumberSchema = z.number().finite();
 const nonNegativeNumberSchema = finiteNumberSchema.min(0);
 const requiredTextSchema = z.string().trim().min(1);
 const nonNegativeIntegerSchema = z.number().int().min(0);
+const imageSourceSchema = z.union([
+  z.literal(""),
+  z.url(),
+  z.string().regex(/^\/images\/[a-z0-9/_-]+\.(?:avif|gif|jpe?g|png|webp)$/i),
+]);
 
 export const attributesSchema = z.object({
   FOR: finiteNumberSchema,
@@ -65,7 +70,7 @@ export const racePayloadSchema = z
     specialization: requiredTextSchema.default("Versátil"),
     tags: z.array(z.string().trim().min(1).regex(/^[A-Z0-9_]+$/)).default(["HUMANOIDE"]),
     description: requiredTextSchema,
-    imageUrl: z.union([z.literal(""), z.url()]).default(""),
+    imageUrl: imageSourceSchema.default(""),
     difficulty: z.number().int().min(1).max(5),
     baseHp: nonNegativeIntegerSchema,
     baseMana: nonNegativeIntegerSchema,
@@ -225,7 +230,7 @@ export const classPathSchema = z.object({
 export const classPayloadSchema = z.object({
   engineContractVersion: z.literal(1),
   description: requiredTextSchema,
-  imageUrl: z.union([z.literal(""), z.url()]).default(""),
+  imageUrl: imageSourceSchema.default(""),
   difficulty: z.number().int().min(1).max(5),
   complexity: requiredTextSchema,
   specialization: requiredTextSchema,

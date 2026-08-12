@@ -10,6 +10,8 @@ import {
   restoreRaceAction,
 } from "@/app/admin/racas/actions";
 import { RacePreview } from "@/components/admin/race-preview";
+import { StructuredSkillEditor } from "@/components/admin/structured-skill-editor";
+import type { ClassSkill } from "@/lib/game/classes";
 import { initialRaceActionState, type RaceEditorValue } from "@/lib/game/race-forms";
 import {
   attributeLabels,
@@ -17,10 +19,8 @@ import {
   getRaceBonusTotal,
   maximumRaceBonusPoints,
   type RaceMechanic,
-  type RaceProgressionEntry,
-  type RaceTrait,
 } from "@/lib/game/races";
-import { attributeKeys } from "@/lib/game/schemas";
+import { attributeKeys, classSkillSchema } from "@/lib/game/schemas";
 
 const statusLabels = {
   draft: "Rascunho",
@@ -57,15 +57,6 @@ export function RaceEditor({
     if (!slugTouched) setSlug(createRaceSlug(value));
   }
 
-  function updateTrait(index: number, field: keyof RaceTrait, value: string | number) {
-    setPayload((current) => ({
-      ...current,
-      traits: current.traits.map((trait, traitIndex) =>
-        traitIndex === index ? { ...trait, [field]: value } : trait,
-      ),
-    }));
-  }
-
   function updateMechanic(index: number, field: keyof RaceMechanic, value: string) {
     setPayload((current) => ({
       ...current,
@@ -75,18 +66,10 @@ export function RaceEditor({
     }));
   }
 
-  function updateProgression(
-    index: number,
-    field: keyof RaceProgressionEntry,
-    value: string | number,
-  ) {
-    setPayload((current) => ({
-      ...current,
-      progression: current.progression.map((entry, entryIndex) =>
-        entryIndex === index ? { ...entry, [field]: value } : entry,
-      ),
-    }));
-  }
+  const structuredAbilities = classSkillSchema.array().safeParse(payload.abilitiesV2);
+  const abilities: ClassSkill[] = structuredAbilities.success ? structuredAbilities.data : [];
+  const structuredTraits = classSkillSchema.array().safeParse(payload.traitsV2);
+  const traits: ClassSkill[] = structuredTraits.success ? structuredTraits.data : [];
 
   const publishedSave = initialValue.status === "published";
   const saveLabel = publishedSave
@@ -389,128 +372,57 @@ export function RaceEditor({
         </EditorSection>
 
         <EditorSection
-          action={
-            <button
-              className="admin-add-button"
-              onClick={() =>
-                setPayload((current) => ({
-                  ...current,
-                  traits: [...current.traits, { name: "", description: "" }],
-                }))
-              }
-              type="button"
-            >
-              ＋ Adicionar passiva
-            </button>
-          }
-          description="Características passivas e permanentes da raça."
+          description="Passivas permanentes com condições e operações legíveis pelo motor."
           index="04"
-          title="Traços raciais"
+          title="Passivas raciais estruturadas"
         >
-          <DynamicCollection empty="Nenhuma passiva adicionada.">
-            {payload.traits.map((trait, index) => (
-              <DynamicCard
-                index={index}
-                key={`trait-${index}`}
-                label="Passiva"
-                onRemove={() =>
-                  setPayload((current) => ({
-                    ...current,
-                    traits: current.traits.filter((_, traitIndex) => traitIndex !== index),
-                  }))
-                }
-              >
-                <EditorField label="Nome da passiva">
-                  <input
-                    onChange={(event) => updateTrait(index, "name", event.target.value)}
-                    placeholder="Ex.: Luz Celestial"
-                    required
-                    value={trait.name}
-                  />
-                </EditorField>
-                <EditorField label="Descrição">
-                  <textarea
-                    onChange={(event) => updateTrait(index, "description", event.target.value)}
-                    placeholder="Explique exatamente como a passiva funciona..."
-                    required
-                    rows={6}
-                    value={trait.description}
-                  />
-                </EditorField>
-              </DynamicCard>
-            ))}
-          </DynamicCollection>
+          {!structuredTraits.success && payload.traitsV2.length > 0 ? (
+            <div className="admin-notice admin-notice--error">
+              As passivas antigas precisam ser recriadas no contrato estruturado.
+            </div>
+          ) : null}
+          <StructuredSkillEditor
+            skills={traits}
+            title="Passiva racial"
+            onChange={(next) =>
+              setPayload((current) => ({
+                ...current,
+                traitsV2: next,
+                traits: next.map((skill) => ({
+                  name: skill.name,
+                  description: skill.playerDescription,
+                })),
+              }))
+            }
+          />
         </EditorSection>
 
         <EditorSection
-          action={
-            <button
-              className="admin-add-button"
-              onClick={() =>
-                setPayload((current) => ({
-                  ...current,
-                  progression: [...current.progression, { level: 1, title: "", description: "" }],
-                }))
-              }
-              type="button"
-            >
-              ＋ Adicionar habilidade
-            </button>
-          }
-          description="Habilidades raciais desbloqueadas conforme o personagem alcança novos níveis."
+          description="Habilidades raciais no contrato universal da Arena e das futuras dungeons."
           index="05"
-          title="Progressão racial"
+          title="Habilidades estruturadas"
         >
-          <DynamicCollection empty="Nenhuma habilidade de progressão adicionada.">
-            {payload.progression.map((entry, index) => (
-              <DynamicCard
-                index={index}
-                key={`progression-${index}`}
-                label="Habilidade"
-                onRemove={() =>
-                  setPayload((current) => ({
-                    ...current,
-                    progression: current.progression.filter(
-                      (_, entryIndex) => entryIndex !== index,
-                    ),
-                  }))
-                }
-              >
-                <div className="race-form-grid race-form-grid--level">
-                  <EditorField label="Nome da habilidade">
-                    <input
-                      onChange={(event) => updateProgression(index, "title", event.target.value)}
-                      placeholder="Ex.: Toque da Alvorada"
-                      required
-                      value={entry.title}
-                    />
-                  </EditorField>
-                  <EditorField label="Nível">
-                    <input
-                      min={1}
-                      onChange={(event) =>
-                        updateProgression(index, "level", Number(event.target.value))
-                      }
-                      required
-                      type="number"
-                      value={entry.level}
-                    />
-                  </EditorField>
-                </div>
-                <EditorField label="Descrição">
-                  <textarea
-                    onChange={(event) =>
-                      updateProgression(index, "description", event.target.value)
-                    }
-                    placeholder="Efeito, custo, recarga, duração, alcance e regras da habilidade..."
-                    required
-                    rows={8}
-                    value={entry.description}
-                  />
-                </EditorField>
-              </DynamicCard>
-            ))}
-          </DynamicCollection>
+          {!structuredAbilities.success && payload.abilitiesV2.length > 0 ? (
+            <div className="admin-notice admin-notice--error" role="alert">
+              As habilidades desta raça usam um formato antigo inválido. Recrie-as abaixo antes de
+              salvar.
+            </div>
+          ) : null}
+          <StructuredSkillEditor
+            skills={abilities}
+            title="Habilidade racial"
+            onChange={(next) =>
+              setPayload((current) => ({
+                ...current,
+                abilitiesV2: next,
+                progression: next.map((skill) => ({
+                  level: skill.level,
+                  title: skill.name,
+                  description: skill.playerDescription,
+                })),
+              }))
+            }
+          />
         </EditorSection>
 
         <footer className="race-editor-submit">

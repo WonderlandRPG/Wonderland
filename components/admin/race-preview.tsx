@@ -41,8 +41,8 @@ export function RacePreview({
             <strong>{payload.baseHp}</strong>
           </div>
           <div>
-            <span>Mana inicial</span>
-            <strong>{payload.baseMana}</strong>
+            <span>Recurso racial</span>
+            <strong>{payload.resource?.name ?? "Nenhum"}</strong>
           </div>
           <div>
             <span>Bônus racial</span>

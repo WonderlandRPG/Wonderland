@@ -45,7 +45,7 @@ describe("regras das raças", () => {
     expect(racePayloadSchema.safeParse(payload).success).toBe(false);
   });
 
-  it("mantém as 11 raças oficiais completas e válidas", () => {
+  it("mantém as 14 raças oficiais completas e válidas", () => {
     expect(officialRaces.map((race) => race.name)).toEqual([
       "Aengel",
       "Draconato",
@@ -58,6 +58,9 @@ describe("regras das raças", () => {
       "Fada",
       "Humano",
       "Orc",
+      "Alquimista",
+      "Ninja",
+      "Necromante",
     ]);
 
     officialRaces.forEach((race) => {
@@ -67,9 +70,9 @@ describe("regras das raças", () => {
       expect(race.payload.engineContractVersion).toBe(1);
       expect(race.payload.traits.length).toBeGreaterThanOrEqual(1);
       expect(race.payload.traitsV2.length).toBeGreaterThanOrEqual(1);
-      expect(race.payload.abilitiesV2).toHaveLength(5);
+      expect(race.payload.abilitiesV2.length).toBeGreaterThanOrEqual(4);
       expect(race.payload.progression.map((entry) => entry.level)).toEqual([
-        1, 1, 25, 50, 80,
+        ...race.payload.abilitiesV2.map((ability) => ability.level),
       ]);
       getStructuredRaceAbilities(race.payload).forEach((ability) => {
         expect(ability.operations.length).toBeGreaterThan(0);

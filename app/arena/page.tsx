@@ -82,9 +82,7 @@ export default async function ArenaPage({
       baseMana: character.race.payload.baseMana,
       classResource: character.characterClass.payload.resource,
       raceResource: character.race.payload.resource,
-      usesMana: [...character.unlockedClassSkills, ...character.unlockedRaceAbilities].some(
-        (skill) => skill.resource === "mana",
-      ),
+      usesMana: false,
       basicAttackRange: getBasicAttackRange(character.inventory),
       attributes: character.stats.attributes,
       skills: character.unlockedClassSkills

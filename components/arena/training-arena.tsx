@@ -106,6 +106,18 @@ function stepToward(from: Position, target: Position, maximum: number) {
   return next;
 }
 
+function stepAway(from: Position, source: Position, maximum: number) {
+  const next = { ...from };
+  for (let step = 0; step < maximum; step += 1) {
+    const dx = next.x - source.x;
+    const dy = next.y - source.y;
+    if (Math.abs(dx) >= Math.abs(dy))
+      next.x = Math.max(0, Math.min(tacticalGrid.width - 1, next.x + (dx >= 0 ? 1 : -1)));
+    else next.y = Math.max(0, Math.min(tacticalGrid.height - 1, next.y + (dy >= 0 ? 1 : -1)));
+  }
+  return next;
+}
+
 export function TrainingArena({
   characters,
   initialCharacterId,
@@ -245,7 +257,13 @@ function Battle({
       });
     } else if (action === "basic") {
       visualSequence.current += 1;
-      setVisual({ id: visualSequence.current, kind: "attack", amount: 0, target: "enemy", source: "player" });
+      setVisual({
+        id: visualSequence.current,
+        kind: "attack",
+        amount: 0,
+        target: "enemy",
+        source: "player",
+      });
     }
     if (nextEnemy.hp <= 0) {
       setMessage(`${text} Vitória!`);
@@ -342,6 +360,7 @@ function Battle({
       setMessage(result.event.message);
       return;
     }
+    applySkillMovement(skill);
     applyPlayerAction(result.actor, result.target, result.event.message, "class", result.event);
   }
 
@@ -353,7 +372,21 @@ function Battle({
     }
     const result = resolveRaceAbility(player, enemy, ability, rules);
     if (result.event.kind === "error") return setMessage(result.event.message);
+    applySkillMovement(ability);
     applyPlayerAction(result.actor, result.target, result.event.message, "race", result.event);
+  }
+
+  function applySkillMovement(skill: ClassSkill) {
+    for (const operation of skill.operations) {
+      const distance = operation.distance || skill.range || 0;
+      if (distance <= 0) continue;
+      if (operation.operation === "MOVE" || operation.operation === "TELEPORT") {
+        setPlayerPosition(stepToward(playerPosition, enemyPosition, distance));
+      }
+      if (operation.operation === "PUSH") {
+        setEnemyPosition(stepAway(enemyPosition, playerPosition, distance));
+      }
+    }
   }
 
   function handleItem(item: ArenaCharacter["items"][number]) {
@@ -392,7 +425,13 @@ function Battle({
     setMoving(false);
     setMessage(`${character.name} assumiu postura defensiva e bloqueará o próximo dano.`);
     visualSequence.current += 1;
-    setVisual({ id: visualSequence.current, kind: "shield", amount: 0, target: "player", source: "player" });
+    setVisual({
+      id: visualSequence.current,
+      kind: "shield",
+      amount: 0,
+      target: "player",
+      source: "player",
+    });
   }
 
   return (
@@ -612,7 +651,7 @@ function Battle({
                   <small>
                     {cooldown
                       ? `Recarga: ${cooldown} rodada(s)`
-                      : `${meta.cost} ${ability.resource === "special" ? player.raceResourceName : "Mana"} · Recarga ${meta.cooldown}`}
+                      : `${meta.cost} ${player.raceResourceName} · Recarga ${meta.cooldown}`}
                   </small>
                 </button>
               );
@@ -628,7 +667,7 @@ function Battle({
             </header>
             {character.skills.map((skill) => {
               const cooldown = player.cooldowns[skill.key] ?? 0;
-              const cannotPay = skill.resource === "mana" && player.mana < skill.cost;
+              const cannotPay = false;
               const cannotPayClassResource =
                 skill.resource === "special" &&
                 (skill.resourceKey === "race" ? player.raceResource : player.classResource) <
@@ -657,7 +696,7 @@ function Battle({
                   <small>
                     {cooldown
                       ? `Recarga: ${cooldown}`
-                      : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "special" ? (skill.resourceKey === "race" ? player.raceResourceName : player.classResourceName) : "HP"} · Recarga ${skill.cooldown}`}
+                      : `${skill.cost} ${skill.resource === "special" ? (skill.resourceKey === "race" ? player.raceResourceName : player.classResourceName) : skill.resource === "life" ? "HP" : "Sem custo"} · Recarga ${skill.cooldown}`}
                   </small>
                 </button>
               );
@@ -768,8 +807,18 @@ function Fighter({
         <span>{side === "player" ? "JOGADOR" : "OPONENTE"}</span>
         <EquippedTitle title={title} />
         {visual ? (
-          <span className={`arena-combat-float is-${visual.kind}`} key={visual.id} aria-live="polite">
-            {visual.kind === "damage" ? `−${visual.amount}` : visual.kind === "heal" ? `+${visual.amount}` : visual.kind === "shield" ? "ESCUDO" : "ATAQUE"}
+          <span
+            className={`arena-combat-float is-${visual.kind}`}
+            key={visual.id}
+            aria-live="polite"
+          >
+            {visual.kind === "damage"
+              ? `−${visual.amount}`
+              : visual.kind === "heal"
+                ? `+${visual.amount}`
+                : visual.kind === "shield"
+                  ? "ESCUDO"
+                  : "ATAQUE"}
           </span>
         ) : null}
       </div>
@@ -783,17 +832,6 @@ function Fighter({
           </strong>
         </p>
         <progress className="is-hp" max={combatant.maxHp} value={combatant.hp} />
-        {combatant.maxMana > 0 ? (
-          <>
-            <p>
-              Mana{" "}
-              <strong>
-                {combatant.mana}/{combatant.maxMana}
-              </strong>
-            </p>
-            <progress className="is-mana" max={combatant.maxMana} value={combatant.mana} />
-          </>
-        ) : null}
         {combatant.maxClassResource > 0 ? (
           <>
             <p>
@@ -832,7 +870,17 @@ function Fighter({
               key={key}
               title={status.name}
             >
-              <b aria-hidden="true">{status.beneficial ? "✦" : /venen/i.test(status.name) ? "☠" : /sang/i.test(status.name) ? "✚" : /congel|gelo/i.test(status.name) ? "❄" : "▼"}</b>
+              <b aria-hidden="true">
+                {status.beneficial
+                  ? "✦"
+                  : /venen/i.test(status.name)
+                    ? "☠"
+                    : /sang/i.test(status.name)
+                      ? "✚"
+                      : /congel|gelo/i.test(status.name)
+                        ? "❄"
+                        : "▼"}
+              </b>
               <small>{status.name}</small>
               <i>{status.duration}</i>
             </span>

@@ -77,8 +77,12 @@ export function StructuredSkillEditor({
         </div>
       ) : null}
       {skills.map((skill, index) => (
-        <article className="structured-skill" key={`${skill.key}-${index}`}>
-          <header>
+        <details
+          className="structured-skill"
+          key={`${skill.key}-${index}`}
+          open={skills.length === 1}
+        >
+          <summary>
             <div>
               <span>
                 {title} {String(index + 1).padStart(2, "0")}
@@ -87,11 +91,14 @@ export function StructuredSkillEditor({
             </div>
             <button
               type="button"
-              onClick={() => onChange(skills.filter((_, current) => current !== index))}
+              onClick={(event) => {
+                event.preventDefault();
+                onChange(skills.filter((_, current) => current !== index));
+              }}
             >
               Remover
             </button>
-          </header>
+          </summary>
           <div className="structured-skill__group">
             <h3>Identidade e desbloqueio</h3>
             <div className="structured-skill__grid structured-skill__grid--4">
@@ -192,7 +199,6 @@ export function StructuredSkillEditor({
                     update(index, { resource: e.target.value as ClassSkill["resource"] })
                   }
                 >
-                  <option value="mana">Mana</option>
                   <option value="life">Vida</option>
                   <option value="special">Recurso especial</option>
                   <option value="none">Sem custo</option>
@@ -454,7 +460,7 @@ export function StructuredSkillEditor({
               />
             </Field>
           </div>
-        </article>
+        </details>
       ))}
     </div>
   );

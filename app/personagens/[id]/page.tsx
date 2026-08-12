@@ -64,9 +64,6 @@ export default async function CharacterSheetPage({
   const futurePathSkills = (classPath?.skills ?? []).filter(
     (skill) => skill.level > character.level,
   );
-  const usesMana = [...character.unlockedClassSkills, ...character.unlockedRaceAbilities].some(
-    (skill) => skill.resource === "mana",
-  );
   const classResourceBonus = getConvertedResourceBonus(
     character.stats.attributes.INT,
     character.characterClass.payload.resource.maximum,
@@ -203,12 +200,8 @@ export default async function CharacterSheetPage({
                 <strong>{character.stats.maxHp}</strong>
               </article>
               <article>
-                <span>{usesMana ? "Mana máxima" : "Recursos iniciais"}</span>
-                <strong>
-                  {usesMana
-                    ? character.stats.maxMana
-                    : `+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}
-                </strong>
+                <span>Recursos iniciais</span>
+                <strong>{`+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}</strong>
               </article>
               <article>
                 <span>Iniciativa</span>

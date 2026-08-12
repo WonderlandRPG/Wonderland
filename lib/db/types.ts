@@ -167,6 +167,40 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_pvp_queue"]["Insert"]>;
         Relationships: [];
       };
+      v2_pvp_matches: {
+        Row: {
+          id: string;
+          player_one_user_id: string;
+          player_one_character_id: string;
+          player_two_user_id: string;
+          player_two_character_id: string;
+          rank: string;
+          state: Json | null;
+          version: number;
+          status: string;
+          winner_character_id: string | null;
+          created_at: string;
+          updated_at: string;
+          finished_at: string | null;
+        };
+        Insert: {
+          id: string;
+          player_one_user_id: string;
+          player_one_character_id: string;
+          player_two_user_id: string;
+          player_two_character_id: string;
+          rank: string;
+          state?: Json | null;
+          version?: number;
+          status?: string;
+          winner_character_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          finished_at?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_pvp_matches"]["Insert"]>;
+        Relationships: [];
+      };
       v2_active_characters: {
         Row: { user_id: string; character_id: string; selected_at: string };
         Insert: { user_id: string; character_id: string; selected_at?: string };
@@ -451,6 +485,12 @@ export interface Database {
       v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };
       v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };
       v2_get_pvp_opponent: { Args: { p_match_id: string }; Returns: Json };
+      v2_initialize_pvp_match: { Args: { p_match_id: string; p_state: Json }; Returns: boolean };
+      v2_get_pvp_match_state: { Args: { p_match_id: string }; Returns: Json };
+      v2_update_pvp_match_state: {
+        Args: { p_match_id: string; p_expected_version: number; p_state: Json };
+        Returns: Json;
+      };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
       v2_select_character: { Args: { p_character_id: string }; Returns: undefined };
       v2_character_ranking: {

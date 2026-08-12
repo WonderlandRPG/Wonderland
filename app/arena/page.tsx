@@ -1,18 +1,16 @@
 import { TrainingArena } from "@/components/arena/training-arena";
 import { PlayerNav } from "@/components/player-nav";
-import {
-  getCharacterSheets,
-  getPvpOpponentSheet,
-  type CharacterSheet,
-} from "@/lib/content/characters";
+import { getCharacterSheets, getPvpOpponentSheet } from "@/lib/content/characters";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { defaultCombatRules } from "@/lib/game/combat";
-import { prepareArenaSkill } from "@/lib/game/classes";
 import { PvpLobby } from "@/components/arena/pvp-lobby";
 import { arenaRewards, type ArenaMode } from "@/lib/game/arena";
 import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { getBasicAttackRange } from "@/lib/game/equipment";
+import { toArenaCharacter } from "@/lib/game/arena-character";
+import { createInitialPvpState } from "@/lib/game/pvp-state";
+import { PvpBattle } from "@/components/arena/pvp-battle";
+import type { Json } from "@/lib/db/types";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -61,65 +59,18 @@ export default async function ArenaPage({
     query.partida && !opponent
       ? "A sala foi encontrada, mas não foi possível carregar o adversário. Volte à fila e tente novamente."
       : null;
-  const toArenaCharacter = (character: CharacterSheet) => {
-    const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
-    return {
-      id: character.id,
-      name: character.name,
-      level: character.level,
-      adventureRank: character.adventure_rank,
-      imageUrl: character.image_url ?? "",
-      equippedTitle: equippedTitle
-        ? {
-            name: equippedTitle.name,
-            rarity: equippedTitle.rarity,
-            titleStyle: equippedTitle.titleStyle,
-          }
-        : null,
-      raceName: character.race.name,
-      className: character.characterClass.name,
-      baseHp: character.race.payload.baseHp,
-      baseMana: character.race.payload.baseMana,
-      classResource: character.characterClass.payload.resource,
-      raceResource: character.race.payload.resource,
-      usesMana: false,
-      basicAttackRange: getBasicAttackRange(character.inventory),
-      attributes: character.stats.attributes,
-      skills: character.unlockedClassSkills
-        .filter((skill) => !/passiva/i.test(skill.type))
-        .map(prepareArenaSkill),
-      raceAbilities: character.unlockedRaceAbilities,
-      combatLore: [
-        {
-          name: character.characterClass.payload.passive.name,
-          description: character.characterClass.payload.passive.description,
-        },
-        {
-          name: character.characterClass.payload.mechanic.name,
-          description: character.characterClass.payload.mechanic.description,
-        },
-        ...character.characterClass.payload.paths
-          .filter((path) => path.key === character.class_path_key)
-          .map((path) => ({ name: path.passive.name, description: path.passive.description })),
-        ...character.race.payload.traits,
-        ...character.race.payload.mechanics,
-        ...character.inventory
-          .filter((item) => item.equippedSlot)
-          .flatMap((item) =>
-            item.specialEffects.map((effect) => ({
-              name: effect.name,
-              description: effect.description,
-            })),
-          ),
-      ],
-      equipmentEffects: character.inventory
-        .filter((item) => item.equippedSlot)
-        .flatMap((item) => item.specialEffects),
-      items: character.inventory
-        .filter((item) => /consum|poção|pocao/i.test(item.category))
-        .map((item) => ({ id: item.id, name: item.name, description: item.description })),
-    };
-  };
+  const arenaCharacter = activeCharacter ? toArenaCharacter(activeCharacter) : null;
+  const arenaOpponent = opponent ? toArenaCharacter(opponent) : null;
+  let pvpRoom = null;
+  if (client && mode === "pvp" && query.partida && arenaCharacter && arenaOpponent) {
+    const initialState = createInitialPvpState(arenaCharacter, arenaOpponent, defaultCombatRules);
+    await client.rpc("v2_initialize_pvp_match", {
+      p_match_id: query.partida,
+      p_state: initialState as unknown as Json,
+    });
+    const roomResult = await client.rpc("v2_get_pvp_match_state", { p_match_id: query.partida });
+    pvpRoom = roomResult.data;
+  }
 
   return (
     <main className="arena-page">
@@ -211,21 +162,30 @@ export default async function ArenaPage({
             <Link className="arena-mode-back" href="/arena">
               ← Trocar modo
             </Link>
-            <TrainingArena
-              characters={characters
-                .filter((character) => character.id === characterId)
-                .map(toArenaCharacter)}
-              initialCharacterId={query.personagem}
-              mode={mode}
-              monsterIndex={
-                typeof arenaSessionId === "string"
-                  ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
-                  : 0
-              }
-              sessionId={typeof arenaSessionId === "string" ? arenaSessionId : undefined}
-              opponent={opponent ? toArenaCharacter(opponent) : undefined}
-              rules={defaultCombatRules}
-            />
+            {mode === "pvp" && query.partida && arenaCharacter && arenaOpponent && pvpRoom ? (
+              <PvpBattle
+                matchId={query.partida}
+                initialRoom={pvpRoom}
+                character={arenaCharacter}
+                opponent={arenaOpponent}
+              />
+            ) : (
+              <TrainingArena
+                characters={characters
+                  .filter((character) => character.id === characterId)
+                  .map(toArenaCharacter)}
+                initialCharacterId={query.personagem}
+                mode={mode}
+                monsterIndex={
+                  typeof arenaSessionId === "string"
+                    ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
+                    : 0
+                }
+                sessionId={typeof arenaSessionId === "string" ? arenaSessionId : undefined}
+                opponent={arenaOpponent ?? undefined}
+                rules={defaultCombatRules}
+              />
+            )}
           </>
         ) : null}
       </div>

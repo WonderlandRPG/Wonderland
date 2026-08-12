@@ -10,43 +10,49 @@ const tools = [
     href: "/admin/jogadores",
     index: "01",
     title: "Jogadores",
-    text: "Gerencie contas, cargos e permissões de acesso.",
+    text: "Contas, cargos e acesso administrativo.",
   },
   {
     href: "/admin/personagens",
     index: "02",
     title: "Personagens",
-    text: "Ajuste progressão, WG, Rank, reino e caminho de classe.",
+    text: "XP, WG, rank, reino e caminho de classe.",
   },
   {
     href: "/admin/racas",
     index: "03",
     title: "Conteúdo do jogo",
-    text: "Publique raças, habilidades e regras do mundo.",
+    text: "Raças, habilidades e regras publicadas.",
+  },
+  {
+    href: "/admin/classes",
+    index: "CL",
+    title: "Guia de classes",
+    text: "Formato exigido pela Arena para classes, recursos e habilidades.",
   },
   {
     href: "/admin/itens",
     index: "04",
     title: "Itens e economia",
-    text: "Revise o catálogo, preços, raridades e efeitos.",
+    text: "Catálogo, raridades, preços e efeitos.",
   },
   {
     href: "/admin/balanceamento",
     index: "05",
     title: "Balanceamento",
-    text: "Calibre combate, atributos e ritmo de progressão.",
+    text: "Parâmetros globais do combate e progressão.",
   },
   {
     href: "/admin/presenca",
     index: "06",
     title: "Presença",
-    text: "Configure campanhas e recompensas de acesso diário.",
+    text: "Recompensas diárias por personagem.",
   },
   {
     href: "/admin/historico",
     index: "07",
     title: "Histórico",
-    text: "Consulte quem alterou cada sistema e quando.",
+    text: "Registro de todas as mudanças administrativas.",
   },
 ];
 
@@ -69,8 +75,8 @@ export default async function AdminPage() {
           <span className="eyebrow">Painel administrativo</span>
           <h2>O que você quer administrar hoje?</h2>
           <p>
-            Publique novidades, acompanhe a comunidade e ajuste os sistemas do RPG a partir de um
-            único painel.
+            As ações mais usadas ficam primeiro. Publicações, jogadores e sistemas estão separados
+            por função.
           </p>
         </div>
         <div className="admin-command-welcome__status">

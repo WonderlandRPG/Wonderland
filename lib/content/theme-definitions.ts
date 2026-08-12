@@ -17,6 +17,12 @@ export const themeDefinitions = [
     description: "Pinheiro, rubi, ouro, luzes e neve.",
     icon: "❄",
   },
+  {
+    key: "halloween",
+    label: "Véu das Bruxas",
+    description: "Abóbora, violeta, névoa e luar espectral.",
+    icon: "☾",
+  },
 ] as const;
 
 export type ThemeName = (typeof themeDefinitions)[number]["key"];

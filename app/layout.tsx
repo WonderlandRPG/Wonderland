@@ -5,7 +5,7 @@ import { getCurrentAccount } from "@/lib/auth/account";
 import { getActiveCharacterRank } from "@/lib/content/active-character";
 import { getAdventureRank } from "@/lib/game/ranks";
 import { ThemeControl } from "@/components/theme/theme-control";
-import { getThemeAvailability } from "@/lib/content/themes";
+import { getThemeConfiguration } from "@/lib/content/themes";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 
 import "./globals.css";
@@ -23,15 +23,15 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [account, themeAvailability] = await Promise.all([
+  const [account, themeConfiguration] = await Promise.all([
     getCurrentAccount(),
-    getThemeAvailability(),
+    getThemeConfiguration(),
   ]);
   const activeRank = account ? await getActiveCharacterRank(account.id) : null;
   const rank = activeRank ? getAdventureRank(activeRank) : null;
 
   return (
-    <html data-theme="classic" lang="pt-BR">
+    <html data-theme={themeConfiguration.defaultTheme} lang="pt-BR">
       <body
         data-rank={rank?.key}
         style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}
@@ -45,7 +45,8 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <AudioProvider>
           {children}
           <ThemeControl
-            availability={themeAvailability}
+            availability={themeConfiguration.availability}
+            defaultTheme={themeConfiguration.defaultTheme}
             isAdmin={Boolean(account && isAdministrativeRole(account.role))}
           />
         </AudioProvider>

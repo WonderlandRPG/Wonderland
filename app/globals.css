@@ -7972,6 +7972,8 @@ html[data-theme="accessible"] .sheet-tabs a.is-active {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+.path-quest{display:grid;gap:7px;margin:14px 0;padding:16px;border:1px solid rgba(214,181,107,.25);border-radius:12px;background:linear-gradient(145deg,rgba(214,181,107,.09),rgba(8,15,20,.4))}.path-quest small{color:var(--ui-gold);font-weight:900;letter-spacing:.1em;text-transform:uppercase}.path-quest p,.path-quest ol{margin:0;color:var(--ui-muted);font-size:.75rem;line-height:1.6}.admin-theme-default{grid-column:1/-1;padding:22px;border:1px solid var(--ui-line-gold);border-radius:16px;background:var(--ui-surface)}.admin-theme-default h3,.admin-theme-default p{margin:5px 0}.admin-theme-default-choice{display:flex;align-items:center;gap:8px;color:var(--ui-gold-soft);font-size:.7rem;font-weight:800}.admin-theme-default-choice input{width:18px;height:18px;accent-color:var(--ui-gold)}.admin-theme-card.is-halloween .admin-theme-card__preview{background:radial-gradient(circle at 70% 20%,#a75ee8,transparent 35%),linear-gradient(145deg,#2e123c,#0a050f);color:#f29a38}.path-selection-board .is-locked{opacity:.58;filter:saturate(.45)}
+.character-codex-portrait{display:block;width:100%;height:190px;margin-bottom:16px;border:1px solid var(--ui-line-gold);border-radius:14px;background-position:center 20%;background-size:cover;box-shadow:var(--ui-shadow-small)}
 
 /* Player portal */
 .admin-form {

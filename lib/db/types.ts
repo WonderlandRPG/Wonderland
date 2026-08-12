@@ -489,9 +489,13 @@ export interface Database {
           p_image_url: string;
           p_kingdom: string;
           p_adventure_rank: string;
-          p_class_path_key: string;
+          p_class_path_key: string | null;
         };
         Returns: Database["public"]["Tables"]["v2_characters"]["Row"];
+      };
+      v2_choose_class_path: {
+        Args: { p_character_id: string; p_path_key: string };
+        Returns: undefined;
       };
       v2_admin_grant_reward_command: {
         Args: {

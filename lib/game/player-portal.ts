@@ -49,3 +49,19 @@ export async function getPortalUpdates() {
     notes: parseUpdateBlocks(entry.notes),
   }));
 }
+
+export async function getRecentPortalUpdates(limit = 3) {
+  const client = await createServerSupabaseClient();
+  if (!client) return [];
+  const { data } = await client
+    .from("v2_updates")
+    .select("id, version, title, notes, published_on")
+    .eq("active", true)
+    .order("published_on", { ascending: false })
+    .order("updated_at", { ascending: false })
+    .limit(limit);
+  return (data ?? []).map((entry) => ({
+    ...entry,
+    notes: parseUpdateBlocks(entry.notes),
+  }));
+}

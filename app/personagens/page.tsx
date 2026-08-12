@@ -10,6 +10,7 @@ import { selectCharacterAction } from "./select-actions";
 import { RankBadge } from "@/components/characters/rank-badge";
 import { getAdventureRank } from "@/lib/game/ranks";
 import { EquippedTitle } from "@/components/characters/equipped-title";
+import { getRecentPortalUpdates } from "@/lib/game/player-portal";
 
 export const metadata = { title: "Meus Personagens" };
 export const dynamic = "force-dynamic";
@@ -26,11 +27,12 @@ export default async function CharactersPage({
   searchParams: Promise<{ notice?: string; selecionar?: string; next?: string }>;
 }) {
   const account = await requireCurrentAccount("/personagens");
-  const [characters, rules, query, activeCharacterId] = await Promise.all([
+  const [characters, rules, query, activeCharacterId, recentUpdates] = await Promise.all([
     getCharacterSheets(account.id),
     getCharacterRules(),
     searchParams,
     getActiveCharacterId(account.id),
+    getRecentPortalUpdates(3),
   ]);
   const selecting = query.selecionar === "1" || !activeCharacterId;
   const activeCharacter = characters.find((character) => character.id === activeCharacterId);
@@ -275,6 +277,48 @@ export default async function CharactersPage({
                 <strong>Ver Ranking</strong>
                 <i>→</i>
               </Link>
+            </div>
+          </section>
+        ) : null}
+        {recentUpdates.length > 0 ? (
+          <section className="home-updates" aria-labelledby="home-updates-title">
+            <header>
+              <div>
+                <span className="eyebrow">Diário de Wonderland</span>
+                <h2 id="home-updates-title">Últimas atualizações</h2>
+                <p>Novidades, ajustes e conteúdos que acabaram de chegar ao jogo.</p>
+              </div>
+              <Link href="/atualizacoes">Ver todas as atualizações →</Link>
+            </header>
+            <div className="home-updates__grid">
+              {recentUpdates.map((update, index) => {
+                const summary = update.notes.find((block) =>
+                  ["paragraph", "highlight", "list"].includes(block.type),
+                )?.content;
+                return (
+                  <Link
+                    className={`home-update-card ${index === 0 ? "is-featured" : ""}`}
+                    href="/atualizacoes"
+                    key={update.id}
+                  >
+                    <div>
+                      <span>{index === 0 ? "Mais recente" : `Atualização 0${index + 1}`}</span>
+                      <time dateTime={update.published_on}>
+                        {new Date(`${update.published_on}T00:00:00Z`).toLocaleDateString("pt-BR", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                          timeZone: "UTC",
+                        })}
+                      </time>
+                    </div>
+                    <small>Versão {update.version}</small>
+                    <h3>{update.title}</h3>
+                    <p>{summary ?? "Abra o diário para conhecer todos os detalhes desta versão."}</p>
+                    <strong>Ler atualização <i>→</i></strong>
+                  </Link>
+                );
+              })}
             </div>
           </section>
         ) : null}

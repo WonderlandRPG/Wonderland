@@ -14,10 +14,11 @@ export default async function RacesPage() {
       <PlayerNav />
       <div className="page-container lore-page__inner">
         <header className="lore-hero">
-          <span className="eyebrow">Atlas dos povos</span>
-          <h1>Raças</h1>
+          <span className="eyebrow">Atlas dos povos de Wonderland</span>
+          <h1>Descubra a origem do seu herói</h1>
           <p>
-            Entenda atributos, recursos, traços e todas as habilidades raciais em uma única ficha.
+            Explore a identidade, os traços e as mecânicas de cada povo antes de iniciar sua
+            jornada.
           </p>
         </header>
         <RaceCodex entries={races} />

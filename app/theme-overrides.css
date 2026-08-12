@@ -2012,3 +2012,257 @@ html[data-theme="halloween"]
     padding-bottom: 96px;
   }
 }
+/* Temas 5.0 — contraste universal e identidades sazonais completas */
+html[data-theme="classic"] {
+  --ui-bg: #05090e;
+  --ui-bg-2: #0c1720;
+  --ui-surface: rgba(14, 27, 36, 0.97);
+  --ui-surface-solid: #0f202a;
+  --ui-surface-raised: #19313d;
+  --ui-glass: rgba(7, 17, 23, 0.92);
+  --ui-ink: #fff7e7;
+  --ui-muted: #c4cbd0;
+  --ui-faint: #91a0a8;
+  --ui-gold: #e0ae52;
+  --ui-gold-soft: #ffdc8b;
+  --ui-arcane: #62d0e2;
+  --ui-arcane-rgb: 98, 208, 226;
+  --ui-line: rgba(186, 222, 230, 0.22);
+  --ui-line-gold: rgba(224, 174, 82, 0.55);
+}
+html[data-theme="classic"] body {
+  background:
+    radial-gradient(circle at 50% -18%, rgba(71, 158, 184, 0.32), transparent 38rem),
+    radial-gradient(circle at 100% 18%, rgba(224, 174, 82, 0.15), transparent 30rem),
+    linear-gradient(145deg, #0d1b25, #05090e 60%, #020407) fixed !important;
+}
+html[data-theme="classic"]
+  :is(
+    .portal-card,
+    .sheet-section,
+    .ranking-board,
+    .ranking-season-banner,
+    .lore-dossier,
+    .lore-browser__index,
+    .arena-command-panel,
+    .arena-toolbar,
+    .admin-editor-card,
+    .account-card
+  ) {
+  border-color: rgba(134, 190, 202, 0.28) !important;
+  background: linear-gradient(145deg, rgba(18, 38, 49, 0.98), rgba(8, 19, 26, 0.98)) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.48) !important;
+}
+html[data-theme="classic"] :is(p, small, dt, .ranking-kingdom) {
+  color: #bdc9ce !important;
+}
+html[data-theme="classic"] :is(h1, h2, h3, h4, strong, dd) {
+  color: #fff4dc !important;
+}
+html[data-theme="classic"] :is(input, select, textarea) {
+  border-color: #3b6571 !important;
+  background: #061116 !important;
+  color: #f9f5ea !important;
+}
+html[data-theme="accessible"] {
+  --ui-bg: #02040a;
+  --ui-bg-2: #080e1d;
+  --ui-surface: rgba(12, 19, 37, 0.98);
+  --ui-surface-solid: #101a31;
+  --ui-surface-raised: #172846;
+  --ui-glass: rgba(5, 10, 24, 0.94);
+  --ui-ink: #fffdf5;
+  --ui-muted: #c9d2e4;
+  --ui-faint: #98a7c1;
+  --ui-gold: #f0c866;
+  --ui-gold-soft: #ffe59d;
+  --ui-arcane: #72e3ec;
+  --ui-arcane-rgb: 114, 227, 236;
+  --ui-line: rgba(166, 195, 238, 0.24);
+  --ui-line-gold: rgba(240, 200, 102, 0.54);
+}
+html[data-theme="accessible"] body {
+  background:
+    radial-gradient(circle at 18% 0, rgba(40, 99, 170, 0.28), transparent 33rem),
+    radial-gradient(circle at 86% 8%, rgba(91, 224, 232, 0.12), transparent 26rem),
+    linear-gradient(150deg, #0b1429, #02040a 62%, #000) fixed !important;
+}
+html[data-theme="accessible"] :is(p, small, dt) {
+  color: #c5d0e1 !important;
+}
+html[data-theme="accessible"] :is(h1, h2, h3, h4, strong, dd) {
+  color: #fffdf4 !important;
+}
+/* Natal: noite de neve, pinheiros, guirlandas, luzes e presentes. */
+html[data-theme="christmas"] {
+  --ui-bg: #03100c;
+  --ui-bg-2: #08251a;
+  --ui-surface: rgba(7, 35, 24, 0.97);
+  --ui-surface-solid: #0b2b1e;
+  --ui-surface-raised: #12452e;
+  --ui-glass: rgba(3, 19, 13, 0.93);
+  --ui-ink: #fffbed;
+  --ui-muted: #d2ddd5;
+  --ui-faint: #9bb4a3;
+  --ui-gold: #ffd369;
+  --ui-gold-soft: #fff0aa;
+  --ui-arcane: #ff5964;
+  --ui-arcane-rgb: 255, 89, 100;
+  --ui-line: rgba(238, 249, 239, 0.21);
+  --ui-line-gold: rgba(255, 211, 105, 0.58);
+}
+html[data-theme="christmas"] body {
+  background:
+    radial-gradient(circle at 50% -5%, rgba(255, 230, 157, 0.22), transparent 28rem),
+    radial-gradient(circle at 4% 24%, rgba(190, 25, 39, 0.25), transparent 28rem),
+    radial-gradient(circle at 96% 25%, rgba(22, 124, 68, 0.3), transparent 30rem),
+    linear-gradient(150deg, #0b3624, #03100c 60%, #010805) fixed !important;
+}
+html[data-theme="christmas"] body::before {
+  z-index: -1;
+  opacity: 0.85;
+  background-image:
+    radial-gradient(circle, #fff 0 2px, transparent 2.8px),
+    radial-gradient(circle, #dcefff 0 1px, transparent 2px),
+    radial-gradient(circle, #fff7d0 0 1.5px, transparent 2.4px);
+  background-size:
+    82px 82px,
+    127px 127px,
+    173px 173px;
+  animation: solstice-snow 13s linear infinite !important;
+}
+html[data-theme="christmas"] .player-nav::after,
+html[data-theme="christmas"] .site-header::after {
+  position: absolute;
+  right: 20px;
+  bottom: -8px;
+  left: 20px;
+  height: 16px;
+  border-radius: 50%;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 8px 8px, #ffcf45 0 3px, transparent 4px) 0 0/42px 16px,
+    radial-gradient(circle at 25px 8px, #f04853 0 3px, transparent 4px) 0 0/42px 16px;
+  filter: drop-shadow(0 0 7px rgba(255, 215, 92, 0.8));
+  animation: christmas-lights-glow 1.8s ease-in-out infinite;
+}
+html[data-theme="christmas"]
+  :is(
+    .portal-card,
+    .sheet-section,
+    .ranking-board,
+    .ranking-season-banner,
+    .lore-dossier,
+    .lore-browser__index,
+    .arena-command-panel,
+    .arena-toolbar,
+    .admin-editor-card,
+    .account-card
+  ) {
+  border-color: rgba(255, 222, 138, 0.3) !important;
+  background: linear-gradient(145deg, rgba(10, 52, 34, 0.98), rgba(4, 25, 17, 0.98)) !important;
+  box-shadow:
+    0 20px 65px rgba(0, 0, 0, 0.48),
+    inset 3px 0 rgba(190, 38, 49, 0.38) !important;
+}
+html[data-theme="christmas"]
+  :is(.button--primary, .sheet-tabs a.is-active, .ranking-filters button.is-active) {
+  color: #fff !important;
+  background: linear-gradient(135deg, #c61f31, #8e1523) !important;
+  border-color: #f47a82 !important;
+  box-shadow: 0 7px 24px rgba(190, 31, 48, 0.35) !important;
+}
+html[data-theme="christmas"] :is(p, small, dt) {
+  color: #cfddd4 !important;
+}
+html[data-theme="christmas"] :is(h1, h2, h3, h4, strong, dd) {
+  color: #fff8e8 !important;
+}
+/* Halloween: noite de lua, abóboras, velas, morcegos e névoa. */
+html[data-theme="halloween"] {
+  --ui-bg: #08050c;
+  --ui-bg-2: #190b22;
+  --ui-surface: rgba(29, 13, 35, 0.97);
+  --ui-surface-solid: #20102a;
+  --ui-surface-raised: #39164a;
+  --ui-glass: rgba(14, 6, 20, 0.94);
+  --ui-ink: #fff4dd;
+  --ui-muted: #d5c7d8;
+  --ui-faint: #a993ad;
+  --ui-gold: #ff9b3d;
+  --ui-gold-soft: #ffc979;
+  --ui-arcane: #b778ff;
+  --ui-arcane-rgb: 183, 120, 255;
+  --ui-line: rgba(226, 192, 239, 0.22);
+  --ui-line-gold: rgba(255, 155, 61, 0.58);
+}
+html[data-theme="halloween"] body {
+  background:
+    radial-gradient(
+      circle at 78% 2%,
+      #f2decf 0 4rem,
+      rgba(187, 120, 255, 0.18) 4.2rem,
+      transparent 14rem
+    ),
+    radial-gradient(ellipse at 50% 105%, rgba(94, 160, 73, 0.22), transparent 45%),
+    linear-gradient(150deg, #271031, #08050c 62%, #030105) fixed !important;
+}
+html[data-theme="halloween"] body::before {
+  z-index: -1;
+  background:
+    radial-gradient(ellipse at 20% 88%, rgba(255, 112, 26, 0.23) 0 32px, transparent 34px),
+    radial-gradient(ellipse at 83% 92%, rgba(255, 112, 26, 0.2) 0 42px, transparent 45px),
+    repeating-radial-gradient(
+      ellipse at 50% 110%,
+      rgba(213, 202, 222, 0.08) 0 3px,
+      transparent 6px 58px
+    ) !important;
+  animation: halloween-mist 10s ease-in-out infinite alternate !important;
+}
+html[data-theme="halloween"] .game-world-atmosphere::before {
+  position: fixed;
+  top: 8%;
+  left: -12%;
+  width: 120%;
+  height: 180px;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, #100714 0 7px, transparent 8px) 0 0/130px 60px,
+    radial-gradient(ellipse at center, #100714 0 4px, transparent 5px) 45px 30px/170px 70px;
+  opacity: 0.7;
+  animation: halloween-embers 18s linear infinite;
+}
+html[data-theme="halloween"]
+  :is(
+    .portal-card,
+    .sheet-section,
+    .ranking-board,
+    .ranking-season-banner,
+    .lore-dossier,
+    .lore-browser__index,
+    .arena-command-panel,
+    .arena-toolbar,
+    .admin-editor-card,
+    .account-card
+  ) {
+  border-color: rgba(255, 155, 61, 0.3) !important;
+  background: linear-gradient(145deg, rgba(48, 19, 59, 0.98), rgba(20, 8, 27, 0.98)) !important;
+  box-shadow:
+    0 20px 65px rgba(0, 0, 0, 0.55),
+    inset 0 1px rgba(255, 178, 91, 0.12) !important;
+}
+html[data-theme="halloween"]
+  :is(.button--primary, .sheet-tabs a.is-active, .ranking-filters button.is-active) {
+  color: #210b24 !important;
+  background: linear-gradient(135deg, #ffad49, #e46b22) !important;
+  border-color: #ffcb82 !important;
+  box-shadow: 0 7px 26px rgba(255, 120, 32, 0.32) !important;
+}
+html[data-theme="halloween"] :is(p, small, dt) {
+  color: #d4c5d7 !important;
+}
+html[data-theme="halloween"] :is(h1, h2, h3, h4, strong, dd) {
+  color: #fff2d9 !important;
+}

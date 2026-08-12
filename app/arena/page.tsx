@@ -83,6 +83,9 @@ export default async function ArenaPage({
               <h1>Escolha seu modo</h1>
               <p>Cada modalidade usa a ficha e os equipamentos do personagem selecionado.</p>
             </header>
+            <Link className="arena-history-link" href="/arena/historico">
+              Ver histórico de vitórias e derrotas →
+            </Link>
             <div>
               <Link href="/arena?modo=training">
                 <span>修</span>

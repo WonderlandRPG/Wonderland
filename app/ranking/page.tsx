@@ -1,18 +1,18 @@
 import { PortalShell } from "@/components/portal-shell";
 import { requireActiveCharacter } from "@/lib/content/active-character";
-import { getRanking } from "@/lib/game/player-portal";
-import { PlayerRanking } from "@/components/ranking/player-ranking";
+import { getPvpRanking, getRanking } from "@/lib/game/player-portal";
+import { RankingHall } from "@/components/ranking/ranking-hall";
 export const dynamic = "force-dynamic";
 export default async function RankingPage() {
   await requireActiveCharacter("/ranking");
-  const ranking = await getRanking();
+  const [ranking, pvpRanking] = await Promise.all([getRanking(), getPvpRanking()]);
   return (
     <PortalShell
-      eyebrow="Classificação por nível"
-      title="Ranking de jogadores"
-      description="Os aventureiros que estão escrevendo seus nomes no topo da história de Wonderland."
+      eyebrow="Salão competitivo"
+      title="Rankings de Wonderland"
+      description="Compare a progressão dos aventureiros e conheça os campeões da Arena PvP."
     >
-      <PlayerRanking entries={ranking} />
+      <RankingHall levelEntries={ranking} pvpEntries={pvpRanking} />
     </PortalShell>
   );
 }

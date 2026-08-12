@@ -14,11 +14,11 @@ export default async function ClassesPage() {
       <PlayerNav />
       <div className="page-container lore-page__inner">
         <header className="lore-hero">
-          <span className="eyebrow">Biblioteca dos aventureiros</span>
-          <h1>Classes</h1>
+          <span className="eyebrow">Grimório das vocações</span>
+          <h1>Escolha como deixar sua marca</h1>
           <p>
-            Compare funções, recursos, Caminhos e todas as habilidades antes de criar seu
-            personagem.
+            Conheça a fantasia, a dificuldade e o estilo de combate de cada Classe. Selecione um
+            retrato para abrir seu grimório completo.
           </p>
         </header>
         <ClassCodex entries={classes} />

@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { ServerControl } from "@/components/admin/server-control";
+import { getServerOnline } from "@/lib/content/server-status";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Central de Comando" };
@@ -50,7 +52,12 @@ const tools = [
   },
 ];
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ servidor?: string }>;
+}) {
+  const [{ servidor }, serverOnline] = await Promise.all([searchParams, getServerOnline()]);
   const client = await createServerSupabaseClient();
   const results = client
     ? await Promise.all([
@@ -64,6 +71,20 @@ export default async function AdminPage() {
 
   return (
     <div className="admin-content admin-command-center">
+      {servidor === "ligado" || servidor === "desligado" ? (
+        <div className="admin-notice">
+          <span>✓</span>Servidor {servidor} com sucesso.
+        </div>
+      ) : null}
+      {servidor === "erro" || servidor === "confirmacao-invalida" ? (
+        <div className="admin-notice admin-notice--error">
+          <span>!</span>
+          {servidor === "erro"
+            ? "Não foi possível alterar o servidor."
+            : "Digite DESLIGAR para confirmar a operação."}
+        </div>
+      ) : null}
+      <ServerControl online={serverOnline} />
       <section className="admin-command-welcome">
         <div>
           <span className="eyebrow">Painel administrativo</span>

@@ -5,6 +5,7 @@ import { AuthShell } from "@/components/auth/auth-shell";
 import { LoginForm } from "@/components/auth/login-form";
 import { getCurrentAccount } from "@/lib/auth/account";
 import { getSafeRedirectPath } from "@/lib/auth/redirects";
+import { getServerOnline } from "@/lib/content/server-status";
 
 export const metadata: Metadata = { title: "Entrar" };
 
@@ -23,7 +24,7 @@ interface LoginPageProps {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const nextPath = getSafeRedirectPath(params.next);
-  const account = await getCurrentAccount();
+  const [account, serverOnline] = await Promise.all([getCurrentAccount(), getServerOnline()]);
 
   if (account) redirect(nextPath);
 
@@ -38,7 +39,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           {statusMessages[params.status]}
         </div>
       ) : null}
-      <LoginForm nextPath={nextPath} />
+      <LoginForm nextPath={nextPath} maintenance={!serverOnline} />
     </AuthShell>
   );
 }

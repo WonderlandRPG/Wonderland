@@ -6,7 +6,6 @@ import {
   restoreRaceAction,
 } from "@/app/admin/racas/actions";
 import { getRaceCatalog } from "@/lib/content/races";
-import { getRaceBonusTotal } from "@/lib/game/races";
 
 export const metadata = {
   title: "Gerenciar Raças",
@@ -132,72 +131,55 @@ export default async function RacesPage({
       </nav>
 
       {visibleRaces.length > 0 ? (
-        <section className="race-catalog-grid">
+        <section className="class-admin-grid">
           {visibleRaces.map((race) => (
-            <article className="race-catalog-card" key={race.id}>
-              <div
-                className={`race-catalog-card__visual ${race.payload.imageUrl ? "has-image" : ""}`}
-                style={
-                  race.payload.imageUrl
-                    ? { backgroundImage: `url("${race.payload.imageUrl}")` }
-                    : undefined
-                }
-              >
-                <span>{race.name.slice(0, 2).toUpperCase()}</span>
-                <small>{"★".repeat(race.payload.difficulty)}</small>
+            <article className="class-admin-card race-admin-card" key={race.id}>
+              <div>
+                <span>{"★".repeat(race.payload.difficulty)}</span>
+                <span className={`content-status content-status--${race.status}`}>
+                  {statusLabels[race.status]}
+                </span>
               </div>
-              <div className="race-catalog-card__body">
-                <div className="race-catalog-card__title">
-                  <div>
-                    <h2>{race.name}</h2>
-                    <code>{race.slug}</code>
-                  </div>
-                  <span className={`content-status content-status--${race.status}`}>
-                    {statusLabels[race.status]}
-                  </span>
+              <h2>{race.name}</h2>
+              <p>{race.payload.specialization}</p>
+              <dl>
+                <div>
+                  <dt>Recurso</dt>
+                  <dd>
+                    {race.payload.resource?.name ??
+                      (race.payload.baseMana > 0 ? "Mana" : "Sem recurso")}
+                  </dd>
                 </div>
-                <p>{race.payload.description}</p>
-                <div className="race-catalog-card__metrics">
-                  <span>
-                    HP <strong>{race.payload.baseHp}</strong>
-                  </span>
-                  <span>
-                    Mana <strong>{race.payload.baseMana}</strong>
-                  </span>
-                  <span>
-                    Pontos <strong>{getRaceBonusTotal(race.payload.attributeBonuses)}/25</strong>
-                  </span>
-                  <span>
-                    Rev. <strong>{race.revision}</strong>
-                  </span>
+                <div>
+                  <dt>Habilidades</dt>
+                  <dd>{race.payload.abilitiesV2.length}</dd>
                 </div>
-                <small className="race-catalog-card__updated">
-                  Atualizada em {formatDate(race.updated_at)}
-                </small>
-              </div>
-              <footer>
-                <Link
-                  className="race-card-action race-card-action--primary"
-                  href={`/admin/racas/${race.id}`}
-                >
-                  Editar
-                </Link>
-                <Link className="race-card-action" href={`/admin/racas/${race.id}/preview`}>
-                  Prévia
-                </Link>
+                <div>
+                  <dt>Passivas</dt>
+                  <dd>{race.payload.traitsV2.length}</dd>
+                </div>
+                <div>
+                  <dt>Revisão</dt>
+                  <dd>{race.revision}</dd>
+                </div>
+              </dl>
+              <small className="race-admin-card__updated">
+                Atualizada em {formatDate(race.updated_at)}
+              </small>
+              <Link className="button button--primary" href={`/admin/racas/${race.id}`}>
+                Editar raça
+              </Link>
+              <div className="race-admin-card__secondary">
+                <Link href={`/admin/racas/${race.id}/preview`}>Prévia</Link>
                 <form action={duplicateRaceAction.bind(null, race.id)}>
-                  <button className="race-card-action" type="submit">
-                    Duplicar
-                  </button>
+                  <button type="submit">Duplicar</button>
                 </form>
                 {race.status === "archived" ? (
                   <form action={restoreRaceAction.bind(null, race.id)}>
-                    <button className="race-card-action" type="submit">
-                      Restaurar
-                    </button>
+                    <button type="submit">Restaurar</button>
                   </form>
                 ) : null}
-              </footer>
+              </div>
             </article>
           ))}
         </section>

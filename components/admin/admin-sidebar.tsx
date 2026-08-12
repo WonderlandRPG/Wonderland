@@ -13,7 +13,6 @@ const navigation = [
   {
     group: "Comunidade",
     items: [
-      { label: "Tela principal", glyph: "◈", href: "/admin/portal" },
       { label: "Publicar evento", glyph: "＋", href: "/admin/eventos#novo-evento" },
       { label: "Publicar atualização", glyph: "＋", href: "/admin/atualizacoes#nova-atualizacao" },
       { label: "Jogadores", glyph: "02", href: "/admin/jogadores" },
@@ -25,6 +24,7 @@ const navigation = [
     group: "Jogo e economia",
     items: [
       { label: "Raças e conteúdo", glyph: "04", href: "/admin/racas" },
+      { label: "Guia de classes", glyph: "CL", href: "/admin/classes" },
       { label: "Itens", glyph: "05", href: "/admin/itens" },
       { label: "Títulos", glyph: "✦", href: "/admin/titulos" },
       { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },

@@ -45,7 +45,7 @@ describe("regras das raças", () => {
     expect(racePayloadSchema.safeParse(payload).success).toBe(false);
   });
 
-  it("mantém as 14 raças oficiais completas e válidas", () => {
+  it("mantém as 11 raças oficiais completas e válidas", () => {
     expect(officialRaces.map((race) => race.name)).toEqual([
       "Aengel",
       "Draconato",
@@ -58,9 +58,6 @@ describe("regras das raças", () => {
       "Fada",
       "Humano",
       "Orc",
-      "Alquimista",
-      "Ninja",
-      "Necromante",
     ]);
 
     officialRaces.forEach((race) => {

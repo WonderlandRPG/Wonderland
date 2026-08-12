@@ -1410,4 +1410,6 @@ const seeds: RaceSeed[] = [
   },
 ];
 
-export const officialRaces = seeds.map(buildRace);
+const classSlugs = new Set(["alquimista", "ninja", "necromante"]);
+
+export const officialRaces = seeds.filter((seed) => !classSlugs.has(seed.slug)).map(buildRace);

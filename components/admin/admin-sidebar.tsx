@@ -24,7 +24,8 @@ const navigation = [
   {
     group: "Jogo e economia",
     items: [
-      { label: "Raças e conteúdo", glyph: "04", href: "/admin/racas" },
+      { label: "Raças", glyph: "04", href: "/admin/racas" },
+      { label: "Classes", glyph: "CL", href: "/admin/classes" },
       { label: "Itens", glyph: "05", href: "/admin/itens" },
       { label: "Títulos", glyph: "✦", href: "/admin/titulos" },
       { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
@@ -93,6 +94,16 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
             <Link href="/admin/racas/nova">
               <span>＋</span>
               Nova raça
+            </Link>
+          </div>
+        ) : null}
+        {pathname.startsWith("/admin/classes") ? (
+          <div className="admin-sidebar__subnav">
+            <Link className="is-active" href="/admin/classes">
+              <span>CL</span>Classes
+            </Link>
+            <Link href="/admin/classes/nova">
+              <span>＋</span>Nova classe
             </Link>
           </div>
         ) : null}

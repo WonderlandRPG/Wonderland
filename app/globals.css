@@ -23,6 +23,48 @@
   --radius-large: 28px;
 }
 
+/* Structured class/race ability editor */
+.structured-skills { display: grid; gap: 18px; }
+.structured-skills__intro { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 18px; border: 1px solid rgba(119, 225, 181, .16); border-radius: 11px; background: rgba(77, 197, 144, .045); }
+.structured-skills__intro strong { color: var(--emerald-300); font: 400 1rem Georgia, serif; }
+.structured-skills__intro p, .structured-skill__help { margin: 4px 0 0; color: rgba(216, 235, 223, .42); font-size: .6rem; line-height: 1.55; }
+.structured-skill { overflow: hidden; border: 1px solid rgba(119, 225, 181, .2); border-radius: 14px; background: linear-gradient(145deg, rgba(10, 29, 22, .84), rgba(3, 12, 9, .7)); box-shadow: 0 18px 50px rgba(0, 0, 0, .16); }
+.structured-skill > header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid rgba(119, 225, 181, .12); background: rgba(77, 197, 144, .045); }
+.structured-skill > header div { display: grid; gap: 4px; }
+.structured-skill > header span { color: var(--emerald-300); font: 700 .52rem ui-monospace, monospace; letter-spacing: .12em; text-transform: uppercase; }
+.structured-skill > header strong { font: 400 1.15rem Georgia, serif; }
+.structured-skill > header button, .class-path-editor > header button { color: #ee9d94; border: 0; background: transparent; font-size: .57rem; cursor: pointer; }
+.structured-skill__group { display: grid; gap: 13px; padding: 18px; border-bottom: 1px solid rgba(216, 235, 223, .07); }
+.structured-skill__group:last-child { border-bottom: 0; }
+.structured-skill__group h3 { margin: 0; color: rgba(216, 235, 223, .72); font-size: .62rem; letter-spacing: .1em; text-transform: uppercase; }
+.structured-skill__grid { display: grid; gap: 11px; }
+.structured-skill__grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.structured-skill__grid--6 { grid-template-columns: repeat(5, minmax(110px, 1fr)); }
+.structured-scaling { display: flex; flex-wrap: wrap; gap: 9px; }
+.structured-scaling > div { display: flex; align-items: center; gap: 7px; padding: 8px; border: 1px solid rgba(216, 235, 223, .1); border-radius: 8px; }
+.structured-scaling select, .structured-scaling input, .structured-operation select, .structured-operation input { min-height: 38px; padding: 0 9px; color: var(--mist-100); border: 1px solid rgba(216, 235, 223, .12); border-radius: 7px; background: rgba(4, 13, 9, .6); }
+.structured-scaling input { width: 85px; }
+.structured-scaling span { color: rgba(216, 235, 223, .4); font-size: .56rem; }
+.structured-scaling button, .structured-operations > button { padding: 9px 12px; color: var(--emerald-300); border: 1px dashed rgba(119, 225, 181, .24); border-radius: 8px; background: rgba(77, 197, 144, .04); cursor: pointer; }
+.structured-operations { display: grid; gap: 8px; }
+.structured-operation { display: grid; grid-template-columns: 34px 1.35fr 1fr .7fr 1fr auto; gap: 8px; align-items: center; padding: 9px; border: 1px solid rgba(216, 235, 223, .08); border-radius: 9px; background: rgba(0, 0, 0, .12); }
+.structured-operation > span { color: var(--emerald-300); font: .58rem ui-monospace, monospace; text-align: center; }
+.structured-operation > button { color: #ee9d94; border: 0; background: transparent; font-size: .52rem; cursor: pointer; }
+.class-path-editor { display: grid; gap: 16px; padding: 18px; border: 1px solid rgba(119, 225, 181, .2); border-radius: 14px; background: rgba(4, 14, 10, .3); }
+.class-path-editor > header { display: flex; align-items: center; justify-content: space-between; }
+.class-path-editor > header strong { color: var(--emerald-300); font: 400 1.25rem Georgia, serif; }
+.class-admin-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.class-admin-card { display: grid; gap: 14px; padding: 22px; border: 1px solid var(--line-dark); border-radius: 15px; background: rgba(255, 255, 255, .022); }
+.class-admin-card > div:first-child { display: flex; justify-content: space-between; color: var(--emerald-300); }
+.class-admin-card h2 { margin: 0; font: 400 1.7rem Georgia, serif; }
+.class-admin-card p { margin: -8px 0 0; color: rgba(216, 235, 223, .42); }
+.class-admin-card dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0; }
+.class-admin-card dl div { padding: 10px; border: 1px solid rgba(216, 235, 223, .08); border-radius: 8px; }
+.class-admin-card dt { color: rgba(216, 235, 223, .35); font-size: .52rem; text-transform: uppercase; }
+.class-admin-card dd { margin: 4px 0 0; color: var(--mist-100); font-size: .7rem; }
+@media (max-width: 1000px) { .structured-skill__grid--4, .structured-skill__grid--6, .class-admin-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .structured-operation { grid-template-columns: 30px 1fr 1fr; } }
+@media (max-width: 650px) { .structured-skills__intro { align-items: stretch; flex-direction: column; } .structured-skill__grid--4, .structured-skill__grid--6, .class-admin-grid { grid-template-columns: 1fr; } .structured-operation { grid-template-columns: 28px 1fr; } }
+
 /* ========================================================================== */
 /* Identidade global Wonderland, temas e seletor de equipamentos — 2026-08-11 */
 /* ========================================================================== */

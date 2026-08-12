@@ -1319,7 +1319,6 @@ html[data-theme="christmas"] .game-world-atmosphere::before {
   }
 }
 
-
 /* ========================================================================== */
 /* Wonderland UI 4.1 — coerência integral dos temas                           */
 /* Esta camada elimina superfícies escuras herdadas do CSS histórico.         */
@@ -1375,147 +1374,152 @@ html[data-theme="classic"] .game-world-atmosphere::after {
 }
 
 /* As superfícies abaixo possuíam cores noturnas fixas em gerações antigas. */
-html[data-theme="classic"] :is(
-  .player-nav,
-  .site-header,
-  .admin-topbar,
-  .theme-control__toggle,
-  .theme-control__menu,
-  .player-nav__world-menu > div,
-  .portal-card,
-  .account-card,
-  .sheet-section,
-  .sheet-stat-grid article,
-  .sheet-attributes article,
-  .sheet-lore-block article,
-  .grimoire-list article,
-  .character-progress-strip,
-  .account-summary dl > div,
-  .character-command-hero,
-  .character-session-card,
-  .character-create-section,
-  .character-build-preview,
-  .character-choice-summary,
-  .rank-guide-card,
-  .ranks-intro-card,
-  .ranking-board,
-  .ranking-season-banner,
-  .ranking-podium__place,
-  .ranking-table > a,
-  .event-list article,
-  .update-list article,
-  .lore-browser__index,
-  .lore-dossier,
-  .lore-resource,
-  .path-dossier-grid > article,
-  .race-trait-grid > article,
-  .path-passive,
-  .path-technique,
-  .ability-ledger > article,
-  .ability-ledger > article > div,
-  .inventory-slot-panel,
-  .inventory-browser__catalog,
-  .inventory-inspector,
-  .inventory-slot-grid > button,
-  .inventory-search input,
-  .inventory-search > button,
-  .classic-item-card,
-  .shop-controls,
-  .shop-controls input,
-  .shop-controls select,
-  .shop-inspector,
-  .shop-client-pagination button,
-  .arena-toolbar,
-  .arena-command-panel,
-  .arena-message,
-  .arena-turn-budget,
-  .arena-fighter,
-  .arena-action-group > button,
-  .arena-mode-select > div > a,
-  .presence-pass,
-  .presence-hero,
-  .presence-reward-grid article,
-  .presence-admin-grid fieldset,
-  .presence-campaign-settings,
-  .admin-editor-card,
-  .admin-character-card,
-  .admin-composer,
-  .admin-tool-grid > a,
-  .admin-command-metrics > article,
-  .admin-title-create,
-  .admin-theme-card,
-  .race-catalog-card,
-  .race-editor-section,
-  .equipment-modal__dialog,
-  .race-preview-modal__panel
-) {
+html[data-theme="classic"]
+  :is(
+    .player-nav,
+    .site-header,
+    .admin-topbar,
+    .theme-control__toggle,
+    .theme-control__menu,
+    .player-nav__world-menu > div,
+    .portal-card,
+    .account-card,
+    .sheet-section,
+    .sheet-stat-grid article,
+    .sheet-attributes article,
+    .sheet-lore-block article,
+    .grimoire-list article,
+    .character-progress-strip,
+    .account-summary dl > div,
+    .character-command-hero,
+    .character-session-card,
+    .character-create-section,
+    .character-build-preview,
+    .character-choice-summary,
+    .rank-guide-card,
+    .ranks-intro-card,
+    .ranking-board,
+    .ranking-season-banner,
+    .ranking-podium__place,
+    .ranking-table > a,
+    .event-list article,
+    .update-list article,
+    .lore-browser__index,
+    .lore-dossier,
+    .lore-resource,
+    .path-dossier-grid > article,
+    .race-trait-grid > article,
+    .path-passive,
+    .path-technique,
+    .ability-ledger > article,
+    .ability-ledger > article > div,
+    .inventory-slot-panel,
+    .inventory-browser__catalog,
+    .inventory-inspector,
+    .inventory-slot-grid > button,
+    .inventory-search input,
+    .inventory-search > button,
+    .classic-item-card,
+    .shop-controls,
+    .shop-controls input,
+    .shop-controls select,
+    .shop-inspector,
+    .shop-client-pagination button,
+    .arena-toolbar,
+    .arena-command-panel,
+    .arena-message,
+    .arena-turn-budget,
+    .arena-fighter,
+    .arena-action-group > button,
+    .arena-mode-select > div > a,
+    .presence-pass,
+    .presence-hero,
+    .presence-reward-grid article,
+    .presence-admin-grid fieldset,
+    .presence-campaign-settings,
+    .admin-editor-card,
+    .admin-character-card,
+    .admin-composer,
+    .admin-tool-grid > a,
+    .admin-command-metrics > article,
+    .admin-title-create,
+    .admin-theme-card,
+    .race-catalog-card,
+    .race-editor-section,
+    .equipment-modal__dialog,
+    .race-preview-modal__panel
+  ) {
   color: var(--ui-ink) !important;
   border-color: var(--ui-line) !important;
   background: linear-gradient(145deg, #fffefa, #f4f1e9) !important;
   box-shadow: var(--ui-shadow-small) !important;
 }
 
-html[data-theme="classic"] :is(
-  .sheet-stat-grid article,
-  .sheet-attributes article,
-  .sheet-lore-block article,
-  .grimoire-list article,
-  .character-progress-strip,
-  .account-summary dl > div,
-  .path-passive,
-  .path-technique,
-  .ability-ledger > article,
-  .ability-ledger > article > div,
-  .inventory-slot-grid > button,
-  .arena-action-group > button,
-  .presence-reward-grid article
-) {
+html[data-theme="classic"]
+  :is(
+    .sheet-stat-grid article,
+    .sheet-attributes article,
+    .sheet-lore-block article,
+    .grimoire-list article,
+    .character-progress-strip,
+    .account-summary dl > div,
+    .path-passive,
+    .path-technique,
+    .ability-ledger > article,
+    .ability-ledger > article > div,
+    .inventory-slot-grid > button,
+    .arena-action-group > button,
+    .presence-reward-grid article
+  ) {
   background: #f7f4ec !important;
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.9) !important;
 }
 
-html[data-theme="classic"] :is(
-  .sheet-stat-grid span,
-  .sheet-attributes span,
-  .sheet-attributes small,
-  .sheet-lore-block p,
-  .grimoire-list p,
-  .path-dossier-grid p,
-  .race-trait-grid p,
-  .path-passive span,
-  .path-technique span,
-  .ability-ledger p,
-  .inventory-slot-grid small,
-  .inventory-slot-grid em,
-  .classic-item-card p,
-  .classic-item-card small
-) {
+html[data-theme="classic"]
+  :is(
+    .sheet-stat-grid span,
+    .sheet-attributes span,
+    .sheet-attributes small,
+    .sheet-lore-block p,
+    .grimoire-list p,
+    .path-dossier-grid p,
+    .race-trait-grid p,
+    .path-passive span,
+    .path-technique span,
+    .ability-ledger p,
+    .inventory-slot-grid small,
+    .inventory-slot-grid em,
+    .classic-item-card p,
+    .classic-item-card small
+  ) {
   color: var(--ui-muted) !important;
 }
 
-html[data-theme="classic"] :is(
-  .sheet-stat-grid strong,
-  .sheet-attributes strong,
-  .sheet-lore-block h3,
-  .grimoire-list h3,
-  .path-dossier-grid h4,
-  .race-trait-grid h4,
-  .path-passive b,
-  .path-technique b,
-  .ability-ledger h4,
-  .inventory-slot-grid strong,
-  .classic-item-card h2,
-  .classic-item-card strong
-) {
+html[data-theme="classic"]
+  :is(
+    .sheet-stat-grid strong,
+    .sheet-attributes strong,
+    .sheet-lore-block h3,
+    .grimoire-list h3,
+    .path-dossier-grid h4,
+    .race-trait-grid h4,
+    .path-passive b,
+    .path-technique b,
+    .ability-ledger h4,
+    .inventory-slot-grid strong,
+    .classic-item-card h2,
+    .classic-item-card strong
+  ) {
   color: var(--ui-ink) !important;
 }
 
-html[data-theme="classic"] :is(
-  .sheet-stat-grid strong,
-  .sheet-attributes strong,
-  .ability-ledger > article > div span,
-  .ability-ledger footer span
-) {
+html[data-theme="classic"]
+  :is(
+    .sheet-stat-grid strong,
+    .sheet-attributes strong,
+    .ability-ledger > article > div span,
+    .ability-ledger footer span
+  ) {
   color: var(--ui-success) !important;
 }
 
@@ -1547,13 +1551,14 @@ html[data-theme="classic"] :is(.classic-item-card footer button, .shop-inspector
   background: linear-gradient(135deg, #2d8455, #175c39) !important;
 }
 
-html[data-theme="classic"] :is(
-  .lore-browser__index button:hover,
-  .lore-browser__index button.is-active,
-  .inventory-browser__catalog nav button.is-active,
-  .inventory-slot-grid > button:hover,
-  .inventory-slot-grid > button.is-selected
-) {
+html[data-theme="classic"]
+  :is(
+    .lore-browser__index button:hover,
+    .lore-browser__index button.is-active,
+    .inventory-browser__catalog nav button.is-active,
+    .inventory-slot-grid > button:hover,
+    .inventory-slot-grid > button.is-selected
+  ) {
   color: var(--ui-ink) !important;
   background: #e9e3d6 !important;
 }
@@ -1639,8 +1644,14 @@ html[data-theme="christmas"] body::before {
     radial-gradient(circle, rgba(252, 252, 252, 0.96) 0 2.2px, transparent 2.8px),
     radial-gradient(circle, rgba(229, 247, 255, 0.82) 0 1.4px, transparent 2px),
     radial-gradient(circle, rgba(252, 252, 252, 0.58) 0 0.8px, transparent 1.3px);
-  background-size: 96px 96px, 61px 61px, 37px 37px;
-  background-position: 7px 12px, 31px 48px, 12px 23px;
+  background-size:
+    96px 96px,
+    61px 61px,
+    37px 37px;
+  background-position:
+    7px 12px,
+    31px 48px,
+    12px 23px;
   animation: christmas-snowfall 13s linear infinite;
 }
 
@@ -1660,8 +1671,18 @@ html[data-theme="christmas"] .game-world-atmosphere::before {
     radial-gradient(ellipse at center, #58e87e 0 4px, #0b6623 5px, transparent 8px),
     radial-gradient(ellipse at center, #f8fbff 0 4px, #9bd9ff 5px, transparent 8px),
     linear-gradient(176deg, transparent 0 11px, #274a34 12px 14px, transparent 15px);
-  background-size: 124px 28px, 124px 28px, 124px 28px, 124px 28px, 100% 28px;
-  background-position: 0 3px, 31px 3px, 62px 3px, 93px 3px, 0 0;
+  background-size:
+    124px 28px,
+    124px 28px,
+    124px 28px,
+    124px 28px,
+    100% 28px;
+  background-position:
+    0 3px,
+    31px 3px,
+    62px 3px,
+    93px 3px,
+    0 0;
   filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.72));
   animation: christmas-lights-glow 2.2s steps(2, end) infinite;
 }
@@ -1676,47 +1697,48 @@ html[data-theme="christmas"] :is(.player-nav, .site-header, .admin-topbar) {
     inset 0 -2px rgba(179, 0, 0, 0.34) !important;
 }
 
-html[data-theme="christmas"] :is(
-  .portal-card,
-  .account-card,
-  .sheet-section,
-  .sheet-stat-grid article,
-  .sheet-attributes article,
-  .sheet-lore-block article,
-  .grimoire-list article,
-  .character-progress-strip,
-  .character-command-hero,
-  .rank-guide-card,
-  .ranking-board,
-  .event-list article,
-  .update-list article,
-  .lore-browser__index,
-  .lore-dossier,
-  .lore-resource,
-  .path-passive,
-  .path-technique,
-  .ability-ledger > article,
-  .ability-ledger > article > div,
-  .inventory-slot-panel,
-  .inventory-browser__catalog,
-  .inventory-inspector,
-  .inventory-slot-grid > button,
-  .classic-item-card,
-  .shop-controls,
-  .shop-inspector,
-  .arena-toolbar,
-  .arena-command-panel,
-  .arena-message,
-  .arena-turn-budget,
-  .arena-fighter,
-  .presence-pass,
-  .presence-hero,
-  .presence-reward-grid article,
-  .admin-editor-card,
-  .admin-character-card,
-  .admin-tool-grid > a,
-  .admin-theme-card
-) {
+html[data-theme="christmas"]
+  :is(
+    .portal-card,
+    .account-card,
+    .sheet-section,
+    .sheet-stat-grid article,
+    .sheet-attributes article,
+    .sheet-lore-block article,
+    .grimoire-list article,
+    .character-progress-strip,
+    .character-command-hero,
+    .rank-guide-card,
+    .ranking-board,
+    .event-list article,
+    .update-list article,
+    .lore-browser__index,
+    .lore-dossier,
+    .lore-resource,
+    .path-passive,
+    .path-technique,
+    .ability-ledger > article,
+    .ability-ledger > article > div,
+    .inventory-slot-panel,
+    .inventory-browser__catalog,
+    .inventory-inspector,
+    .inventory-slot-grid > button,
+    .classic-item-card,
+    .shop-controls,
+    .shop-inspector,
+    .arena-toolbar,
+    .arena-command-panel,
+    .arena-message,
+    .arena-turn-budget,
+    .arena-fighter,
+    .presence-pass,
+    .presence-hero,
+    .presence-reward-grid article,
+    .admin-editor-card,
+    .admin-character-card,
+    .admin-tool-grid > a,
+    .admin-theme-card
+  ) {
   color: var(--christmas-snow) !important;
   border-color: rgba(255, 215, 0, 0.2) !important;
   background:
@@ -1727,11 +1749,8 @@ html[data-theme="christmas"] :is(
     inset 0 1px rgba(255, 255, 255, 0.04) !important;
 }
 
-html[data-theme="christmas"] :is(
-  .button--primary,
-  .classic-item-card footer button,
-  .shop-inspector > footer button
-) {
+html[data-theme="christmas"]
+  :is(.button--primary, .classic-item-card footer button, .shop-inspector > footer button) {
   color: #fff !important;
   border-color: #ff5a5a !important;
   background: linear-gradient(135deg, #d82424, #930000) !important;
@@ -1744,9 +1763,7 @@ html[data-theme="christmas"] :is(.eyebrow, .hero__kicker, .brand-mark__copy span
 
 html[data-theme="christmas"] :is(.classic-item-card > footer, .shop-inspector > footer) {
   border-color: rgba(255, 215, 0, 0.24) !important;
-  background:
-    linear-gradient(90deg, rgba(179, 0, 0, 0.18), transparent),
-    #04170e !important;
+  background: linear-gradient(90deg, rgba(179, 0, 0, 0.18), transparent), #04170e !important;
 }
 
 html[data-theme="christmas"] .admin-sidebar {
@@ -1761,6 +1778,184 @@ html[data-theme="christmas"] .admin-sidebar__nav a:is(:hover, .is-active) {
   color: var(--christmas-gold) !important;
   border-color: rgba(255, 215, 0, 0.34) !important;
   background: rgba(179, 0, 0, 0.22) !important;
+}
+
+/* Crônicas Reais 2.0 — tema principal, mineral e solene. */
+html[data-theme="classic"] {
+  color-scheme: dark;
+  --ui-bg: #060b13;
+  --ui-bg-2: #0d1824;
+  --ui-surface: rgba(14, 25, 37, 0.94);
+  --ui-surface-solid: #101d2a;
+  --ui-surface-raised: #192b3d;
+  --ui-glass: rgba(8, 17, 27, 0.82);
+  --ui-ink: #f5ead2;
+  --ui-muted: #b8b2a6;
+  --ui-faint: #7d8792;
+  --ui-gold: #c99c4e;
+  --ui-gold-soft: #f0ce83;
+  --ui-arcane: #58b9cc;
+  --ui-arcane-rgb: 88, 185, 204;
+  --ui-line: rgba(173, 199, 218, 0.14);
+  --ui-line-gold: rgba(201, 156, 78, 0.48);
+  --game-bg-deep: #02060b;
+}
+html[data-theme="classic"] body {
+  background:
+    radial-gradient(circle at 12% -8%, rgba(40, 116, 148, 0.25), transparent 32rem),
+    radial-gradient(circle at 88% 4%, rgba(201, 156, 78, 0.16), transparent 30rem),
+    linear-gradient(145deg, #0d1824, #060b13 54%, #02060b) fixed !important;
+}
+html[data-theme="classic"] .game-world-atmosphere::after {
+  opacity: 0.38;
+  background-image: radial-gradient(circle, rgba(115, 210, 230, 0.5) 0 1px, transparent 2px);
+  background-size: 92px 92px;
+  animation: royal-drift 18s linear infinite;
+}
+html[data-theme="classic"] :is(.player-nav, .site-header, .admin-topbar, .theme-control__menu) {
+  border-color: rgba(201, 156, 78, 0.35);
+  background: linear-gradient(90deg, rgba(9, 20, 31, 0.98), rgba(17, 34, 49, 0.96));
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.42),
+    inset 0 -1px rgba(88, 185, 204, 0.15);
+}
+
+/* Solstício — rubi, pinho, aurora e neve em profundidade. */
+html[data-theme="christmas"] {
+  --ui-bg: #03100d;
+  --ui-bg-2: #09231a;
+  --ui-surface: rgba(8, 31, 22, 0.95);
+  --ui-surface-raised: #153f2e;
+  --ui-arcane: #e65b62;
+  --ui-arcane-rgb: 230, 91, 98;
+  --ui-gold: #f2c966;
+  --ui-gold-soft: #fff0ad;
+}
+html[data-theme="christmas"] body {
+  background:
+    radial-gradient(circle at 50% -15%, rgba(240, 202, 102, 0.23), transparent 30rem),
+    radial-gradient(circle at 10% 15%, rgba(195, 43, 57, 0.18), transparent 26rem),
+    linear-gradient(155deg, #0b2a20, #04120e 56%, #020806) fixed !important;
+}
+html[data-theme="christmas"] .game-world-atmosphere::after {
+  content: "";
+  position: fixed;
+  inset: -20% 0 0;
+  pointer-events: none;
+  opacity: 0.65;
+  background-image:
+    radial-gradient(circle, #fff 0 1.5px, transparent 2px),
+    radial-gradient(circle, #d9f5ff 0 1px, transparent 1.5px);
+  background-size:
+    74px 74px,
+    113px 113px;
+  animation: solstice-snow 16s linear infinite;
+}
+html[data-theme="christmas"] :is(.player-nav, .site-header, .admin-topbar, .theme-control__menu) {
+  border-color: rgba(242, 201, 102, 0.4);
+  background: linear-gradient(90deg, rgba(7, 42, 29, 0.98), rgba(64, 14, 23, 0.9));
+  box-shadow:
+    0 18px 60px rgba(0, 0, 0, 0.45),
+    inset 0 -2px rgba(242, 201, 102, 0.2);
+}
+
+/* Véu das Bruxas — Halloween oficial. */
+html[data-theme="halloween"] {
+  color-scheme: dark;
+  --ui-bg: #08050e;
+  --ui-bg-2: #170b20;
+  --ui-surface: rgba(25, 12, 33, 0.94);
+  --ui-surface-solid: #1c1026;
+  --ui-surface-raised: #311842;
+  --ui-glass: rgba(15, 7, 22, 0.82);
+  --ui-ink: #fff0d4;
+  --ui-muted: #c9b7cf;
+  --ui-faint: #88758f;
+  --ui-gold: #f29a38;
+  --ui-gold-soft: #ffc66f;
+  --ui-arcane: #a75ee8;
+  --ui-arcane-rgb: 167, 94, 232;
+  --ui-danger: #ff5d67;
+  --ui-success: #79c66d;
+  --ui-line: rgba(207, 157, 230, 0.16);
+  --ui-line-gold: rgba(242, 154, 56, 0.48);
+  --game-bg-deep: #030106;
+}
+html[data-theme="halloween"] body {
+  background:
+    radial-gradient(circle at 78% -10%, rgba(166, 94, 232, 0.24), transparent 31rem),
+    radial-gradient(circle at 5% 30%, rgba(242, 104, 33, 0.17), transparent 27rem),
+    linear-gradient(145deg, #170b20, #08050e 58%, #030106) fixed !important;
+}
+html[data-theme="halloween"] body::before {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 105%, rgba(116, 170, 103, 0.13), transparent 45%),
+    repeating-radial-gradient(
+      ellipse at 50% 110%,
+      rgba(204, 190, 220, 0.05) 0 2px,
+      transparent 4px 42px
+    );
+  animation: halloween-mist 12s ease-in-out infinite alternate;
+}
+html[data-theme="halloween"] .game-world-atmosphere::after {
+  opacity: 0.48;
+  background-image:
+    radial-gradient(circle, rgba(255, 166, 68, 0.65) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(184, 112, 240, 0.55) 0 1px, transparent 2px);
+  background-size:
+    126px 126px,
+    83px 83px;
+  animation: halloween-embers 15s linear infinite;
+}
+html[data-theme="halloween"] :is(.player-nav, .site-header, .admin-topbar, .theme-control__menu) {
+  border-color: rgba(242, 154, 56, 0.38);
+  background: linear-gradient(90deg, rgba(22, 9, 31, 0.98), rgba(45, 15, 29, 0.96));
+  box-shadow:
+    0 18px 65px rgba(0, 0, 0, 0.5),
+    inset 0 -2px rgba(167, 94, 232, 0.18);
+}
+html[data-theme="halloween"]
+  :is(.button--primary, .sheet-tabs a.is-active, .ranking-filters button.is-active) {
+  color: #16091d;
+  background: linear-gradient(135deg, #f4a143, #c56a27);
+  box-shadow: 0 0 28px rgba(242, 154, 56, 0.22);
+}
+
+@keyframes royal-drift {
+  to {
+    background-position: 92px 184px;
+  }
+}
+@keyframes solstice-snow {
+  to {
+    transform: translateY(20%);
+    background-position:
+      25px 74px,
+      -30px 113px;
+  }
+}
+@keyframes halloween-mist {
+  to {
+    transform: translate3d(3%, -2%, 0) scale(1.08);
+  }
+}
+@keyframes halloween-embers {
+  to {
+    background-position:
+      42px -126px,
+      -25px -83px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme] .game-world-atmosphere::after,
+  html[data-theme="halloween"] body::before {
+    animation: none !important;
+  }
 }
 
 @keyframes christmas-snowfall {

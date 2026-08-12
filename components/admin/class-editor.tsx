@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { initialClassActionState, saveClassAction } from "@/app/admin/classes/actions";
 import { StructuredSkillEditor } from "@/components/admin/structured-skill-editor";
-import { createClassSlug, type ClassPayload } from "@/lib/game/classes";
+import { createClassSlug, createEmptyClassSkill, type ClassPayload } from "@/lib/game/classes";
 import { attributeKeys } from "@/lib/game/schemas";
 
 type Value = {
@@ -287,8 +287,19 @@ export function ClassEditor({ initialValue, notice }: { initialValue: Value; not
                     key: `novo-caminho-${payload.paths.length + 1}`,
                     name: "Novo caminho",
                     description: "Descreva o caminho.",
+                    unlockLevel: 50,
+                    quest: {
+                      title: "A Escolha do Novo Caminho",
+                      briefing: "Procure o mentor deste caminho ao alcançar o nível 50.",
+                      objectives: [
+                        "Converse com o mentor no Salão dos Caminhos.",
+                        "Complete três confrontos de treino usando a doutrina do caminho.",
+                        "Retorne ao mentor e confirme sua escolha.",
+                      ],
+                      completionText: "O caminho e sua primeira habilidade foram desbloqueados.",
+                    },
                     passive: { name: "Passiva do caminho", description: "Descreva a passiva." },
-                    skills: [],
+                    skills: [50, 60, 70, 80, 90, 100].map((level) => createEmptyClassSkill(level)),
                   },
                 ],
               })
@@ -378,6 +389,73 @@ export function ClassEditor({ initialValue, notice }: { initialValue: Value; not
                         paths: payload.paths.map((item, current) =>
                           current === index
                             ? { ...item, passive: { ...item.passive, description: e.target.value } }
+                            : item,
+                        ),
+                      })
+                    }
+                  />
+                </Field>
+                <Field label="Missão de escolha · nível 50">
+                  <input
+                    value={path.quest.title}
+                    onChange={(e) =>
+                      setPayload({
+                        ...payload,
+                        paths: payload.paths.map((item, current) =>
+                          current === index
+                            ? { ...item, quest: { ...item.quest, title: e.target.value } }
+                            : item,
+                        ),
+                      })
+                    }
+                  />
+                  <textarea
+                    rows={3}
+                    value={path.quest.briefing}
+                    onChange={(e) =>
+                      setPayload({
+                        ...payload,
+                        paths: payload.paths.map((item, current) =>
+                          current === index
+                            ? { ...item, quest: { ...item.quest, briefing: e.target.value } }
+                            : item,
+                        ),
+                      })
+                    }
+                  />
+                </Field>
+                <Field label="Objetivos da missão · um por linha">
+                  <textarea
+                    rows={5}
+                    value={path.quest.objectives.join("\n")}
+                    onChange={(e) =>
+                      setPayload({
+                        ...payload,
+                        paths: payload.paths.map((item, current) =>
+                          current === index
+                            ? {
+                                ...item,
+                                quest: {
+                                  ...item.quest,
+                                  objectives: e.target.value
+                                    .split("\n")
+                                    .map((value) => value.trim())
+                                    .filter(Boolean),
+                                },
+                              }
+                            : item,
+                        ),
+                      })
+                    }
+                  />
+                  <input
+                    value={path.quest.completionText}
+                    onChange={(e) =>
+                      setPayload({
+                        ...payload,
+                        paths: payload.paths.map((item, current) =>
+                          current === index
+                            ? { ...item, quest: { ...item.quest, completionText: e.target.value } }
                             : item,
                         ),
                       })

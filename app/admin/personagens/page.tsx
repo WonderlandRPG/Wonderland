@@ -19,7 +19,9 @@ export default async function AdminCharactersPage({
     client
       ? client
           .from("v2_characters")
-          .select("id,name,level,xp,gold,image_url,kingdom,adventure_rank,race_id,class_id,class_path_key,user_id")
+          .select(
+            "id,name,level,xp,gold,image_url,kingdom,adventure_rank,race_id,class_id,class_path_key,user_id",
+          )
           .order("name")
       : Promise.resolve({ data: [] }),
     searchParams,
@@ -32,11 +34,13 @@ export default async function AdminCharactersPage({
       ? await client.from("v2_content").select("id,name,content_type,payload").in("id", contentIds)
       : { data: [] };
   const names = new Map((content ?? []).map((entry) => [entry.id, entry.name]));
-  const classPaths = new Map((content ?? []).flatMap((entry) => {
-    if (entry.content_type !== "class") return [];
-    const parsed = parseClassPayload(entry.payload);
-    return parsed.success ? [[entry.id, parsed.data.paths] as const] : [];
-  }));
+  const classPaths = new Map(
+    (content ?? []).flatMap((entry) => {
+      if (entry.content_type !== "class") return [];
+      const parsed = parseClassPayload(entry.payload);
+      return parsed.success ? [[entry.id, parsed.data.paths] as const] : [];
+    }),
+  );
   return (
     <div className="admin-content">
       <section className="admin-page-title">
@@ -115,8 +119,13 @@ export default async function AdminCharactersPage({
                 </label>
                 <label>
                   <span>Caminho da classe</span>
-                  <select name="classPathKey" defaultValue={character.class_path_key ?? classPaths.get(character.class_id)?.[0]?.key} required>
-                    {(classPaths.get(character.class_id) ?? []).map((path) => <option key={path.key} value={path.key}>{path.name}</option>)}
+                  <select name="classPathKey" defaultValue={character.class_path_key ?? ""}>
+                    <option value="">Nenhum caminho</option>
+                    {(classPaths.get(character.class_id) ?? []).map((path) => (
+                      <option key={path.key} value={path.key}>
+                        {path.name}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>

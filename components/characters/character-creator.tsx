@@ -4,10 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 
 import { createCharacterAction } from "@/app/personagens/actions";
 import { initialCharacterActionState } from "@/lib/game/character-forms";
-import {
-  buildCharacterPreset,
-  type CharacterPreset,
-} from "@/lib/game/character-presets";
+import { buildCharacterPreset, type CharacterPreset } from "@/lib/game/character-presets";
 import {
   createEmptyAllocation,
   getAllocatedTotal,
@@ -57,7 +54,6 @@ export function CharacterCreator({
   const [imageUrl, setImageUrl] = useState("");
   const [activePreset, setActivePreset] = useState<CharacterPreset | "custom">("custom");
   const [codexTab, setCodexTab] = useState<"race" | "class">("race");
-  const [classPathKey, setClassPathKey] = useState(classes[0]?.paths[0]?.key ?? "");
   const selectedRace = useMemo(() => races.find((entry) => entry.id === raceId), [raceId, races]);
   const selectedClass = useMemo(
     () => classes.find((entry) => entry.id === classId),
@@ -92,16 +88,29 @@ export function CharacterCreator({
     setRaceId(nextRaceId);
     const nextRace = races.find((entry) => entry.id === nextRaceId);
     if (activePreset !== "custom" && nextRace && selectedClass) {
-      setAllocation(buildCharacterPreset({ preset: activePreset, points, racialBonuses: nextRace.payload.attributeBonuses, primaryAttributes: selectedClass.primaryAttributes }));
+      setAllocation(
+        buildCharacterPreset({
+          preset: activePreset,
+          points,
+          racialBonuses: nextRace.payload.attributeBonuses,
+          primaryAttributes: selectedClass.primaryAttributes,
+        }),
+      );
     }
   }
 
   function selectClass(nextClassId: string) {
     setClassId(nextClassId);
     const nextClass = classes.find((entry) => entry.id === nextClassId);
-    setClassPathKey(nextClass?.paths[0]?.key ?? "");
     if (activePreset !== "custom" && selectedRace && nextClass) {
-      setAllocation(buildCharacterPreset({ preset: activePreset, points, racialBonuses: selectedRace.payload.attributeBonuses, primaryAttributes: nextClass.primaryAttributes }));
+      setAllocation(
+        buildCharacterPreset({
+          preset: activePreset,
+          points,
+          racialBonuses: selectedRace.payload.attributeBonuses,
+          primaryAttributes: nextClass.primaryAttributes,
+        }),
+      );
     }
   }
 
@@ -126,7 +135,11 @@ export function CharacterCreator({
         <div className="character-identity-layout">
           <div
             className={`character-portrait-preview ${imageUrl ? "has-image" : ""}`}
-            style={imageUrl ? { backgroundImage: `url(${JSON.stringify(imageUrl).slice(1, -1)})` } : undefined}
+            style={
+              imageUrl
+                ? { backgroundImage: `url(${JSON.stringify(imageUrl).slice(1, -1)})` }
+                : undefined
+            }
           >
             <span>{name.trim().slice(0, 1).toUpperCase() || "?"}</span>
             <small>Retrato do herói</small>
@@ -134,7 +147,15 @@ export function CharacterCreator({
           <div className="character-identity-fields">
             <label className="race-field">
               <span>Nome do personagem</span>
-              <input maxLength={32} minLength={2} name="name" onChange={(event) => setName(event.target.value)} placeholder="Ex.: Aster" required value={name} />
+              <input
+                maxLength={32}
+                minLength={2}
+                name="name"
+                onChange={(event) => setName(event.target.value)}
+                placeholder="Ex.: Aster"
+                required
+                value={name}
+              />
             </label>
             <label className="race-field">
               <span>Reino de origem</span>
@@ -149,7 +170,13 @@ export function CharacterCreator({
             </label>
             <label className="race-field">
               <span>Imagem do personagem (opcional)</span>
-              <input name="imageUrl" onChange={(event) => setImageUrl(event.target.value)} placeholder="https://exemplo.com/personagem.png" type="url" value={imageUrl} />
+              <input
+                name="imageUrl"
+                onChange={(event) => setImageUrl(event.target.value)}
+                placeholder="https://exemplo.com/personagem.png"
+                type="url"
+                value={imageUrl}
+              />
               <small>Cole o link direto de uma imagem pública.</small>
             </label>
           </div>
@@ -196,19 +223,17 @@ export function CharacterCreator({
             </select>
           </label>
         </div>
-        <label className="race-field character-path-field">
-          <span>Caminho da classe</span>
-          <select name="classPathKey" required value={classPathKey} onChange={(event) => setClassPathKey(event.target.value)}>
-            {selectedClass?.paths.map((path) => <option key={path.key} value={path.key}>{path.name} · {path.description}</option>)}
-          </select>
-          <small>O caminho define a futura especialização desta ficha e poderá ser alterado pelo Painel ADM.</small>
-        </label>
+        <div className="account-notice">
+          <span>50</span> O personagem começa sem caminho. No nível 50, uma missão permitirá
+          escolher uma especialização definitiva.
+        </div>
         <div className="character-choice-summary">
           <article>
             <span>Raça escolhida</span>
             <strong>{selectedRace?.name ?? "Nenhuma"}</strong>
             <small>
-              HP {selectedRace?.payload.baseHp ?? 0} · Recurso {selectedRace?.payload.resource?.name ?? "racial"}
+              HP {selectedRace?.payload.baseHp ?? 0} · Recurso{" "}
+              {selectedRace?.payload.resource?.name ?? "racial"}
             </small>
           </article>
           <article>
@@ -219,10 +244,10 @@ export function CharacterCreator({
         </div>
         <div className="character-build-preview">
           <span>Combinação escolhida</span>
-          <strong>{selectedRace?.name} {selectedClass?.name}</strong>
-          <small>
-            Afinidades da classe: {selectedClass?.primaryAttributes.join(" · ") || "—"}
-          </small>
+          <strong>
+            {selectedRace?.name} {selectedClass?.name}
+          </strong>
+          <small>Afinidades da classe: {selectedClass?.primaryAttributes.join(" · ") || "—"}</small>
         </div>
         <section className="character-choice-codex">
           <header>
@@ -230,22 +255,55 @@ export function CharacterCreator({
               <span className="eyebrow">Códice do aventureiro</span>
               <strong>Conheça antes de escolher</strong>
             </div>
-            <div className="character-choice-codex__tabs" role="tablist" aria-label="Informações da escolha">
-              <button aria-selected={codexTab === "race"} className={codexTab === "race" ? "is-active" : ""} onClick={() => setCodexTab("race")} role="tab" type="button">Sobre a raça</button>
-              <button aria-selected={codexTab === "class"} className={codexTab === "class" ? "is-active" : ""} onClick={() => setCodexTab("class")} role="tab" type="button">Sobre a classe</button>
+            <div
+              className="character-choice-codex__tabs"
+              role="tablist"
+              aria-label="Informações da escolha"
+            >
+              <button
+                aria-selected={codexTab === "race"}
+                className={codexTab === "race" ? "is-active" : ""}
+                onClick={() => setCodexTab("race")}
+                role="tab"
+                type="button"
+              >
+                Sobre a raça
+              </button>
+              <button
+                aria-selected={codexTab === "class"}
+                className={codexTab === "class" ? "is-active" : ""}
+                onClick={() => setCodexTab("class")}
+                role="tab"
+                type="button"
+              >
+                Sobre a classe
+              </button>
             </div>
           </header>
           {codexTab === "race" ? (
             <div className="character-choice-codex__content" role="tabpanel">
               <div>
-                <small>Raça selecionada · {"★".repeat(selectedRace?.payload.difficulty ?? 1)}</small>
+                {selectedRace?.payload.imageUrl ? (
+                  <span
+                    className="character-codex-portrait"
+                    style={{ backgroundImage: `url(${selectedRace.payload.imageUrl})` }}
+                    role="img"
+                    aria-label={`Arte oficial de ${selectedRace.name}`}
+                  />
+                ) : null}
+                <small>
+                  Raça selecionada · {"★".repeat(selectedRace?.payload.difficulty ?? 1)}
+                </small>
                 <h3>{selectedRace?.name}</h3>
                 <p>{selectedRace?.payload.description}</p>
               </div>
               <aside>
-                <span>Especialização</span><strong>{selectedRace?.payload.specialization}</strong>
-                <span>Recurso racial</span><strong>{selectedRace?.payload.resource?.name ?? "Nenhum"}</strong>
-                <span>Traço inicial</span><strong>{selectedRace?.payload.traits[0]?.name ?? "—"}</strong>
+                <span>Especialização</span>
+                <strong>{selectedRace?.payload.specialization}</strong>
+                <span>Recurso racial</span>
+                <strong>{selectedRace?.payload.resource?.name ?? "Nenhum"}</strong>
+                <span>Traço inicial</span>
+                <strong>{selectedRace?.payload.traits[0]?.name ?? "—"}</strong>
               </aside>
             </div>
           ) : (
@@ -256,11 +314,15 @@ export function CharacterCreator({
                 <p>{selectedClass?.description}</p>
               </div>
               <aside>
-                <span>Especialização</span><strong>{selectedClass?.specialization}</strong>
-                <span>Recurso de classe</span><strong>{selectedClass?.resourceName}</strong>
-                <span>Passiva inicial</span><strong>{selectedClass?.passiveName}</strong>
+                <span>Especialização</span>
+                <strong>{selectedClass?.specialization}</strong>
+                <span>Recurso de classe</span>
+                <strong>{selectedClass?.resourceName}</strong>
+                <span>Passiva inicial</span>
+                <strong>{selectedClass?.passiveName}</strong>
                 <small>{selectedClass?.passiveDescription}</small>
-                <span>Caminho escolhido</span><strong>{selectedClass?.paths.find((path) => path.key === classPathKey)?.name ?? "—"}</strong>
+                <span>Caminho</span>
+                <strong>Disponível no nível 50</strong>
               </aside>
             </div>
           )}
@@ -286,17 +348,38 @@ export function CharacterCreator({
           <div>
             <span className="eyebrow">Distribuição automática</span>
             <strong>Escolha um estilo de combate</strong>
-            <small>O cálculo combina os bônus de {selectedRace?.name} com as afinidades de {selectedClass?.name}.</small>
+            <small>
+              O cálculo combina os bônus de {selectedRace?.name} com as afinidades de{" "}
+              {selectedClass?.name}.
+            </small>
           </div>
           <div className="character-preset-buttons">
-            <button className={activePreset === "aggressive" ? "is-active" : ""} onClick={() => applyPreset("aggressive")} type="button">
-              <span>⚔</span><strong>Agressivo</strong><small>Prioriza dano e iniciativa</small>
+            <button
+              className={activePreset === "aggressive" ? "is-active" : ""}
+              onClick={() => applyPreset("aggressive")}
+              type="button"
+            >
+              <span>⚔</span>
+              <strong>Agressivo</strong>
+              <small>Prioriza dano e iniciativa</small>
             </button>
-            <button className={activePreset === "balanced" ? "is-active" : ""} onClick={() => applyPreset("balanced")} type="button">
-              <span>✦</span><strong>Equilibrado</strong><small>Distribuição versátil</small>
+            <button
+              className={activePreset === "balanced" ? "is-active" : ""}
+              onClick={() => applyPreset("balanced")}
+              type="button"
+            >
+              <span>✦</span>
+              <strong>Equilibrado</strong>
+              <small>Distribuição versátil</small>
             </button>
-            <button className={activePreset === "defensive" ? "is-active" : ""} onClick={() => applyPreset("defensive")} type="button">
-              <span>◆</span><strong>Defensivo</strong><small>Prioriza DEF e RES</small>
+            <button
+              className={activePreset === "defensive" ? "is-active" : ""}
+              onClick={() => applyPreset("defensive")}
+              type="button"
+            >
+              <span>◆</span>
+              <strong>Defensivo</strong>
+              <small>Prioriza DEF e RES</small>
             </button>
           </div>
         </div>

@@ -15,6 +15,7 @@ import { getStructuredRaceAbilities } from "@/lib/game/races";
 import { compatibleEquipSlots, equipmentSlots, itemSlotLabel } from "@/lib/game/equipment";
 import { updateCharacterImageAction } from "./equipment-actions";
 import { EquippedTitle } from "@/components/characters/equipped-title";
+import { completePathQuestAction } from "./path-actions";
 
 export const metadata = { title: "Ficha do Personagem" };
 export const dynamic = "force-dynamic";
@@ -79,6 +80,18 @@ export default async function CharacterSheetPage({
         {query.status === "criado" ? (
           <div className="account-notice" data-sfx-on-mount="confirm" role="status">
             <span>✓</span>Personagem criado! A ficha já está salva no seu perfil.
+          </div>
+        ) : null}
+        {query.status === "caminho-escolhido" ? (
+          <div className="account-notice" role="status">
+            <span>✓</span>Missão concluída. O caminho e a habilidade de nível 50 foram
+            desbloqueados.
+          </div>
+        ) : null}
+        {query.status === "caminho-erro" || query.status === "caminho-bloqueado" ? (
+          <div className="account-notice is-warning" role="alert">
+            <span>!</span>Não foi possível concluir a escolha do caminho. Confirme o nível e tente
+            novamente.
           </div>
         ) : null}
         <section
@@ -194,6 +207,55 @@ export default async function CharacterSheetPage({
         </nav>
         {tab === "resumo" ? (
           <>
+            {!classPath ? (
+              <section className="sheet-section path-selection-board">
+                <header>
+                  <span className="eyebrow">Missão de classe · nível 50</span>
+                  <h2>Escolha seu caminho</h2>
+                  <p>
+                    {character.level >= 50
+                      ? "Leia as missões e confirme a especialização que acompanhará este personagem."
+                      : `Faltam ${50 - character.level} níveis para abrir o Salão dos Caminhos.`}
+                  </p>
+                </header>
+                <div className="path-dossier-grid">
+                  {character.characterClass.payload.paths.map((path) => (
+                    <article key={path.key} className={character.level < 50 ? "is-locked" : ""}>
+                      <header>
+                        <span>{path.name.slice(0, 1)}</span>
+                        <div>
+                          <small>Nível 50</small>
+                          <h3>{path.quest.title}</h3>
+                        </div>
+                      </header>
+                      <p>{path.quest.briefing}</p>
+                      <ol>
+                        {path.quest.objectives.map((objective) => (
+                          <li key={objective}>{objective}</li>
+                        ))}
+                      </ol>
+                      <div className="path-passive">
+                        <small>Doutrina recebida</small>
+                        <b>{path.passive.name}</b>
+                        <span>{path.passive.description}</span>
+                      </div>
+                      {character.level >= 50 ? (
+                        <form action={completePathQuestAction.bind(null, character.id)}>
+                          <input name="pathKey" type="hidden" value={path.key} />
+                          <button className="button button--primary">
+                            Concluir missão e escolher {path.name}
+                          </button>
+                        </form>
+                      ) : (
+                        <button className="button button--dark" disabled>
+                          Bloqueado até o nível 50
+                        </button>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ) : null}
             <section className="sheet-stat-grid">
               <article>
                 <span>HP máximo</span>

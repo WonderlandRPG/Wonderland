@@ -20,15 +20,18 @@ describe("catálogo oficial de classes", () => {
     );
   });
 
-  it("concede duas técnicas estruturadas por Caminho", () => {
+  it("concede seis técnicas estruturadas por caminho do nível 50 ao 100", () => {
     const paths = officialClasses.flatMap((entry) => entry.payload.paths);
     expect(paths).toHaveLength(34);
-    expect(paths.every((path) => path.skills.length === 2)).toBe(true);
-    expect(paths.flatMap((path) => path.skills)).toHaveLength(68);
+    expect(paths.every((path) => path.skills.length === 6)).toBe(true);
+    expect(paths.flatMap((path) => path.skills)).toHaveLength(204);
+    expect(
+      paths.every((path) => path.unlockLevel === 50 && path.quest.objectives.length >= 2),
+    ).toBe(true);
     const barbarian = officialClasses.find((entry) => entry.slug === "barbaro")!;
-    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 14)).toHaveLength(0);
-    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 15)).toHaveLength(1);
-    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 45)).toHaveLength(2);
+    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 49)).toHaveLength(0);
+    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 50)).toHaveLength(1);
+    expect(getUnlockedPathSkills(barbarian.payload, "berserker", 100)).toHaveLength(6);
   });
 
   it("usa operações genéricas e regras separadas da descrição", () => {

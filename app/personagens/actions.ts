@@ -7,7 +7,6 @@ import { z } from "zod";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import type { Json } from "@/lib/db/types";
-import { parseClassPayload } from "@/lib/game/classes";
 import type { CharacterActionState } from "@/lib/game/character-forms";
 import { allocatedAttributesSchema, getAllocatedTotal } from "@/lib/game/characters";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -21,7 +20,6 @@ const creationSchema = z.object({
     .max(32, "Use no máximo 32 caracteres."),
   raceId: z.uuid("Escolha uma raça."),
   classId: z.uuid("Escolha uma classe."),
-  classPathKey: z.string().trim().min(1, "Escolha um caminho de classe."),
   kingdom: z.enum(kingdoms.map((entry) => entry.key) as [string, ...string[]], {
     error: "Escolha um reino.",
   }),
@@ -47,7 +45,6 @@ export async function createCharacterAction(
     name: formData.get("name"),
     raceId: formData.get("raceId"),
     classId: formData.get("classId"),
-    classPathKey: formData.get("classPathKey"),
     kingdom: formData.get("kingdom"),
     imageUrl: String(formData.get("imageUrl") ?? "").trim(),
     allocation: formData.get("allocation"),
@@ -92,10 +89,6 @@ export async function createCharacterAction(
       entry.status === "published",
   );
   if (!validRace || !validClass) return fail("A raça ou classe escolhida não está publicada.");
-  const classContent = content?.find((entry) => entry.id === submission.data.classId);
-  const parsedClass = parseClassPayload(classContent?.payload);
-  if (!parsedClass.success || !parsedClass.data.paths.some((path) => path.key === submission.data.classPathKey))
-    return fail("O caminho escolhido não pertence a esta classe.");
   const { data, error } = await client
     .from("v2_characters")
     .insert({
@@ -103,7 +96,7 @@ export async function createCharacterAction(
       name: submission.data.name,
       race_id: submission.data.raceId,
       class_id: submission.data.classId,
-      class_path_key: submission.data.classPathKey,
+      class_path_key: null,
       kingdom: submission.data.kingdom,
       image_url: submission.data.imageUrl || null,
       allocated_attributes: allocation.data as unknown as Json,

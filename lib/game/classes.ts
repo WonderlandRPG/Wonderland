@@ -88,7 +88,50 @@ export function createEmptyClassPayload(): ClassPayload {
 }
 
 export function parseClassPayload(payload: unknown) {
-  return classPayloadSchema.safeParse(payload);
+  const parsed = classPayloadSchema.safeParse(payload);
+  if (!parsed.success) return parsed;
+  return {
+    success: true as const,
+    data: {
+      ...parsed.data,
+      paths: parsed.data.paths.map((path) => {
+        const baseSkills = path.skills.length > 0 ? path.skills : [createEmptyClassSkill(50)];
+        const levels = [50, 60, 70, 80, 90, 100];
+        const labels = ["Fundamento", "Técnica", "Domínio", "Ruptura", "Apogeu", "Legado"];
+        return {
+          ...path,
+          unlockLevel: 50,
+          quest:
+            path.quest.title !== "Missão de escolha"
+              ? path.quest
+              : {
+                  title: `A Escolha de ${path.name}`,
+                  briefing: `Ao alcançar o nível 50, procure o mentor de ${path.name}. ${path.description}`,
+                  objectives: [
+                    `Converse com o mentor de ${path.name} no Salão dos Caminhos.`,
+                    `Complete três confrontos de treino demonstrando a doutrina ${path.passive.name}.`,
+                    `Retorne ao mentor e confirme que ${path.name} será seu caminho permanente.`,
+                  ],
+                  completionText: `O caminho ${path.name} e sua primeira habilidade foram desbloqueados.`,
+                },
+          skills: levels.map((level, index) => {
+            const source = baseSkills[Math.min(index, baseSkills.length - 1)];
+            return {
+              ...source,
+              key:
+                index < baseSkills.length
+                  ? source.key
+                  : `${path.key}-${labels[index].toLowerCase()}`,
+              name: index < baseSkills.length ? source.name : `${labels[index]} de ${path.name}`,
+              level,
+              cost: Math.max(source.cost, 20 + index * 6),
+              cooldown: Math.max(source.cooldown, 2 + Math.floor(index / 2)),
+            };
+          }),
+        };
+      }),
+    },
+  };
 }
 
 export function getClassAffinity(payload: ClassPayload, attribute: AttributeKey) {

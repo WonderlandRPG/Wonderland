@@ -68,7 +68,15 @@ export const racePayloadSchema = z
   .object({
     engineContractVersion: z.literal(1).default(1),
     specialization: requiredTextSchema.default("Versátil"),
-    tags: z.array(z.string().trim().min(1).regex(/^[A-Z0-9_]+$/)).default(["HUMANOIDE"]),
+    tags: z
+      .array(
+        z
+          .string()
+          .trim()
+          .min(1)
+          .regex(/^[A-Z0-9_]+$/),
+      )
+      .default(["HUMANOIDE"]),
     description: requiredTextSchema,
     imageUrl: imageSourceSchema.default(""),
     difficulty: z.number().int().min(1).max(5),
@@ -223,6 +231,20 @@ export const classPathSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   name: requiredTextSchema,
   description: requiredTextSchema,
+  unlockLevel: z.number().int().min(1).default(50),
+  quest: z
+    .object({
+      title: requiredTextSchema,
+      briefing: requiredTextSchema,
+      objectives: z.array(requiredTextSchema).min(2),
+      completionText: requiredTextSchema,
+    })
+    .default({
+      title: "Missão de escolha",
+      briefing: "Procure o mentor deste caminho ao alcançar o nível 50.",
+      objectives: ["Converse com o mentor.", "Complete três confrontos de treino."],
+      completionText: "O caminho foi desbloqueado.",
+    }),
   passive: z.object({ name: requiredTextSchema, description: requiredTextSchema }),
   skills: z.array(classSkillSchema),
 });

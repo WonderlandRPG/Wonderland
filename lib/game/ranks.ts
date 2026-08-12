@@ -27,7 +27,7 @@ export const adventureRanks = [
     description:
       "Aventureiros experientes, capazes de enfrentar ameaças consideráveis e assumir missões de maior responsabilidade.",
     access: ["Missões C", "Dungeons C", "Maior variedade de recompensas"],
-    atmosphere: "Orbes de mana",
+    atmosphere: "Orbes arcanos",
   },
   {
     key: "B",

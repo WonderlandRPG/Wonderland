@@ -141,7 +141,7 @@ export default async function CharactersPage({
                         HP <strong>{character.stats.maxHp}</strong>
                       </span>
                       <span>
-                        Mana <strong>{character.stats.maxMana}</strong>
+                        Recurso <strong>{character.characterClass.payload.resource.name}</strong>
                       </span>
                       <span>
                         INI <strong>{character.stats.initiative}</strong>

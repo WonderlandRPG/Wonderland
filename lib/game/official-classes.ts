@@ -221,7 +221,7 @@ const pathTechniques: Record<string, [PathTechniqueSeed, PathTechniqueSeed]> = {
     },
   ],
   arcanista: [
-    { name: "Barreira de Mana", mode: "shield", flavor: "Condensa Mana em proteção arcana." },
+    { name: "Barreira Arcana", mode: "shield", flavor: "Condensa energia arcana em proteção." },
     { name: "Ruptura Arcana", mode: "damage", flavor: "Desmonta a defesa inimiga com magia pura." },
   ],
   "linhagem-draconica": [
@@ -452,8 +452,8 @@ const classPaths: Record<
     {
       key: "arcanista",
       name: "Arcanista",
-      description: "Controle de Mana, escudos e magia pura.",
-      passive: "Ao terminar a rodada com Mana, recebe escudo arcano.",
+      description: "Controle de energia arcana, escudos e magia pura.",
+      passive: "Ao terminar a rodada com Energia Arcana, recebe escudo arcano.",
     },
   ],
   feiticeiro: [

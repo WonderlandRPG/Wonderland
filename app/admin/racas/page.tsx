@@ -79,7 +79,7 @@ export default async function RacesPage({
         <div className="race-catalog-hero__actions">
           <form action={importOfficialRacesAction}>
             <button className="button button--dark" type="submit">
-              Sincronizar 11 raças oficiais
+              Sincronizar raças oficiais
             </button>
           </form>
           <Link className="button button--primary" href="/admin/racas/nova">
@@ -145,10 +145,7 @@ export default async function RacesPage({
               <dl>
                 <div>
                   <dt>Recurso</dt>
-                  <dd>
-                    {race.payload.resource?.name ??
-                      (race.payload.baseMana > 0 ? "Mana" : "Sem recurso")}
-                  </dd>
+                  <dd>{race.payload.resource?.name ?? "Sem recurso"}</dd>
                 </div>
                 <div>
                   <dt>Habilidades</dt>

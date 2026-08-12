@@ -242,7 +242,7 @@ export function RaceEditor({
         <EditorSection
           description="Valores iniciais recebidos por todo personagem desta raça."
           index="02"
-          title="Vida, Mana e atributos"
+          title="Vida, recurso e atributos"
         >
           <div className="race-vitals-editor">
             <EditorField label="HP inicial">
@@ -256,17 +256,11 @@ export function RaceEditor({
                 value={payload.baseHp}
               />
             </EditorField>
-            <EditorField label="Mana inicial">
-              <input
-                min={0}
-                onChange={(event) =>
-                  setPayload((current) => ({ ...current, baseMana: Number(event.target.value) }))
-                }
-                required
-                type="number"
-                value={payload.baseMana}
-              />
-            </EditorField>
+            <div className="race-field">
+              <span>Recurso racial</span>
+              <strong>{payload.resource?.name ?? "Configure na mecânica"}</strong>
+              <small>Cada raça usa seu próprio recurso.</small>
+            </div>
             <div className={`race-points-meter ${bonusIsValid ? "is-valid" : "is-invalid"}`}>
               <span>Pontos raciais usados</span>
               <strong>

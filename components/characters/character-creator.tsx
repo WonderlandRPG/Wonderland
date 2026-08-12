@@ -208,7 +208,7 @@ export function CharacterCreator({
             <span>Raça escolhida</span>
             <strong>{selectedRace?.name ?? "Nenhuma"}</strong>
             <small>
-              HP {selectedRace?.payload.baseHp ?? 0} · Mana {selectedRace?.payload.baseMana ?? 0}
+              HP {selectedRace?.payload.baseHp ?? 0} · Recurso {selectedRace?.payload.resource?.name ?? "racial"}
             </small>
           </article>
           <article>

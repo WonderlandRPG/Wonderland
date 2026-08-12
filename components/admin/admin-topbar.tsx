@@ -25,6 +25,7 @@ function getRouteHeading(pathname: string) {
     ["/admin/presenca", "Jogo", "Recompensas de presença"],
     ["/admin/historico", "Auditoria", "Histórico administrativo"],
     ["/admin/itens", "Economia", "Catálogo de itens"],
+    ["/admin/importar", "Conteúdo do jogo", "Chat de conteúdo"],
     ["/admin/racas", "Conteúdo do jogo", "Raças"],
     ["/admin/classes", "Conteúdo do jogo", "Classes"],
   ] as const;

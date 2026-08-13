@@ -18,14 +18,14 @@ export async function executeRewardCommandAction(formData: FormData) {
   const value = kind === "xp" ? "" : valueRaw.trim();
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/console?status=erro");
-  const { error } = await client.rpc("v2_admin_grant_reward_command", {
+  const { data, error } = await client.rpc("v2_admin_grant_reward_command", {
     p_target_name: target.trim(),
     p_reward_type: kind,
     p_reward_name: value,
     p_amount: amount,
   });
   if (error) redirect(`/admin/console?status=${encodeURIComponent(error.message)}`);
-  revalidatePath("/personagens");
+  revalidatePath("/personagens", "layout");
   revalidatePath("/ranking");
-  redirect("/admin/console?status=sucesso");
+  redirect(`/admin/console?status=sucesso&afetados=${Number(data ?? 0)}`);
 }

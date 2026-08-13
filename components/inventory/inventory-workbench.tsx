@@ -33,7 +33,7 @@ export function InventoryWorkbench({
   slots: Slot[];
   items: InventoryItem[];
 }) {
-  const [view, setView] = useState<"all" | "bag" | "equipped">("all");
+  const [view, setView] = useState<"all" | "bag" | "equipped" | "rewards">("all");
   const [search, setSearch] = useState("");
   const [slotFilter, setSlotFilter] = useState("");
   const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
@@ -68,7 +68,9 @@ export function InventoryWorkbench({
             ? !item.equippedSlot
             : view === "equipped"
               ? Boolean(item.equippedSlot)
-              : true) &&
+              : view === "rewards"
+                ? item.slot === "title"
+                : true) &&
           (!slotFilter ||
             item.compatibleSlots.includes(slotFilter) ||
             item.equippedSlot === slotFilter) &&
@@ -195,6 +197,13 @@ export function InventoryWorkbench({
               >
                 Equipados
               </button>
+              <button
+                className={view === "rewards" ? "is-active" : ""}
+                onClick={() => setView("rewards")}
+                type="button"
+              >
+                Recompensas ADM
+              </button>
             </nav>
           </header>
           <div className="inventory-search">
@@ -231,6 +240,9 @@ export function InventoryWorkbench({
                     {item.rarityLabel} · {item.slotLabel}
                   </small>
                   <strong>{item.name}</strong>
+                  {item.slot === "title" ? (
+                    <em className="inventory-reward-tag">Presente ADM</em>
+                  ) : null}
                   <footer>
                     {item.equippedSlot ? <span>✓ Equipado</span> : <span>Na mochila</span>}
                     <i>Ver detalhes</i>

@@ -3,7 +3,12 @@
 import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
 import { getPvpMatchStateAction, performPvpAction } from "@/app/arena/pvp-match-actions";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
-import { getEffectiveAttributes } from "@/lib/game/combat";
+import {
+  calculateDamage,
+  calculateScaledPower,
+  defaultCombatRules,
+  getEffectiveAttributes,
+} from "@/lib/game/combat";
 import { getMovementRange, tacticalGrid } from "@/lib/game/arena";
 import type { ArenaCharacter, ArenaPosition, PvpRoomSnapshot } from "@/lib/game/arena-types";
 
@@ -33,12 +38,13 @@ export function PvpBattle({
   const [clock, setClock] = useState(() => Date.now());
   const seconds = Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
 
-  const refresh = useCallback(() => {
-    startTransition(async () => {
-      const result = await getPvpMatchStateAction(matchId);
-      if (result.ok) setRoom(result.data);
-      else setError(result.message);
-    });
+  const refresh = useCallback(async () => {
+    const result = await getPvpMatchStateAction(matchId);
+    if (result.ok) {
+      setRoom((current) => (result.data.version > current.version ? result.data : current));
+    } else {
+      setError(result.message);
+    }
   }, [matchId]);
 
   useEffect(() => {
@@ -48,10 +54,10 @@ export function PvpBattle({
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "v2_pvp_matches", filter: `id=eq.${matchId}` },
-        refresh,
+        () => void refresh(),
       )
       .subscribe();
-    const fallback = window.setInterval(refresh, 2500);
+    const fallback = window.setInterval(() => void refresh(), 2500);
     return () => {
       window.clearInterval(fallback);
       if (client && channel) void client.removeChannel(channel);
@@ -93,6 +99,15 @@ export function PvpBattle({
     [],
   );
   const finished = state.status === "finished";
+  const ownAttributes = getEffectiveAttributes(own);
+  const enemyAttributes = getEffectiveAttributes(enemy);
+  const basicDamageType = ownAttributes.INT > ownAttributes.FOR ? "magic" : "physical";
+  const basicDamage = calculateDamage(
+    (basicDamageType === "magic" ? ownAttributes.INT : ownAttributes.FOR) *
+      defaultCombatRules.basicAttackMultiplier,
+    basicDamageType,
+    enemyAttributes,
+  );
 
   function skillResource(skill: ArenaCharacter["skills"][number]) {
     if (skill.resource === "life") {
@@ -251,7 +266,7 @@ export function PvpBattle({
               }
               origin="ATAQUE BÁSICO"
               name="Atacar"
-              detail={`Alcance ${character.basicAttackRange} · distância ${distance}`}
+              detail={`${basicDamage} de dano ${basicDamageType === "magic" ? "mágico" : "físico"} · alcance ${character.basicAttackRange}`}
               status={
                 distance > character.basicAttackRange
                   ? "Fora de alcance"
@@ -277,12 +292,14 @@ export function PvpBattle({
                   ? `CDR ${own.cooldowns["defesa-total"]}`
                   : "Disponível"
               }
+              cooldown={own.cooldowns["defesa-total"] ?? 0}
               tone="defense"
               onClick={() => submit({ kind: "defend" })}
             />
             {character.raceAbilities.map((skill) => {
               const resource = skillResource(skill);
               const cooldown = own.cooldowns[skill.key] ?? 0;
+              const preview = describeSkillPower(skill, ownAttributes, enemyAttributes, own.maxHp);
               return (
                 <ActionButton
                   key={skill.key}
@@ -297,7 +314,7 @@ export function PvpBattle({
                   }
                   origin="HABILIDADE DE RAÇA"
                   name={skill.name}
-                  detail={`${skill.cost ? `${skill.cost} ${resource.label}` : "Sem custo"} · alcance ${skill.range}`}
+                  detail={`${preview} · ${skill.cost ? `${skill.cost} ${resource.label}` : "Sem custo"} · alcance ${skill.range}`}
                   status={
                     cooldown > 0
                       ? `CDR ${cooldown} rodada${cooldown === 1 ? "" : "s"}`
@@ -311,6 +328,7 @@ export function PvpBattle({
                               ? "Aguarde seu turno"
                               : "Disponível"
                   }
+                  cooldown={cooldown}
                   tone="race"
                   onClick={() => submit({ kind: "race", key: skill.key })}
                 />
@@ -319,6 +337,7 @@ export function PvpBattle({
             {character.skills.map((skill) => {
               const resource = skillResource(skill);
               const cooldown = own.cooldowns[skill.key] ?? 0;
+              const preview = describeSkillPower(skill, ownAttributes, enemyAttributes, own.maxHp);
               return (
                 <ActionButton
                   key={skill.key}
@@ -333,7 +352,7 @@ export function PvpBattle({
                   }
                   origin="HABILIDADE DE CLASSE"
                   name={skill.name}
-                  detail={`${skill.cost ? `${skill.cost} ${resource.label}` : "Sem custo"} · alcance ${skill.range}`}
+                  detail={`${preview} · ${skill.cost ? `${skill.cost} ${resource.label}` : "Sem custo"} · alcance ${skill.range}`}
                   status={
                     cooldown > 0
                       ? `CDR ${cooldown} rodada${cooldown === 1 ? "" : "s"}`
@@ -347,6 +366,7 @@ export function PvpBattle({
                               ? "Aguarde seu turno"
                               : "Disponível"
                   }
+                  cooldown={cooldown}
                   tone="class"
                   onClick={() => submit({ kind: "class", key: skill.key })}
                 />
@@ -409,6 +429,7 @@ function ActionButton({
   name,
   detail,
   status,
+  cooldown = 0,
   tone,
   onClick,
 }: {
@@ -417,17 +438,56 @@ function ActionButton({
   name: string;
   detail: string;
   status: string;
+  cooldown?: number;
   tone: "move" | "basic" | "defense" | "race" | "class" | "item";
   onClick(): void;
 }) {
   return (
-    <button className={`pvp-action is-${tone}`} disabled={disabled} onClick={onClick} type="button">
+    <button
+      className={`pvp-action is-${tone} ${cooldown > 0 ? "is-cooldown" : ""}`}
+      disabled={disabled}
+      onClick={onClick}
+      type="button"
+    >
+      {cooldown > 0 ? (
+        <span className="pvp-action__cooldown" aria-label={`${cooldown} rodadas de recarga`}>
+          <b>{cooldown}</b>
+          <small>RODADAS</small>
+        </span>
+      ) : null}
       <small>{origin}</small>
       <strong>{name}</strong>
       <span>{detail}</span>
       <em className={status === "Disponível" ? "is-ready" : ""}>{status}</em>
     </button>
   );
+}
+
+function describeSkillPower(
+  skill: ArenaCharacter["skills"][number],
+  actorAttributes: ReturnType<typeof getEffectiveAttributes>,
+  targetAttributes: ReturnType<typeof getEffectiveAttributes>,
+  actorMaxHp: number,
+) {
+  const operation = skill.operations[0];
+  if (!operation) return skill.playerDescription;
+  const scaling = operation.scaling.length ? operation.scaling : skill.scaling;
+  const raw = operation.base + calculateScaledPower(actorAttributes, scaling);
+  if (operation.operation === "DAMAGE") {
+    const type = operation.damageType === "none" ? "physical" : operation.damageType;
+    const amount = calculateDamage(raw, type, targetAttributes);
+    const label = type === "magic" ? "mágico" : type === "true" ? "verdadeiro" : "físico";
+    return `${amount} de dano ${label}`;
+  }
+  if (operation.operation === "HEAL") {
+    return `${raw || Math.round(actorMaxHp * 0.08)} de cura`;
+  }
+  if (operation.operation === "SHIELD") {
+    return `${raw || Math.round(actorAttributes.ARC)} de escudo`;
+  }
+  const modifier = operation.modifiers[0];
+  if (modifier) return `${modifier.attribute} ${modifier.value >= 0 ? "+" : ""}${modifier.value}`;
+  return skill.playerDescription;
 }
 function PvpFighter({
   fighter,

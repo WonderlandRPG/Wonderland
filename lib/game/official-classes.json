@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 62781)
-Total output lines: 7310
-
 [
   {
     "name": "Bárbaro",
@@ -747,20 +744,6 @@ Total output lines: 7310
           "chance": 100,
           "maxStacks": 0,
           "operations": [
-            {
-              "operation": "MOVE",
-              "target": "self",
-              "base": 0,
-              "scaling": [],
-              "damageType": "none",
-              "status": "",
-              "duration": 0,
-              "chance": 100,
-              "stacks": 0,
-              "maxStacks": 0,
-              "distance": 3,
-              "modifiers": []
-            },
             {
               "operation": "DAMAGE",
               "target": "enemy",
@@ -1770,7 +1753,3815 @@ Total output lines: 7310
           "scaling": [],
           "reachText": "3 casa(s)",
           "conditions": [],
-          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Ex…32781 tokens truncated…nal-2",
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute TAUNT com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Provoca um inimigo em até 3 casas por 2 rodadas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "TAUNT",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "provocado",
+              "duration": 2,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "linha-intransponivel",
+          "name": "Linha Intransponível",
+          "level": 25,
+          "category": "Controle",
+          "type": "Ativa",
+          "effect": "Imobiliza inimigos em até 2 casas por 1 rodada.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "area",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 40,
+          "cooldown": 4,
+          "range": 0,
+          "area": 2,
+          "duration": 1,
+          "scaling": [],
+          "reachText": "0 casas; área de 2 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute ROOT com 100% de chance. A duração é de 1 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Imobiliza inimigos em até 2 casas por 1 rodada.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "ROOT",
+              "target": "area",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "imobilizado",
+              "duration": 1,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "fortaleza",
+          "name": "Fortaleza",
+          "level": 50,
+          "category": "Escudo",
+          "type": "Ativa",
+          "effect": "Recebe escudo igual a 2x DEF por 3 rodadas.",
+          "kind": "shield",
+          "damageType": "none",
+          "target": "self",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 100,
+          "cooldown": 6,
+          "range": 0,
+          "area": 0,
+          "duration": 3,
+          "scaling": [
+            {
+              "attribute": "DEF",
+              "multiplier": 2
+            }
+          ],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute SHIELD com 100% de chance. A duração é de 3 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Recebe escudo igual a 2x DEF por 3 rodadas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "SHIELD",
+              "target": "self",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "DEF",
+                  "multiplier": 2
+                }
+              ],
+              "damageType": "none",
+              "status": "",
+              "duration": 3,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "key": "bastiao",
+          "name": "Bastião",
+          "description": "Defesa absoluta, provocação e bloqueio.",
+          "passive": {
+            "name": "Doutrina: Bastião",
+            "description": "Recebe menos dano enquanto protege um aliado."
+          },
+          "skills": [
+            {
+              "key": "bastiao-1",
+              "name": "Muralha Viva",
+              "level": 15,
+              "category": "Escudo",
+              "type": "Ativa",
+              "effect": "Transforma a própria armadura em uma fortaleza. Concede escudo de 1.25x DEF por 2 rodadas.",
+              "kind": "shield",
+              "damageType": "none",
+              "target": "self",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 0,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "DEF",
+                  "multiplier": 1.25
+                }
+              ],
+              "reachText": "0 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute SHIELD com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Transforma a própria armadura em uma fortaleza. Concede escudo de 1.25x DEF por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "SHIELD",
+                  "target": "self",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "DEF",
+                      "multiplier": 1.25
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            },
+            {
+              "key": "bastiao-2",
+              "name": "Desafio Irrecusável",
+              "level": 45,
+              "category": "Controle",
+              "type": "Ativa",
+              "effect": "Obriga o inimigo a enfrentar o Bastião. Aplica bastiao por 1 rodada.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 1,
+              "scaling": [
+                {
+                  "attribute": "DEF",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute APPLY_STATUS com 100% de chance. A duração é de 1 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Obriga o inimigo a enfrentar o Bastião. Aplica bastiao por 1 rodada.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "APPLY_STATUS",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "DEF",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "bastiao",
+                  "duration": 1,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "cavaleiro-negro",
+          "name": "Cavaleiro Negro",
+          "description": "Sacrifica proteção para aplicar pressão sombria.",
+          "passive": {
+            "name": "Doutrina: Cavaleiro Negro",
+            "description": "Perder HP fortalece o próximo ataque físico."
+          },
+          "skills": [
+            {
+              "key": "cavaleiro-negro-1",
+              "name": "Lâmina do Sacrifício",
+              "level": 15,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Converte vitalidade perdida em um golpe sombrio. Causa dano 1.25x DEF.",
+              "kind": "damage",
+              "damageType": "magic",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "DEF",
+                  "multiplier": 1.25
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Converte vitalidade perdida em um golpe sombrio. Causa dano 1.25x DEF.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "DEF",
+                      "multiplier": 1.25
+                    }
+                  ],
+                  "damageType": "magic",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            },
+            {
+              "key": "cavaleiro-negro-2",
+              "name": "Armadura Profana",
+              "level": 45,
+              "category": "Buff",
+              "type": "Ativa",
+              "effect": "Aceita a corrupção para ampliar o poder físico. Aumenta DEF em 15 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "self",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 0,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "DEF",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "0 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute BUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Aceita a corrupção para ampliar o poder físico. Aumenta DEF em 15 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "BUFF",
+                  "target": "self",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "DEF",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "DEF",
+                      "value": 15
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Arqueiro",
+    "slug": "arqueiro",
+    "payload": {
+      "engineContractVersion": 1,
+      "description": "Atirador de longo alcance que acumula Foco ao manter distância.",
+      "imageUrl": "",
+      "difficulty": 3,
+      "complexity": "3/5 estrelas",
+      "specialization": "Dano físico à distância",
+      "primaryAttributes": [
+        "INI",
+        "FOR"
+      ],
+      "affinities": {
+        "FOR": 5,
+        "DEF": 3,
+        "RES": 3,
+        "INI": 5,
+        "INT": 2,
+        "ARC": 2
+      },
+      "mechanic": {
+        "name": "Foco",
+        "description": "Ganha 10 Foco ao causar dano a 3 ou mais casas de distância. Disparos especiais consomem Foco no momento da execução."
+      },
+      "resource": {
+        "name": "Foco",
+        "initial": 30,
+        "maximum": 100,
+        "generationRules": [
+          "Ganha 10 Foco ao causar dano a 3 ou mais casas de distância."
+        ],
+        "consumptionRules": [
+          "Disparos especiais consomem Foco no momento da execução."
+        ],
+        "resetRules": [
+          "No início do combate, Foco retorna a 30."
+        ],
+        "generationEvents": [
+          {
+            "trigger": "BASIC_ATTACK_HIT",
+            "amount": 10,
+            "limitPerAction": 1
+          }
+        ]
+      },
+      "passive": {
+        "name": "Olho de Águia",
+        "description": "Ataques realizados a 3 ou mais casas geram 10 Foco."
+      },
+      "progression": [
+        {
+          "key": "olho-de-aguia",
+          "name": "Olho de Águia",
+          "level": 1,
+          "category": "Buff",
+          "type": "Passiva",
+          "effect": "Ataques realizados a 3 ou mais casas geram 10 Foco.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "none",
+          "resourceKey": "class",
+          "cost": 0,
+          "cooldown": 0,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute REACTION com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Ataques realizados a 3 ou mais casas geram 10 Foco.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "REACTION",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "olho-de-aguia",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "tiro-preciso",
+          "name": "Tiro Preciso",
+          "level": 1,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,2x INI de dano físico a um inimigo em até 6 casas.",
+          "kind": "damage",
+          "damageType": "physical",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 15,
+          "cooldown": 1,
+          "range": 6,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INI",
+              "multiplier": 1.2
+            }
+          ],
+          "reachText": "6 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,2x INI de dano físico a um inimigo em até 6 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.2
+                }
+              ],
+              "damageType": "physical",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "flecha-restritiva",
+          "name": "Flecha Restritiva",
+          "level": 10,
+          "category": "Controle",
+          "type": "Ativa",
+          "effect": "Tem 85% de chance de imobilizar um inimigo em até 6 casas por 1 rodada.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 25,
+          "cooldown": 3,
+          "range": 6,
+          "area": 0,
+          "duration": 1,
+          "scaling": [],
+          "reachText": "6 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute ROOT com 85% de chance. A duração é de 1 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Tem 85% de chance de imobilizar um inimigo em até 6 casas por 1 rodada.",
+          "chance": 85,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "ROOT",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "imobilizado",
+              "duration": 1,
+              "chance": 85,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "chuva-de-flechas",
+          "name": "Chuva de Flechas",
+          "level": 25,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 0,9x INI de dano físico em uma área de 2 casas.",
+          "kind": "damage",
+          "damageType": "physical",
+          "target": "area",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 45,
+          "cooldown": 4,
+          "range": 5,
+          "area": 2,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INI",
+              "multiplier": 0.9
+            }
+          ],
+          "reachText": "5 casas; área de 2 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 0,9x INI de dano físico em uma área de 2 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "area",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0.9
+                }
+              ],
+              "damageType": "physical",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "tiro-do-horizonte",
+          "name": "Tiro do Horizonte",
+          "level": 50,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,6x INI de dano verdadeiro a um inimigo em até 10 casas.",
+          "kind": "damage",
+          "damageType": "true",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 100,
+          "cooldown": 6,
+          "range": 10,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INI",
+              "multiplier": 1.6
+            }
+          ],
+          "reachText": "10 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,6x INI de dano verdadeiro a um inimigo em até 10 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.6
+                }
+              ],
+              "damageType": "true",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "key": "atirador",
+          "name": "Atirador",
+          "description": "Precisão extrema e dano em alvo único.",
+          "passive": {
+            "name": "Doutrina: Atirador",
+            "description": "Ataques a longa distância acumulam Precisão."
+          },
+          "skills": [
+            {
+              "key": "atirador-1",
+              "name": "Mira Implacável",
+              "level": 15,
+              "category": "Buff",
+              "type": "Ativa",
+              "effect": "Estabiliza a postura e elimina qualquer hesitação. Aumenta INI em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "self",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 0,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "0 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute BUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Estabiliza a postura e elimina qualquer hesitação. Aumenta INI em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "BUFF",
+                  "target": "self",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "INI",
+                      "value": 10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "atirador-2",
+              "name": "Disparo Perfurante",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Dispara um projétil de altíssima precisão. Causa dano 1.8x INI.",
+              "kind": "damage",
+              "damageType": "physical",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Dispara um projétil de altíssima precisão. Causa dano 1.8x INI.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "physical",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "cacador",
+          "name": "Caçador",
+          "description": "Marcas, armadilhas e controle de território.",
+          "passive": {
+            "name": "Doutrina: Caçador",
+            "description": "Alvos marcados não podem ocultar sua posição."
+          },
+          "skills": [
+            {
+              "key": "cacador-1",
+              "name": "Marca da Presa",
+              "level": 15,
+              "category": "Debuff",
+              "type": "Ativa",
+              "effect": "Expõe a presa e seus pontos vulneráveis. Reduz INI do alvo em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Expõe a presa e seus pontos vulneráveis. Reduz INI do alvo em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DEBUFF",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "INI",
+                      "value": -10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "cacador-2",
+              "name": "Armadilha de Contenção",
+              "level": 45,
+              "category": "Controle",
+              "type": "Ativa",
+              "effect": "Prende o alvo no terreno preparado. Aplica cacador por 1 rodada.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 1,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute APPLY_STATUS com 100% de chance. A duração é de 1 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Prende o alvo no terreno preparado. Aplica cacador por 1 rodada.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "APPLY_STATUS",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "cacador",
+                  "duration": 1,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Assassino",
+    "slug": "assassino",
+    "payload": {
+      "engineContractVersion": 1,
+      "description": "Especialista em eliminar alvos marcados e reposicionar-se pelas sombras.",
+      "imageUrl": "",
+      "difficulty": 4,
+      "complexity": "4/5 estrelas",
+      "specialization": "Explosão e execução",
+      "primaryAttributes": [
+        "INI",
+        "FOR"
+      ],
+      "affinities": {
+        "FOR": 5,
+        "DEF": 3,
+        "RES": 3,
+        "INI": 5,
+        "INT": 2,
+        "ARC": 2
+      },
+      "mechanic": {
+        "name": "Sombra",
+        "description": "Ganha 15 Sombra ao atacar um alvo que ainda não agiu na rodada. Técnicas furtivas consomem Sombra após a validação da condição."
+      },
+      "resource": {
+        "name": "Sombra",
+        "initial": 40,
+        "maximum": 100,
+        "generationRules": [
+          "Ganha 15 Sombra ao atacar um alvo que ainda não agiu na rodada."
+        ],
+        "consumptionRules": [
+          "Técnicas furtivas consomem Sombra após a validação da condição."
+        ],
+        "resetRules": [
+          "No início do combate, Sombra retorna a 40."
+        ],
+        "generationEvents": [
+          {
+            "trigger": "BASIC_ATTACK_HIT",
+            "amount": 10,
+            "limitPerAction": 1
+          }
+        ]
+      },
+      "passive": {
+        "name": "Primeiro Sangue",
+        "description": "Uma vez por rodada, atacar antes do alvo gera 15 Sombra."
+      },
+      "progression": [
+        {
+          "key": "primeiro-sangue",
+          "name": "Primeiro Sangue",
+          "level": 1,
+          "category": "Reação",
+          "type": "Passiva",
+          "effect": "Uma vez por rodada, atacar antes do alvo gera 15 Sombra.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "none",
+          "resourceKey": "class",
+          "cost": 0,
+          "cooldown": 1,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute REACTION com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Uma vez por rodada, atacar antes do alvo gera 15 Sombra.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "REACTION",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "primeiro-sangue",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "corte-velado",
+          "name": "Corte Velado",
+          "level": 1,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,3x INI de dano físico a um inimigo adjacente.",
+          "kind": "damage",
+          "damageType": "physical",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 20,
+          "cooldown": 1,
+          "range": 1,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INI",
+              "multiplier": 1.3
+            }
+          ],
+          "reachText": "1 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,3x INI de dano físico a um inimigo adjacente.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.3
+                }
+              ],
+              "damageType": "physical",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "passo-sombrio",
+          "name": "Passo Sombrio",
+          "level": 10,
+          "category": "Mobilidade",
+          "type": "Ativa",
+          "effect": "Teleporta para uma casa livre adjacente a um inimigo em até 5 casas.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 25,
+          "cooldown": 3,
+          "range": 5,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "5 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute TELEPORT com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Teleporta para uma casa livre adjacente a um inimigo em até 5 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "TELEPORT",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "marca-da-morte",
+          "name": "Marca da Morte",
+          "level": 25,
+          "category": "Debuff",
+          "type": "Ativa",
+          "effect": "Marca um inimigo por 3 rodadas; ele recebe 20% mais dano do Assassino.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 35,
+          "cooldown": 4,
+          "range": 3,
+          "area": 0,
+          "duration": 3,
+          "scaling": [],
+          "reachText": "3 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 3 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Marca um inimigo por 3 rodadas; ele recebe 20% mais dano do Assassino.",
+          "chance": 100,
+          "maxStacks": 1,
+          "operations": [
+            {
+              "operation": "DEBUFF",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "marca-da-morte",
+              "duration": 3,
+              "chance": 100,
+              "stacks": 1,
+              "maxStacks": 1,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "execucao",
+          "name": "Execução",
+          "level": 50,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Contra alvo com até 35% de HP, causa 1,8x INI de dano verdadeiro.",
+          "kind": "damage",
+          "damageType": "true",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 100,
+          "cooldown": 6,
+          "range": 1,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INI",
+              "multiplier": 1.8
+            }
+          ],
+          "reachText": "1 casa(s)",
+          "conditions": [
+            "O alvo deve estar com 35% ou menos do HP máximo."
+          ],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Contra alvo com até 35% de HP, causa 1,8x INI de dano verdadeiro.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.8
+                }
+              ],
+              "damageType": "true",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "key": "executor",
+          "name": "Executor",
+          "description": "Explosão de dano contra inimigos enfraquecidos.",
+          "passive": {
+            "name": "Doutrina: Executor",
+            "description": "Dano aumenta contra alvos abaixo de 35% do HP."
+          },
+          "skills": [
+            {
+              "key": "executor-1",
+              "name": "Selo da Execução",
+              "level": 15,
+              "category": "Debuff",
+              "type": "Ativa",
+              "effect": "Marca o alvo para um fim rápido. Reduz INI do alvo em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Marca o alvo para um fim rápido. Reduz INI do alvo em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DEBUFF",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "INI",
+                      "value": -10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "executor-2",
+              "name": "Golpe Terminal",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Ataca o ponto vital revelado pelo selo. Causa dano 1.8x INI.",
+              "kind": "damage",
+              "damageType": "physical",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Ataca o ponto vital revelado pelo selo. Causa dano 1.8x INI.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "physical",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "sombra",
+          "name": "Sombra",
+          "description": "Mobilidade, furtividade e ataques de oportunidade.",
+          "passive": {
+            "name": "Doutrina: Sombra",
+            "description": "Reposicionar-se fortalece o próximo golpe."
+          },
+          "skills": [
+            {
+              "key": "sombra-1",
+              "name": "Passo Sombrio",
+              "level": 15,
+              "category": "Mobilidade",
+              "type": "Ativa",
+              "effect": "Desaparece e reaparece em posição vantajosa. Move o usuário em até 2 casas sem provocar reação.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "self",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 0,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "0 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute MOVE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Desaparece e reaparece em posição vantajosa. Move o usuário em até 2 casas sem provocar reação.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "MOVE",
+                  "target": "self",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 2,
+                  "modifiers": []
+                }
+              ]
+            },
+            {
+              "key": "sombra-2",
+              "name": "Lâmina do Ocaso",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Ataca ao emergir da escuridão. Causa dano 1.8x INI.",
+              "kind": "damage",
+              "damageType": "physical",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Ataca ao emergir da escuridão. Causa dano 1.8x INI.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "physical",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Ladino",
+    "slug": "ladino",
+    "payload": {
+      "engineContractVersion": 1,
+      "description": "Manipulador de campo que cria vantagens com truques e efeitos acumuláveis.",
+      "imageUrl": "",
+      "difficulty": 4,
+      "complexity": "4/5 estrelas",
+      "specialization": "Controle e oportunismo",
+      "primaryAttributes": [
+        "INI",
+        "ARC"
+      ],
+      "affinities": {
+        "FOR": 2,
+        "DEF": 3,
+        "RES": 3,
+        "INI": 5,
+        "INT": 2,
+        "ARC": 5
+      },
+      "mechanic": {
+        "name": "Oportunidade",
+        "description": "Ganha 1 Oportunidade quando um inimigo recebe um debuff, máximo de uma por ação. Truques consomem unidades inteiras de Oportunidade."
+      },
+      "resource": {
+        "name": "Oportunidade",
+        "initial": 2,
+        "maximum": 5,
+        "generationRules": [
+          "Ganha 1 Oportunidade quando um inimigo recebe um debuff, máximo de uma por ação."
+        ],
+        "consumptionRules": [
+          "Truques consomem unidades inteiras de Oportunidade."
+        ],
+        "resetRules": [
+          "No início do combate, Oportunidade retorna a 2."
+        ],
+        "generationEvents": [
+          {
+            "trigger": "BASIC_ATTACK_HIT",
+            "amount": 1,
+            "limitPerAction": 1
+          }
+        ]
+      },
+      "passive": {
+        "name": "Jogo Sujo",
+        "description": "Quando um inimigo recebe um debuff, ganha 1 Oportunidade, uma vez por ação."
+      },
+      "progression": [
+        {
+          "key": "jogo-sujo",
+          "name": "Jogo Sujo",
+          "level": 1,
+          "category": "Reação",
+          "type": "Passiva",
+          "effect": "Quando um inimigo recebe um debuff, ganha 1 Oportunidade, uma vez por ação.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "none",
+          "resourceKey": "class",
+          "cost": 0,
+          "cooldown": 0,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute REACTION com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Quando um inimigo recebe um debuff, ganha 1 Oportunidade, uma vez por ação.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "REACTION",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "jogo-sujo",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "estocada-oportuna",
+          "name": "Estocada Oportuna",
+          "level": 1,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,1x INI de dano físico a um inimigo adjacente.",
+          "kind": "damage",
+          "damageType": "physical",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 1,
+          "cooldown": 1,
+          "range": 1,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INI",
+              "multiplier": 1.1
+            }
+          ],
+          "reachText": "1 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,1x INI de dano físico a um inimigo adjacente.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.1
+                }
+              ],
+              "damageType": "physical",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "po-de-cegueira",
+          "name": "Pó de Cegueira",
+          "level": 10,
+          "category": "Debuff",
+          "type": "Ativa",
+          "effect": "Inimigos na área têm 80% de chance de receber Cegueira por 2 rodadas.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "area",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 1,
+          "cooldown": 3,
+          "range": 3,
+          "area": 1,
+          "duration": 2,
+          "scaling": [],
+          "reachText": "3 casas; área de 1 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 80% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Inimigos na área têm 80% de chance de receber Cegueira por 2 rodadas.",
+          "chance": 80,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DEBUFF",
+              "target": "area",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "cego",
+              "duration": 2,
+              "chance": 80,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "gancho",
+          "name": "Gancho",
+          "level": 25,
+          "category": "Controle",
+          "type": "Ativa",
+          "effect": "Puxa o inimigo 2 casas na direção do Ladino; falha se a rota estiver bloqueada.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 2,
+          "cooldown": 3,
+          "range": 4,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "4 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute PUSH com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Puxa o inimigo 2 casas na direção do Ladino; falha se a rota estiver bloqueada.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "PUSH",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 2,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "plano-perfeito",
+          "name": "Plano Perfeito",
+          "level": 50,
+          "category": "Buff",
+          "type": "Ativa",
+          "effect": "Por 3 rodadas, seus debuffs têm +20 pontos percentuais de chance, limitados a 100%.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 5,
+          "cooldown": 6,
+          "range": 0,
+          "area": 0,
+          "duration": 3,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute BUFF com 100% de chance. A duração é de 3 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Por 3 rodadas, seus debuffs têm +20 pontos percentuais de chance, limitados a 100%.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "BUFF",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "plano-perfeito",
+              "duration": 3,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "key": "duelista",
+          "name": "Duelista",
+          "description": "Combate ágil, contra-ataques e precisão.",
+          "passive": {
+            "name": "Doutrina: Duelista",
+            "description": "Esquivar habilita uma reação ofensiva."
+          },
+          "skills": [
+            {
+              "key": "duelista-1",
+              "name": "Convite ao Duelo",
+              "level": 15,
+              "category": "Debuff",
+              "type": "Ativa",
+              "effect": "Desafia o alvo e quebra sua concentração. Reduz INI do alvo em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Desafia o alvo e quebra sua concentração. Reduz INI do alvo em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DEBUFF",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "INI",
+                      "value": -10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "duelista-2",
+              "name": "Resposta Perfeita",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Transforma uma abertura em contra-ataque preciso. Causa dano 1.8x INI.",
+              "kind": "damage",
+              "damageType": "physical",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Transforma uma abertura em contra-ataque preciso. Causa dano 1.8x INI.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "physical",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "trapaceiro",
+          "name": "Trapaceiro",
+          "description": "Debuffs, itens e manipulação do campo.",
+          "passive": {
+            "name": "Doutrina: Trapaceiro",
+            "description": "O primeiro item de cada combate não consome a ação de item."
+          },
+          "skills": [
+            {
+              "key": "trapaceiro-1",
+              "name": "Bolsa de Truques",
+              "level": 15,
+              "category": "Debuff",
+              "type": "Ativa",
+              "effect": "Usa um artifício para enfraquecer o adversário. Reduz INI do alvo em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Usa um artifício para enfraquecer o adversário. Reduz INI do alvo em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DEBUFF",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "INI",
+                      "value": -10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "trapaceiro-2",
+              "name": "Saída Ensaiada",
+              "level": 45,
+              "category": "Mobilidade",
+              "type": "Ativa",
+              "effect": "Escapa da ameaça antes que o plano seja descoberto. Move o usuário em até 2 casas sem provocar reação.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "self",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 0,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INI",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "0 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute MOVE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Escapa da ameaça antes que o plano seja descoberto. Move o usuário em até 2 casas sem provocar reação.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "MOVE",
+                  "target": "self",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INI",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 2,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Monge",
+    "slug": "monge",
+    "payload": {
+      "engineContractVersion": 1,
+      "description": "Lutador móvel que encadeia técnicas e administra Chi.",
+      "imageUrl": "",
+      "difficulty": 4,
+      "complexity": "4/5 estrelas",
+      "specialization": "Combos e mobilidade",
+      "primaryAttributes": [
+        "FOR",
+        "ARC",
+        "INI"
+      ],
+      "affinities": {
+        "FOR": 5,
+        "DEF": 3,
+        "RES": 3,
+        "INI": 5,
+        "INT": 2,
+        "ARC": 5
+      },
+      "mechanic": {
+        "name": "Chi",
+        "description": "Ganha 1 Chi ao usar ataque básico, limitado a uma vez por rodada. Técnicas consomem Chi; ao fim do combate o Chi retorna a 3."
+      },
+      "resource": {
+        "name": "Chi",
+        "initial": 3,
+        "maximum": 6,
+        "generationRules": [
+          "Ganha 1 Chi ao usar ataque básico, limitado a uma vez por rodada."
+        ],
+        "consumptionRules": [
+          "Técnicas consomem Chi; ao fim do combate o Chi retorna a 3."
+        ],
+        "resetRules": [
+          "No início do combate, Chi retorna a 3."
+        ],
+        "generationEvents": [
+          {
+            "trigger": "BASIC_ATTACK_HIT",
+            "amount": 1,
+            "limitPerAction": 1
+          }
+        ]
+      },
+      "passive": {
+        "name": "Fluxo Contínuo",
+        "description": "O primeiro ataque básico da rodada gera 1 Chi."
+      },
+      "progression": [
+        {
+          "key": "fluxo-continuo",
+          "name": "Fluxo Contínuo",
+          "level": 1,
+          "category": "Reação",
+          "type": "Passiva",
+          "effect": "O primeiro ataque básico da rodada gera 1 Chi.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "none",
+          "resourceKey": "class",
+          "cost": 0,
+          "cooldown": 1,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute REACTION com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "O primeiro ataque básico da rodada gera 1 Chi.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "REACTION",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "fluxo-continuo",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "palma-ressonante",
+          "name": "Palma Ressonante",
+          "level": 1,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,15x FOR de dano físico a um inimigo adjacente.",
+          "kind": "damage",
+          "damageType": "physical",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 1,
+          "cooldown": 1,
+          "range": 1,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "FOR",
+              "multiplier": 1.15
+            }
+          ],
+          "reachText": "1 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,15x FOR de dano físico a um inimigo adjacente.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "FOR",
+                  "multiplier": 1.15
+                }
+              ],
+              "damageType": "physical",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "passo-do-vento",
+          "name": "Passo do Vento",
+          "level": 10,
+          "category": "Mobilidade",
+          "type": "Ativa",
+          "effect": "Move até 2 casas sem provocar reações de movimento.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 1,
+          "cooldown": 2,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute MOVE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Move até 2 casas sem provocar reações de movimento.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "MOVE",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 2,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "selo-do-silencio",
+          "name": "Selo do Silêncio",
+          "level": 25,
+          "category": "Controle",
+          "type": "Ativa",
+          "effect": "Tem 90% de chance de silenciar um inimigo adjacente por 1 rodada.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 2,
+          "cooldown": 4,
+          "range": 1,
+          "area": 0,
+          "duration": 1,
+          "scaling": [],
+          "reachText": "1 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute SILENCE com 90% de chance. A duração é de 1 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Tem 90% de chance de silenciar um inimigo adjacente por 1 rodada.",
+          "chance": 90,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "SILENCE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "silenciado",
+              "duration": 1,
+              "chance": 90,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "cem-golpes",
+          "name": "Cem Golpes",
+          "level": 50,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,7x FOR de dano verdadeiro a um inimigo adjacente.",
+          "kind": "damage",
+          "damageType": "true",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 6,
+          "cooldown": 6,
+          "range": 1,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "FOR",
+              "multiplier": 1.7
+            }
+          ],
+          "reachText": "1 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,7x FOR de dano verdadeiro a um inimigo adjacente.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "FOR",
+                  "multiplier": 1.7
+                }
+              ],
+              "damageType": "true",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "key": "punho-de-ferro",
+          "name": "Punho de Ferro",
+          "description": "Combos físicos e quebra de postura.",
+          "passive": {
+            "name": "Doutrina: Punho de Ferro",
+            "description": "Golpes consecutivos aumentam o dano do combo."
+          },
+          "skills": [
+            {
+              "key": "punho-de-ferro-1",
+              "name": "Quebra-Postura",
+              "level": 15,
+              "category": "Debuff",
+              "type": "Ativa",
+              "effect": "Abala a guarda do inimigo com um impacto concentrado. Reduz FOR do alvo em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "FOR",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Abala a guarda do inimigo com um impacto concentrado. Reduz FOR do alvo em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DEBUFF",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "FOR",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "FOR",
+                      "value": -10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "punho-de-ferro-2",
+              "name": "Cem Punhos",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Conclui o combo com uma sequência devastadora. Causa dano 1.8x FOR.",
+              "kind": "damage",
+              "damageType": "physical",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "FOR",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Conclui o combo com uma sequência devastadora. Causa dano 1.8x FOR.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "FOR",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "physical",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "caminho-espiritual",
+          "name": "Caminho Espiritual",
+          "description": "Ki defensivo, cura e purificação.",
+          "passive": {
+            "name": "Doutrina: Caminho Espiritual",
+            "description": "Gastar Ki em suporte recupera uma pequena quantidade de HP."
+          },
+          "skills": [
+            {
+              "key": "caminho-espiritual-1",
+              "name": "Sopro de Ki",
+              "level": 15,
+              "category": "Cura",
+              "type": "Ativa",
+              "effect": "Conduz energia vital para fechar ferimentos. Cura 1.25x ARC.",
+              "kind": "heal",
+              "damageType": "none",
+              "target": "ally",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "ARC",
+                  "multiplier": 1.25
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute HEAL com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Conduz energia vital para fechar ferimentos. Cura 1.25x ARC.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "HEAL",
+                  "target": "ally",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "ARC",
+                      "multiplier": 1.25
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            },
+            {
+              "key": "caminho-espiritual-2",
+              "name": "Círculo de Pureza",
+              "level": 45,
+              "category": "Escudo",
+              "type": "Ativa",
+              "effect": "Forma uma barreira espiritual contra agressões. Concede escudo de 1.8x RES por 2 rodadas.",
+              "kind": "shield",
+              "damageType": "none",
+              "target": "self",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 0,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "RES",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "0 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute SHIELD com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Forma uma barreira espiritual contra agressões. Concede escudo de 1.8x RES por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "SHIELD",
+                  "target": "self",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "RES",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Mago",
+    "slug": "mago",
+    "payload": {
+      "engineContractVersion": 1,
+      "description": "Conjurador acadêmico que prepara fórmulas arcanas para controlar áreas.",
+      "imageUrl": "",
+      "difficulty": 3,
+      "complexity": "3/5 estrelas",
+      "specialization": "Dano mágico e controle",
+      "primaryAttributes": [
+        "INT"
+      ],
+      "affinities": {
+        "FOR": 2,
+        "DEF": 3,
+        "RES": 3,
+        "INI": 2,
+        "INT": 5,
+        "ARC": 2
+      },
+      "mechanic": {
+        "name": "Carga Arcana",
+        "description": "Ganha 1 Carga Arcana ao usar uma habilidade com custo, máximo uma por ação. Magias avançadas consomem Cargas Arcanas antes de resolver operações."
+      },
+      "resource": {
+        "name": "Carga Arcana",
+        "initial": 0,
+        "maximum": 5,
+        "generationRules": [
+          "Ganha 1 Carga Arcana ao usar uma habilidade com custo, máximo uma por ação."
+        ],
+        "consumptionRules": [
+          "Magias avançadas consomem Cargas Arcanas antes de resolver operações."
+        ],
+        "resetRules": [
+          "No início do combate, Carga Arcana retorna a 0."
+        ],
+        "generationEvents": [
+          {
+            "trigger": "BASIC_ATTACK_HIT",
+            "amount": 1,
+            "limitPerAction": 1
+          }
+        ]
+      },
+      "passive": {
+        "name": "Estudo Arcano",
+        "description": "Usar uma habilidade com custo gera 1 Carga Arcana."
+      },
+      "progression": [
+        {
+          "key": "estudo-arcano",
+          "name": "Estudo Arcano",
+          "level": 1,
+          "category": "Reação",
+          "type": "Passiva",
+          "effect": "Usar uma habilidade com custo gera 1 Carga Arcana.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "none",
+          "resourceKey": "class",
+          "cost": 0,
+          "cooldown": 0,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute REACTION com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Usar uma habilidade com custo gera 1 Carga Arcana.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "REACTION",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "estudo-arcano",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "projetil-arcano",
+          "name": "Projétil Arcano",
+          "level": 1,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,2x INT de dano mágico a um inimigo em até 6 casas.",
+          "kind": "damage",
+          "damageType": "magic",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 1,
+          "cooldown": 1,
+          "range": 6,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INT",
+              "multiplier": 1.2
+            }
+          ],
+          "reachText": "6 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,2x INT de dano mágico a um inimigo em até 6 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 1.2
+                }
+              ],
+              "damageType": "magic",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "barreira-runica",
+          "name": "Barreira Rúnica",
+          "level": 10,
+          "category": "Escudo",
+          "type": "Ativa",
+          "effect": "Concede escudo igual a 0,9x INT a um aliado em até 4 casas.",
+          "kind": "shield",
+          "damageType": "none",
+          "target": "ally",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 1,
+          "cooldown": 3,
+          "range": 4,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INT",
+              "multiplier": 0.9
+            }
+          ],
+          "reachText": "4 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute SHIELD com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Concede escudo igual a 0,9x INT a um aliado em até 4 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "SHIELD",
+              "target": "ally",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 0.9
+                }
+              ],
+              "damageType": "none",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "campo-gravitacional",
+          "name": "Campo Gravitacional",
+          "level": 25,
+          "category": "Controle",
+          "type": "Ativa",
+          "effect": "Imobiliza inimigos em uma área de 2 casas por 1 rodada.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "area",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 3,
+          "cooldown": 4,
+          "range": 5,
+          "area": 2,
+          "duration": 1,
+          "scaling": [],
+          "reachText": "5 casas; área de 2 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute ROOT com 100% de chance. A duração é de 1 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Imobiliza inimigos em uma área de 2 casas por 1 rodada.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "ROOT",
+              "target": "area",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "imobilizado",
+              "duration": 1,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "meteoro",
+          "name": "Meteoro",
+          "level": 50,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,8x INT de dano mágico em uma área de 3 casas.",
+          "kind": "damage",
+          "damageType": "magic",
+          "target": "area",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 5,
+          "cooldown": 6,
+          "range": 8,
+          "area": 3,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INT",
+              "multiplier": 1.8
+            }
+          ],
+          "reachText": "8 casas; área de 3 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,8x INT de dano mágico em uma área de 3 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "area",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 1.8
+                }
+              ],
+              "damageType": "magic",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "key": "elementalista",
+          "name": "Elementalista",
+          "description": "Domina áreas e interações elementais.",
+          "passive": {
+            "name": "Doutrina: Elementalista",
+            "description": "Alternar elementos aplica uma reação elemental adicional."
+          },
+          "skills": [
+            {
+              "key": "elementalista-1",
+              "name": "Convergência Elemental",
+              "level": 15,
+              "category": "Debuff",
+              "type": "Ativa",
+              "effect": "Mistura elementos para romper resistências. Reduz INT do alvo em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Mistura elementos para romper resistências. Reduz INT do alvo em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DEBUFF",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INT",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "INT",
+                      "value": -10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "elementalista-2",
+              "name": "Cataclismo Primordial",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Libera uma colisão concentrada de forças elementais. Causa dano 1.8x INT.",
+              "kind": "damage",
+              "damageType": "magic",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Libera uma colisão concentrada de forças elementais. Causa dano 1.8x INT.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INT",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "magic",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "arcanista",
+          "name": "Arcanista",
+          "description": "Controle de Mana, escudos e magia pura.",
+          "passive": {
+            "name": "Doutrina: Arcanista",
+            "description": "Ao terminar a rodada com Mana, recebe escudo arcano."
+          },
+          "skills": [
+            {
+              "key": "arcanista-1",
+              "name": "Barreira de Mana",
+              "level": 15,
+              "category": "Escudo",
+              "type": "Ativa",
+              "effect": "Condensa Mana em proteção arcana. Concede escudo de 1.25x RES por 2 rodadas.",
+              "kind": "shield",
+              "damageType": "none",
+              "target": "self",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 0,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "RES",
+                  "multiplier": 1.25
+                }
+              ],
+              "reachText": "0 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute SHIELD com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Condensa Mana em proteção arcana. Concede escudo de 1.25x RES por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "SHIELD",
+                  "target": "self",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "RES",
+                      "multiplier": 1.25
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            },
+            {
+              "key": "arcanista-2",
+              "name": "Ruptura Arcana",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Desmonta a defesa inimiga com magia pura. Causa dano 1.8x INT.",
+              "kind": "damage",
+              "damageType": "magic",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Desmonta a defesa inimiga com magia pura. Causa dano 1.8x INT.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INT",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "magic",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Feiticeiro",
+    "slug": "feiticeiro",
+    "payload": {
+      "engineContractVersion": 1,
+      "description": "Conjurador espontâneo que manipula Instabilidade para amplificar riscos e resultados.",
+      "imageUrl": "",
+      "difficulty": 5,
+      "complexity": "5/5 estrelas",
+      "specialization": "Magia instável e explosiva",
+      "primaryAttributes": [
+        "INT",
+        "INI"
+      ],
+      "affinities": {
+        "FOR": 2,
+        "DEF": 3,
+        "RES": 3,
+        "INI": 5,
+        "INT": 5,
+        "ARC": 2
+      },
+      "mechanic": {
+        "name": "Instabilidade",
+        "description": "Ganha 15 Instabilidade ao causar dano mágico, uma vez por ação. Feitiços consomem Instabilidade; chances são roladas antes das operações de efeito."
+      },
+      "resource": {
+        "name": "Instabilidade",
+        "initial": 0,
+        "maximum": 100,
+        "generationRules": [
+          "Ganha 15 Instabilidade ao causar dano mágico, uma vez por ação."
+        ],
+        "consumptionRules": [
+          "Feitiços consomem Instabilidade; chances são roladas antes das operações de efeito."
+        ],
+        "resetRules": [
+          "No início do combate, Instabilidade retorna a 0."
+        ],
+        "generationEvents": [
+          {
+            "trigger": "BASIC_ATTACK_HIT",
+            "amount": 10,
+            "limitPerAction": 1
+          }
+        ]
+      },
+      "passive": {
+        "name": "Magia Volátil",
+        "description": "Causar dano mágico gera 15 Instabilidade, uma vez por ação."
+      },
+      "progression": [
+        {
+          "key": "magia-volatil",
+          "name": "Magia Volátil",
+          "level": 1,
+          "category": "Reação",
+          "type": "Passiva",
+          "effect": "Causar dano mágico gera 15 Instabilidade, uma vez por ação.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "none",
+          "resourceKey": "class",
+          "cost": 0,
+          "cooldown": 0,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute REACTION com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causar dano mágico gera 15 Instabilidade, uma vez por ação.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "REACTION",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "magia-volatil",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "centelha-caotica",
+          "name": "Centelha Caótica",
+          "level": 1,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,3x INT de dano mágico a um inimigo em até 5 casas.",
+          "kind": "damage",
+          "damageType": "magic",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 15,
+          "cooldown": 1,
+          "range": 5,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INT",
+              "multiplier": 1.3
+            }
+          ],
+          "reachText": "5 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,3x INT de dano mágico a um inimigo em até 5 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 1.3
+                }
+              ],
+              "damageType": "magic",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "salto-imprevisivel",
+          "name": "Salto Imprevisível",
+          "level": 10,
+          "category": "Mobilidade",
+          "type": "Ativa",
+          "effect": "Teleporta para uma casa livre em até 4 casas.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 20,
+          "cooldown": 3,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute TELEPORT com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Teleporta para uma casa livre em até 4 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "TELEPORT",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "ruptura-arcana",
+          "name": "Ruptura Arcana",
+          "level": 25,
+          "category": "Debuff",
+          "type": "Ativa",
+          "effect": "Inimigos na área têm 85% de chance de perder 20 RES por 2 rodadas.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "area",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 40,
+          "cooldown": 4,
+          "range": 5,
+          "area": 2,
+          "duration": 2,
+          "scaling": [],
+          "reachText": "5 casas; área de 2 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 85% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Inimigos na área têm 85% de chance de perder 20 RES por 2 rodadas.",
+          "chance": 85,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DEBUFF",
+              "target": "area",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "vulneravel-magia",
+              "duration": 2,
+              "chance": 85,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": [
+                {
+                  "attribute": "RES",
+                  "value": -20
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "singularidade",
+          "name": "Singularidade",
+          "level": 50,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,7x INT de dano verdadeiro em uma área de 2 casas.",
+          "kind": "damage",
+          "damageType": "true",
+          "target": "area",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 100,
+          "cooldown": 7,
+          "range": 6,
+          "area": 2,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "INT",
+              "multiplier": 1.7
+            }
+          ],
+          "reachText": "6 casas; área de 2 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,7x INT de dano verdadeiro em uma área de 2 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "area",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 1.7
+                }
+              ],
+              "damageType": "true",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "key": "linhagem-draconica",
+          "name": "Linhagem Dracônica",
+          "description": "Poder elemental estável e resistência mágica.",
+          "passive": {
+            "name": "Doutrina: Linhagem Dracônica",
+            "description": "Habilidades elementais concedem resistência temporária."
+          },
+          "skills": [
+            {
+              "key": "linhagem-draconica-1",
+              "name": "Escamas Ancestrais",
+              "level": 15,
+              "category": "Escudo",
+              "type": "Ativa",
+              "effect": "Manifesta a resistência da linhagem dracônica. Concede escudo de 1.25x RES por 2 rodadas.",
+              "kind": "shield",
+              "damageType": "none",
+              "target": "self",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 0,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "RES",
+                  "multiplier": 1.25
+                }
+              ],
+              "reachText": "0 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute SHIELD com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Manifesta a resistência da linhagem dracônica. Concede escudo de 1.25x RES por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "SHIELD",
+                  "target": "self",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "RES",
+                      "multiplier": 1.25
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            },
+            {
+              "key": "linhagem-draconica-2",
+              "name": "Sopro do Ancestral",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Expele o poder elemental herdado do sangue dracônico. Causa dano 1.8x INT.",
+              "kind": "damage",
+              "damageType": "magic",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Expele o poder elemental herdado do sangue dracônico. Causa dano 1.8x INT.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INT",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "magic",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "caos-arcano",
+          "name": "Caos Arcano",
+          "description": "Magia imprevisível de alto risco e recompensa.",
+          "passive": {
+            "name": "Doutrina: Caos Arcano",
+            "description": "Efeitos com chance bem-sucedidos geram poder adicional."
+          },
+          "skills": [
+            {
+              "key": "caos-arcano-1",
+              "name": "Distorção Instável",
+              "level": 15,
+              "category": "Debuff",
+              "type": "Ativa",
+              "effect": "Desorganiza a energia do alvo com magia caótica. Reduz INT do alvo em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Desorganiza a energia do alvo com magia caótica. Reduz INT do alvo em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DEBUFF",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INT",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "INT",
+                      "value": -10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "caos-arcano-2",
+              "name": "Surto Impossível",
+              "level": 45,
+              "category": "Dano",
+              "type": "Ativa",
+              "effect": "Força o caos a assumir uma forma destrutiva. Causa dano 1.8x INT.",
+              "kind": "damage",
+              "damageType": "magic",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 40,
+              "cooldown": 4,
+              "range": 4,
+              "area": 0,
+              "duration": 0,
+              "scaling": [
+                {
+                  "attribute": "INT",
+                  "multiplier": 1.8
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Força o caos a assumir uma forma destrutiva. Causa dano 1.8x INT.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DAMAGE",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "INT",
+                      "multiplier": 1.8
+                    }
+                  ],
+                  "damageType": "magic",
+                  "status": "",
+                  "duration": 0,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "Bruxo",
+    "slug": "bruxo",
+    "payload": {
+      "engineContractVersion": 1,
+      "description": "Conjurador de pactos que acumula Selos ao aplicar condições negativas.",
+      "imageUrl": "",
+      "difficulty": 4,
+      "complexity": "4/5 estrelas",
+      "specialization": "Maldições e drenagem",
+      "primaryAttributes": [
+        "ARC",
+        "INT"
+      ],
+      "affinities": {
+        "FOR": 2,
+        "DEF": 3,
+        "RES": 3,
+        "INI": 2,
+        "INT": 5,
+        "ARC": 5
+      },
+      "mechanic": {
+        "name": "Selos de Pacto",
+        "description": "Ganha 1 Selo ao aplicar um status negativo, máximo uma vez por ação. Rituais consomem Selos inteiros após a chance de aplicação ser validada."
+      },
+      "resource": {
+        "name": "Selos de Pacto",
+        "initial": 1,
+        "maximum": 5,
+        "generationRules": [
+          "Ganha 1 Selo ao aplicar um status negativo, máximo uma vez por ação."
+        ],
+        "consumptionRules": [
+          "Rituais consomem Selos inteiros após a chance de aplicação ser validada."
+        ],
+        "resetRules": [
+          "No início do combate, Selos de Pacto retorna a 1."
+        ],
+        "generationEvents": [
+          {
+            "trigger": "BASIC_ATTACK_HIT",
+            "amount": 1,
+            "limitPerAction": 1
+          }
+        ]
+      },
+      "passive": {
+        "name": "Preço do Pacto",
+        "description": "Aplicar um status negativo gera 1 Selo de Pacto, uma vez por ação."
+      },
+      "progression": [
+        {
+          "key": "preco-do-pacto",
+          "name": "Preço do Pacto",
+          "level": 1,
+          "category": "Reação",
+          "type": "Passiva",
+          "effect": "Aplicar um status negativo gera 1 Selo de Pacto, uma vez por ação.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "self",
+          "resource": "none",
+          "resourceKey": "class",
+          "cost": 0,
+          "cooldown": 0,
+          "range": 0,
+          "area": 0,
+          "duration": 0,
+          "scaling": [],
+          "reachText": "0 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute REACTION com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Aplicar um status negativo gera 1 Selo de Pacto, uma vez por ação.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "REACTION",
+              "target": "self",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "preco-do-pacto",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "rajada-profana",
+          "name": "Rajada Profana",
+          "level": 1,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1,2x ARC de dano mágico a um inimigo em até 5 casas.",
+          "kind": "damage",
+          "damageType": "magic",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 1,
+          "cooldown": 1,
+          "range": 5,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "ARC",
+              "multiplier": 1.2
+            }
+          ],
+          "reachText": "5 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1,2x ARC de dano mágico a um inimigo em até 5 casas.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "ARC",
+                  "multiplier": 1.2
+                }
+              ],
+              "damageType": "magic",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "maldicao-da-fraqueza",
+          "name": "Maldição da Fraqueza",
+          "level": 10,
+          "category": "Debuff",
+          "type": "Ativa",
+          "effect": "Tem 90% de chance de reduzir FOR e INT do alvo em 15 por 3 rodadas.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 1,
+          "cooldown": 3,
+          "range": 5,
+          "area": 0,
+          "duration": 3,
+          "scaling": [],
+          "reachText": "5 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 90% de chance. A duração é de 3 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Tem 90% de chance de reduzir FOR e INT do alvo em 15 por 3 rodadas.",
+          "chance": 90,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DEBUFF",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "fraqueza",
+              "duration": 3,
+              "chance": 90,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": [
+                {
+                  "attribute": "FOR",
+                  "value": -15
+                },
+                {
+                  "attribute": "INT",
+                  "value": -15
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "key": "drenar-essencia",
+          "name": "Drenar Essência",
+          "level": 25,
+          "category": "Dano",
+          "type": "Ativa",
+          "effect": "Causa 1x ARC de dano mágico; cura recebida por esta habilidade é resolvida em operação subsequente no motor.",
+          "kind": "damage",
+          "damageType": "magic",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 2,
+          "cooldown": 4,
+          "range": 4,
+          "area": 0,
+          "duration": 0,
+          "scaling": [
+            {
+              "attribute": "ARC",
+              "multiplier": 1
+            }
+          ],
+          "reachText": "4 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DAMAGE com 100% de chance. O efeito é instantâneo. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Causa 1x ARC de dano mágico; cura recebida por esta habilidade é resolvida em operação subsequente no motor.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "DAMAGE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [
+                {
+                  "attribute": "ARC",
+                  "multiplier": 1
+                }
+              ],
+              "damageType": "magic",
+              "status": "",
+              "duration": 0,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        },
+        {
+          "key": "condenacao",
+          "name": "Condenação",
+          "level": 50,
+          "category": "Controle",
+          "type": "Ativa",
+          "effect": "Silencia o alvo por 2 rodadas e impede a remoção deste status durante sua duração.",
+          "kind": "utility",
+          "damageType": "none",
+          "target": "enemy",
+          "resource": "special",
+          "resourceKey": "class",
+          "cost": 5,
+          "cooldown": 7,
+          "range": 6,
+          "area": 0,
+          "duration": 2,
+          "scaling": [],
+          "reachText": "6 casa(s)",
+          "conditions": [],
+          "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute SILENCE com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+          "playerDescription": "Silencia o alvo por 2 rodadas e impede a remoção deste status durante sua duração.",
+          "chance": 100,
+          "maxStacks": 0,
+          "operations": [
+            {
+              "operation": "SILENCE",
+              "target": "enemy",
+              "base": 0,
+              "scaling": [],
+              "damageType": "none",
+              "status": "condenado",
+              "duration": 2,
+              "chance": 100,
+              "stacks": 0,
+              "maxStacks": 0,
+              "distance": 0,
+              "modifiers": []
+            }
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "key": "pacto-infernal",
+          "name": "Pacto Infernal",
+          "description": "Dano contínuo, fogo e contratos de poder.",
+          "passive": {
+            "name": "Doutrina: Pacto Infernal",
+            "description": "Inimigos com debuff recebem dano mágico adicional."
+          },
+          "skills": [
+            {
+              "key": "pacto-infernal-1",
+              "name": "Contrato em Chamas",
+              "level": 15,
+              "category": "Debuff",
+              "type": "Ativa",
+              "effect": "Grava no alvo uma cláusula de sofrimento. Reduz ARC do alvo em 10 por 2 rodadas.",
+              "kind": "utility",
+              "damageType": "none",
+              "target": "enemy",
+              "resource": "special",
+              "resourceKey": "class",
+              "cost": 25,
+              "cooldown": 2,
+              "range": 4,
+              "area": 0,
+              "duration": 2,
+              "scaling": [
+                {
+                  "attribute": "ARC",
+                  "multiplier": 0
+                }
+              ],
+              "reachText": "4 casa(s)",
+              "conditions": [],
+              "systemRule": "Valide custo, alcance, alvo e recarga antes de executar. Execute DEBUFF com 100% de chance. A duração é de 2 rodada(s) completas. Arredonde valores finais para o inteiro mais próximo; empate .5 arredonda para cima.",
+              "playerDescription": "Grava no alvo uma cláusula de sofrimento. Reduz ARC do alvo em 10 por 2 rodadas.",
+              "chance": 100,
+              "maxStacks": 0,
+              "operations": [
+                {
+                  "operation": "DEBUFF",
+                  "target": "enemy",
+                  "base": 0,
+                  "scaling": [
+                    {
+                      "attribute": "ARC",
+                      "multiplier": 0
+                    }
+                  ],
+                  "damageType": "none",
+                  "status": "",
+                  "duration": 2,
+                  "chance": 100,
+                  "stacks": 0,
+                  "maxStacks": 0,
+                  "distance": 0,
+                  "modifiers": [
+                    {
+                      "attribute": "ARC",
+                      "value": -10
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "pacto-infernal-2",
               "name": "Cobrança Infernal",
               "level": 45,
               "category": "Dano",

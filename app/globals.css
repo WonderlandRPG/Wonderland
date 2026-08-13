@@ -13275,6 +13275,50 @@ body[data-rank="EX"] .rank-atmosphere i {
 .pvp-action:disabled > strong {
   color: var(--ui-muted) !important;
 }
+.pvp-action.is-cooldown {
+  opacity: 0.72 !important;
+  filter: grayscale(1) saturate(0) !important;
+}
+.pvp-action__cooldown {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 3px;
+  border-radius: inherit;
+  color: #f2f4f3 !important;
+  background: rgba(5, 8, 8, 0.78);
+  text-align: center;
+  pointer-events: none;
+}
+.pvp-action__cooldown b {
+  color: #fff !important;
+  font:
+    700 2.5rem/1 Georgia,
+    serif;
+}
+.pvp-action__cooldown small {
+  color: #c6ccca !important;
+  font-size: 0.5rem;
+  letter-spacing: 0.18em;
+}
+.pvp-realtime .pvp-action,
+.pvp-realtime .pvp-action * {
+  animation: none !important;
+}
+.inventory-reward-tag {
+  width: max-content;
+  padding: 4px 7px;
+  border: 1px solid color-mix(in srgb, var(--ui-gold) 48%, transparent);
+  border-radius: 999px;
+  color: var(--ui-gold-soft);
+  font-size: 0.5rem;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
 
 .arena-result--cinematic {
   position: relative;

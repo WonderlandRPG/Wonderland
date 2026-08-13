@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminConsolePage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; afetados?: string }>;
 }) {
   const client = await createServerSupabaseClient();
   const [{ data: characters }, { data: items }, query] = await Promise.all([
@@ -24,7 +24,7 @@ export default async function AdminConsolePage({
       {query.status ? (
         <div className={`account-notice ${query.status !== "sucesso" ? "is-warning" : ""}`}>
           {query.status === "sucesso"
-            ? "✓ Recompensa distribuída com sucesso."
+            ? `✓ Recompensa confirmada no inventário de ${Math.max(0, Number(query.afetados ?? 0))} personagem(ns).`
             : query.status === "formato"
               ? "Use um dos formatos mostrados na cola."
               : `Não foi possível executar: ${query.status}`}

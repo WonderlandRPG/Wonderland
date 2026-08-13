@@ -7,9 +7,37 @@ export const firstDungeon = {
   description:
     "Uma patrulha desapareceu sob as antigas muralhas cobertas de musgo. Reúna quatro aventureiros e interrompa a infestação antes que alcance as trilhas de Aokigahara.",
   encounters: [
-    { key: "batedor-musgoso", name: "Batedor Musgoso", role: "Atacante", imageUrl: "/images/monsters/dungeon-e/batedor-musgoso.webp" },
-    { key: "limo-runico", name: "Limo Rúnico", role: "Controle", imageUrl: "/images/monsters/dungeon-e/limo-runico.webp" },
-    { key: "kobold-tunel", name: "Kobold do Túnel", role: "Defensor", imageUrl: "/images/monsters/dungeon-e/kobold-tunel.webp" },
-    { key: "rei-rato", name: "Rei Rato Coroado", role: "Chefe", imageUrl: "/images/monsters/dungeon-e/rei-rato-coroado.webp" },
+    {
+      key: "batedor-musgoso",
+      name: "Batedor Musgoso",
+      role: "Atacante",
+      imageUrl: "/images/monsters/dungeon-e/batedor-musgoso.webp",
+      weights: [6, 2, 3, 5, 1, 2],
+      hpScale: 0.65,
+    },
+    {
+      key: "limo-runico",
+      name: "Limo Rúnico",
+      role: "Controle",
+      imageUrl: "/images/monsters/dungeon-e/limo-runico.webp",
+      weights: [2, 3, 5, 2, 5, 4],
+      hpScale: 0.8,
+    },
+    {
+      key: "kobold-tunel",
+      name: "Kobold do Túnel",
+      role: "Defensor",
+      imageUrl: "/images/monsters/dungeon-e/kobold-tunel.webp",
+      weights: [4, 6, 5, 3, 1, 2],
+      hpScale: 1,
+    },
+    {
+      key: "rei-rato",
+      name: "Rei Rato Coroado",
+      role: "Chefe",
+      imageUrl: "/images/monsters/dungeon-e/rei-rato-coroado.webp",
+      weights: [6, 4, 5, 5, 3, 3],
+      hpScale: 1.45,
+    },
   ],
 } as const;

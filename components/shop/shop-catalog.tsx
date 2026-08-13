@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ItemGlyph } from "@/components/items/item-glyph";
+import { ItemArtwork } from "@/components/items/item-artwork";
 import { ShopBuyButton } from "@/components/shop/shop-buy-button";
 import { buyCart, buyItem } from "@/app/loja/actions";
 
@@ -185,7 +186,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                           style={{ backgroundImage: `url(${item.imageUrl})` }}
                         />
                       ) : (
-                        <ItemGlyph slot={item.slot} />
+                        <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
                       )}
                       <small>{item.twoHanded ? "Duas mãos" : item.slotLabel}</small>
                     </div>
@@ -270,7 +271,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
               <div>
                 {cartItems.map((item, index) => (
                   <button key={`${item.id}-${index}`} onClick={() => removeFromCart(index)} type="button">
-                    <ItemGlyph slot={item.slot} />
+                    <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
                     <span>{item.name}<small>{item.price.toLocaleString("pt-BR")} WG</small></span>
                     <b>×</b>
                   </button>

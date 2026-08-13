@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
 import {
   equipItemAction,
@@ -8,6 +8,7 @@ import {
   unequipItemAction,
 } from "@/app/personagens/[id]/equipment-actions";
 import { ItemGlyph } from "@/components/items/item-glyph";
+import { ItemArtwork } from "@/components/items/item-artwork";
 import { RankBadge } from "@/components/characters/rank-badge";
 
 type InventoryItem = {
@@ -43,11 +44,7 @@ export function InventoryWorkbench({
   const [slotFilter, setSlotFilter] = useState("");
   const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
   const [activeSlotKey, setActiveSlotKey] = useState<string | null>(null);
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false,
-  );
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const selected = items.find((item) => item.id === selectedId) ?? null;
   const activeSlot = slots.find((slot) => slot.key === activeSlotKey) ?? null;
   const activeSlotItem = activeSlot
@@ -100,7 +97,9 @@ export function InventoryWorkbench({
     };
     document.body.classList.add("has-equipment-modal");
     window.addEventListener("keydown", close);
+    const focusTimer = window.setTimeout(() => closeButtonRef.current?.focus(), 0);
     return () => {
+      window.clearTimeout(focusTimer);
       document.body.classList.remove("has-equipment-modal");
       window.removeEventListener("keydown", close);
     };
@@ -244,7 +243,7 @@ export function InventoryWorkbench({
                   type="button"
                 >
                   <div>
-                    <ItemGlyph slot={item.slot} />
+                    <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
                     {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
                   </div>
                   <small>
@@ -298,7 +297,7 @@ export function InventoryWorkbench({
                 )}
               </header>
               <div className="inventory-inspector__glyph">
-                <ItemGlyph slot={selected.slot} />
+                <ItemArtwork name={selected.name} rarity={selected.rarity} slot={selected.slot} />
               </div>
               <p>{selected.description}</p>
               <dl>
@@ -356,7 +355,7 @@ export function InventoryWorkbench({
           )}
         </aside>
       </section>
-      {mounted && activeSlot
+      {activeSlot && typeof document !== "undefined"
         ? createPortal(
             <div
               className="equipment-modal"
@@ -384,6 +383,7 @@ export function InventoryWorkbench({
                   <button
                     aria-label="Fechar seleção de equipamento"
                     onClick={() => setActiveSlotKey(null)}
+                    ref={closeButtonRef}
                     type="button"
                   >
                     ×
@@ -391,7 +391,7 @@ export function InventoryWorkbench({
                 </header>
                 {activeSlot.reserved && activeSlotItem ? (
                   <div className="equipment-modal__two-handed">
-                    <ItemGlyph slot={activeSlotItem.slot} />
+                    <ItemArtwork name={activeSlotItem.name} rarity={activeSlotItem.rarity} slot={activeSlotItem.slot} />
                     <span>
                       <strong>Espaço reservado por arma de duas mãos</strong>
                       <small>
@@ -413,7 +413,7 @@ export function InventoryWorkbench({
                           key={item.id}
                         >
                           <div className="equipment-modal__glyph">
-                            <ItemGlyph slot={item.slot} />
+                            <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
                             {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
                           </div>
                           <div className="equipment-modal__item-copy">

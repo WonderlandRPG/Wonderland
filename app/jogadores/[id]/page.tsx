@@ -10,6 +10,7 @@ import { kingdomName } from "@/lib/game/kingdoms";
 import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
 import { itemSlotLabel } from "@/lib/game/equipment";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -46,6 +47,7 @@ export default async function PublicCharacterProfile({
     <main className="public-character-page">
       <PlayerNav />
       <div className="page-container public-character-shell">
+        <Link className="public-character-back" href="/ranking">← Voltar aos rankings</Link>
         <section className="public-character-hero" data-rank={sheet.adventure_rank}>
           <div
             className={`public-character-hero__portrait ${sheet.image_url ? "is-image" : ""}`}

@@ -20,6 +20,10 @@ function Avatar({ entry }: { entry: RankingEntry }) {
   );
 }
 
+function PlayerTitle({ title }: { title?: string | null }) {
+  return title ? <em className="ranking-equipped-title">✦ {title}</em> : null;
+}
+
 export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
   const [query, setQuery] = useState("");
   const [rank, setRank] = useState<(typeof rankOrder)[number]>("Todos");
@@ -88,11 +92,15 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
             key={entry.id}
           >
             <b className="ranking-podium__number">{position}</b>
-            <Avatar entry={entry} />
+            <span className="ranking-podium__portrait">
+              {position === 1 ? <span className="ranking-crown" aria-label="Primeiro colocado">♛</span> : null}
+              <Avatar entry={entry} />
+            </span>
             <RankBadge compact rank={entry.adventure_rank} />
             <div>
               <small>{position === 1 ? "Líder da temporada" : `${position}º colocado`}</small>
               <h3>{entry.name}</h3>
+              <PlayerTitle title={entry.title_name} />
               <p>
                 {entry.race_name} · {entry.class_name}
               </p>
@@ -146,6 +154,7 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
                 <Avatar entry={entry} />
                 <span>
                   <b>{entry.name}</b>
+                  <PlayerTitle title={entry.title_name} />
                   <small>
                     {entry.race_name} · {entry.class_name}
                   </small>

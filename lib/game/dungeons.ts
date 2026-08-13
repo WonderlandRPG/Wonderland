@@ -14,6 +14,7 @@ export const firstDungeon = {
       imageUrl: "/images/monsters/dungeon-e/batedor-musgoso.webp",
       weights: [6, 2, 3, 5, 1, 2],
       hpScale: 0.65,
+      abilities: ["Emboscada de Esporos", "Passo entre Raízes"],
     },
     {
       key: "limo-runico",
@@ -22,6 +23,7 @@ export const firstDungeon = {
       imageUrl: "/images/monsters/dungeon-e/limo-runico.webp",
       weights: [2, 3, 5, 2, 5, 4],
       hpScale: 0.8,
+      abilities: ["Prisão Rúnica", "Regeneração Viscosa"],
     },
     {
       key: "kobold-tunel",
@@ -30,6 +32,7 @@ export const firstDungeon = {
       imageUrl: "/images/monsters/dungeon-e/kobold-tunel.webp",
       weights: [4, 6, 5, 3, 1, 2],
       hpScale: 1,
+      abilities: ["Muralha do Túnel", "Investida Calculada"],
     },
     {
       key: "rei-rato",
@@ -38,6 +41,7 @@ export const firstDungeon = {
       imageUrl: "/images/monsters/dungeon-e/rei-rato-coroado.webp",
       weights: [6, 4, 5, 5, 3, 3],
       hpScale: 1.45,
+      abilities: ["Decreto da Colônia", "Banquete do Rei", "Cauda Pestilenta"],
     },
   ],
 } as const;

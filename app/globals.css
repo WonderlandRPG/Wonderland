@@ -3291,6 +3291,28 @@ html[data-theme="accessible"] :focus-visible {
     serif;
 }
 
+/* Diário de atualizações editorial */
+.update-list { grid-template-columns: 1fr; gap: 28px; }
+.update-featured { padding: 0 !important; overflow: hidden; background: var(--ui-surface); }
+.update-featured__masthead { display:grid !important; grid-template-columns:auto 1fr auto; align-items:center; gap:16px; padding:20px 28px; border-bottom:1px solid var(--ui-line-gold); }
+.update-featured__seal { display:grid; place-items:center; width:46px; aspect-ratio:1; border:1px solid var(--ui-gold); border-radius:50%; color:var(--ui-gold); font:700 1.5rem Georgia,serif; }
+.update-featured__masthead strong,.update-featured__masthead small { display:block; }
+.update-featured__masthead small { color:var(--ui-arcane); letter-spacing:.16em; }
+.update-featured__masthead time { color:var(--ui-muted); font-size:.75rem; }
+.update-featured__body { display:grid; grid-template-columns:150px 1fr; min-height:320px; }
+.update-featured__body>aside { padding:36px 24px; border-right:1px solid var(--ui-line); background:color-mix(in srgb,var(--ui-gold) 7%,transparent); }
+.update-featured__body>aside span,.update-featured__body>aside small { display:block; color:var(--ui-muted); font-size:.65rem; letter-spacing:.14em; }
+.update-featured__body>aside b { display:block; margin:8px 0 18px; color:var(--ui-gold); font:700 1.8rem Georgia,serif; }
+.update-featured__body>div { padding:42px clamp(26px,5vw,70px); }
+.update-featured__body h2 { margin:0 0 28px; font-size:clamp(2rem,4vw,4rem); line-height:.95; }
+.update-archive { padding:30px; border:1px solid var(--ui-line); border-radius:var(--radius-medium); background:var(--ui-surface); }
+.update-image { margin:28px 0; overflow:hidden; border:1px solid var(--ui-line-gold); border-radius:18px; background:var(--ui-bg); }
+.update-image img { display:block; width:100%; max-height:620px; object-fit:cover; }
+.update-image figcaption { padding:12px 16px; color:var(--ui-muted); font-size:.75rem; }
+.structured-composer__upload { display:inline-flex; align-items:center; padding:8px 10px; border:1px solid var(--ui-line-gold); border-radius:8px; color:var(--ui-gold); cursor:pointer; font-size:.72rem; font-weight:800; }
+.structured-composer__upload input { position:absolute; width:1px; height:1px; opacity:0; }
+@media(max-width:700px){.update-featured__body{grid-template-columns:1fr}.update-featured__body>aside{border-right:0;border-bottom:1px solid var(--ui-line)}.update-featured__masthead{grid-template-columns:auto 1fr}.update-featured__masthead time{grid-column:2}.update-archive{padding:18px}}
+
 @media (max-width: 1180px) {
   .shop-browser,
   .inventory-browser {

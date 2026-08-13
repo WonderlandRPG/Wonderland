@@ -2,7 +2,7 @@ export const themeDefinitions = [
   {
     key: "classic",
     label: "Crônicas Reais",
-    description: "Pergaminho mineral, bronze e magia azul.",
+    description: "Ouro solar, esmeralda, preto e branco da marca.",
     icon: "✧",
   },
   {

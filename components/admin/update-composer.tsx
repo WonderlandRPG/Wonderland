@@ -11,6 +11,7 @@ const labels: Record<UpdateBlock["type"], string> = {
   highlight: "Destaque",
   list: "Lista",
   stat: "Estatística",
+  image: "Imagem",
 };
 
 function newBlock(type: UpdateBlock["type"] = "paragraph"): UpdateBlock {
@@ -34,6 +35,17 @@ export function UpdateComposer({ initial = [] }: { initial?: UpdateBlock[] }) {
       [next[index], next[target]] = [next[target], next[index]];
       return next;
     });
+  async function uploadImage(file: File) {
+    const data = new FormData();
+    data.set("image", file);
+    const response = await fetch("/api/admin/update-images", { method: "POST", body: data });
+    const result = (await response.json()) as { url?: string; error?: string };
+    if (!response.ok || !result.url) throw new Error(result.error || "Falha no upload.");
+    setBlocks((current) => [
+      ...current,
+      { id: crypto.randomUUID(), type: "image", content: result.url!, label: file.name },
+    ]);
+  }
   return (
     <div className="structured-composer">
       <input name="notes" type="hidden" value={serialized} />
@@ -54,6 +66,19 @@ export function UpdateComposer({ initial = [] }: { initial?: UpdateBlock[] }) {
               ＋ {label}
             </button>
           ))}
+          <label className="structured-composer__upload">
+            ↑ Enviar imagem
+            <input
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={async (event) => {
+                const file = event.target.files?.[0];
+                if (!file) return;
+                try { await uploadImage(file); } catch (error) { window.alert(error instanceof Error ? error.message : "Falha no upload."); }
+                event.target.value = "";
+              }}
+              type="file"
+            />
+          </label>
         </div>
       </div>
       <div className="structured-composer__workspace">
@@ -113,14 +138,26 @@ export function UpdateComposer({ initial = [] }: { initial?: UpdateBlock[] }) {
                   onChange={(event) => update(block.id, { label: event.target.value })}
                 />
               ) : null}
+              {block.type === "image" ? (
+                <input
+                  aria-label="Legenda da imagem"
+                  placeholder="Legenda da imagem"
+                  value={block.label ?? ""}
+                  onChange={(event) => update(block.id, { label: event.target.value })}
+                />
+              ) : null}
               <textarea
                 aria-label={`Conteúdo de ${labels[block.type]}`}
                 placeholder={
+                  block.type === "image"
+                    ? "URL da imagem enviada"
+                    :
                   block.type === "list"
                     ? "Um item por linha"
                     : `Escreva o ${labels[block.type].toLowerCase()}`
                 }
                 rows={block.type === "paragraph" || block.type === "list" ? 4 : 2}
+                readOnly={block.type === "image"}
                 value={block.content}
                 onChange={(event) => update(block.id, { content: event.target.value })}
                 required

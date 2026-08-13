@@ -8,6 +8,7 @@ import { ThemeControl } from "@/components/theme/theme-control";
 import { getThemeConfiguration } from "@/lib/content/themes";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 import { PlayerPresence } from "@/components/player-presence";
+import { SeasonalAtmosphere } from "@/components/theme/seasonal-atmosphere";
 
 import "./globals.css";
 import "./theme-overrides.css";
@@ -43,6 +44,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
           <span />
           <span />
         </div>
+        <SeasonalAtmosphere />
         <RankAtmosphere rank={rank?.key} />
         <AudioProvider>
           {children}

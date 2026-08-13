@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import {
   getDungeonQueueAction,
@@ -27,6 +28,7 @@ export function DungeonLobby({
   const [queue, setQueue] = useState(initialQueue);
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
+  const router = useRouter();
   const joined = queue.some((entry) => entry.userId === userId);
   const ready = queue.length >= minimumPlayers;
 
@@ -47,7 +49,6 @@ export function DungeonLobby({
           event: "*",
           schema: "public",
           table: "v2_dungeon_queue",
-          filter: `dungeon_key=eq.${dungeonKey}`,
         },
         refresh,
       )
@@ -75,10 +76,7 @@ export function DungeonLobby({
     startTransition(async () => {
       const result = await startDungeonAction(dungeonKey, force);
       if (!result.ok) return setMessage(result.message);
-      setQueue([]);
-      setMessage(
-        `Expedição iniciada com ${result.data.partySize} jogador(es)${result.data.forced ? " por início forçado" : ""}.`,
-      );
+      router.push(`/arena/dungeons/${result.data.runId}`);
     });
   }
 

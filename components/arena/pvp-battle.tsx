@@ -94,6 +94,18 @@ export function PvpBattle({
   );
   const finished = state.status === "finished";
 
+  function skillResource(skill: ArenaCharacter["skills"][number]) {
+    if (skill.resource === "life") {
+      return { current: own.hp, label: "HP" };
+    }
+    if (skill.resource !== "special") {
+      return { current: Number.POSITIVE_INFINITY, label: "Sem custo" };
+    }
+    return skill.resourceKey === "race"
+      ? { current: own.raceResource, label: own.raceResourceName }
+      : { current: own.classResource, label: own.classResourceName };
+  }
+
   return (
     <section className="arena-console pvp-realtime">
       <header className="arena-toolbar arena-game-header">
@@ -223,13 +235,31 @@ export function PvpBattle({
               origin="MOVIMENTO"
               name={moving ? `Escolha uma casa até ${movement}` : "Mover"}
               detail={`Até ${movement} casas`}
+              status={
+                !isMyTurn ? "Aguarde seu turno" : state.actions.move ? "Já utilizado" : "Disponível"
+              }
+              tone="move"
               onClick={() => setMoving((value) => !value)}
             />
             <ActionButton
-              disabled={!isMyTurn || pending || state.actions.basic || state.actions.defend}
+              disabled={
+                !isMyTurn ||
+                pending ||
+                state.actions.basic ||
+                state.actions.defend ||
+                distance > character.basicAttackRange
+              }
               origin="ATAQUE BÁSICO"
               name="Atacar"
               detail={`Alcance ${character.basicAttackRange} · distância ${distance}`}
+              status={
+                distance > character.basicAttackRange
+                  ? "Fora de alcance"
+                  : state.actions.basic
+                    ? "Já utilizado"
+                    : "Disponível"
+              }
+              tone="basic"
               onClick={() => submit({ kind: "basic" })}
             />
             <ActionButton
@@ -242,40 +272,86 @@ export function PvpBattle({
               origin="DEFESA"
               name="Defender"
               detail="Bloqueia o próximo dano"
+              status={
+                (own.cooldowns["defesa-total"] ?? 0) > 0
+                  ? `CDR ${own.cooldowns["defesa-total"]}`
+                  : "Disponível"
+              }
+              tone="defense"
               onClick={() => submit({ kind: "defend" })}
             />
-            {character.raceAbilities.map((skill) => (
-              <ActionButton
-                key={skill.key}
-                disabled={
-                  !isMyTurn ||
-                  pending ||
-                  state.actions.race ||
-                  state.actions.defend ||
-                  (own.cooldowns[skill.key] ?? 0) > 0
-                }
-                origin="HABILIDADE DE RAÇA"
-                name={skill.name}
-                detail={`${skill.cost} ${own.raceResourceName} · alcance ${skill.range}`}
-                onClick={() => submit({ kind: "race", key: skill.key })}
-              />
-            ))}
-            {character.skills.map((skill) => (
-              <ActionButton
-                key={skill.key}
-                disabled={
-                  !isMyTurn ||
-                  pending ||
-                  state.actions.class ||
-                  state.actions.defend ||
-                  (own.cooldowns[skill.key] ?? 0) > 0
-                }
-                origin="HABILIDADE DE CLASSE"
-                name={skill.name}
-                detail={`${skill.cost} ${own.classResourceName} · alcance ${skill.range}`}
-                onClick={() => submit({ kind: "class", key: skill.key })}
-              />
-            ))}
+            {character.raceAbilities.map((skill) => {
+              const resource = skillResource(skill);
+              const cooldown = own.cooldowns[skill.key] ?? 0;
+              return (
+                <ActionButton
+                  key={skill.key}
+                  disabled={
+                    !isMyTurn ||
+                    pending ||
+                    state.actions.race ||
+                    state.actions.defend ||
+                    cooldown > 0 ||
+                    resource.current < skill.cost ||
+                    distance > skill.range
+                  }
+                  origin="HABILIDADE DE RAÇA"
+                  name={skill.name}
+                  detail={`${skill.cost ? `${skill.cost} ${resource.label}` : "Sem custo"} · alcance ${skill.range}`}
+                  status={
+                    cooldown > 0
+                      ? `CDR ${cooldown} rodada${cooldown === 1 ? "" : "s"}`
+                      : resource.current < skill.cost
+                        ? "Recurso insuficiente"
+                        : distance > skill.range
+                          ? "Fora de alcance"
+                          : state.actions.race
+                            ? "Já utilizado"
+                            : !isMyTurn
+                              ? "Aguarde seu turno"
+                              : "Disponível"
+                  }
+                  tone="race"
+                  onClick={() => submit({ kind: "race", key: skill.key })}
+                />
+              );
+            })}
+            {character.skills.map((skill) => {
+              const resource = skillResource(skill);
+              const cooldown = own.cooldowns[skill.key] ?? 0;
+              return (
+                <ActionButton
+                  key={skill.key}
+                  disabled={
+                    !isMyTurn ||
+                    pending ||
+                    state.actions.class ||
+                    state.actions.defend ||
+                    cooldown > 0 ||
+                    resource.current < skill.cost ||
+                    distance > skill.range
+                  }
+                  origin="HABILIDADE DE CLASSE"
+                  name={skill.name}
+                  detail={`${skill.cost ? `${skill.cost} ${resource.label}` : "Sem custo"} · alcance ${skill.range}`}
+                  status={
+                    cooldown > 0
+                      ? `CDR ${cooldown} rodada${cooldown === 1 ? "" : "s"}`
+                      : resource.current < skill.cost
+                        ? "Recurso insuficiente"
+                        : distance > skill.range
+                          ? "Fora de alcance"
+                          : state.actions.class
+                            ? "Já utilizado"
+                            : !isMyTurn
+                              ? "Aguarde seu turno"
+                              : "Disponível"
+                  }
+                  tone="class"
+                  onClick={() => submit({ kind: "class", key: skill.key })}
+                />
+              );
+            })}
             {character.items.map((item) => (
               <ActionButton
                 key={item.id}
@@ -283,6 +359,8 @@ export function PvpBattle({
                 origin="ITEM"
                 name={item.name}
                 detail={item.description}
+                status={state.actions.item ? "Já utilizado" : "Disponível"}
+                tone="item"
                 onClick={() => submit({ kind: "item", id: item.id })}
               />
             ))}
@@ -298,8 +376,15 @@ export function PvpBattle({
         </section>
       ) : (
         <section
-          className={`arena-result ${state.winnerCharacterId === ownId ? "is-victory" : "is-defeat"}`}
+          className={`arena-result arena-result--cinematic ${state.winnerCharacterId === ownId ? "is-victory" : "is-defeat"}`}
         >
+          <div className="arena-result__crest" aria-hidden="true">
+            <i />
+            <b>
+              <span>{state.winnerCharacterId === ownId ? "W" : "L"}</span>
+            </b>
+            <i />
+          </div>
           <span>{state.winnerCharacterId === ownId ? "VITÓRIA" : "DERROTA"}</span>
           <h2>{state.fighters[state.winnerCharacterId ?? enemyId].name} venceu o duelo</h2>
           <p>Este resultado é o mesmo para os dois jogadores e foi confirmado pela sala oficial.</p>
@@ -323,19 +408,24 @@ function ActionButton({
   origin,
   name,
   detail,
+  status,
+  tone,
   onClick,
 }: {
   disabled: boolean;
   origin: string;
   name: string;
   detail: string;
+  status: string;
+  tone: "move" | "basic" | "defense" | "race" | "class" | "item";
   onClick(): void;
 }) {
   return (
-    <button disabled={disabled} onClick={onClick} type="button">
+    <button className={`pvp-action is-${tone}`} disabled={disabled} onClick={onClick} type="button">
       <small>{origin}</small>
       <strong>{name}</strong>
       <span>{detail}</span>
+      <em className={status === "Disponível" ? "is-ready" : ""}>{status}</em>
     </button>
   );
 }

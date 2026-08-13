@@ -706,7 +706,16 @@ function Battle({
         </div>
       </section>
       {finished ? (
-        <section className={`arena-result ${enemy.hp <= 0 ? "is-victory" : "is-defeat"}`}>
+        <section
+          className={`arena-result arena-result--cinematic ${enemy.hp <= 0 ? "is-victory" : "is-defeat"}`}
+        >
+          <div className="arena-result__crest" aria-hidden="true">
+            <i />
+            <b>
+              <span>{enemy.hp <= 0 ? "W" : "L"}</span>
+            </b>
+            <i />
+          </div>
           <span>{enemy.hp <= 0 ? "VITÓRIA" : "DERROTA"}</span>
           <h2>
             {enemy.hp <= 0 ? `${initial.title} foi derrotado` : "Seu personagem caiu em combate"}

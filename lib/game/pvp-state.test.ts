@@ -42,4 +42,30 @@ describe("estado compartilhado do PvP", () => {
     expect(state.status).toBe("active");
     expect(state.turn).toBe(1);
   });
+
+  it("leva atributos e passivas dos equipamentos ao estado autoritativo de combate", () => {
+    const equipped = fighter("equipado", 20);
+    equipped.equipmentEffects = [
+      {
+        key: "armadura-viva",
+        name: "Armadura Viva",
+        description: "Concede defesa, vida e escudo.",
+        kind: "BATTLE_START",
+        trigger: "BATTLE_START",
+        duration: 0,
+        power: 0,
+        modifiers: { DEF: 15 },
+        shield: 25,
+        maxHpPercent: 10,
+        mana: 0,
+        classResource: 0,
+        raceResource: 0,
+      },
+    ];
+    const state = createInitialPvpState(equipped, fighter("alvo", 10), defaultCombatRules);
+    const combatant = state.fighters[equipped.id];
+    expect(combatant.attributes.DEF).toBe(35);
+    expect(combatant.shield).toBe(25);
+    expect(combatant.maxHp).toBe(550);
+  });
 });

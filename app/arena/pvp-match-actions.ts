@@ -7,6 +7,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { toArenaCharacter } from "@/lib/game/arena-character";
 import {
   defaultCombatRules,
+  calculateDamage,
   getEffectiveAttributes,
   guardCombatant,
   resolveBasicAttack,
@@ -14,6 +15,7 @@ import {
   resolveSkill,
   tickCooldowns,
 } from "@/lib/game/combat";
+import { resolvePeriodicItemDamage } from "@/lib/game/item-effects";
 import { getMovementRange, tacticalGrid } from "@/lib/game/arena";
 import { emptyPvpActions } from "@/lib/game/pvp-state";
 import type { ArenaPosition, PvpBattleState, PvpRoomSnapshot } from "@/lib/game/arena-types";
@@ -181,12 +183,15 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     state.actions.item = true;
     message = `${actor.name} usou ${item.name} e recuperou ${healed} de HP.`;
   } else {
-    actor = tickCooldowns(actor);
+    const actorPeriodic = resolvePeriodicItemDamage(actor, (amount, type) =>
+      calculateDamage(amount, type, getEffectiveAttributes(actor), defaultCombatRules),
+    );
+    actor = tickCooldowns(actorPeriodic.combatant);
     state.turn += 1;
     state.activeCharacterId = enemyId;
     state.actions = { ...emptyPvpActions };
     state.turnEndsAt = new Date(Date.now() + 60_000).toISOString();
-    message = `${actor.name} encerrou sua jogada. Turno de ${target.name}.`;
+    message = `${actor.name} encerrou sua jogada.${actorPeriodic.messages.length ? ` ${actorPeriodic.messages.join(" ")}` : ""} Turno de ${target.name}.`;
   }
   state.fighters[ownId] = actor;
   state.fighters[enemyId] = target;

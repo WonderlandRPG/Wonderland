@@ -119,6 +119,48 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_characters"]["Insert"]>;
         Relationships: [];
       };
+      v2_dungeon_queue: {
+        Row: {
+          id: string;
+          dungeon_key: string;
+          user_id: string;
+          character_id: string;
+          joined_at: string;
+        };
+        Insert: {
+          id?: string;
+          dungeon_key: string;
+          user_id: string;
+          character_id: string;
+          joined_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_dungeon_queue"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_dungeon_runs: {
+        Row: {
+          id: string;
+          dungeon_key: string;
+          party_character_ids: string[];
+          started_by: string;
+          forced_start: boolean;
+          status: string;
+          started_at: string;
+          finished_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          dungeon_key: string;
+          party_character_ids: string[];
+          started_by: string;
+          forced_start?: boolean;
+          status?: string;
+          started_at?: string;
+          finished_at?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_dungeon_runs"]["Insert"]>;
+        Relationships: [];
+      };
       v2_character_inventory: {
         Row: {
           id: string;
@@ -496,6 +538,13 @@ export interface Database {
       };
       v2_touch_player_presence: { Args: Record<PropertyKey, never>; Returns: undefined };
       v2_get_online_player_count: { Args: Record<PropertyKey, never>; Returns: number };
+      v2_join_dungeon_queue: {
+        Args: { p_dungeon_key: string; p_character_id: string };
+        Returns: undefined;
+      };
+      v2_leave_dungeon_queue: { Args: { p_dungeon_key: string }; Returns: undefined };
+      v2_get_dungeon_queue: { Args: { p_dungeon_key: string }; Returns: Json };
+      v2_start_dungeon: { Args: { p_dungeon_key: string; p_force?: boolean }; Returns: Json };
       v2_publish_content: {
         Args: { p_content_id: string };
         Returns: Database["public"]["Tables"]["v2_content"]["Row"];

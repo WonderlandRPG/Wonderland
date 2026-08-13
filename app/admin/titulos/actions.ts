@@ -45,18 +45,21 @@ export async function saveTitleAdminAction(formData: FormData) {
   const attributes = Object.fromEntries(
     (["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const).map((key) => [key, data[key]]),
   );
-  const specialEffects = data.effectKind && data.effectName
-    ? [{
-        key: `${data.id || slugify(data.name)}-title-effect`,
-        kind: data.effectKind,
-        name: data.effectName,
-        description: data.effectDescription || "Efeito concedido pelo Título equipado.",
-        trigger: data.effectKind === "COOLDOWN_REDUCTION" ? "ON_SKILL_USE" : "ON_DAMAGE_DEALT",
-        duration: data.effectDuration,
-        power: data.effectPower,
-        modifiers: {},
-      }]
-    : [];
+  const specialEffects =
+    data.effectKind && data.effectName
+      ? [
+          {
+            key: `${data.id || slugify(data.name)}-title-effect`,
+            kind: data.effectKind,
+            name: data.effectName,
+            description: data.effectDescription || "Efeito concedido pelo Título equipado.",
+            trigger: data.effectKind === "COOLDOWN_REDUCTION" ? "ON_SKILL_USE" : "ON_DAMAGE_DEALT",
+            duration: data.effectDuration,
+            power: data.effectPower,
+            modifiers: {},
+          },
+        ]
+      : [];
   const payload = {
     name: data.name,
     description: data.description,
@@ -91,4 +94,18 @@ export async function saveTitleAdminAction(formData: FormData) {
   revalidatePath("/personagens/[id]", "page");
   revalidatePath("/arena");
   redirect("/admin/titulos?status=salvo");
+}
+
+export async function deleteTitleAdminAction(formData: FormData) {
+  await requireAdministrativeAccount();
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) redirect("/admin/titulos?status=erro");
+  const client = await createServerSupabaseClient();
+  if (!client) redirect("/admin/titulos?status=erro");
+  const { error } = await client.rpc("v2_admin_delete_title", { p_title_id: id.data });
+  if (error) redirect(`/admin/titulos?status=${encodeURIComponent(error.message)}`);
+  revalidatePath("/admin/titulos");
+  revalidatePath("/personagens", "layout");
+  revalidatePath("/arena");
+  redirect("/admin/titulos?status=excluido");
 }

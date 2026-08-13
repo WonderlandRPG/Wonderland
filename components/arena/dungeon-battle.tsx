@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState, useTransition } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { getDungeonRunAction, performDungeonAction } from "@/app/arena/dungeons/[runId]/actions";
 import { firstDungeon } from "@/lib/game/dungeons";
+import { tacticalGrid } from "@/lib/game/arena";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import type { DungeonBattleState } from "@/lib/game/dungeon-combat";
 type Room = { runId: string; version: number; state: DungeonBattleState };
@@ -119,6 +120,11 @@ export function DungeonBattle({
           label={monsterMeta.role.toUpperCase()}
         />
       </div>
+      <DungeonTacticalMap
+        state={state}
+        characters={characters}
+        monsterImage={monsterMeta.imageUrl}
+      />
       <section className="dungeon-party-panel">
         <header>
           <span className="eyebrow">Grupo da expedição</span>
@@ -225,6 +231,64 @@ export function DungeonBattle({
           ))}
         </ol>
       </details>
+    </section>
+  );
+}
+
+function DungeonTacticalMap({
+  state,
+  characters,
+  monsterImage,
+}: {
+  state: DungeonBattleState;
+  characters: ArenaCharacter[];
+  monsterImage: string;
+}) {
+  const partyPositions = state.partyOrder.map((id, index) => ({ id, x: 2, y: 4 + index * 2 }));
+  const monsterPosition = { x: tacticalGrid.width - 4, y: Math.floor(tacticalGrid.height / 2) };
+  return (
+    <section className="dungeon-tactical-panel">
+      <header>
+        <div>
+          <span className="eyebrow">Campo da expedição</span>
+          <h2>Mapa tático</h2>
+        </div>
+        <small>Formação do grupo · turno de {state.fighters[state.activeCharacterId]?.name}</small>
+      </header>
+      <div
+        className="arena-tactical-map dungeon-tactical-map"
+        style={{ gridTemplateColumns: `repeat(${tacticalGrid.width}, 1fr)` }}
+      >
+        {Array.from({ length: tacticalGrid.width * tacticalGrid.height }, (_, index) => {
+          const x = index % tacticalGrid.width,
+            y = Math.floor(index / tacticalGrid.width);
+          const party = partyPositions.find((position) => position.x === x && position.y === y);
+          const fighter = party ? state.fighters[party.id] : null;
+          const meta = party ? characters.find((entry) => entry.id === party.id) : null;
+          const monster = monsterPosition.x === x && monsterPosition.y === y;
+          const combatant = monster ? state.monster : fighter;
+          const image = monster ? monsterImage : meta?.imageUrl;
+          return (
+            <div
+              className={`${combatant ? "is-occupied" : ""} ${party?.id === state.activeCharacterId ? "is-active" : ""} ${monster ? "is-enemy" : ""}`}
+              key={`${x}-${y}`}
+            >
+              {combatant ? (
+                <div className="arena-map-piece">
+                  <div
+                    className={image ? "is-image" : ""}
+                    style={image ? { backgroundImage: `url(${image})` } : undefined}
+                  >
+                    {image ? "" : combatant.name.slice(0, 2)}
+                  </div>
+                  <progress max={combatant.maxHp} value={combatant.hp} />
+                  <small>{combatant.name}</small>
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }

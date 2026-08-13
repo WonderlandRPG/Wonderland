@@ -75,6 +75,7 @@ export function RewardConsole({
         <code>Dar @Luna item:Cajado do Gelo Eterno quantidade: 1</code>
         <code>Dar @Luna titulo:Desperto de Wonderland quantidade: 1</code>
         <code>Dar @Luna xp:500</code>
+        <code>Dar @Luna wg:1.000</code>
         <code>Dar @todos xp:100</code>
         <p>
           <b>@todos</b> entrega a recompensa a todos os personagens existentes. A ação fica

@@ -19615,6 +19615,193 @@ html[data-theme="accessible"] :is(.presence-campaign-settings, .admin-title-crea
     flex-direction: column;
   }
 }
+
+.admin-title-delete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 18px 18px;
+  padding: 14px;
+  border: 1px solid rgba(218, 73, 83, 0.28);
+  border-radius: 10px;
+  background: rgba(91, 13, 20, 0.16);
+}
+.admin-title-delete p {
+  margin: 0;
+  color: #b89494;
+  font-size: 0.68rem;
+}
+.admin-title-delete form { display: flex; align-items: center; gap: 8px; }
+.admin-title-delete form span { color: #ffd9dc; font-size: .65rem; }
+.button--danger {
+  border-color: #9f3e48 !important;
+  color: #ffd9dc !important;
+  background: #4a151b !important;
+}
+
+.shop-cart {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px solid rgba(214, 181, 107, 0.24);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(214, 181, 107, 0.08), transparent), #07110d;
+}
+.shop-cart > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+.shop-cart h2 {
+  margin: 3px 0 0;
+  color: #f0e2c6;
+  font:
+    500 1.1rem Georgia,
+    serif;
+}
+.shop-cart > header > strong {
+  color: #e6bd68;
+}
+.shop-cart > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.shop-cart > div > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(214, 181, 107, 0.2);
+  border-radius: 8px;
+  color: #dcebe5;
+  background: #0b1b15;
+  text-align: left;
+}
+.shop-cart > div svg {
+  width: 22px;
+  height: 22px;
+}
+.shop-cart > div span {
+  display: grid;
+  font-size: 0.64rem;
+}
+.shop-cart > div small {
+  color: #d2ad63;
+  font-size: 0.52rem;
+}
+.shop-cart > div b {
+  color: #cf6970;
+}
+.shop-cart > p {
+  margin: 0;
+  color: #78978b;
+  font-size: 0.7rem;
+}
+.shop-add-cart {
+  border: 0;
+  color: #d9bd7a;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dungeon-tactical-panel {
+  overflow: hidden;
+  border: 1px solid rgba(101, 229, 192, 0.18);
+  border-radius: 12px;
+  background: #04110d;
+}
+.dungeon-tactical-panel > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border-bottom: 1px solid rgba(101, 229, 192, 0.12);
+}
+.dungeon-tactical-panel h2 {
+  margin: 2px 0 0;
+  color: #f0e1c7;
+  font:
+    500 1.2rem Georgia,
+    serif;
+}
+.dungeon-tactical-panel > header small {
+  color: #76958a;
+}
+.dungeon-tactical-map {
+  display: grid;
+  aspect-ratio: 20 / 9;
+  min-height: 360px;
+  padding: 12px;
+  background:
+    radial-gradient(circle at center, rgba(40, 104, 76, 0.18), transparent 45%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 calc(100% / 14 - 1px),
+      rgba(101, 229, 192, 0.08) calc(100% / 14)
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 calc(100% / 20 - 1px),
+      rgba(101, 229, 192, 0.08) calc(100% / 20)
+    ),
+    #020906;
+}
+.dungeon-tactical-map > div {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid transparent;
+}
+.dungeon-tactical-map > div.is-active {
+  border-color: #65e5c0;
+  box-shadow: inset 0 0 14px rgba(101, 229, 192, 0.2);
+}
+.dungeon-tactical-map > div.is-enemy {
+  border-color: #b84c5d;
+}
+.dungeon-tactical-map .arena-map-piece {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  width: clamp(38px, 4vw, 60px);
+  transform: translate(-50%, -50%);
+}
+.dungeon-tactical-map .arena-map-piece > div {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-position: center;
+  background-size: cover;
+}
+.dungeon-tactical-map .arena-map-piece progress {
+  width: 100%;
+  height: 5px;
+  accent-color: #ef5968;
+}
+.dungeon-tactical-map .arena-map-piece small {
+  display: block;
+  overflow: hidden;
+  color: #dcebe5;
+  font-size: 0.45rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .dungeon-tactical-map {
+    min-height: 270px;
+    overflow-x: auto;
+  }
+  .admin-title-delete {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
 /* Ranking PvP e histórico competitivo */
 .ranking-mode-tabs {
   display: grid;

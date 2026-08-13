@@ -184,6 +184,13 @@ export function resolvePeriodicItemDamage<T extends ItemEffectCombatant>(
       0,
       Math.round(mitigate(rawDamage, status.periodicDamageType ?? "true")),
     );
+    if (damage > 0 && next.statuses["defesa-total"]) {
+      const statuses = { ...next.statuses };
+      delete statuses["defesa-total"];
+      next = { ...next, statuses };
+      messages.push(`${status.name} foi bloqueado por Defesa total.`);
+      continue;
+    }
     const absorbed = Math.min(next.shield, damage);
     const hpDamage = Math.max(0, damage - absorbed);
     next = {

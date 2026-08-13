@@ -12,6 +12,7 @@ import {
   getEffectiveAttributes,
   guardCombatant,
   resolveBasicAttack,
+  resolveAreaSkill,
   resolveRaceAbility,
   resolveSkill,
   tickCooldowns,
@@ -95,9 +96,14 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
     );
     if (!skill) return { ok: false as const, message: "Habilidade indisponível." };
     result =
-      action.data.kind === "class"
-        ? resolveSkill(actor, monster, skill, defaultCombatRules)
-        : resolveRaceAbility(actor, monster, skill, defaultCombatRules);
+      skill.area > 0
+        ? (() => {
+            const area = resolveAreaSkill(actor, [monster], skill, defaultCombatRules);
+            return { actor: area.actor, target: area.targets[0], event: area.events[0] };
+          })()
+        : action.data.kind === "class"
+          ? resolveSkill(actor, monster, skill, defaultCombatRules)
+          : resolveRaceAbility(actor, monster, skill, defaultCombatRules);
   }
   if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
   state.fighters[actorId] = result.actor;

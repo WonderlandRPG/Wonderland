@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { createPortal } from "react-dom";
-import { equipItemAction, unequipItemAction } from "@/app/personagens/[id]/equipment-actions";
+import {
+  equipItemAction,
+  sellInventoryItemAction,
+  unequipItemAction,
+} from "@/app/personagens/[id]/equipment-actions";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { RankBadge } from "@/components/characters/rank-badge";
 
@@ -11,6 +15,7 @@ type InventoryItem = {
   name: string;
   description: string;
   rarity: string;
+  price: number;
   rarityLabel: string;
   slot: string;
   slotLabel: string;
@@ -38,6 +43,11 @@ export function InventoryWorkbench({
   const [slotFilter, setSlotFilter] = useState("");
   const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
   const [activeSlotKey, setActiveSlotKey] = useState<string | null>(null);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
   const selected = items.find((item) => item.id === selectedId) ?? null;
   const activeSlot = slots.find((slot) => slot.key === activeSlotKey) ?? null;
   const activeSlotItem = activeSlot
@@ -324,6 +334,14 @@ export function InventoryWorkbench({
                     <button className="button button--primary">Equipar item</button>
                   </form>
                 )}
+                {!selected.equippedSlot && selected.slot !== "title" && selected.price > 0 ? (
+                  <form action={sellInventoryItemAction.bind(null, character.id)}>
+                    <input name="inventoryId" type="hidden" value={selected.id} />
+                    <button className="button button--danger">
+                      Vender por {Math.floor(selected.price / 3).toLocaleString("pt-BR")} WG
+                    </button>
+                  </form>
+                ) : null}
               </footer>
             </>
           ) : (
@@ -334,7 +352,7 @@ export function InventoryWorkbench({
           )}
         </aside>
       </section>
-      {typeof document !== "undefined" && activeSlot
+      {mounted && activeSlot
         ? createPortal(
             <div
               className="equipment-modal"

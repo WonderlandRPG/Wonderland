@@ -544,10 +544,11 @@ export interface Database {
       v2_get_online_player_count: { Args: Record<PropertyKey, never>; Returns: number };
       v2_join_dungeon_queue: {
         Args: { p_dungeon_key: string; p_character_id: string };
-        Returns: undefined;
+        Returns: Json;
       };
       v2_leave_dungeon_queue: { Args: { p_dungeon_key: string }; Returns: undefined };
       v2_get_dungeon_queue: { Args: { p_dungeon_key: string }; Returns: Json };
+      v2_get_own_active_dungeon_run: { Args: { p_dungeon_key: string }; Returns: string | null };
       v2_start_dungeon: { Args: { p_dungeon_key: string; p_force?: boolean }; Returns: Json };
       v2_get_dungeon_run: { Args: { p_run_id: string }; Returns: Json };
       v2_initialize_dungeon_run: { Args: { p_run_id: string; p_state: Json }; Returns: Json };
@@ -609,6 +610,7 @@ export interface Database {
         }>;
       };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
+      v2_buy_shop_cart: { Args: { p_item_ids: string[] }; Returns: Json };
       v2_select_character: { Args: { p_character_id: string }; Returns: undefined };
       v2_character_ranking: {
         Args: Record<PropertyKey, never>;
@@ -633,6 +635,7 @@ export interface Database {
         Args: { p_inventory_id: string };
         Returns: Database["public"]["Tables"]["v2_character_inventory"]["Row"];
       };
+      v2_sell_inventory_item: { Args: { p_inventory_id: string }; Returns: Json };
       v2_set_character_image: {
         Args: { p_character_id: string; p_image_url: string };
         Returns: Database["public"]["Tables"]["v2_characters"]["Row"];
@@ -663,6 +666,7 @@ export interface Database {
         };
         Returns: number;
       };
+      v2_admin_delete_title: { Args: { p_title_id: string }; Returns: number };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

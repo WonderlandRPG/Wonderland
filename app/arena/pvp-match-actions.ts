@@ -11,6 +11,7 @@ import {
   getEffectiveAttributes,
   guardCombatant,
   resolveBasicAttack,
+  resolveAreaSkill,
   resolveRaceAbility,
   resolveSkill,
   tickCooldowns,
@@ -162,9 +163,14 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     if (skill.target !== "self" && distance(actorPosition, targetPosition) > skill.range)
       return { ok: false as const, message: `${skill.name} alcança ${skill.range} casa(s).` };
     const result =
-      category === "race"
-        ? resolveRaceAbility(actor, target, skill, defaultCombatRules)
-        : resolveSkill(actor, target, skill, defaultCombatRules);
+      skill.area > 0
+        ? (() => {
+            const area = resolveAreaSkill(actor, [target], skill, defaultCombatRules);
+            return { actor: area.actor, target: area.targets[0], event: area.events[0] };
+          })()
+        : category === "race"
+          ? resolveRaceAbility(actor, target, skill, defaultCombatRules)
+          : resolveSkill(actor, target, skill, defaultCombatRules);
     if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
     actor = result.actor;
     target = result.target;

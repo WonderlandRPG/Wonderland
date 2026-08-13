@@ -11,6 +11,7 @@ import {
   getConvertedResourceBonus,
   guardCombatant,
   resolveBasicAttack,
+  resolveAreaSkill,
   resolveSkill,
   tickCooldowns,
 } from "@/lib/game/combat";
@@ -133,6 +134,57 @@ describe("motor de combate", () => {
     expect(blocked.statuses["defesa-total"]).toBeUndefined();
     expect(guarded.cooldowns["defesa-total"]).toBe(5);
     expect(applyDamage(blocked, 50).hp).toBe(target.hp - 50);
+  });
+
+  it("Defesa total também bloqueia 100% do próximo dano periódico", () => {
+    const guarded = guardCombatant(
+      createCombatant({
+        id: "guard-periodic",
+        name: "Guardião",
+        attributes,
+        baseHp: 300,
+        baseMana: 0,
+      }),
+    );
+    const poisoned: ReturnType<typeof guardCombatant> = {
+      ...guarded,
+      statuses: {
+        ...guarded.statuses,
+        poison: {
+          name: "Veneno",
+          duration: 2,
+          stacks: 1,
+          modifiers: {},
+          beneficial: false,
+          periodicDamage: 50,
+          periodicDamageType: "true" as const,
+        },
+      },
+    };
+    const result = resolvePeriodicItemDamage(poisoned);
+    expect(result.combatant.hp).toBe(poisoned.hp);
+    expect(result.combatant.statuses["defesa-total"]).toBeUndefined();
+  });
+
+  it("habilidades de área causam dano em todos os alvos informados", () => {
+    const actor = createCombatant({
+      id: "area-actor",
+      name: "Mago",
+      attributes,
+      baseHp: 300,
+      baseMana: 500,
+      classResource: { name: "Carga", initial: 100, maximum: 100 },
+    });
+    const targets = ["a", "b", "c"].map((id) =>
+      createCombatant({ id, name: id, attributes, baseHp: 300, baseMana: 0 }),
+    );
+    const mage = officialClasses.find((entry) => entry.slug === "mago")!;
+    const area = mage.payload.progression.find(
+      (skill) => skill.area > 0 && skill.operations[0]?.operation === "DAMAGE",
+    )!;
+    const result = resolveAreaSkill(actor, targets, area);
+    expect(result.targets).toHaveLength(3);
+    expect(result.targets.every((target, index) => target.hp < targets[index].hp)).toBe(true);
   });
 
   it("resolve ataque básico, habilidade, Mana e recarga", () => {

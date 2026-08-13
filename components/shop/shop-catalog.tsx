@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { ShopBuyButton } from "@/components/shop/shop-buy-button";
-import { buyItem } from "@/app/loja/actions";
+import { buyCart, buyItem } from "@/app/loja/actions";
 
 export type ShopCatalogItem = {
   id: string;
@@ -43,6 +43,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
   const [order, setOrder] = useState("featured");
   const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
   const [page, setPage] = useState(1);
+  const [cart, setCart] = useState<string[]>([]);
   const pageSize = 18;
   const slots = useMemo(
     () =>
@@ -78,6 +79,13 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
   const currentPage = Math.min(page, pageCount);
   const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   const selected = visible.find((item) => item.id === selectedId) ?? visible[0] ?? null;
+  const cartItems = cart
+    .map((id) => items.find((item) => item.id === id))
+    .filter((item): item is ShopCatalogItem => Boolean(item));
+  const cartTotal = cartItems.reduce((total, item) => total + item.price, 0);
+  const addToCart = (id: string) => setCart((current) => [...current, id]);
+  const removeFromCart = (index: number) =>
+    setCart((current) => current.filter((_, itemIndex) => itemIndex !== index));
   const clear = () => {
     setSearch("");
     setRarity("");
@@ -157,6 +165,45 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
           ) : null}
         </div>
       </section>
+      <section className="shop-cart">
+        <header>
+          <div>
+            <span className="eyebrow">Carrinho</span>
+            <h2>{cart.length} item(ns) reservado(s)</h2>
+          </div>
+          <strong>{cartTotal.toLocaleString("pt-BR")} WG</strong>
+        </header>
+        {cartItems.length ? (
+          <>
+            <div>
+              {cartItems.map((item, index) => (
+                <button
+                  key={`${item.id}-${index}`}
+                  onClick={() => removeFromCart(index)}
+                  type="button"
+                >
+                  <ItemGlyph slot={item.slot} />
+                  <span>
+                    {item.name}
+                    <small>{item.price.toLocaleString("pt-BR")} WG</small>
+                  </span>
+                  <b>×</b>
+                </button>
+              ))}
+            </div>
+            <form action={buyCart}>
+              {cart.map((id, index) => (
+                <input name="itemId" type="hidden" value={id} key={`${id}-input-${index}`} />
+              ))}
+              <button className="button button--primary" disabled={cartTotal > gold}>
+                Comprar tudo · {cartTotal.toLocaleString("pt-BR")} WG
+              </button>
+            </form>
+          </>
+        ) : (
+          <p>Adicione equipamentos para comprar todos em uma única transação.</p>
+        )}
+      </section>
       <div className="shop-browser">
         <section>
           <header className="shop-browser__result">
@@ -210,6 +257,13 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                       <input name="itemId" type="hidden" value={item.id} />
                       <ShopBuyButton disabled={gold < item.price} itemName={item.name} compact />
                     </form>
+                    <button
+                      className="shop-add-cart"
+                      onClick={() => addToCart(item.id)}
+                      type="button"
+                    >
+                      + Carrinho
+                    </button>
                   </footer>
                 </article>
               ))}
@@ -290,6 +344,13 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                   <input name="itemId" type="hidden" value={selected.id} />
                   <ShopBuyButton disabled={gold < selected.price} itemName={selected.name} />
                 </form>
+                <button
+                  className="button button--dark"
+                  onClick={() => addToCart(selected.id)}
+                  type="button"
+                >
+                  Adicionar ao carrinho
+                </button>
               </footer>
             </>
           ) : (

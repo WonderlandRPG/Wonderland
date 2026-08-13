@@ -293,8 +293,8 @@ export function resolveBasicAttack(
     event: {
       kind: "damage",
       damageType,
-      amount,
-      message: `${actor.name} usou Ataque básico e causou ${amount} de dano ${isMagical ? "mágico" : "físico"}.${itemResolution.messages.length ? ` ${itemResolution.messages.join(" ")}` : ""}`,
+      amount: damageDealt,
+      message: `${actor.name} usou Ataque básico e causou ${damageDealt} de dano ${isMagical ? "mágico" : "físico"}.${damageDealt === 0 && amount > 0 ? " O golpe foi bloqueado." : ""}${itemResolution.messages.length ? ` ${itemResolution.messages.join(" ")}` : ""}`,
     },
   };
 }
@@ -371,8 +371,8 @@ export function resolveSkill(
       event: {
         kind: "damage",
         damageType: type,
-        amount,
-        message: `${actor.name} usou ${skill.name} e causou ${amount} de dano ${type === "magic" ? "mágico" : type === "true" ? "verdadeiro" : "físico"}.${itemResolution.messages.length ? ` ${itemResolution.messages.join(" ")}` : ""}`,
+        amount: damageDealt,
+        message: `${actor.name} usou ${skill.name} e causou ${damageDealt} de dano ${type === "magic" ? "mágico" : type === "true" ? "verdadeiro" : "físico"}.${damageDealt === 0 && amount > 0 ? " O golpe foi bloqueado." : ""}${itemResolution.messages.length ? ` ${itemResolution.messages.join(" ")}` : ""}`,
       },
     };
   }

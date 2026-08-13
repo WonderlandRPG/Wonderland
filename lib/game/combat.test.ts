@@ -95,6 +95,30 @@ describe("motor de combate", () => {
     expect(next.hp).toBe(target.maxHp - 35);
   });
 
+  it("registra apenas o dano realmente causado quando escudo ou defesa total absorvem o golpe", () => {
+    const actor = createCombatant({
+      id: "atacante-log",
+      name: "Atacante",
+      attributes,
+      baseHp: 300,
+      baseMana: 0,
+    });
+    const shielded = {
+      ...createCombatant({
+        id: "escudado",
+        name: "Escudado",
+        attributes,
+        baseHp: 300,
+        baseMana: 0,
+      }),
+      shield: 30,
+    };
+    expect(resolveBasicAttack(actor, shielded).event.amount).toBe(50);
+    const blocked = resolveBasicAttack(actor, guardCombatant(shielded));
+    expect(blocked.event.amount).toBe(0);
+    expect(blocked.event.message).toContain("bloqueado");
+  });
+
   it("Defender bloqueia integralmente o próximo dano e entra em recarga", () => {
     const target = createCombatant({
       id: "guardiao",
@@ -170,6 +194,34 @@ describe("motor de combate", () => {
       periodicDamage: 8,
     });
     expect(resolvePeriodicItemDamage(hit.target).combatant.hp).toBe(hit.target.hp - 8);
+  });
+
+  it("permite que a defesa mitigue sangramento periódico sem reduzir dano verdadeiro", () => {
+    const target = createCombatant({
+      id: "periodico",
+      name: "Alvo",
+      attributes,
+      baseHp: 300,
+      baseMana: 0,
+    });
+    const withBleed = {
+      ...target,
+      statuses: {
+        bleed: {
+          name: "Sangramento",
+          duration: 2,
+          stacks: 1,
+          modifiers: {},
+          beneficial: false,
+          periodicDamage: 20,
+          periodicDamageType: "physical" as const,
+        },
+      },
+    };
+    const result = resolvePeriodicItemDamage(withBleed, (amount, type) =>
+      calculateDamage(amount, type, getEffectiveAttributes(withBleed)),
+    );
+    expect(result.combatant.hp).toBe(target.hp - 10);
   });
 
   it("faz roubo de vida e reduz a recarga de habilidades por equipamento", () => {

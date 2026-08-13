@@ -40,7 +40,7 @@ export default async function DungeonRunPage({ params }: { params: Promise<{ run
   if (error || !initialized || Array.isArray(initialized) || typeof initialized !== "object")
     notFound();
   return (
-    <main className="dungeon-page">
+    <main className="arena-page dungeon-page">
       <PlayerNav />
       <div className="page-container dungeon-shell">
         <Link className="arena-mode-back" href="/arena/dungeons">

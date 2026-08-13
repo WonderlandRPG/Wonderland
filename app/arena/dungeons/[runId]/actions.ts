@@ -8,6 +8,7 @@ import { firstDungeon } from "@/lib/game/dungeons";
 import {
   defaultCombatRules,
   applyDamage,
+  calculateDamage,
   getEffectiveAttributes,
   guardCombatant,
   resolveBasicAttack,
@@ -15,6 +16,7 @@ import {
   resolveSkill,
   tickCooldowns,
 } from "@/lib/game/combat";
+import { resolvePeriodicItemDamage } from "@/lib/game/item-effects";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/db/types";
 
@@ -101,6 +103,21 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   state.fighters[actorId] = result.actor;
   state.monster = result.target;
   let message = result.event.message;
+  const actorPeriodic = resolvePeriodicItemDamage(state.fighters[actorId], (amount, type) =>
+    calculateDamage(
+      amount,
+      type,
+      getEffectiveAttributes(state.fighters[actorId]),
+      defaultCombatRules,
+    ),
+  );
+  const monsterPeriodic = resolvePeriodicItemDamage(state.monster, (amount, type) =>
+    calculateDamage(amount, type, getEffectiveAttributes(state.monster), defaultCombatRules),
+  );
+  state.fighters[actorId] = actorPeriodic.combatant;
+  state.monster = tickCooldowns(monsterPeriodic.combatant);
+  const periodicMessages = [...actorPeriodic.messages, ...monsterPeriodic.messages];
+  if (periodicMessages.length) message += ` ${periodicMessages.join(" ")}`;
   const partySheets = (await Promise.all(state.partyOrder.map((id) => getCharacterSheet(id))))
     .filter(Boolean)
     .map((entry) => toArenaCharacter(entry!));
@@ -146,8 +163,16 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
       state.monster = { ...state.monster, shield: state.monster.shield + damage };
       message += ` ${state.monster.name} usou ${ability} e recebeu ${damage} de escudo.`;
     } else {
-      state.fighters[targetId] = applyDamage(target, damage);
-      message += ` ${state.monster.name} usou ${ability} em ${target.name}, causando ${damage} de dano.`;
+      const mitigatedDamage = calculateDamage(
+        damage,
+        "magic",
+        getEffectiveAttributes(target),
+        defaultCombatRules,
+      );
+      const damagedTarget = applyDamage(target, mitigatedDamage);
+      const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
+      state.fighters[targetId] = damagedTarget;
+      message += ` ${state.monster.name} usou ${ability} em ${target.name}, causando ${damageDealt} de dano mágico.${damageDealt === 0 ? " O golpe foi bloqueado." : ""}`;
     }
     if (alive.every((id) => state.fighters[id].hp <= 0)) {
       state.status = "defeat";

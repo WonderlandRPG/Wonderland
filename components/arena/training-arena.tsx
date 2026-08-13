@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import { claimArenaVictoryAction } from "@/app/arena/actions";
 
 import {
+  calculateDamage,
   createCombatant,
   getRaceAbilityCooldown,
   getRaceAbilityArenaMeta,
@@ -245,8 +246,12 @@ function Battle({
               message: `${enemy.name} avançou pelo campo de batalha.`,
             },
           };
-      const playerPeriodic = resolvePeriodicItemDamage(reply.target);
-      const enemyPeriodic = resolvePeriodicItemDamage(reply.actor);
+      const playerPeriodic = resolvePeriodicItemDamage(reply.target, (amount, type) =>
+        calculateDamage(amount, type, getEffectiveAttributes(reply.target), rules),
+      );
+      const enemyPeriodic = resolvePeriodicItemDamage(reply.actor, (amount, type) =>
+        calculateDamage(amount, type, getEffectiveAttributes(reply.actor), rules),
+      );
       const cooledPlayer = tickCooldowns(playerPeriodic.combatant);
       const cooledEnemy = tickCooldowns(enemyPeriodic.combatant);
       for (const key of newCooldowns)

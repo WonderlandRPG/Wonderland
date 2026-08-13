@@ -171,12 +171,19 @@ export function applyOffensiveItemEffects<T extends ItemEffectCombatant>(
   return { actor: nextActor, target: nextTarget, messages };
 }
 
-export function resolvePeriodicItemDamage<T extends ItemEffectCombatant>(combatant: T) {
+export function resolvePeriodicItemDamage<T extends ItemEffectCombatant>(
+  combatant: T,
+  mitigate: (amount: number, type: "physical" | "magic" | "true") => number = (amount) => amount,
+) {
   let next = combatant;
   const messages: string[] = [];
   for (const status of Object.values(combatant.statuses)) {
-    const damage = Math.max(0, Math.round(status.periodicDamage ?? 0));
-    if (!damage) continue;
+    const rawDamage = Math.max(0, Math.round(status.periodicDamage ?? 0));
+    if (!rawDamage) continue;
+    const damage = Math.max(
+      0,
+      Math.round(mitigate(rawDamage, status.periodicDamageType ?? "true")),
+    );
     const absorbed = Math.min(next.shield, damage);
     const hpDamage = Math.max(0, damage - absorbed);
     next = {

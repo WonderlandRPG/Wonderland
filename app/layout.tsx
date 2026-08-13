@@ -7,6 +7,7 @@ import { getAdventureRank } from "@/lib/game/ranks";
 import { ThemeControl } from "@/components/theme/theme-control";
 import { getThemeConfiguration } from "@/lib/content/themes";
 import { isAdministrativeRole } from "@/lib/auth/roles";
+import { PlayerPresence } from "@/components/player-presence";
 
 import "./globals.css";
 import "./theme-overrides.css";
@@ -36,6 +37,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         data-rank={rank?.key}
         style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}
       >
+        {account ? <PlayerPresence /> : null}
         <div className="game-world-atmosphere" aria-hidden="true">
           <span />
           <span />

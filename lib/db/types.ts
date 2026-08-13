@@ -494,6 +494,8 @@ export interface Database {
         Args: Record<PropertyKey, never>;
         Returns: boolean;
       };
+      v2_touch_player_presence: { Args: Record<PropertyKey, never>; Returns: undefined };
+      v2_get_online_player_count: { Args: Record<PropertyKey, never>; Returns: number };
       v2_publish_content: {
         Args: { p_content_id: string };
         Returns: Database["public"]["Tables"]["v2_content"]["Row"];

@@ -13653,6 +13653,375 @@ body[data-rank="EX"] .rank-atmosphere i {
   }
 }
 
+/* Portal de combate 8.0, matchmaking e dungeons cooperativas. */
+.arena-mode-select {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  padding: clamp(28px, 5vw, 68px) 0 80px;
+}
+.arena-mode-select > header h1 {
+  font-size: clamp(3.3rem, 8vw, 7.4rem);
+  line-height: 0.86;
+}
+.arena-mode-select .arena-history-link {
+  align-self: end;
+  margin: 0;
+  padding: 14px 18px;
+}
+.arena-mode-select > .arena-mode-grid {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.arena-mode-select .arena-mode-card {
+  --mode-accent: #67d9b7;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: 310px;
+  align-content: end;
+  overflow: hidden;
+  padding: 30px;
+  border: 1px solid color-mix(in srgb, var(--mode-accent) 42%, transparent);
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      circle at 72% 18%,
+      color-mix(in srgb, var(--mode-accent) 20%, transparent),
+      transparent 35%
+    ),
+    linear-gradient(145deg, #0b1720, #050b0d);
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.04),
+    0 25px 70px rgba(0, 0, 0, 0.28);
+}
+.arena-mode-card.is-training {
+  --mode-accent: #75c6a5;
+}
+.arena-mode-card.is-pve {
+  --mode-accent: #d7a94e;
+}
+.arena-mode-card.is-pvp {
+  --mode-accent: #8d7eff;
+}
+.arena-mode-card.is-dungeon {
+  --mode-accent: #50dc9b;
+}
+.arena-mode-select .arena-mode-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 90px color-mix(in srgb, var(--mode-accent) 18%, transparent);
+}
+.arena-mode-select .arena-mode-card > i {
+  position: absolute;
+  top: 22px;
+  left: 25px;
+  color: var(--mode-accent);
+  font: 800 0.65rem/1 monospace;
+}
+.arena-mode-select .arena-mode-card__sigil {
+  position: absolute;
+  z-index: -1;
+  top: 18px;
+  right: 34px;
+  color: var(--mode-accent);
+  opacity: 0.36;
+  filter: drop-shadow(0 0 22px var(--mode-accent));
+  font-size: 7rem;
+}
+.arena-mode-select .arena-mode-card strong {
+  color: #f4ead7;
+  font-size: clamp(2.1rem, 4vw, 3.7rem);
+}
+.arena-mode-select .arena-mode-card b {
+  color: var(--mode-accent);
+}
+
+.pvp-lobby {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 620px;
+  align-content: center;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(80, 220, 164, 0.2), transparent 24rem), #040a09;
+}
+.pvp-lobby::before,
+.pvp-lobby::after {
+  position: absolute;
+  z-index: -1;
+  inset: 50% auto auto 50%;
+  width: 360px;
+  height: 360px;
+  content: "";
+  border: 1px solid rgba(101, 229, 192, 0.2);
+  border-radius: 50%;
+  animation: pvp-search-orbit 8s linear infinite;
+}
+.pvp-lobby::after {
+  width: 510px;
+  height: 510px;
+  animation-direction: reverse;
+  animation-duration: 13s;
+}
+.pvp-lobby__crest {
+  display: grid;
+  width: 110px;
+  height: 110px;
+  place-items: center;
+  margin-inline: auto;
+  border: 1px solid #65e5c0;
+  border-radius: 50%;
+  box-shadow: 0 0 60px rgba(101, 229, 192, 0.28);
+  animation: pvp-search-pulse 2.2s ease-in-out infinite;
+}
+.pvp-lobby.is-matched {
+  --match-color: #e7c46d;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(231, 196, 109, 0.25), transparent 25rem), #080905;
+}
+.pvp-lobby.is-matched .pvp-lobby__crest {
+  border-color: var(--match-color);
+  color: var(--match-color);
+  animation: pvp-match-found 0.8s ease-out both;
+}
+.pvp-match-card {
+  animation: pvp-card-reveal 0.75s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+@keyframes pvp-search-orbit {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+  from {
+    transform: translate(-50%, -50%) rotate(0);
+  }
+}
+@keyframes pvp-search-pulse {
+  50% {
+    transform: scale(1.07);
+    box-shadow: 0 0 95px rgba(101, 229, 192, 0.48);
+  }
+}
+@keyframes pvp-match-found {
+  0% {
+    transform: scale(0.5) rotate(-35deg);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.14) rotate(4deg);
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes pvp-card-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.arena-map__grid > button .arena-map-token {
+  position: absolute;
+  z-index: 5;
+  inset: 50% auto auto 50%;
+  display: grid;
+  width: clamp(30px, 4.2vw, 58px);
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.8));
+}
+.arena-map-token > i {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid #62e5bf;
+  border-radius: 50%;
+  background: #071611 center 18% / cover no-repeat;
+  color: #fff;
+  font-style: normal;
+}
+.arena-map__grid > button.has-enemy .arena-map-token > i {
+  border-color: #dc6374;
+}
+.arena-map-token progress {
+  width: 125%;
+  height: 7px;
+  margin: 3px 0 0 -12.5%;
+  accent-color: #42d979;
+}
+.arena-map-token.has-damage {
+  animation: map-token-damage 0.5s ease-out;
+}
+.arena-map-token.has-heal {
+  animation: map-token-heal 0.8s ease-out;
+}
+.arena-map-token.has-shield > i {
+  box-shadow:
+    0 0 0 6px rgba(83, 182, 255, 0.35),
+    0 0 30px #53b6ff;
+  animation: map-token-shield 0.8s ease-out;
+}
+@keyframes map-token-damage {
+  25% {
+    transform: translate(-58%, -50%);
+    filter: brightness(2) sepia(1) hue-rotate(300deg);
+  }
+  55% {
+    transform: translate(-44%, -50%);
+  }
+}
+@keyframes map-token-heal {
+  50% {
+    filter: drop-shadow(0 0 22px #54ef94);
+    transform: translate(-50%, -58%) scale(1.12);
+  }
+}
+@keyframes map-token-shield {
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+.dungeon-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 18%, rgba(34, 128, 86, 0.2), transparent 34rem), #030907;
+}
+.dungeon-shell {
+  display: grid;
+  gap: 22px;
+  padding-block: 32px 90px;
+}
+.dungeon-hero {
+  display: grid;
+  grid-template-columns: 1fr 190px;
+  gap: 30px;
+  min-height: 380px;
+  align-items: end;
+  padding: clamp(28px, 6vw, 72px);
+  border: 1px solid rgba(89, 221, 161, 0.28);
+  border-radius: 26px;
+  background:
+    linear-gradient(110deg, rgba(2, 10, 7, 0.98), rgba(5, 29, 20, 0.76)),
+    url("/images/monsters/dungeon-e-rank-atlas.png") 100% 100%/200% 200%;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.38);
+}
+.dungeon-hero h1 {
+  max-width: 800px;
+  margin: 10px 0;
+  font-size: clamp(3.4rem, 8vw, 7rem);
+  line-height: 0.88;
+}
+.dungeon-hero p {
+  max-width: 700px;
+  color: #a9c6b8;
+  line-height: 1.8;
+}
+.dungeon-hero aside {
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  border: 1px solid #58dda1;
+  background: rgba(2, 12, 8, 0.78);
+}
+.dungeon-hero aside b {
+  color: #65e5ac;
+  font-size: 2rem;
+}
+.dungeon-party-panel {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: center;
+  padding: 26px;
+  border: 1px solid rgba(91, 218, 161, 0.22);
+  border-radius: 18px;
+  background: #07130f;
+}
+.dungeon-party-ring {
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-content: center;
+  border: 1px solid #5ce0a5;
+  border-radius: 50%;
+  text-align: center;
+  box-shadow: inset 0 0 24px rgba(92, 224, 165, 0.14);
+}
+.dungeon-party-ring span {
+  font:
+    500 2rem Georgia,
+    serif;
+}
+.dungeon-party-ring small {
+  font-size: 0.5rem;
+  letter-spacing: 0.14em;
+}
+.dungeon-bestiary {
+  padding: clamp(24px, 4vw, 42px);
+  border: 1px solid rgba(91, 218, 161, 0.18);
+  border-radius: 22px;
+  background: #06100d;
+}
+.dungeon-bestiary h2 {
+  margin: 8px 0 22px;
+  font-size: 2.3rem;
+}
+.dungeon-bestiary > div {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.dungeon-bestiary article {
+  overflow: hidden;
+  border: 1px solid rgba(91, 218, 161, 0.2);
+  border-radius: 14px;
+  background: #091712;
+}
+.dungeon-bestiary article > div {
+  aspect-ratio: 1;
+  background-image: url("/images/monsters/dungeon-e-rank-atlas.png");
+  background-size: 200% 200%;
+}
+.dungeon-bestiary article small,
+.dungeon-bestiary article strong {
+  display: block;
+  padding-inline: 15px;
+}
+.dungeon-bestiary article small {
+  padding-top: 13px;
+  color: #58dda1;
+}
+.dungeon-bestiary article strong {
+  padding-block: 5px 17px;
+  font-size: 1rem;
+}
+@media (max-width: 800px) {
+  .arena-mode-select {
+    grid-template-columns: 1fr;
+  }
+  .arena-mode-select > .arena-mode-grid {
+    grid-template-columns: 1fr;
+  }
+  .dungeon-hero {
+    grid-template-columns: 1fr;
+  }
+  .dungeon-party-panel {
+    grid-template-columns: 1fr;
+  }
+  .dungeon-bestiary > div {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* Correção final: Arena nunca herda superfícies claras do portal */
 body[data-rank]:has(.arena-page) {
   color: #e9f4ef;

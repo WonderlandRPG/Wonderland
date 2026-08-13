@@ -473,10 +473,19 @@ function Battle({
           onMove={moveTo}
           player={player}
           playerPosition={playerPosition}
+          playerImage={character.imageUrl}
+          enemyImage={
+            opponent?.imageUrl ?? (mode === "pve" ? "/images/monsters/pve-bestiary-atlas.png" : "")
+          }
+          enemyImagePosition={initial.imagePosition}
+          visual={visual}
         />
         <Fighter
           combatant={enemy}
-          imageUrl={opponent?.imageUrl ?? ""}
+          imageUrl={
+            opponent?.imageUrl ?? (mode === "pve" ? "/images/monsters/pve-bestiary-atlas.png" : "")
+          }
+          imagePosition={initial.imagePosition}
           side="enemy"
           sigil={initial.sigil}
           subtitle={`Nível ${opponent?.level ?? character.level} · ${initial.title}`}
@@ -759,6 +768,7 @@ function Fighter({
   subtitle,
   side,
   imageUrl,
+  imagePosition,
   sigil = "鬼",
   title,
   visual,
@@ -767,6 +777,7 @@ function Fighter({
   subtitle: string;
   side: "player" | "enemy";
   imageUrl: string;
+  imagePosition?: string;
   sigil?: string;
   title: EquippedTitleData | null;
   visual: CombatVisual | null;
@@ -777,7 +788,15 @@ function Fighter({
       <div
         key={`${side}-${visual?.id ?? 0}-${visual?.kind ?? "idle"}`}
         className={`arena-fighter__portrait ${imageUrl ? "is-image" : ""} ${visual ? `has-${visual.kind}` : ""}`}
-        style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
+        style={
+          imageUrl
+            ? {
+                backgroundImage: `url(${imageUrl})`,
+                backgroundPosition: imagePosition,
+                backgroundSize: imagePosition ? "500% 200%" : undefined,
+              }
+            : undefined
+        }
       >
         {imageUrl ? "" : side === "player" ? combatant.name.slice(0, 2).toUpperCase() : sigil}
         <span>{side === "player" ? "JOGADOR" : "OPONENTE"}</span>
@@ -904,6 +923,10 @@ function BattleGrid({
   onMove,
   player,
   playerPosition,
+  playerImage,
+  enemyImage,
+  enemyImagePosition,
+  visual,
 }: {
   enemy: CombatantState;
   enemyPosition: Position;
@@ -912,6 +935,10 @@ function BattleGrid({
   onMove(position: Position): void;
   player: CombatantState;
   playerPosition: Position;
+  playerImage: string;
+  enemyImage: string;
+  enemyImagePosition?: string;
+  visual: CombatVisual | null;
 }) {
   const cells = Array.from({ length: tacticalGrid.width * tacticalGrid.height }, (_, index) => ({
     x: index % tacticalGrid.width,
@@ -963,10 +990,40 @@ function BattleGrid({
               type="button"
             >
               {hasPlayer ? (
-                <span title={player.name}>{player.name.slice(0, 2).toUpperCase()}</span>
+                <span
+                  className={`arena-map-token ${visual?.target === "player" ? `has-${visual.kind}` : ""}`}
+                  title={player.name}
+                >
+                  <i
+                    className={playerImage ? "is-image" : ""}
+                    style={playerImage ? { backgroundImage: `url(${playerImage})` } : undefined}
+                  >
+                    {playerImage ? "" : player.name.slice(0, 2).toUpperCase()}
+                  </i>
+                  <progress max={player.maxHp} value={player.hp} />
+                </span>
               ) : null}
               {hasEnemy ? (
-                <span title={enemy.name}>{enemy.name.slice(0, 2).toUpperCase()}</span>
+                <span
+                  className={`arena-map-token ${visual?.target === "enemy" ? `has-${visual.kind}` : ""}`}
+                  title={enemy.name}
+                >
+                  <i
+                    className={enemyImage ? "is-image" : ""}
+                    style={
+                      enemyImage
+                        ? {
+                            backgroundImage: `url(${enemyImage})`,
+                            backgroundPosition: enemyImagePosition,
+                            backgroundSize: enemyImagePosition ? "500% 200%" : undefined,
+                          }
+                        : undefined
+                    }
+                  >
+                    {enemyImage ? "" : enemy.name.slice(0, 2).toUpperCase()}
+                  </i>
+                  <progress max={enemy.maxHp} value={enemy.hp} />
+                </span>
               ) : null}
             </button>
           );
@@ -1039,5 +1096,6 @@ function createBattle(
     enemy,
     title: opponent ? "Duelo entre aventureiros" : (monster?.title ?? "Autômato de treino"),
     sigil: opponent ? "対" : (monster?.sigil ?? "鬼"),
+    imagePosition: monster?.imagePosition,
   };
 }

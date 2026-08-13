@@ -18,6 +18,7 @@ import { getMovementRange, tacticalGrid } from "@/lib/game/arena";
 import { emptyPvpActions } from "@/lib/game/pvp-state";
 import type { ArenaPosition, PvpBattleState, PvpRoomSnapshot } from "@/lib/game/arena-types";
 import type { Json } from "@/lib/db/types";
+import { resolveSkillMovement } from "@/lib/game/skill-movement";
 
 const matchSchema = z.uuid();
 const actionSchema = z.discriminatedUnion("kind", [
@@ -44,25 +45,6 @@ const actionSchema = z.discriminatedUnion("kind", [
 
 function distance(a: ArenaPosition, b: ArenaPosition) {
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
-}
-function toward(from: ArenaPosition, target: ArenaPosition, maximum: number) {
-  const next = { ...from };
-  for (let step = 0; step < maximum && distance(next, target) > 1; step += 1) {
-    if (next.x !== target.x) next.x += Math.sign(target.x - next.x);
-    else if (next.y !== target.y) next.y += Math.sign(target.y - next.y);
-  }
-  return next;
-}
-function away(from: ArenaPosition, source: ArenaPosition, maximum: number) {
-  const next = { ...from };
-  for (let step = 0; step < maximum; step += 1) {
-    const dx = next.x - source.x,
-      dy = next.y - source.y;
-    if (Math.abs(dx) >= Math.abs(dy))
-      next.x = Math.max(0, Math.min(tacticalGrid.width - 1, next.x + (dx >= 0 ? 1 : -1)));
-    else next.y = Math.max(0, Math.min(tacticalGrid.height - 1, next.y + (dy >= 0 ? 1 : -1)));
-  }
-  return next;
 }
 
 function parseRoom(data: unknown): PvpRoomSnapshot | null {
@@ -186,13 +168,9 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     target = result.target;
     state.actions[category] = true;
     message = result.event.message;
-    for (const operation of skill.operations) {
-      const amount = operation.distance || skill.range || 0;
-      if (operation.operation === "MOVE" || operation.operation === "TELEPORT")
-        state.positions[ownId] = toward(actorPosition, targetPosition, amount);
-      if (operation.operation === "PUSH")
-        state.positions[enemyId] = away(targetPosition, actorPosition, amount);
-    }
+    const movement = resolveSkillMovement(skill, actorPosition, targetPosition);
+    state.positions[ownId] = movement.actor;
+    state.positions[enemyId] = movement.target;
   } else if (actionData.kind === "item") {
     if (state.actions.item || state.actions.defend)
       return { ok: false as const, message: "O item desta rodada já foi usado." };

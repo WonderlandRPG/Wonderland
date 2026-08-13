@@ -2,8 +2,8 @@ import "server-only";
 
 import type { CharacterSheet } from "@/lib/content/characters";
 import { prepareArenaSkill } from "@/lib/game/classes";
-import { getBasicAttackRange } from "@/lib/game/equipment";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
+import { getClassBasicAttackRange } from "@/lib/game/class-range";
 
 export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
   const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
@@ -27,7 +27,7 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
     classResource: character.characterClass.payload.resource,
     raceResource: character.race.payload.resource,
     usesMana: false,
-    basicAttackRange: getBasicAttackRange(character.inventory),
+    basicAttackRange: getClassBasicAttackRange(character.characterClass.name),
     attributes: character.stats.attributes,
     skills: character.unlockedClassSkills
       .filter((skill) => !/passiva/i.test(skill.type))

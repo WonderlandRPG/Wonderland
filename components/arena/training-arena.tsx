@@ -33,6 +33,7 @@ import {
 } from "@/lib/game/item-effects";
 import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
+import { resolveSkillMovement } from "@/lib/game/skill-movement";
 
 type TurnActions = {
   move: boolean;
@@ -69,18 +70,6 @@ function stepToward(from: Position, target: Position, maximum: number) {
   for (let step = 0; step < maximum && gridDistance(next, target) > 1; step += 1) {
     if (next.x !== target.x) next.x += Math.sign(target.x - next.x);
     else if (next.y !== target.y) next.y += Math.sign(target.y - next.y);
-  }
-  return next;
-}
-
-function stepAway(from: Position, source: Position, maximum: number) {
-  const next = { ...from };
-  for (let step = 0; step < maximum; step += 1) {
-    const dx = next.x - source.x;
-    const dy = next.y - source.y;
-    if (Math.abs(dx) >= Math.abs(dy))
-      next.x = Math.max(0, Math.min(tacticalGrid.width - 1, next.x + (dx >= 0 ? 1 : -1)));
-    else next.y = Math.max(0, Math.min(tacticalGrid.height - 1, next.y + (dy >= 0 ? 1 : -1)));
   }
   return next;
 }
@@ -344,16 +333,9 @@ function Battle({
   }
 
   function applySkillMovement(skill: ClassSkill) {
-    for (const operation of skill.operations) {
-      const distance = operation.distance || skill.range || 0;
-      if (distance <= 0) continue;
-      if (operation.operation === "MOVE" || operation.operation === "TELEPORT") {
-        setPlayerPosition(stepToward(playerPosition, enemyPosition, distance));
-      }
-      if (operation.operation === "PUSH") {
-        setEnemyPosition(stepAway(enemyPosition, playerPosition, distance));
-      }
-    }
+    const movement = resolveSkillMovement(skill, playerPosition, enemyPosition);
+    setPlayerPosition(movement.actor);
+    setEnemyPosition(movement.target);
   }
 
   function handleItem(item: ArenaCharacter["items"][number]) {

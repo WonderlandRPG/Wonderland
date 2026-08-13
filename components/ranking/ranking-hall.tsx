@@ -96,7 +96,7 @@ function PvpRanking({ entries }: { entries: PvpRankingEntry[] }) {
             <span>Taxa</span>
           </div>
           {entries.map((entry) => (
-            <Link href={`/jogadores/${entry.user_id}`} key={entry.id}>
+            <Link href={`/jogadores/${entry.id}`} key={entry.id}>
               <b>#{entry.position}</b>
               <span className="pvp-ranking-player">
                 <Avatar entry={entry} />

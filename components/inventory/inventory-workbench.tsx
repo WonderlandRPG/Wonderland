@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { equipItemAction, unequipItemAction } from "@/app/personagens/[id]/equipment-actions";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { RankBadge } from "@/components/characters/rank-badge";
@@ -321,132 +322,141 @@ export function InventoryWorkbench({
           )}
         </aside>
       </section>
-      {activeSlot ? (
-        <div
-          className="equipment-modal"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.currentTarget === event.target) setActiveSlotKey(null);
-          }}
-        >
-          <section
-            aria-labelledby="equipment-modal-title"
-            aria-modal="true"
-            className="equipment-modal__dialog"
-            role="dialog"
-          >
-            <header className="equipment-modal__header">
-              <div>
-                <span className="eyebrow">Escolher equipamento</span>
-                <h3 id="equipment-modal-title">{activeSlot.label}</h3>
-                <p>
-                  {activeSlotItem
-                    ? `${activeSlotItem.name} está equipado neste espaço.`
-                    : `Escolha um dos ${compatibleItems.length} itens compatíveis da mochila.`}
-                </p>
-              </div>
-              <button
-                aria-label="Fechar seleção de equipamento"
-                onClick={() => setActiveSlotKey(null)}
-                type="button"
+      {typeof document !== "undefined" && activeSlot
+        ? createPortal(
+            <div
+              className="equipment-modal"
+              role="presentation"
+              onMouseDown={(event) => {
+                if (event.currentTarget === event.target) setActiveSlotKey(null);
+              }}
+            >
+              <section
+                aria-labelledby="equipment-modal-title"
+                aria-modal="true"
+                className="equipment-modal__dialog"
+                role="dialog"
               >
-                ×
-              </button>
-            </header>
-            {activeSlot.reserved && activeSlotItem ? (
-              <div className="equipment-modal__two-handed">
-                <ItemGlyph slot={activeSlotItem.slot} />
-                <span>
-                  <strong>Espaço reservado por arma de duas mãos</strong>
-                  <small>
-                    Equipar outra arma aqui substituirá {activeSlotItem.name} e liberará os dois
-                    espaços.
-                  </small>
-                </span>
-              </div>
-            ) : null}
-            <div className="equipment-modal__list">
-              {compatibleItems.length ? (
-                compatibleItems.map((item) => {
-                  const equippedHere = item.id === activeSlot.itemId;
-                  const equippedElsewhere = Boolean(item.equippedSlot && !equippedHere);
-                  return (
-                    <article
-                      className={equippedHere ? "is-equipped" : ""}
-                      data-rarity={item.rarity}
-                      key={item.id}
-                    >
-                      <div className="equipment-modal__glyph">
-                        <ItemGlyph slot={item.slot} />
-                        {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
-                      </div>
-                      <div className="equipment-modal__item-copy">
-                        <small>
-                          {item.rarityLabel} · {item.twoHanded ? "Duas mãos" : item.slotLabel}
-                        </small>
-                        <strong>{item.name}</strong>
-                        <p>{item.description}</p>
-                        <div>
-                          {Object.entries(item.attributes).map(([key, value]) => (
-                            <span key={key}>
-                              {key} <b>+{value}</b>
-                            </span>
-                          ))}
-                          {item.effects.map((effect) => (
-                            <span className="is-effect" key={effect.key} title={effect.description}>
-                              ✦ {effect.name}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="equipment-modal__action">
-                        {equippedHere ? (
-                          <>
-                            <span>✓ Equipado</span>
-                            <form action={unequipItemAction.bind(null, character.id)}>
-                              <input name="inventoryId" type="hidden" value={item.id} />
-                              <button className="button button--dark">Desequipar</button>
-                            </form>
-                          </>
-                        ) : (
-                          <form action={equipItemAction.bind(null, character.id)}>
-                            <input name="inventoryId" type="hidden" value={item.id} />
-                            <input name="slot" type="hidden" value={activeSlot.key} />
-                            {equippedElsewhere ? (
-                              <small>
-                                Em {slots.find((slot) => slot.key === item.equippedSlot)?.label}
-                              </small>
-                            ) : null}
-                            <button className="button button--primary">
-                              {equippedElsewhere ? "Mover para cá" : "Equipar"}
-                            </button>
-                          </form>
-                        )}
-                      </div>
-                    </article>
-                  );
-                })
-              ) : (
-                <div className="inventory-empty">
-                  <ItemGlyph slot={activeSlot.key} />
-                  <strong>Nenhum {activeSlot.label.toLocaleLowerCase("pt-BR")} na mochila</strong>
-                  <p>
-                    {activeSlot.key === "title"
-                      ? "Títulos são concedidos exclusivamente pela administração."
-                      : "Visite a Loja para encontrar um equipamento compatível."}
-                  </p>
+                <header className="equipment-modal__header">
+                  <div>
+                    <span className="eyebrow">Escolher equipamento</span>
+                    <h3 id="equipment-modal-title">{activeSlot.label}</h3>
+                    <p>
+                      {activeSlotItem
+                        ? `${activeSlotItem.name} está equipado neste espaço.`
+                        : `Escolha um dos ${compatibleItems.length} itens compatíveis da mochila.`}
+                    </p>
+                  </div>
+                  <button
+                    aria-label="Fechar seleção de equipamento"
+                    onClick={() => setActiveSlotKey(null)}
+                    type="button"
+                  >
+                    ×
+                  </button>
+                </header>
+                {activeSlot.reserved && activeSlotItem ? (
+                  <div className="equipment-modal__two-handed">
+                    <ItemGlyph slot={activeSlotItem.slot} />
+                    <span>
+                      <strong>Espaço reservado por arma de duas mãos</strong>
+                      <small>
+                        Equipar outra arma aqui substituirá {activeSlotItem.name} e liberará os dois
+                        espaços.
+                      </small>
+                    </span>
+                  </div>
+                ) : null}
+                <div className="equipment-modal__list">
+                  {compatibleItems.length ? (
+                    compatibleItems.map((item) => {
+                      const equippedHere = item.id === activeSlot.itemId;
+                      const equippedElsewhere = Boolean(item.equippedSlot && !equippedHere);
+                      return (
+                        <article
+                          className={equippedHere ? "is-equipped" : ""}
+                          data-rarity={item.rarity}
+                          key={item.id}
+                        >
+                          <div className="equipment-modal__glyph">
+                            <ItemGlyph slot={item.slot} />
+                            {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
+                          </div>
+                          <div className="equipment-modal__item-copy">
+                            <small>
+                              {item.rarityLabel} · {item.twoHanded ? "Duas mãos" : item.slotLabel}
+                            </small>
+                            <strong>{item.name}</strong>
+                            <p>{item.description}</p>
+                            <div>
+                              {Object.entries(item.attributes).map(([key, value]) => (
+                                <span key={key}>
+                                  {key} <b>+{value}</b>
+                                </span>
+                              ))}
+                              {item.effects.map((effect) => (
+                                <span
+                                  className="is-effect"
+                                  key={effect.key}
+                                  title={effect.description}
+                                >
+                                  ✦ {effect.name}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="equipment-modal__action">
+                            {equippedHere ? (
+                              <>
+                                <span>✓ Equipado</span>
+                                <form action={unequipItemAction.bind(null, character.id)}>
+                                  <input name="inventoryId" type="hidden" value={item.id} />
+                                  <button className="button button--dark">Desequipar</button>
+                                </form>
+                              </>
+                            ) : (
+                              <form action={equipItemAction.bind(null, character.id)}>
+                                <input name="inventoryId" type="hidden" value={item.id} />
+                                <input name="slot" type="hidden" value={activeSlot.key} />
+                                {equippedElsewhere ? (
+                                  <small>
+                                    Em {slots.find((slot) => slot.key === item.equippedSlot)?.label}
+                                  </small>
+                                ) : null}
+                                <button className="button button--primary">
+                                  {equippedElsewhere ? "Mover para cá" : "Equipar"}
+                                </button>
+                              </form>
+                            )}
+                          </div>
+                        </article>
+                      );
+                    })
+                  ) : (
+                    <div className="inventory-empty">
+                      <ItemGlyph slot={activeSlot.key} />
+                      <strong>
+                        Nenhum {activeSlot.label.toLocaleLowerCase("pt-BR")} na mochila
+                      </strong>
+                      <p>
+                        {activeSlot.key === "title"
+                          ? "Títulos são concedidos exclusivamente pela administração."
+                          : "Visite a Loja para encontrar um equipamento compatível."}
+                      </p>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <footer className="equipment-modal__footer">
-              <span>{compatibleItems.length} itens compatíveis</span>
-              <button className="button button--dark" onClick={() => setActiveSlotKey(null)}>
-                Voltar ao inventário
-              </button>
-            </footer>
-          </section>
-        </div>
-      ) : null}
+                <footer className="equipment-modal__footer">
+                  <span>{compatibleItems.length} itens compatíveis</span>
+                  <button className="button button--dark" onClick={() => setActiveSlotKey(null)}>
+                    Voltar ao inventário
+                  </button>
+                </footer>
+              </section>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

@@ -13215,6 +13215,400 @@ body[data-rank="EX"] .rank-atmosphere i {
   }
 }
 
+/* Arena 7.0 — comandos legíveis, resultado cinematográfico e inventário em viewport. */
+.pvp-actions-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.pvp-actions-grid .pvp-action {
+  position: relative;
+  min-height: 132px;
+  padding: 16px 17px 14px;
+  border-left: 3px solid var(--action-color, var(--ui-arcane));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--action-color, var(--ui-arcane)) 9%, var(--ui-surface-solid)),
+    var(--ui-bg)
+  );
+}
+.pvp-action.is-move {
+  --action-color: #58cba5;
+}
+.pvp-action.is-basic {
+  --action-color: #dfb45f;
+}
+.pvp-action.is-defense {
+  --action-color: #72a8e8;
+}
+.pvp-action.is-race {
+  --action-color: #55d5be;
+}
+.pvp-action.is-class {
+  --action-color: #bd7aea;
+}
+.pvp-action.is-item {
+  --action-color: #e49b55;
+}
+.pvp-action > small {
+  color: var(--action-color) !important;
+}
+.pvp-action > em {
+  align-self: end;
+  width: max-content;
+  margin-top: 6px;
+  padding: 4px 7px;
+  border: 1px solid color-mix(in srgb, var(--ui-danger) 45%, transparent);
+  border-radius: 999px;
+  color: var(--ui-danger);
+  font-size: 0.55rem;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.pvp-action > em.is-ready {
+  border-color: color-mix(in srgb, var(--ui-success) 48%, transparent);
+  color: var(--ui-success);
+}
+.pvp-action:disabled {
+  opacity: 0.58;
+  filter: saturate(0.55);
+}
+.pvp-action:disabled > strong {
+  color: var(--ui-muted) !important;
+}
+
+.arena-result--cinematic {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  min-height: min(620px, 78vh);
+  overflow: hidden;
+  place-items: center;
+  align-content: center;
+  gap: 18px;
+  padding: clamp(44px, 8vw, 96px) 24px;
+  border: 1px solid color-mix(in srgb, var(--result-color) 65%, transparent);
+  background:
+    radial-gradient(
+      circle at 50% 42%,
+      color-mix(in srgb, var(--result-color) 24%, transparent),
+      transparent 25rem
+    ),
+    linear-gradient(155deg, #07100e, #020504 70%) !important;
+  text-align: center;
+  --result-color: #e4bd63;
+}
+.arena-result--cinematic.is-defeat {
+  --result-color: #cb5265;
+}
+.arena-result--cinematic::before,
+.arena-result--cinematic::after {
+  position: absolute;
+  z-index: -1;
+  width: 72%;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, var(--result-color), transparent);
+  box-shadow: 0 0 28px var(--result-color);
+}
+.arena-result--cinematic::before {
+  top: 20%;
+}
+.arena-result--cinematic::after {
+  bottom: 20%;
+}
+.arena-result__crest {
+  display: flex !important;
+  align-items: center;
+  gap: 16px !important;
+}
+.arena-result__crest i {
+  width: clamp(42px, 9vw, 120px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--result-color));
+}
+.arena-result__crest i:last-child {
+  transform: scaleX(-1);
+}
+.arena-result__crest b {
+  display: grid;
+  width: 86px;
+  height: 86px;
+  place-items: center;
+  border: 1px solid var(--result-color);
+  transform: rotate(45deg);
+  color: var(--result-color) !important;
+  background: color-mix(in srgb, var(--result-color) 10%, #050807);
+  box-shadow: 0 0 45px color-mix(in srgb, var(--result-color) 32%, transparent);
+  font:
+    500 2.7rem Georgia,
+    serif;
+}
+.arena-result__crest b > span {
+  display: block;
+  transform: rotate(-45deg);
+}
+.arena-result--cinematic > span {
+  color: var(--result-color) !important;
+  font-size: 0.8rem;
+  letter-spacing: 0.42em;
+}
+.arena-result--cinematic h2 {
+  max-width: 780px;
+  font-size: clamp(2.3rem, 6vw, 5.2rem);
+  line-height: 0.98;
+}
+.arena-result--cinematic p {
+  max-width: 620px;
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.equipment-modal {
+  align-items: center !important;
+  overflow: hidden;
+}
+.equipment-modal__dialog {
+  max-height: calc(100dvh - 32px) !important;
+}
+.equipment-modal__list {
+  min-height: 0;
+  overscroll-behavior: contain;
+}
+
+/* Ranking e ficha pública de personagem. */
+.ranking-avatar {
+  width: 62px !important;
+  height: 62px !important;
+  background-position: center 18% !important;
+}
+.ranking-podium__place .ranking-avatar {
+  width: 112px !important;
+  height: 112px !important;
+}
+.ranking-podium__place h3 {
+  font-size: 1.65rem !important;
+}
+.ranking-player-cell b,
+.pvp-ranking-player strong {
+  font-size: 0.82rem !important;
+}
+.pvp-ranking-player .ranking-avatar {
+  width: 58px !important;
+  height: 58px !important;
+}
+
+.public-character-page {
+  min-height: 100vh;
+}
+.public-character-shell {
+  display: grid;
+  gap: 22px;
+  padding-block: 44px 90px;
+}
+.public-character-hero {
+  display: grid;
+  grid-template-columns: minmax(300px, 42%) 1fr;
+  min-height: 600px;
+  overflow: hidden;
+  border: 1px solid var(--ui-line-gold);
+  border-radius: 24px;
+  background: linear-gradient(145deg, var(--ui-surface-raised), var(--ui-surface-solid));
+  box-shadow: var(--ui-shadow);
+}
+.public-character-hero__portrait {
+  position: relative;
+  display: grid;
+  min-height: 600px;
+  place-items: center;
+  background:
+    radial-gradient(circle, rgba(var(--ui-arcane-rgb), 0.18), transparent 65%), var(--ui-bg);
+  color: var(--ui-gold);
+  font:
+    500 5rem Georgia,
+    serif;
+}
+.public-character-hero__portrait.is-image {
+  background-position: center 18%;
+  background-size: cover;
+}
+.public-character-hero__portrait::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg, transparent 65%, var(--ui-surface-solid));
+  pointer-events: none;
+}
+.public-character-hero__portrait .rank-badge {
+  position: absolute;
+  z-index: 2;
+  right: 24px;
+  bottom: 24px;
+}
+.public-character-hero__copy {
+  display: grid;
+  align-content: center;
+  gap: 13px;
+  padding: clamp(32px, 6vw, 76px);
+}
+.public-character-hero__copy h1 {
+  margin: 0;
+  font-size: clamp(3.5rem, 8vw, 7.4rem);
+  line-height: 0.9;
+}
+.public-character-hero__copy > p {
+  margin: 0;
+  color: var(--ui-gold-soft) !important;
+  font-size: 1rem;
+}
+.public-character-hero__copy > dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 18px 0;
+}
+.public-character-hero__copy > dl div {
+  padding: 14px;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-glass);
+}
+.public-character-hero__copy dt {
+  color: var(--ui-muted);
+  font-size: 0.55rem;
+  text-transform: uppercase;
+}
+.public-character-hero__copy dd {
+  margin: 5px 0 0;
+  font-weight: 800;
+}
+.public-character-summary,
+.public-character-equipment {
+  padding: clamp(22px, 4vw, 40px);
+  border: 1px solid var(--ui-line);
+  border-radius: 20px;
+  background: var(--ui-surface);
+}
+.public-character-summary h2,
+.public-character-equipment h2 {
+  margin: 5px 0;
+  font:
+    400 2rem Georgia,
+    serif;
+}
+.public-character-stats {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-top: 20px;
+}
+.public-character-stats article {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--ui-line);
+  border-radius: 10px;
+  background: var(--ui-surface-solid);
+}
+.public-character-stats small {
+  font-size: 0.52rem;
+  text-transform: uppercase;
+}
+.public-character-stats strong {
+  font-size: 1.35rem;
+  color: var(--ui-gold-soft) !important;
+}
+.public-character-equipment > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.public-character-equipment > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.public-character-equipment article {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--ui-line);
+  border-radius: 13px;
+  background: var(--ui-surface-solid);
+}
+.public-character-equipment article > svg {
+  width: 42px;
+  color: var(--ui-arcane);
+}
+.public-character-equipment article span > small {
+  font-size: 0.52rem;
+  text-transform: uppercase;
+}
+.public-character-equipment article span > strong {
+  display: block;
+  margin: 4px 0;
+  font-size: 1rem;
+}
+.public-character-equipment article span > p {
+  margin: 0;
+  font-size: 0.65rem;
+  line-height: 1.5;
+}
+.public-character-equipment article dl {
+  display: flex;
+  grid-column: 1/-1;
+  gap: 6px;
+  margin: 0;
+}
+.public-character-equipment article dl div {
+  display: flex;
+  gap: 5px;
+  padding: 5px 7px;
+  border: 1px solid var(--ui-line);
+  border-radius: 6px;
+  font-size: 0.6rem;
+}
+.public-character-equipment article dl dd {
+  margin: 0;
+  color: var(--ui-gold-soft) !important;
+}
+.public-character-equipment article aside {
+  grid-column: 1/-1;
+  padding: 10px;
+  border-left: 2px solid var(--ui-gold);
+  background: var(--ui-glass);
+}
+.public-character-equipment article aside small,
+.public-character-equipment article aside b {
+  display: block;
+}
+.public-character-equipment article aside p {
+  margin: 4px 0 0;
+  font-size: 0.65rem;
+}
+@media (max-width: 850px) {
+  .pvp-actions-grid {
+    grid-template-columns: 1fr;
+  }
+  .public-character-hero {
+    grid-template-columns: 1fr;
+  }
+  .public-character-hero__portrait {
+    min-height: 480px;
+  }
+  .public-character-hero__portrait::after {
+    background: linear-gradient(0deg, var(--ui-surface-solid), transparent 35%);
+  }
+  .public-character-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .public-character-equipment > div {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Correção final: Arena nunca herda superfícies claras do portal */
 body[data-rank]:has(.arena-page) {
   color: #e9f4ef;

@@ -84,7 +84,7 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
         {podium.map(({ entry, position }) => (
           <Link
             className={`ranking-podium__place is-place-${position}`}
-            href={`/jogadores/${entry.user_id}`}
+            href={`/jogadores/${entry.id}`}
             key={entry.id}
           >
             <b className="ranking-podium__number">{position}</b>
@@ -140,7 +140,7 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
             <span>Rank</span>
           </div>
           {visible.map((entry) => (
-            <Link href={`/jogadores/${entry.user_id}`} key={entry.id} role="row">
+            <Link href={`/jogadores/${entry.id}`} key={entry.id} role="row">
               <strong className="ranking-position">#{entry.rank}</strong>
               <span className="ranking-player-cell">
                 <Avatar entry={entry} />

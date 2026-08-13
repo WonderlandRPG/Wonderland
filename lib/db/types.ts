@@ -147,6 +147,8 @@ export interface Database {
           status: string;
           started_at: string;
           finished_at: string | null;
+          state: Json | null;
+          version: number;
         };
         Insert: {
           id?: string;
@@ -157,6 +159,8 @@ export interface Database {
           status?: string;
           started_at?: string;
           finished_at?: string | null;
+          state?: Json | null;
+          version?: number;
         };
         Update: Partial<Database["public"]["Tables"]["v2_dungeon_runs"]["Insert"]>;
         Relationships: [];
@@ -545,6 +549,12 @@ export interface Database {
       v2_leave_dungeon_queue: { Args: { p_dungeon_key: string }; Returns: undefined };
       v2_get_dungeon_queue: { Args: { p_dungeon_key: string }; Returns: Json };
       v2_start_dungeon: { Args: { p_dungeon_key: string; p_force?: boolean }; Returns: Json };
+      v2_get_dungeon_run: { Args: { p_run_id: string }; Returns: Json };
+      v2_initialize_dungeon_run: { Args: { p_run_id: string; p_state: Json }; Returns: Json };
+      v2_update_dungeon_run: {
+        Args: { p_run_id: string; p_expected_version: number; p_state: Json };
+        Returns: Json;
+      };
       v2_publish_content: {
         Args: { p_content_id: string };
         Returns: Database["public"]["Tables"]["v2_content"]["Row"];

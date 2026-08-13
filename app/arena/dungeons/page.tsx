@@ -63,7 +63,12 @@ export default async function DungeonPage() {
           <div>
             {firstDungeon.encounters.map((monster) => (
               <article key={monster.key}>
-                <div style={{ backgroundPosition: monster.position }} />
+                <div
+                  aria-label={`Retrato de ${monster.name}`}
+                  className="dungeon-bestiary__portrait"
+                  role="img"
+                  style={{ backgroundImage: `url(${monster.imageUrl})` }}
+                />
                 <small>{monster.role}</small>
                 <strong>{monster.name}</strong>
               </article>

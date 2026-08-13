@@ -26,7 +26,7 @@ export const arenaMonsters = [
     name: "Lobo Cinzento",
     title: "Predador da Mata",
     sigil: "狼",
-    imagePosition: "0% 0%",
+    imageUrl: "/images/monsters/pve/lobo-cinzento.webp",
     weights: [5, 2, 3, 5, 1, 2],
   },
   {
@@ -34,7 +34,7 @@ export const arenaMonsters = [
     name: "Golem Rúnico",
     title: "Guardião de Pedra",
     sigil: "岩",
-    imagePosition: "25% 0%",
+    imageUrl: "/images/monsters/pve/golem-runa.webp",
     weights: [3, 6, 6, 1, 2, 2],
   },
   {
@@ -42,7 +42,7 @@ export const arenaMonsters = [
     name: "Espectro de Gelo",
     title: "Assombração de Oymyakon",
     sigil: "霜",
-    imagePosition: "50% 0%",
+    imageUrl: "/images/monsters/pve/espectro-gelo.webp",
     weights: [1, 2, 5, 3, 6, 3],
   },
   {
@@ -50,7 +50,7 @@ export const arenaMonsters = [
     name: "Escorpião Dourado",
     title: "Caçador de Lesedi",
     sigil: "蠍",
-    imagePosition: "75% 0%",
+    imageUrl: "/images/monsters/pve/escorpiao-dourado.webp",
     weights: [5, 4, 3, 4, 1, 3],
   },
   {
@@ -58,7 +58,7 @@ export const arenaMonsters = [
     name: "Sirena Abissal",
     title: "Voz Perdida de Namida",
     sigil: "海",
-    imagePosition: "100% 0%",
+    imageUrl: "/images/monsters/pve/sirena-abissal.webp",
     weights: [1, 2, 4, 4, 5, 5],
   },
   {
@@ -66,7 +66,7 @@ export const arenaMonsters = [
     name: "Harpia da Tempestade",
     title: "Fera dos Céus",
     sigil: "嵐",
-    imagePosition: "0% 100%",
+    imageUrl: "/images/monsters/pve/harpia-tempestade.webp",
     weights: [3, 2, 2, 6, 5, 2],
   },
   {
@@ -74,7 +74,7 @@ export const arenaMonsters = [
     name: "Orc Corrompido",
     title: "Saqueador de Guerra",
     sigil: "戦",
-    imagePosition: "25% 100%",
+    imageUrl: "/images/monsters/pve/orc-corrompido.webp",
     weights: [7, 3, 4, 3, 1, 2],
   },
   {
@@ -82,7 +82,7 @@ export const arenaMonsters = [
     name: "Aranha de Cristal",
     title: "Tecelã Arcana",
     sigil: "晶",
-    imagePosition: "50% 100%",
+    imageUrl: "/images/monsters/pve/aranha-cristal.webp",
     weights: [2, 3, 4, 5, 4, 4],
   },
   {
@@ -90,7 +90,7 @@ export const arenaMonsters = [
     name: "Cavaleiro do Vazio",
     title: "Sentinela Sem Reino",
     sigil: "虚",
-    imagePosition: "75% 100%",
+    imageUrl: "/images/monsters/pve/cavaleiro-vazio.webp",
     weights: [4, 5, 5, 2, 3, 2],
   },
   {
@@ -98,7 +98,7 @@ export const arenaMonsters = [
     name: "Quimera Primordial",
     title: "Ameaça Instável",
     sigil: "獣",
-    imagePosition: "100% 100%",
+    imageUrl: "/images/monsters/pve/quimera-primordial.webp",
     weights: [5, 3, 3, 4, 3, 4],
   },
 ] as const;

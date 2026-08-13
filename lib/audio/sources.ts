@@ -2,7 +2,7 @@ export const musicTracks = {
   tema: { label: "Tema de Wonderland", source: "/assets/music/tema.mp3" },
   mapa: { label: "Mapa dos Reinos", source: "/assets/music/mapa.mp3" },
   biblioteca: { label: "Biblioteca Real", source: "/assets/music/biblioteca.mp3" },
-  pvp: { label: "Arena de Wonderland", source: "/assets/music/pvp.mp3" },
+  pvp: { label: "Arena de Wonderland", source: "/assets/music/pvp.mp3?v=20260813-2" },
 } as const;
 
 export type MusicTrack = keyof typeof musicTracks;

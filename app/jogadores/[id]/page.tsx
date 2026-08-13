@@ -5,7 +5,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getCharacterSheet } from "@/lib/content/characters";
 import { EquippedTitle } from "@/components/characters/equipped-title";
 import { RankBadge } from "@/components/characters/rank-badge";
-import { ItemGlyph } from "@/components/items/item-glyph";
+import { ItemArtwork } from "@/components/items/item-artwork";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
@@ -116,7 +116,7 @@ export default async function PublicCharacterProfile({
           <div>
             {equipped.map((item) => (
               <article data-rarity={item.rarity} key={`${item.id}-${item.equippedSlot}`}>
-                <ItemGlyph slot={item.slot} />
+                <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
                 <span>
                   <small>
                     {itemSlotLabel(item.equippedSlot ?? item.slot)} · {item.rarity}

@@ -1,4 +1,4 @@
-import { ItemGlyph } from "@/components/items/item-glyph";
+import { ItemArtwork } from "@/components/items/item-artwork";
 import { PlayerNav } from "@/components/player-nav";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
@@ -121,7 +121,7 @@ export default async function PresencePage({
                   </header>
                   <div className="presence-reward-icon" data-type={reward.reward_type}>
                     {reward.reward_type === "item" || reward.reward_type === "title" ? (
-                      <ItemGlyph slot={item?.slot ?? "necklace"} />
+                      <ItemArtwork name={item?.name ?? "Recompensa"} rarity={item?.rarity ?? "common"} slot={item?.slot ?? "necklace"} />
                     ) : (
                       <span>{reward.reward_type === "xp" ? "XP" : "WG"}</span>
                     )}

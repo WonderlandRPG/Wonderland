@@ -1866,7 +1866,7 @@ body.has-equipment-modal {
 }
 .equipment-modal {
   position: fixed;
-  z-index: 11000;
+  z-index: 2147483000;
   inset: 0;
   display: grid;
   place-items: center;
@@ -1874,6 +1874,13 @@ body.has-equipment-modal {
   background: rgba(0, 2, 7, 0.82);
   backdrop-filter: blur(10px);
   animation: equipment-modal-in 0.18s ease-out;
+}
+body.has-equipment-modal {
+  overflow: hidden !important;
+}
+.inventory-slot-column > button:focus-visible {
+  outline: 3px solid var(--slot-rarity);
+  outline-offset: 3px;
 }
 @keyframes equipment-modal-in {
   from {
@@ -9592,6 +9599,52 @@ html[data-theme="accessible"] .sheet-tabs a.is-active {
   .character-progress-strip .player-xp {
     grid-column: 1 / -1;
   }
+}
+
+/* Ilustrações vetoriais individualizadas dos equipamentos. */
+.item-artwork {
+  width: 74px;
+  height: 74px;
+  overflow: visible;
+  color: var(--item-rarity, currentColor);
+  filter: drop-shadow(0 8px 9px rgba(0, 0, 0, 0.5));
+  transition: transform 0.28s ease, filter 0.28s ease;
+}
+.classic-item-card__art .item-artwork {
+  position: relative;
+  z-index: 1;
+  width: 88px;
+  height: 88px;
+}
+.classic-item-card:hover .item-artwork,
+.inventory-classic-card:hover .item-artwork {
+  transform: scale(1.08) rotate(-2deg);
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--item-rarity) 48%, transparent));
+}
+.inventory-classic-card > div:first-child .item-artwork {
+  width: 62px;
+  height: 62px;
+}
+.inventory-inspector__glyph .item-artwork {
+  width: 112px;
+  height: 112px;
+}
+.equipment-modal__glyph .item-artwork,
+.shop-cart .item-artwork {
+  width: 46px;
+  height: 46px;
+}
+.public-character-equipment .item-artwork {
+  width: 58px;
+  height: 58px;
+  color: var(--ui-gold-soft);
+}
+.presence-reward-icon .item-artwork {
+  width: 66px;
+  height: 66px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .item-artwork { transition: none; }
 }
 
 /* Wonderland HUD — unificação clássica e Arena tática */

@@ -7,6 +7,8 @@ import { createDungeonMonster, type DungeonBattleState } from "@/lib/game/dungeo
 import { firstDungeon } from "@/lib/game/dungeons";
 import {
   defaultCombatRules,
+  applyDamage,
+  getEffectiveAttributes,
   guardCombatant,
   resolveBasicAttack,
   resolveRaceAbility,
@@ -114,15 +116,39 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   }
   if (state.status === "active" && state.monster.hp > 0) {
     const alive = state.partyOrder.filter((id) => state.fighters[id].hp > 0);
-    const targetId = alive[(state.round - 1) % alive.length];
-    const retaliation = resolveBasicAttack(
-      state.monster,
-      state.fighters[targetId],
-      defaultCombatRules,
+    const targetId = [...alive].sort(
+      (left, right) =>
+        state.fighters[left].hp / state.fighters[left].maxHp -
+        state.fighters[right].hp / state.fighters[right].maxHp,
+    )[0];
+    const target = state.fighters[targetId];
+    const intelligence = getEffectiveAttributes(state.monster).INT;
+    const abilities = firstDungeon.encounters[state.encounterIndex].abilities;
+    const ability =
+      state.monster.hp < state.monster.maxHp * 0.4 &&
+      abilities.some((name) => name.includes("Regeneração") || name.includes("Banquete"))
+        ? abilities.find((name) => name.includes("Regeneração") || name.includes("Banquete"))!
+        : state.monster.shield === 0 && abilities.some((name) => name.includes("Muralha"))
+          ? abilities.find((name) => name.includes("Muralha"))!
+          : abilities[(state.round + state.encounterIndex) % abilities.length];
+    const damage = Math.max(
+      12,
+      Math.round(
+        intelligence *
+          (ability.includes("Regeneração") || ability.includes("Muralha") ? 0.18 : 0.42),
+      ),
     );
-    state.monster = retaliation.actor;
-    state.fighters[targetId] = retaliation.target;
-    message += ` ${retaliation.event.message}`;
+    if (ability.includes("Regeneração") || ability.includes("Banquete")) {
+      const healed = Math.min(damage, state.monster.maxHp - state.monster.hp);
+      state.monster = { ...state.monster, hp: state.monster.hp + healed };
+      message += ` ${state.monster.name} usou ${ability} e recuperou ${healed} de HP.`;
+    } else if (ability.includes("Muralha")) {
+      state.monster = { ...state.monster, shield: state.monster.shield + damage };
+      message += ` ${state.monster.name} usou ${ability} e recebeu ${damage} de escudo.`;
+    } else {
+      state.fighters[targetId] = applyDamage(target, damage);
+      message += ` ${state.monster.name} usou ${ability} em ${target.name}, causando ${damage} de dano.`;
+    }
     if (alive.every((id) => state.fighters[id].hp <= 0)) {
       state.status = "defeat";
       message = "O grupo inteiro caiu. A expedição fracassou.";

@@ -5,19 +5,20 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 import { firstDungeon } from "@/lib/game/dungeons";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { DungeonLobby } from "@/components/arena/dungeon-lobby";
+import type { DungeonQueueEntry } from "./actions";
 
 export const metadata = { title: "Dungeons | Arena" };
 export const dynamic = "force-dynamic";
 
 export default async function DungeonPage() {
-  const { account } = await requireActiveCharacter("/arena/dungeons");
+  const { account, characterId } = await requireActiveCharacter("/arena/dungeons");
   if (!isAdministrativeRole(account.role)) redirect("/arena");
   const client = await createServerSupabaseClient();
-  const { data: onlineCountResult } = client
-    ? await client.rpc("v2_get_online_player_count")
-    : { data: 0 };
-  const onlineCount = Number(onlineCountResult ?? 0);
-  const ready = onlineCount >= firstDungeon.minimumPlayers;
+  const { data: queueResult } = client
+    ? await client.rpc("v2_get_dungeon_queue", { p_dungeon_key: firstDungeon.key })
+    : { data: [] };
+  const initialQueue = Array.isArray(queueResult) ? (queueResult as DungeonQueueEntry[]) : [];
 
   return (
     <main className="dungeon-page">
@@ -38,23 +39,13 @@ export default async function DungeonPage() {
             <small>Nível recomendado</small>
           </aside>
         </header>
-        <section className="dungeon-party-panel">
-          <div className="dungeon-party-ring">
-            <span>{onlineCount}</span>
-            <small>ONLINE</small>
-          </div>
-          <div>
-            <span className="eyebrow">Formação do grupo</span>
-            <h2>{ready ? "Expedição disponível" : "Aguardando aventureiros"}</h2>
-            <p>
-              São necessários pelo menos {firstDungeon.minimumPlayers} jogadores online para
-              iniciar. A fila cooperativa e o combate em grupo estão em prévia administrativa.
-            </p>
-          </div>
-          <button className="button button--primary" disabled={!ready} type="button">
-            {ready ? "Formar grupo" : `${onlineCount}/${firstDungeon.minimumPlayers} jogadores`}
-          </button>
-        </section>
+        <DungeonLobby
+          dungeonKey={firstDungeon.key}
+          characterId={characterId}
+          userId={account.id}
+          minimumPlayers={firstDungeon.minimumPlayers}
+          initialQueue={initialQueue}
+        />
         <section className="dungeon-bestiary">
           <header>
             <span className="eyebrow">Bestiário da expedição</span>
@@ -67,7 +58,12 @@ export default async function DungeonPage() {
                   aria-label={`Retrato de ${monster.name}`}
                   className="dungeon-bestiary__portrait"
                   role="img"
-                  style={{ backgroundImage: `url(${monster.imageUrl})` }}
+                  style={{
+                    backgroundImage: `url(${monster.imageUrl})`,
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    backgroundSize: "contain",
+                  }}
                 />
                 <small>{monster.role}</small>
                 <strong>{monster.name}</strong>

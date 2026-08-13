@@ -787,7 +787,8 @@ function Fighter({
             ? {
                 backgroundImage: `url(${imageUrl})`,
                 backgroundPosition: imagePosition,
-                backgroundSize: imagePosition ? "500% 200%" : undefined,
+                backgroundSize: imagePosition ? "500% 200%" : "contain",
+                backgroundRepeat: "no-repeat",
               }
             : undefined
         }

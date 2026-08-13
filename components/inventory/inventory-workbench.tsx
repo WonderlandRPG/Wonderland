@@ -113,10 +113,38 @@ export function InventoryWorkbench({
       items.find((item) => item.compatibleSlots.includes(slot.key));
     if (candidate) setSelectedId(candidate.id);
   };
+  const leftSlotKeys = new Set(["head", "torso", "hands", "legs", "feet", "cape"]);
+  const renderSlot = (slot: Slot) => {
+    const item = items.find((entry) => entry.id === slot.itemId);
+    return (
+      <button
+        className={`${slot.itemId ? "is-equipped" : ""} ${slot.reserved ? "is-reserved" : ""}`}
+        data-rarity={item?.rarity}
+        key={slot.key}
+        onClick={() => selectSlot(slot)}
+        type="button"
+      >
+        <ItemGlyph slot={slot.key} />
+        <span>
+          <small>{slot.label}</small>
+          <strong>{item?.name ?? "Espaço livre"}</strong>
+          {item ? <em>{item.rarityLabel}</em> : null}
+          {slot.reserved ? <em>Reservado por arma de duas mãos</em> : null}
+        </span>
+      </button>
+    );
+  };
   return (
     <div className="inventory-command">
       <section className="inventory-command__loadout">
-        <aside className="inventory-character-card">
+        <header className="inventory-loadout-heading">
+          <div><span className="eyebrow">Conjunto equipado</span><h3>Espaços de combate</h3></div>
+          <small>Clique em um espaço para trocar o equipamento.</small>
+        </header>
+        <div className="inventory-slot-column is-left">
+          {slots.filter((slot) => leftSlotKeys.has(slot.key)).map(renderSlot)}
+        </div>
+        <aside className="inventory-character-card is-centered">
           <div
             className={character.imageUrl ? "is-image" : ""}
             style={
@@ -147,35 +175,8 @@ export function InventoryWorkbench({
             {occupied} / {slots.length} espaços ocupados
           </small>
         </aside>
-        <div className="inventory-slot-panel">
-          <header>
-            <div>
-              <span className="eyebrow">Conjunto equipado</span>
-              <h3>Espaços de combate</h3>
-            </div>
-            <small>Selecione um espaço para abrir seus equipamentos compatíveis.</small>
-          </header>
-          <div className="inventory-slot-grid">
-            {slots.map((slot) => {
-              const item = items.find((entry) => entry.id === slot.itemId);
-              return (
-                <button
-                  className={`${slot.itemId ? "is-equipped" : ""} ${slot.reserved ? "is-reserved" : ""} ${slotFilter === slot.key ? "is-selected" : ""}`}
-                  key={slot.key}
-                  onClick={() => selectSlot(slot)}
-                  type="button"
-                >
-                  <ItemGlyph slot={slot.key} />
-                  <span>
-                    <small>{slot.label}</small>
-                    <strong>{item?.name ?? "Espaço livre"}</strong>
-                    {slot.reserved ? <em>Reservado por arma de duas mãos</em> : null}
-                  </span>
-                  <i aria-hidden="true">›</i>
-                </button>
-              );
-            })}
-          </div>
+        <div className="inventory-slot-column is-right">
+          {slots.filter((slot) => !leftSlotKeys.has(slot.key)).map(renderSlot)}
         </div>
       </section>
       <section className="inventory-browser">
@@ -236,7 +237,7 @@ export function InventoryWorkbench({
             <div className="inventory-classic-grid">
               {visible.map((item) => (
                 <button
-                  className={`inventory-classic-card ${item.id === selected?.id ? "is-selected" : ""}`}
+                  className={`inventory-classic-card ${item.id === selected?.id ? "is-selected" : ""} ${item.effects.length ? "has-effect" : ""}`}
                   data-rarity={item.rarity}
                   key={item.id}
                   onClick={() => setSelectedId(item.id)}
@@ -253,6 +254,9 @@ export function InventoryWorkbench({
                   {item.slot === "title" ? (
                     <em className="inventory-reward-tag">Presente ADM</em>
                   ) : null}
+                  {item.effects.slice(0, 1).map((effect) => (
+                    <span className="inventory-card-effect" key={effect.key}>✦ {effect.name}<small>{effect.description}</small></span>
+                  ))}
                   <footer>
                     {item.equippedSlot ? <span>✓ Equipado</span> : <span>Na mochila</span>}
                     <i>Ver detalhes</i>

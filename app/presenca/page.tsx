@@ -47,13 +47,17 @@ export default async function PresencePage({
   const items = new Map((itemRows ?? []).map((item) => [item.id, item]));
   const today = dateInSaoPaulo();
   const campaignOpen = Boolean(config && today >= config.starts_on && today <= config.ends_on);
-  const yesterday = dateInSaoPaulo(-1);
   const claimedToday = character.last_daily_claim === today;
-  const nextStreak =
-    claimedToday || character.last_daily_claim === yesterday ? character.daily_streak + 1 : 1;
-  const visibleStreak = claimedToday ? character.daily_streak : nextStreak;
-  const cycleDay = rewards.length ? ((Math.max(1, visibleStreak) - 1) % rewards.length) + 1 : 0;
-  const completedInCycle = claimedToday ? cycleDay : Math.max(0, cycleDay - 1);
+  const { count: claimedCount = 0 } =
+    client && config
+      ? await client
+          .from("v2_presence_claims")
+          .select("day_number", { count: "exact", head: true })
+          .eq("character_id", characterId)
+          .eq("campaign_start", config.starts_on)
+      : { count: 0 };
+  const completedRewards = Math.min(claimedCount ?? 0, rewards.length);
+  const cycleDay = completedRewards < rewards.length ? completedRewards + 1 : rewards.length;
 
   return (
     <main className="presence-page">
@@ -69,9 +73,9 @@ export default async function PresencePage({
             </p>
           </div>
           <aside>
-            <small>Sequência atual</small>
-            <strong>{character.daily_streak} dia(s)</strong>
-            <span>O ciclo reinicia após a última recompensa.</span>
+            <small>Progresso preservado</small>
+            <strong>{completedRewards} / {rewards.length} dias</strong>
+            <span>Faltar um dia não apaga nem reinicia suas recompensas.</span>
             {config ? <span>{config.starts_on.split("-").reverse().join("/")} a {config.ends_on.split("-").reverse().join("/")}</span> : null}
           </aside>
         </header>
@@ -94,8 +98,8 @@ export default async function PresencePage({
               <h2>Recompensas da jornada</h2>
             </div>
             <form action={claimPresenceRewardAction}>
-              <button className="button button--primary" disabled={claimedToday || !rewards.length || !campaignOpen}>
-                {!campaignOpen ? "Presença fora do período" : claimedToday ? "Presença marcada hoje" : `Resgatar dia ${cycleDay}`}
+              <button className="button button--primary" disabled={claimedToday || !rewards.length || !campaignOpen || completedRewards >= rewards.length}>
+                {!campaignOpen ? "Presença fora do período" : claimedToday ? "Presença marcada hoje" : completedRewards >= rewards.length ? "Passe concluído" : `Resgatar recompensa ${cycleDay}`}
               </button>
             </form>
           </header>
@@ -103,7 +107,7 @@ export default async function PresencePage({
             {rewards.map((reward, index) => {
               const position = index + 1;
               const state =
-                position <= completedInCycle
+                position <= completedRewards
                   ? "claimed"
                   : position === cycleDay && !claimedToday
                     ? "available"

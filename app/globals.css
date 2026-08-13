@@ -19708,6 +19708,93 @@ html[data-theme="accessible"] :is(.presence-campaign-settings, .admin-title-crea
   cursor: pointer;
 }
 
+/* Ficha, rankings, inventário e loja — aprimoramento 2026-08-13 */
+.ranking-podium__portrait,
+.pvp-leader-portrait { position: relative; display: inline-grid; place-items: center; }
+.ranking-podium__place .ranking-avatar { width: 148px !important; height: 148px !important; }
+.ranking-podium__place.is-place-1 .ranking-avatar { width: 180px !important; height: 180px !important; }
+.ranking-crown {
+  position: absolute; z-index: 4; top: -42px; left: 50%; color: #ffd768;
+  font-size: 3rem; line-height: 1; filter: drop-shadow(0 0 14px rgba(255,197,57,.72));
+  transform: translateX(-50%) rotate(-4deg);
+}
+.ranking-equipped-title { display: block; margin: 5px 0; color: #e7c76f; font-size: .63rem; font-style: normal; letter-spacing: .08em; }
+.pvp-ranking-hero .ranking-avatar { width: 126px !important; height: 126px !important; }
+.pvp-ranking-player .ranking-equipped-title { color: #cba7e6; font-size: .53rem; }
+
+.public-character-back { width: max-content; color: var(--ui-gold-soft); font-size: .72rem; text-decoration: none; }
+.public-character-shell { width: min(1480px, calc(100% - 40px)); max-width: none; }
+.public-character-hero { grid-template-columns: minmax(380px, 46%) 1fr; min-height: 660px; }
+.public-character-hero__portrait { min-height: 660px; background-position: center 14% !important; }
+.public-character-equipment article[data-rarity="rare"] { border-color: #4d9bea; }
+.public-character-equipment article[data-rarity="epic"] { border-color: #a96bea; }
+.public-character-equipment article[data-rarity="legendary"] { border-color: #e5a93f; }
+.public-character-equipment article[data-rarity="mythic"] { border-color: #e05252; }
+
+.combat-formulas > div { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+.combat-formulas article { display: grid; gap: 9px; padding: 18px; border: 1px solid var(--ui-line); border-radius: 12px; background: var(--ui-surface-solid); }
+.combat-formulas b { color: var(--ui-gold-soft); }
+.combat-formulas code { padding: 8px; border-radius: 7px; color: #72d8b2; background: rgba(32,123,91,.12); font-size: .7rem; }
+.combat-formulas p { margin: 0; color: var(--ui-muted); font-size: .66rem; line-height: 1.55; }
+
+.inventory-command__loadout {
+  grid-template-columns: minmax(230px,1fr) minmax(300px,420px) minmax(230px,1fr);
+  align-items: stretch; padding: 20px; border: 1px solid rgba(214,181,107,.2); border-radius: 20px;
+  background: radial-gradient(circle at 50% 48%, rgba(68,171,132,.12), transparent 34%), #070d15;
+}
+.inventory-loadout-heading { grid-column: 1/-1; display: flex; align-items: end; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid rgba(214,181,107,.16); }
+.inventory-loadout-heading h3 { margin: 4px 0 0; color: #f2e2c5; font: 400 1.6rem Georgia,serif; }
+.inventory-loadout-heading > small { color: #81948d; }
+.inventory-character-card.is-centered { min-height: 620px; border-color: rgba(214,181,107,.35); box-shadow: 0 24px 60px rgba(0,0,0,.38); }
+.inventory-character-card.is-centered > div:first-child { min-height: 450px; background-position: center 15% !important; }
+.inventory-slot-column { display: grid; gap: 9px; align-content: center; }
+.inventory-slot-column > button {
+  --slot-rarity: #35413e; display: grid; grid-template-columns: 42px minmax(0,1fr); gap: 10px; align-items: center;
+  min-height: 82px; padding: 12px; border: 1px solid color-mix(in srgb,var(--slot-rarity) 74%,#36453f);
+  border-radius: 11px; color: #dfe8e3; background: linear-gradient(110deg,color-mix(in srgb,var(--slot-rarity) 12%,#08110e),#070c12); text-align: left; cursor: pointer;
+}
+.inventory-slot-column > button[data-rarity="common"] { --slot-rarity:#9ba8b2; }
+.inventory-slot-column > button[data-rarity="uncommon"] { --slot-rarity:#55c779; }
+.inventory-slot-column > button[data-rarity="rare"] { --slot-rarity:#4d9bea; }
+.inventory-slot-column > button[data-rarity="epic"] { --slot-rarity:#a96bea; }
+.inventory-slot-column > button[data-rarity="legendary"] { --slot-rarity:#e5a93f; }
+.inventory-slot-column > button[data-rarity="mythic"] { --slot-rarity:#e05252; }
+.inventory-slot-column > button.is-equipped { box-shadow: inset 3px 0 var(--slot-rarity),0 0 18px color-mix(in srgb,var(--slot-rarity) 11%,transparent); }
+.inventory-slot-column svg { width: 30px; color: var(--slot-rarity); filter: drop-shadow(0 0 7px color-mix(in srgb,var(--slot-rarity) 40%,transparent)); }
+.inventory-slot-column span { display: grid; gap: 3px; min-width: 0; }
+.inventory-slot-column small { color: #81948d; font-size: .48rem; font-weight: 900; text-transform: uppercase; }
+.inventory-slot-column strong { overflow: hidden; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
+.inventory-slot-column em { color: var(--slot-rarity); font-size: .5rem; font-style: normal; }
+
+.classic-item-card.has-effect,
+.inventory-classic-card.has-effect { animation: enchantedItemPulse 2.4s ease-in-out infinite; }
+@keyframes enchantedItemPulse { 50% { box-shadow: 0 0 24px color-mix(in srgb,var(--item-rarity) 35%,transparent),0 18px 38px rgba(0,0,0,.42); } }
+.classic-item-card__art::before { position:absolute; inset:12px 28%; content:""; border:1px solid color-mix(in srgb,var(--item-rarity) 34%,transparent); transform:rotate(45deg); box-shadow:0 0 28px color-mix(in srgb,var(--item-rarity) 22%,transparent); }
+.classic-item-card__body { min-height: 190px; }
+.classic-item-card__effect { margin-top: 10px; padding: 9px; border: 1px solid color-mix(in srgb,var(--item-rarity) 32%,transparent); border-radius: 8px; background: color-mix(in srgb,var(--item-rarity) 8%,transparent); text-align:left; }
+.classic-item-card__effect b { display:block; color:var(--item-rarity); font-size:.58rem; }
+.classic-item-card__effect p { margin:4px 0 0; color:#a7b4af; font-size:.55rem; line-height:1.4; }
+.inventory-card-effect { display:grid; gap:4px; margin:8px 12px; padding:8px; border-left:2px solid var(--item-rarity); color:var(--item-rarity); font-size:.57rem; text-align:left; background:color-mix(in srgb,var(--item-rarity) 7%,transparent); }
+.inventory-card-effect small { color:#9eaaa5; font-size:.5rem; line-height:1.4; }
+.shop-cart--sidebar { position: sticky; top: 94px; min-height: 280px; margin: 0; align-content:start; }
+.shop-cart--sidebar > div { display:grid; max-height:480px; overflow:auto; }
+.shop-cart--sidebar > div > button { width:100%; }
+.shop-cart--sidebar form button { width:100%; }
+.shop-cart__balance { color:#8fa49b; }
+@media (prefers-reduced-motion: reduce) { .classic-item-card.has-effect,.inventory-classic-card.has-effect { animation:none; } }
+@media (max-width: 1050px) {
+  .inventory-command__loadout { grid-template-columns:1fr 1fr; }
+  .inventory-character-card.is-centered { grid-column:1/-1; grid-row:2; min-height:520px; }
+  .inventory-slot-column { grid-row:3; }
+  .combat-formulas > div { grid-template-columns:1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .inventory-command__loadout,.combat-formulas > div { grid-template-columns:1fr; }
+  .inventory-slot-column,.inventory-character-card.is-centered { grid-column:1; grid-row:auto; }
+  .public-character-shell { width:min(100% - 20px,1480px); }
+  .public-character-hero { grid-template-columns:1fr; min-height:0; }
+}
+
 .dungeon-tactical-panel {
   overflow: hidden;
   border: 1px solid rgba(101, 229, 192, 0.18);

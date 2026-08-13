@@ -67,10 +67,14 @@ function PvpRanking({ entries }: { entries: PvpRankingEntry[] }) {
           </p>
         </div>
         <article>
-          <Avatar entry={leader} />
+          <span className="pvp-leader-portrait">
+            <span className="ranking-crown" aria-label="Primeiro colocado">♛</span>
+            <Avatar entry={leader} />
+          </span>
           <div>
             <small>Líder PvP</small>
             <h3>{leader.name}</h3>
+            {leader.title_name ? <em className="ranking-equipped-title">✦ {leader.title_name}</em> : null}
             <strong>{Number(leader.win_rate).toFixed(1)}%</strong>
             <span>
               {leader.victories} vitórias em {leader.matches} partidas
@@ -102,6 +106,7 @@ function PvpRanking({ entries }: { entries: PvpRankingEntry[] }) {
                 <Avatar entry={entry} />
                 <span>
                   <strong>{entry.name}</strong>
+                  {entry.title_name ? <em className="ranking-equipped-title">✦ {entry.title_name}</em> : null}
                   <small>
                     {entry.race_name} · {entry.class_name}
                   </small>

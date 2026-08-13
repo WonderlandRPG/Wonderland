@@ -41,7 +41,6 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
   const [rarity, setRarity] = useState("");
   const [slot, setSlot] = useState("");
   const [order, setOrder] = useState("featured");
-  const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
   const [page, setPage] = useState(1);
   const [cart, setCart] = useState<string[]>([]);
   const pageSize = 18;
@@ -78,7 +77,6 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, pageCount);
   const visible = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  const selected = visible.find((item) => item.id === selectedId) ?? visible[0] ?? null;
   const cartItems = cart
     .map((id) => items.find((item) => item.id === id))
     .filter((item): item is ShopCatalogItem => Boolean(item));
@@ -165,65 +163,21 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
           ) : null}
         </div>
       </section>
-      <section className="shop-cart">
-        <header>
-          <div>
-            <span className="eyebrow">Carrinho</span>
-            <h2>{cart.length} item(ns) reservado(s)</h2>
-          </div>
-          <strong>{cartTotal.toLocaleString("pt-BR")} WG</strong>
-        </header>
-        {cartItems.length ? (
-          <>
-            <div>
-              {cartItems.map((item, index) => (
-                <button
-                  key={`${item.id}-${index}`}
-                  onClick={() => removeFromCart(index)}
-                  type="button"
-                >
-                  <ItemGlyph slot={item.slot} />
-                  <span>
-                    {item.name}
-                    <small>{item.price.toLocaleString("pt-BR")} WG</small>
-                  </span>
-                  <b>×</b>
-                </button>
-              ))}
-            </div>
-            <form action={buyCart}>
-              {cart.map((id, index) => (
-                <input name="itemId" type="hidden" value={id} key={`${id}-input-${index}`} />
-              ))}
-              <button className="button button--primary" disabled={cartTotal > gold}>
-                Comprar tudo · {cartTotal.toLocaleString("pt-BR")} WG
-              </button>
-            </form>
-          </>
-        ) : (
-          <p>Adicione equipamentos para comprar todos em uma única transação.</p>
-        )}
-      </section>
       <div className="shop-browser">
         <section>
           <header className="shop-browser__result">
             <strong>{filtered.length} equipamentos</strong>
-            <span>Selecione um card para ver todos os detalhes.</span>
+            <span>Efeitos, atributos e raridade aparecem diretamente nos cards.</span>
           </header>
           {visible.length ? (
             <div className="classic-item-grid">
               {visible.map((item) => (
                 <article
-                  className={`classic-item-card ${selected?.id === item.id ? "is-selected" : ""}`}
+                  className={`classic-item-card ${item.effects.length ? "has-effect" : ""}`}
                   data-rarity={item.rarity}
                   key={item.id}
                 >
-                  <button
-                    className="classic-item-card__select"
-                    onClick={() => setSelectedId(item.id)}
-                    type="button"
-                    aria-label={`Ver ${item.name}`}
-                  >
+                  <div className="classic-item-card__select">
                     <div className="classic-item-card__art">
                       {item.imageUrl ? (
                         <span
@@ -247,8 +201,13 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                             </b>
                           ))}
                       </div>
+                      {item.effects.slice(0, 2).map((effect) => (
+                        <article className="classic-item-card__effect" key={effect.key}>
+                          <b>✦ {effect.name}</b><p>{effect.description}</p>
+                        </article>
+                      ))}
                     </div>
-                  </button>
+                  </div>
                   <footer>
                     <strong>
                       {item.price.toLocaleString("pt-BR")} <small>WG</small>
@@ -300,61 +259,34 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
             </nav>
           ) : null}
         </section>
-        <aside className="shop-inspector">
-          {selected ? (
+        <aside className="shop-cart shop-cart--sidebar">
+          <header>
+            <div><span className="eyebrow">Seu carrinho</span><h2>{cart.length} item(ns)</h2></div>
+            <strong>{cartTotal.toLocaleString("pt-BR")} WG</strong>
+          </header>
+          <small className="shop-cart__balance">Saldo disponível: {gold.toLocaleString("pt-BR")} WG</small>
+          {cartItems.length ? (
             <>
-              <header>
-                <span>
-                  {selected.rarityLabel} · {selected.slotLabel}
-                </span>
-                <h2>{selected.name}</h2>
-              </header>
-              <div className="shop-inspector__art">
-                {selected.imageUrl ? (
-                  <span
-                    className="is-image"
-                    style={{ backgroundImage: `url(${selected.imageUrl})` }}
-                  />
-                ) : (
-                  <ItemGlyph slot={selected.slot} />
-                )}
-              </div>
-              <p>{selected.description}</p>
-              <dl>
-                {Object.entries(selected.attributes).map(([key, value]) => (
-                  <div key={key}>
-                    <dt>{key}</dt>
-                    <dd>+{value}</dd>
-                  </div>
+              <div>
+                {cartItems.map((item, index) => (
+                  <button key={`${item.id}-${index}`} onClick={() => removeFromCart(index)} type="button">
+                    <ItemGlyph slot={item.slot} />
+                    <span>{item.name}<small>{item.price.toLocaleString("pt-BR")} WG</small></span>
+                    <b>×</b>
+                  </button>
                 ))}
-              </dl>
-              {selected.effects.map((effect) => (
-                <article key={effect.key}>
-                  <small>EFEITO ESPECIAL</small>
-                  <strong>{effect.name}</strong>
-                  <p>{effect.description}</p>
-                </article>
-              ))}
-              <footer>
-                <div>
-                  <small>Valor do equipamento</small>
-                  <strong>{selected.price.toLocaleString("pt-BR")} WG</strong>
-                </div>
-                <form action={buyItem}>
-                  <input name="itemId" type="hidden" value={selected.id} />
-                  <ShopBuyButton disabled={gold < selected.price} itemName={selected.name} />
-                </form>
-                <button
-                  className="button button--dark"
-                  onClick={() => addToCart(selected.id)}
-                  type="button"
-                >
-                  Adicionar ao carrinho
+              </div>
+              <form action={buyCart}>
+                {cart.map((id, index) => (
+                  <input name="itemId" type="hidden" value={id} key={`${id}-input-${index}`} />
+                ))}
+                <button className="button button--primary" disabled={cartTotal > gold}>
+                  Comprar tudo · {cartTotal.toLocaleString("pt-BR")} WG
                 </button>
-              </footer>
+              </form>
             </>
           ) : (
-            <p>Não há itens disponíveis.</p>
+            <p>Seu carrinho está vazio. Adicione itens para finalizar tudo de uma vez.</p>
           )}
         </aside>
       </div>

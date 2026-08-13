@@ -10,7 +10,7 @@ import { kingdomName } from "@/lib/game/kingdoms";
 import { RankBadge } from "@/components/characters/rank-badge";
 import { InventoryWorkbench } from "@/components/inventory/inventory-workbench";
 import { getAdventureRank } from "@/lib/game/ranks";
-import { getConvertedResourceBonus } from "@/lib/game/combat";
+import { defaultCombatRules, getConvertedResourceBonus } from "@/lib/game/combat";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
 import { compatibleEquipSlots, equipmentSlots, itemSlotLabel } from "@/lib/game/equipment";
 import { updateCharacterImageAction } from "./equipment-actions";
@@ -281,6 +281,21 @@ export default async function CharacterSheetPage({
                 <span>Poder de suporte</span>
                 <strong>{character.stats.supportPower}</strong>
               </article>
+            </section>
+            <section className="sheet-section combat-formulas">
+              <header>
+                <span className="eyebrow">Transparência de combate</span>
+                <h2>Como os cálculos funcionam</h2>
+                <p>Os mesmos cálculos são usados em Arena, PvE, Treino e Dungeon.</p>
+              </header>
+              <div>
+                <article><b>HP máximo</b><code>HP base + RES × {defaultCombatRules.hpPerResistance}</code><p>RES aumenta sua vida total antes do combate.</p></article>
+                <article><b>Ataque básico</b><code>maior valor entre FOR e INT × {defaultCombatRules.basicAttackMultiplier}</code><p>FOR causa dano físico; INT causa dano mágico quando for maior.</p></article>
+                <article><b>Dano físico recebido</b><code>Dano bruto × 100 ÷ (100 + DEF)</code><p>DEF reduz ataques e habilidades de dano físico.</p></article>
+                <article><b>Dano mágico recebido</b><code>Dano bruto × 100 ÷ (100 + RES)</code><p>RES também reduz ataques e habilidades mágicas.</p></article>
+                <article><b>Habilidades</b><code>Σ atributo × multiplicador da habilidade</code><p>Cada card informa quais atributos entram na escala.</p></article>
+                <article><b>Escudo e defesa</b><code>Escudo absorve primeiro · Defender bloqueia o próximo dano</code><p>Dano verdadeiro ignora DEF e RES. O dano mínimo normal é {defaultCombatRules.minimumDamage}.</p></article>
+              </div>
             </section>
             <section className="sheet-section">
               <header>

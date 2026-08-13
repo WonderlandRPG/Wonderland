@@ -594,6 +594,7 @@ export interface Database {
           victories: number;
           defeats: number;
           win_rate: number;
+          title_name: string | null;
         }>;
       };
       v2_my_pvp_history: {
@@ -625,6 +626,7 @@ export interface Database {
           image_url: string | null;
           kingdom: string;
           adventure_rank: string;
+          title_name: string | null;
         }>;
       };
       v2_equip_inventory_item: {

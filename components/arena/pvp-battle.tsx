@@ -209,12 +209,14 @@ export function PvpBattle({
                 type="button"
               >
                 {hasOwn ? (
-                  <span
-                    className={`arena-map-token ${combatFeedback && ownFeedback ? `has-${combatFeedback}` : ""}`}
+                  <div
+                    className={`arena-map-piece ${combatFeedback && ownFeedback ? `has-${combatFeedback}` : ""}`}
                     key={`own-${room.version}`}
                   >
-                    <i
+                    <div
+                      aria-label={`Retrato de ${character.name}`}
                       className={character.imageUrl ? "is-image" : ""}
+                      role="img"
                       style={
                         character.imageUrl
                           ? { backgroundImage: `url(${character.imageUrl})` }
@@ -222,16 +224,18 @@ export function PvpBattle({
                       }
                     >
                       {character.imageUrl ? "" : character.name.slice(0, 2).toUpperCase()}
-                    </i>
+                    </div>
                     <progress max={own.maxHp} value={own.hp} />
-                  </span>
+                  </div>
                 ) : hasEnemy ? (
-                  <span
-                    className={`arena-map-token ${combatFeedback && !ownFeedback ? `has-${combatFeedback}` : ""}`}
+                  <div
+                    className={`arena-map-piece ${combatFeedback && !ownFeedback ? `has-${combatFeedback}` : ""}`}
                     key={`enemy-${room.version}`}
                   >
-                    <i
+                    <div
+                      aria-label={`Retrato de ${opponent.name}`}
                       className={opponent.imageUrl ? "is-image" : ""}
+                      role="img"
                       style={
                         opponent.imageUrl
                           ? { backgroundImage: `url(${opponent.imageUrl})` }
@@ -239,9 +243,9 @@ export function PvpBattle({
                       }
                     >
                       {opponent.imageUrl ? "" : opponent.name.slice(0, 2).toUpperCase()}
-                    </i>
+                    </div>
                     <progress max={enemy.maxHp} value={enemy.hp} />
-                  </span>
+                  </div>
                 ) : null}
               </button>
             );

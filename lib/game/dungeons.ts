@@ -7,9 +7,9 @@ export const firstDungeon = {
   description:
     "Uma patrulha desapareceu sob as antigas muralhas cobertas de musgo. Reúna quatro aventureiros e interrompa a infestação antes que alcance as trilhas de Aokigahara.",
   encounters: [
-    { key: "batedor-musgoso", name: "Batedor Musgoso", role: "Atacante", position: "0% 0%" },
-    { key: "limo-runico", name: "Limo Rúnico", role: "Controle", position: "100% 0%" },
-    { key: "kobold-tunel", name: "Kobold do Túnel", role: "Defensor", position: "0% 100%" },
-    { key: "rei-rato", name: "Rei Rato Coroado", role: "Chefe", position: "100% 100%" },
+    { key: "batedor-musgoso", name: "Batedor Musgoso", role: "Atacante", imageUrl: "/images/monsters/dungeon-e/batedor-musgoso.webp" },
+    { key: "limo-runico", name: "Limo Rúnico", role: "Controle", imageUrl: "/images/monsters/dungeon-e/limo-runico.webp" },
+    { key: "kobold-tunel", name: "Kobold do Túnel", role: "Defensor", imageUrl: "/images/monsters/dungeon-e/kobold-tunel.webp" },
+    { key: "rei-rato", name: "Rei Rato Coroado", role: "Chefe", imageUrl: "/images/monsters/dungeon-e/rei-rato-coroado.webp" },
   ],
 } as const;

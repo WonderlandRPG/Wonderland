@@ -474,18 +474,12 @@ function Battle({
           player={player}
           playerPosition={playerPosition}
           playerImage={character.imageUrl}
-          enemyImage={
-            opponent?.imageUrl ?? (mode === "pve" ? "/images/monsters/pve-bestiary-atlas.png" : "")
-          }
-          enemyImagePosition={initial.imagePosition}
+          enemyImage={opponent?.imageUrl ?? initial.imageUrl}
           visual={visual}
         />
         <Fighter
           combatant={enemy}
-          imageUrl={
-            opponent?.imageUrl ?? (mode === "pve" ? "/images/monsters/pve-bestiary-atlas.png" : "")
-          }
-          imagePosition={initial.imagePosition}
+          imageUrl={opponent?.imageUrl ?? initial.imageUrl}
           side="enemy"
           sigil={initial.sigil}
           subtitle={`Nível ${opponent?.level ?? character.level} · ${initial.title}`}
@@ -925,7 +919,6 @@ function BattleGrid({
   playerPosition,
   playerImage,
   enemyImage,
-  enemyImagePosition,
   visual,
 }: {
   enemy: CombatantState;
@@ -937,7 +930,6 @@ function BattleGrid({
   playerPosition: Position;
   playerImage: string;
   enemyImage: string;
-  enemyImagePosition?: string;
   visual: CombatVisual | null;
 }) {
   const cells = Array.from({ length: tacticalGrid.width * tacticalGrid.height }, (_, index) => ({
@@ -990,40 +982,42 @@ function BattleGrid({
               type="button"
             >
               {hasPlayer ? (
-                <span
-                  className={`arena-map-token ${visual?.target === "player" ? `has-${visual.kind}` : ""}`}
+                <div
+                  className={`arena-map-piece ${visual?.target === "player" ? `has-${visual.kind}` : ""}`}
                   title={player.name}
                 >
-                  <i
+                  <div
+                    aria-label={`Retrato de ${player.name}`}
                     className={playerImage ? "is-image" : ""}
+                    role="img"
                     style={playerImage ? { backgroundImage: `url(${playerImage})` } : undefined}
                   >
                     {playerImage ? "" : player.name.slice(0, 2).toUpperCase()}
-                  </i>
+                  </div>
                   <progress max={player.maxHp} value={player.hp} />
-                </span>
+                </div>
               ) : null}
               {hasEnemy ? (
-                <span
-                  className={`arena-map-token ${visual?.target === "enemy" ? `has-${visual.kind}` : ""}`}
+                <div
+                  className={`arena-map-piece ${visual?.target === "enemy" ? `has-${visual.kind}` : ""}`}
                   title={enemy.name}
                 >
-                  <i
+                  <div
+                    aria-label={`Retrato de ${enemy.name}`}
                     className={enemyImage ? "is-image" : ""}
+                    role="img"
                     style={
                       enemyImage
                         ? {
                             backgroundImage: `url(${enemyImage})`,
-                            backgroundPosition: enemyImagePosition,
-                            backgroundSize: enemyImagePosition ? "500% 200%" : undefined,
                           }
                         : undefined
                     }
                   >
                     {enemyImage ? "" : enemy.name.slice(0, 2).toUpperCase()}
-                  </i>
+                  </div>
                   <progress max={enemy.maxHp} value={enemy.hp} />
-                </span>
+                </div>
               ) : null}
             </button>
           );
@@ -1096,6 +1090,6 @@ function createBattle(
     enemy,
     title: opponent ? "Duelo entre aventureiros" : (monster?.title ?? "Autômato de treino"),
     sigil: opponent ? "対" : (monster?.sigil ?? "鬼"),
-    imagePosition: monster?.imagePosition,
+    imageUrl: monster?.imageUrl ?? "",
   };
 }

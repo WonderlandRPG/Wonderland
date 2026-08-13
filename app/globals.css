@@ -13986,10 +13986,10 @@ body[data-rank="EX"] .rank-atmosphere i {
   border-radius: 14px;
   background: #091712;
 }
-.dungeon-bestiary article > div {
+.dungeon-bestiary article > .dungeon-bestiary__portrait {
   aspect-ratio: 1;
-  background-image: url("/images/monsters/dungeon-e-rank-atlas.png");
-  background-size: 200% 200%;
+  background-position: center;
+  background-size: cover;
 }
 .dungeon-bestiary article small,
 .dungeon-bestiary article strong {
@@ -16727,6 +16727,72 @@ body[data-rank]:has(.arena-page) .player-nav,
 }
 .arena-map__grid > button.has-enemy span {
   color: #ef7d88;
+}
+
+/* Marcador isolado: não herda as regras antigas dos spans do tabuleiro. */
+.arena-page .arena-map__grid > button > .arena-map-piece {
+  position: absolute;
+  z-index: 7;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: clamp(38px, 4.6vw, 64px);
+  height: auto;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.82));
+  pointer-events: none;
+}
+
+.arena-page .arena-map-piece > div[role="img"] {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid #62e5bf;
+  border-radius: 50%;
+  background-color: #071611;
+  background-position: center 18%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #fff;
+  font: 800 0.68rem/1 Georgia, serif;
+  box-shadow: 0 0 0 3px rgba(98, 229, 191, 0.16), 0 0 24px rgba(98, 229, 191, 0.42);
+}
+
+.arena-page .arena-map__grid > button.has-enemy .arena-map-piece > div[role="img"] {
+  border-color: #dc6374;
+  box-shadow: 0 0 0 3px rgba(220, 99, 116, 0.16), 0 0 24px rgba(220, 99, 116, 0.42);
+}
+
+.arena-page .arena-map-piece progress {
+  display: block;
+  width: 130%;
+  height: 7px;
+  margin: 4px 0 0;
+  accent-color: #42d979;
+}
+
+.arena-page .arena-map-piece.has-damage {
+  animation: map-piece-damage 0.5s ease-out;
+}
+
+.arena-page .arena-map-piece.has-heal {
+  animation: map-piece-heal 0.8s ease-out;
+}
+
+.arena-page .arena-map-piece.has-shield > div[role="img"] {
+  box-shadow: 0 0 0 7px rgba(83, 182, 255, 0.34), 0 0 32px #53b6ff;
+}
+
+@keyframes map-piece-damage {
+  25% { transform: translate(-58%, -50%); filter: brightness(2) sepia(1) hue-rotate(300deg); }
+  55% { transform: translate(-44%, -50%); }
+}
+
+@keyframes map-piece-heal {
+  50% { transform: translate(-50%, -58%) scale(1.12); filter: drop-shadow(0 0 22px #54ef94); }
 }
 
 .arena-status-icons {

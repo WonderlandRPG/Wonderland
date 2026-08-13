@@ -99,6 +99,15 @@ export function PvpBattle({
     [],
   );
   const finished = state.status === "finished";
+  const combatFeedback = /curou|recuperou/i.test(state.message)
+    ? "heal"
+    : /escudo|proteção/i.test(state.message)
+      ? "shield"
+      : /dano|atacou|causou/i.test(state.message)
+        ? "damage"
+        : "";
+  const actorIsOwn = state.message.includes(character.name);
+  const ownFeedback = combatFeedback === "damage" ? !actorIsOwn : actorIsOwn;
   const ownAttributes = getEffectiveAttributes(own);
   const enemyAttributes = getEffectiveAttributes(enemy);
   const basicDamageType = ownAttributes.INT > ownAttributes.FOR ? "magic" : "physical";
@@ -200,9 +209,39 @@ export function PvpBattle({
                 type="button"
               >
                 {hasOwn ? (
-                  <span>{character.name.slice(0, 2).toUpperCase()}</span>
+                  <span
+                    className={`arena-map-token ${combatFeedback && ownFeedback ? `has-${combatFeedback}` : ""}`}
+                    key={`own-${room.version}`}
+                  >
+                    <i
+                      className={character.imageUrl ? "is-image" : ""}
+                      style={
+                        character.imageUrl
+                          ? { backgroundImage: `url(${character.imageUrl})` }
+                          : undefined
+                      }
+                    >
+                      {character.imageUrl ? "" : character.name.slice(0, 2).toUpperCase()}
+                    </i>
+                    <progress max={own.maxHp} value={own.hp} />
+                  </span>
                 ) : hasEnemy ? (
-                  <span>{opponent.name.slice(0, 2).toUpperCase()}</span>
+                  <span
+                    className={`arena-map-token ${combatFeedback && !ownFeedback ? `has-${combatFeedback}` : ""}`}
+                    key={`enemy-${room.version}`}
+                  >
+                    <i
+                      className={opponent.imageUrl ? "is-image" : ""}
+                      style={
+                        opponent.imageUrl
+                          ? { backgroundImage: `url(${opponent.imageUrl})` }
+                          : undefined
+                      }
+                    >
+                      {opponent.imageUrl ? "" : opponent.name.slice(0, 2).toUpperCase()}
+                    </i>
+                    <progress max={enemy.maxHp} value={enemy.hp} />
+                  </span>
                 ) : null}
               </button>
             );

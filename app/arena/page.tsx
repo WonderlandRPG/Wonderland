@@ -11,6 +11,7 @@ import { toArenaCharacter } from "@/lib/game/arena-character";
 import { createInitialPvpState } from "@/lib/game/pvp-state";
 import { PvpBattle } from "@/components/arena/pvp-battle";
 import type { Json } from "@/lib/db/types";
+import { isAdministrativeRole } from "@/lib/auth/roles";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -86,9 +87,10 @@ export default async function ArenaPage({
             <Link className="arena-history-link" href="/arena/historico">
               Ver histórico de vitórias e derrotas →
             </Link>
-            <div>
-              <Link href="/arena?modo=training">
-                <span>修</span>
+            <div className="arena-mode-grid">
+              <Link className="arena-mode-card is-training" href="/arena?modo=training">
+                <span className="arena-mode-card__sigil">修</span>
+                <i>01</i>
                 <small>Sem recompensas</small>
                 <strong>Treino</strong>
                 <p>Teste habilidades e sequências contra o Boneco Rúnico.</p>
@@ -103,8 +105,9 @@ export default async function ArenaPage({
                   <b>Volte amanhã</b>
                 </article>
               ) : (
-                <Link href="/arena?modo=pve">
-                  <span>獣</span>
+                <Link className="arena-mode-card is-pve" href="/arena?modo=pve">
+                  <span className="arena-mode-card__sigil">獣</span>
+                  <i>02</i>
                   <small>
                     {pveStatus
                       ? `${pveStatus.remaining} de ${pveStatus.limit} entradas restantes`
@@ -120,13 +123,24 @@ export default async function ArenaPage({
                   </b>
                 </Link>
               )}
-              <Link href="/arena?modo=pvp">
-                <span>対</span>
+              <Link className="arena-mode-card is-pvp" href="/arena?modo=pvp">
+                <span className="arena-mode-card__sigil">対</span>
+                <i>03</i>
                 <small>Estrutura competitiva</small>
                 <strong>PvP</strong>
                 <p>Entre na fila para duelos balanceados entre aventureiros.</p>
                 <b>Ver fila →</b>
               </Link>
+              {isAdministrativeRole(account.role) ? (
+                <Link className="arena-mode-card is-dungeon" href="/arena/dungeons">
+                  <span className="arena-mode-card__sigil">門</span>
+                  <i>04</i>
+                  <small>Prévia administrativa · Rank E</small>
+                  <strong>Dungeon</strong>
+                  <p>Forme um grupo de quatro aventureiros e explore as Ruínas de Verdantia.</p>
+                  <b>Abrir expedição →</b>
+                </Link>
+              ) : null}
             </div>
           </section>
         ) : null}

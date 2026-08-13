@@ -34,10 +34,13 @@ export function createDungeonMonster(party: ArenaCharacter[], encounterIndex: nu
       encounter.hpScale *
       Math.max(1, party.length * 0.65),
   );
+  const attributes = buildAdaptiveMonsterAttributes(average, encounter.weights);
+  attributes.INT = Math.max(attributes.INT, Math.round(average.INT * 3.5), 180);
+  attributes.ARC = Math.max(attributes.ARC, Math.round(average.ARC * 2.5), 120);
   return createCombatant({
     id: encounter.key,
     name: encounter.name,
-    attributes: buildAdaptiveMonsterAttributes(average, encounter.weights),
+    attributes,
     baseHp,
     baseMana: 0,
     usesMana: false,

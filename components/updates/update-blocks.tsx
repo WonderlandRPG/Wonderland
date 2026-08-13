@@ -4,6 +4,14 @@ export function UpdateBlocks({ blocks }: { blocks: UpdateBlock[] }) {
   return (
     <div className="update-blocks">
       {blocks.map((block) => {
+        if (block.type === "image")
+          return (
+            <figure className="update-image" key={block.id}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img alt={block.label || "Imagem da atualização"} src={block.content} />
+              {block.label ? <figcaption>{block.label}</figcaption> : null}
+            </figure>
+          );
         if (block.type === "heading") return <h3 key={block.id}>{block.content}</h3>;
         if (block.type === "subheading") return <h4 key={block.id}>{block.content}</h4>;
         if (block.type === "highlight")

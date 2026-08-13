@@ -2452,6 +2452,94 @@ html[data-theme="classic"] :is(.hero h1, .hero p, .hero__kicker, .player-nav a, 
   opacity: 1 !important;
 }
 
+/* Identidades 7.0 — paleta oficial da marca e cenas sazonais. */
+html[data-theme="classic"] {
+  --ui-bg: #050806;
+  --ui-bg-2: #0b1510;
+  --ui-surface: rgba(9, 18, 13, 0.97);
+  --ui-surface-solid: #0d1b13;
+  --ui-surface-raised: #152b1f;
+  --ui-glass: rgba(3, 8, 5, 0.94);
+  --ui-ink: #fffef8;
+  --ui-muted: #c8d6ce;
+  --ui-faint: #8ca398;
+  --ui-gold: #ffd400;
+  --ui-gold-soft: #ffe76b;
+  --ui-arcane: #58bd91;
+  --ui-arcane-rgb: 88, 189, 145;
+  --ui-line: rgba(88, 189, 145, 0.22);
+  --ui-line-gold: rgba(255, 212, 0, 0.52);
+}
+html[data-theme="classic"] body {
+  background:
+    radial-gradient(circle at 50% -12%, rgba(255, 212, 0, 0.18), transparent 31rem),
+    radial-gradient(circle at 6% 12%, rgba(88, 189, 145, 0.22), transparent 30rem),
+    linear-gradient(145deg, #10241a, #050806 58%, #010201) fixed !important;
+}
+html[data-theme="classic"] :is(.player-nav, .site-header, .admin-topbar, .theme-control__menu) {
+  border-color: rgba(255, 212, 0, 0.42) !important;
+  background: linear-gradient(90deg, rgba(4, 9, 6, 0.98), rgba(14, 36, 25, 0.97)) !important;
+  box-shadow: 0 18px 62px rgba(0,0,0,.56), inset 0 -2px rgba(88,189,145,.2) !important;
+}
+html[data-theme="classic"] :is(.button--primary, .sheet-tabs a.is-active, .ranking-filters button.is-active) {
+  color: #050806 !important;
+  background: linear-gradient(135deg, #ffe45d, #ffd400) !important;
+  border-color: #fff1a2 !important;
+}
+html[data-theme="classic"] :is(.portal-card,.sheet-section,.ranking-board,.update-featured,.update-archive,.admin-composer,.admin-editor-card) {
+  border-color: rgba(88,189,145,.3) !important;
+  background: linear-gradient(145deg,rgba(13,31,21,.98),rgba(4,10,7,.98)) !important;
+}
+
+.seasonal-atmosphere { position: fixed; inset: 0; z-index: 12; overflow: hidden; pointer-events: none; }
+.seasonal-atmosphere__snow,.seasonal-atmosphere__santa,.seasonal-atmosphere__witch { display: none; }
+html[data-theme="christmas"] .seasonal-atmosphere__snow { display: block; position: absolute; inset: -12vh 0 0; }
+.seasonal-atmosphere__snow i {
+  --column: calc((var(--flake) * 37) % 101);
+  position: absolute; left: calc(var(--column) * 1%); top: -8vh;
+  color: rgba(255,255,255,.9); font-style: normal;
+  font-size: calc(10px + (var(--flake) % 5) * 4px);
+  filter: drop-shadow(0 0 4px rgba(180,225,255,.75));
+  animation: crystal-snow calc(8s + (var(--flake) % 7) * 1s) linear infinite;
+  animation-delay: calc((var(--flake) % 13) * -1s);
+}
+html[data-theme="christmas"] .seasonal-atmosphere__santa {
+  display: flex; position: absolute; top: 12vh; left: -28rem; align-items: center;
+  gap: 3px; font-size: 2.5rem; transform: scaleX(-1);
+  filter: drop-shadow(0 7px 10px rgba(0,0,0,.55)); animation: santa-flight 24s linear infinite;
+}
+.seasonal-atmosphere__santa span { color: #ffd85f; font-size: 1rem; }
+.seasonal-atmosphere__santa em { font-style: normal; font-size: 2rem; }
+html[data-theme="christmas"] body {
+  background: radial-gradient(circle at 50% -8%,rgba(255,238,179,.2),transparent 28rem),
+    radial-gradient(circle at 10% 20%,rgba(209,24,42,.42),transparent 30rem),
+    linear-gradient(150deg,#b50f25,#5d0714 52%,#1a0308) fixed !important;
+}
+html[data-theme="christmas"] :is(.player-nav,.site-header,.admin-topbar,.theme-control__menu) {
+  background: linear-gradient(90deg,rgba(125,7,24,.98),rgba(188,18,38,.97)) !important;
+}
+html[data-theme="christmas"] .portal-content::after {
+  content:"🎁  🎄  🎁"; display:block; padding:28px 0 8px; text-align:center; font-size:2.4rem;
+}
+html[data-theme="halloween"] .seasonal-atmosphere.is-map .seasonal-atmosphere__witch {
+  display:flex; position:absolute; top:18vh; left:-20rem; align-items:center; gap:2px;
+  font-size:2.7rem; filter:drop-shadow(0 8px 10px #000); animation:witch-flight 19s ease-in-out infinite;
+}
+.seasonal-atmosphere__witch span { font-size:1.4rem; animation:bat-wing .45s ease-in-out infinite alternate; }
+.seasonal-atmosphere__witch i { font-style:normal; transform:rotate(-18deg); }
+html[data-theme="halloween"] body {
+  background: radial-gradient(circle at 78% 10%,#ddd5ff 0 4.5rem,rgba(125,78,181,.34) 4.7rem,transparent 16rem),
+    linear-gradient(150deg,#351148,#17061f 58%,#050107) fixed !important;
+}
+html[data-theme="halloween"] :is(.player-nav,.site-header,.admin-topbar,.theme-control__menu) {
+  background:linear-gradient(90deg,rgba(35,8,48,.98),rgba(93,24,112,.96)) !important;
+}
+@keyframes crystal-snow { to { transform:translate3d(35px,120vh,0) rotate(220deg); } }
+@keyframes santa-flight { 0%{transform:translateX(0) scaleX(-1) translateY(0)} 50%{transform:translateX(calc(100vw + 18rem)) scaleX(-1) translateY(-30px)} 100%{transform:translateX(calc(100vw + 40rem)) scaleX(-1) translateY(10px)} }
+@keyframes witch-flight { 0%{transform:translateX(0) translateY(0)} 45%{transform:translateX(calc(100vw + 18rem)) translateY(-45px)} 50%,100%{transform:translateX(calc(100vw + 30rem)) translateY(20px)} }
+@keyframes bat-wing { to { transform:translateY(-7px) rotate(-12deg); } }
+@media (prefers-reduced-motion:reduce) { .seasonal-atmosphere * { animation:none !important; } .seasonal-atmosphere__santa,.seasonal-atmosphere__witch { display:none !important; } }
+
 @media (max-width: 760px) {
   html[data-theme] .lore-browser__index button {
     min-height: 64px;

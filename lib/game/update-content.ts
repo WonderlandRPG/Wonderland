@@ -7,6 +7,7 @@ export const updateBlockTypes = [
   "highlight",
   "list",
   "stat",
+  "image",
 ] as const;
 
 export const updateBlockSchema = z.object({

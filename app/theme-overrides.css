@@ -2266,3 +2266,194 @@ html[data-theme="halloween"] :is(p, small, dt) {
 html[data-theme="halloween"] :is(h1, h2, h3, h4, strong, dd) {
   color: #fff2d9 !important;
 }
+
+/* Contraste 6.0 — contrato global de legibilidade.
+   Cada componente passa a usar as mesmas tintas do tema, sem texto lavado
+   sobre pergaminhos, cards, navegação ou painéis administrativos. */
+:root,
+html[data-theme] {
+  --readable-text: var(--ui-ink);
+  --readable-muted: var(--ui-muted);
+  --readable-faint: color-mix(in srgb, var(--ui-muted) 78%, var(--ui-ink));
+  --readable-panel: var(--ui-surface-solid);
+  --readable-raised: var(--ui-surface-raised);
+  --readable-border: color-mix(in srgb, var(--ui-line) 66%, var(--ui-ink) 14%);
+}
+
+html[data-theme] body,
+html[data-theme] main,
+html[data-theme] .page-shell,
+html[data-theme] .lore-page {
+  color: var(--readable-text) !important;
+}
+
+html[data-theme]
+  :is(
+    .player-nav,
+    .site-header,
+    .theme-control__menu,
+    .lore-browser__index,
+    .lore-dossier,
+    .codex-dossier,
+    .lore-resource,
+    .path-dossier-grid > article,
+    .path-quest,
+    .path-passive,
+    .path-technique,
+    .ability-ledger > article,
+    .ability-ledger > article > section,
+    .sheet-section,
+    .portal-card,
+    .ranking-board,
+    .ranking-season-banner,
+    .ranking-podium__place,
+    .ranking-table > a,
+    .pvp-ranking-table > a,
+    .pvp-history-ledger > article,
+    .arena-command-panel,
+    .arena-toolbar,
+    .arena-fighter,
+    .admin-editor-card,
+    .admin-character-card,
+    .admin-composer,
+    .account-card
+  ) {
+  color: var(--readable-text) !important;
+  border-color: var(--readable-border) !important;
+}
+
+html[data-theme]
+  :is(
+    .player-nav,
+    .site-header,
+    .theme-control__menu,
+    .lore-browser__index,
+    .lore-dossier,
+    .codex-dossier,
+    .path-dossier-grid > article,
+    .ability-ledger > article,
+    .ranking-board,
+    .ranking-season-banner,
+    .ranking-podium__place,
+    .ranking-table > a,
+    .pvp-ranking-table > a,
+    .pvp-history-ledger > article
+  ) {
+  background-color: var(--readable-panel) !important;
+}
+
+html[data-theme]
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    strong,
+    b,
+    dd,
+    .player-nav a,
+    .player-nav button,
+    .site-header a,
+    .site-header button,
+    .lore-browser__index button strong,
+    .path-quest b,
+    .path-passive b,
+    .path-technique b,
+    .ability-ledger b
+  ) {
+  color: var(--readable-text) !important;
+  text-shadow: none !important;
+}
+
+html[data-theme]
+  :is(
+    p,
+    small,
+    dt,
+    li,
+    label,
+    .player-nav__links a,
+    .lore-browser__index button small,
+    .path-quest p,
+    .path-quest li,
+    .path-passive span,
+    .path-technique p,
+    .ability-ledger p,
+    .ability-ledger footer span
+  ) {
+  color: var(--readable-muted) !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+html[data-theme] :is(.eyebrow, .hero__kicker, .lore-resource small, .lore-section-title small) {
+  color: var(--ui-gold-soft) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme] :is(input, select, textarea) {
+  color: var(--readable-text) !important;
+  border-color: var(--readable-border) !important;
+  background: color-mix(in srgb, var(--ui-bg) 86%, black) !important;
+}
+
+html[data-theme] :is(input, textarea)::placeholder {
+  color: var(--readable-faint) !important;
+  opacity: 1 !important;
+}
+
+html[data-theme] .path-quest {
+  background: color-mix(in srgb, var(--readable-raised) 80%, var(--ui-bg)) !important;
+}
+
+html[data-theme] .path-quest :is(p, li),
+html[data-theme] .path-passive span,
+html[data-theme] .path-technique p {
+  font-size: clamp(0.76rem, 0.72rem + 0.16vw, 0.9rem) !important;
+  line-height: 1.65 !important;
+}
+
+html[data-theme] .lore-browser__index button {
+  min-height: 72px;
+  color: var(--readable-text) !important;
+  background: color-mix(in srgb, var(--readable-raised) 70%, transparent) !important;
+}
+
+html[data-theme] .lore-browser__index button:is(:hover, .is-active) {
+  border-color: var(--ui-gold) !important;
+  background: color-mix(in srgb, var(--ui-gold) 13%, var(--readable-raised)) !important;
+}
+
+html[data-theme] .codex-showcase__portrait,
+html[data-theme] .lore-browser__index button i.has-image {
+  image-rendering: auto;
+  background-position: center 18% !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+}
+
+html[data-theme] .codex-showcase__portrait {
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.52),
+    0 0 0 1px var(--ui-line-gold),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12) !important;
+}
+
+/* O tema claro antigo causava a tela branca registrada pelos jogadores.
+   Crônicas Reais permanece escuro e solene em todas as páginas. */
+html[data-theme="classic"] {
+  color-scheme: dark !important;
+}
+
+html[data-theme="classic"] :is(.hero h1, .hero p, .hero__kicker, .player-nav a, .brand-mark__copy strong) {
+  color: var(--readable-text) !important;
+  opacity: 1 !important;
+}
+
+@media (max-width: 760px) {
+  html[data-theme] .lore-browser__index button {
+    min-height: 64px;
+  }
+}

@@ -443,6 +443,7 @@ export default async function CharacterSheetPage({
                 name: entry.name,
                 description: entry.description,
                 rarity: entry.rarity,
+                price: entry.price,
                 rarityLabel:
                   (
                     {

@@ -11,6 +11,7 @@ import {
   getEffectiveAttributes,
   guardCombatant,
   resolveBasicAttack,
+  resolveAreaSkill,
   resolveRaceAbility,
   resolveSkill,
   tickCooldowns,
@@ -235,10 +236,30 @@ function Battle({
       const enemyMovementRange = getMovementRange(getEffectiveAttributes(enemy).INI);
       const nextEnemyPosition = stepToward(enemyPosition, playerPosition, enemyMovementRange);
       const enemyCanAttack = gridDistance(nextEnemyPosition, playerPosition) <= 1;
-      const reply = enemyCanAttack
-        ? resolveBasicAttack(enemy, player, rules)
+      const eliteEnemy =
+        mode === "pve"
+          ? {
+              ...enemy,
+              statuses: {
+                ...enemy.statuses,
+                "instinto-predador": {
+                  name: "Instinto predador",
+                  duration: 2,
+                  stacks: 1,
+                  modifiers: {
+                    FOR: Math.max(12, Math.round(enemy.attributes.FOR * 0.2)),
+                    INT: Math.max(12, Math.round(enemy.attributes.INT * 0.2)),
+                    INI: Math.max(8, Math.round(enemy.attributes.INI * 0.15)),
+                  },
+                  beneficial: true,
+                },
+              },
+            }
+          : enemy;
+      let reply = enemyCanAttack
+        ? resolveBasicAttack(eliteEnemy, player, rules)
         : {
-            actor: enemy,
+            actor: eliteEnemy,
             target: player,
             event: {
               kind: "utility" as const,
@@ -246,6 +267,33 @@ function Battle({
               message: `${enemy.name} avançou pelo campo de batalha.`,
             },
           };
+      if (mode === "pve" && enemyCanAttack && turn % 3 === 0 && reply.target.hp > 0) {
+        const second = resolveBasicAttack(reply.actor, reply.target, rules);
+        reply = {
+          actor: second.actor,
+          target: second.target,
+          event: {
+            ...second.event,
+            amount: reply.event.amount + second.event.amount,
+            message: `${reply.event.message} ${eliteEnemy.name} explorou a abertura e atacou novamente: ${second.event.message}`,
+          },
+        };
+      } else if (
+        mode === "pve" &&
+        enemy.hp < enemy.maxHp * 0.35 &&
+        (enemy.cooldowns["defesa-total"] ?? 0) === 0 &&
+        turn % 2 === 0
+      ) {
+        reply = {
+          actor: guardCombatant(eliteEnemy),
+          target: player,
+          event: {
+            kind: "utility" as const,
+            amount: 0,
+            message: `${eliteEnemy.name} leu seu próximo movimento e assumiu Defesa total.`,
+          },
+        };
+      }
       const playerPeriodic = resolvePeriodicItemDamage(reply.target, (amount, type) =>
         calculateDamage(amount, type, getEffectiveAttributes(reply.target), rules),
       );
@@ -282,7 +330,18 @@ function Battle({
         });
       }
     },
-    [actions, enemy, enemyPosition, finished, newCooldowns, player, playerPosition, rules],
+    [
+      actions,
+      enemy,
+      enemyPosition,
+      finished,
+      mode,
+      newCooldowns,
+      player,
+      playerPosition,
+      rules,
+      turn,
+    ],
   );
 
   useEffect(() => {
@@ -316,7 +375,10 @@ function Battle({
       setMessage(`${skill.name} alcança ${skill.range} casa(s). Aproxime-se do alvo.`);
       return;
     }
-    const result = resolveSkill(player, enemy, skill, rules);
+    const areaResult = skill.area > 0 ? resolveAreaSkill(player, [enemy], skill, rules) : null;
+    const result = areaResult
+      ? { actor: areaResult.actor, target: areaResult.targets[0], event: areaResult.events[0] }
+      : resolveSkill(player, enemy, skill, rules);
     if (result.event.kind === "error") {
       setMessage(result.event.message);
       return;
@@ -1050,6 +1112,10 @@ function createBattle(
     : monster
       ? buildAdaptiveMonsterAttributes(character.attributes, monster.weights)
       : trainingAttributes;
+  if (mode === "pve" && !opponent) {
+    for (const key of Object.keys(enemyAttributes) as Array<keyof CombatAttributes>)
+      enemyAttributes[key] = Math.max(1, Math.round(enemyAttributes[key] * 1.75));
+  }
   if (opponent) {
     const opponentModifiers = sumItemEffectModifiers(opponent.equipmentEffects);
     for (const [attribute, value] of Object.entries(opponentModifiers)) {
@@ -1062,7 +1128,9 @@ function createBattle(
     attributes: enemyAttributes,
     baseHp:
       opponent?.baseHp ??
-      (monster ? character.baseHp : Math.max(450, Math.round(player.maxHp * 0.7))),
+      (monster
+        ? Math.round(character.baseHp * 1.8)
+        : Math.max(450, Math.round(player.maxHp * 0.7))),
     baseMana: opponent?.baseMana ?? (monster ? character.baseMana : 0),
     classResource: opponent?.classResource,
     raceResource: opponent?.raceResource,

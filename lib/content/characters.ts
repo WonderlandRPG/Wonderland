@@ -46,6 +46,7 @@ export interface CharacterSheet extends CharacterRecord {
     description: string;
     category: string;
     rarity: string;
+    price: number;
     slot: string;
     quantity: number;
     equippedSlot: string | null;
@@ -79,18 +80,18 @@ async function loadSheets(
   const characterIds = records.map((entry) => entry.id);
   const inventoryRows = providedInventoryRows
     ? providedInventoryRows
-    : (
+    : ((
         await client
           .from("v2_character_inventory")
           .select("id,character_id,item_id,quantity,equipped_slot")
           .in("character_id", characterIds)
-      ).data ?? [];
+      ).data ?? []);
   const itemIds = [...new Set((inventoryRows ?? []).map((entry) => entry.item_id))];
   const { data: shopRows } = itemIds.length
     ? await client
         .from("v2_shop_items")
         .select(
-          "id,name,description,category,rarity,slot,attributes,special_effects,title_style,two_handed",
+          "id,name,description,category,price,rarity,slot,attributes,special_effects,title_style,two_handed",
         )
         .in("id", itemIds)
     : { data: [] };
@@ -117,6 +118,7 @@ async function loadSheets(
             description: item.description,
             category: item.category,
             rarity: item.rarity,
+            price: item.price,
             slot: item.slot,
             quantity: entry.quantity,
             equippedSlot: entry.equipped_slot,
@@ -237,11 +239,10 @@ export async function getPvpOpponentSheet(matchId: string) {
     return null;
   }
   return (
-    await loadSheets(
-      [payload.character as CharacterRow],
-      payload.equipment as InventoryRow[],
-    )
-  )[0] ?? null;
+    (
+      await loadSheets([payload.character as CharacterRow], payload.equipment as InventoryRow[])
+    )[0] ?? null
+  );
 }
 
 export async function requireCharacterSheet(id: string) {

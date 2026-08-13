@@ -38,6 +38,16 @@ export async function unequipItemAction(characterId: string, formData: FormData)
   revalidatePath("/arena");
 }
 
+export async function sellInventoryItemAction(characterId: string, formData: FormData) {
+  await requireCurrentAccount(`/personagens/${characterId}?tab=equipamentos`);
+  const inventoryId = z.uuid().safeParse(formData.get("inventoryId"));
+  if (!inventoryId.success) return;
+  const client = await createServerSupabaseClient();
+  if (client) await client.rpc("v2_sell_inventory_item", { p_inventory_id: inventoryId.data });
+  revalidatePath(`/personagens/${characterId}`);
+  revalidatePath("/loja");
+}
+
 export async function updateCharacterImageAction(characterId: string, formData: FormData) {
   await requireCurrentAccount(`/personagens/${characterId}`);
   const imageUrl = z

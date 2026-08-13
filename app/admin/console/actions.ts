@@ -9,13 +9,17 @@ export async function executeRewardCommandAction(formData: FormData) {
   await requireAdministrativeAccount();
   const command = String(formData.get("command") ?? "").trim();
   const match = command.match(
-    /^Dar\s+@(.+?)\s+(item|titulo|xp):(.+?)(?:\s+quantidade:\s*(\d+))?$/i,
+    /^Dar\s+@(.+?)\s+(item|titulo|xp|wg):(.+?)(?:\s+quantidade:\s*(\d+))?$/i,
   );
   if (!match) redirect("/admin/console?status=formato");
   const [, target, kindRaw, valueRaw, amountRaw] = match;
   const kind = kindRaw.toLocaleLowerCase("pt-BR");
-  const amount = Math.max(1, Math.min(999999, Number(amountRaw ?? (kind === "xp" ? valueRaw : 1))));
-  const value = kind === "xp" ? "" : valueRaw.trim();
+  const numericReward = kind === "xp" || kind === "wg";
+  const amount = Math.max(
+    1,
+    Math.min(999999, Number(amountRaw ?? (numericReward ? valueRaw.replace(/\./g, "") : 1))),
+  );
+  const value = numericReward ? "" : valueRaw.trim();
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/console?status=erro");
   const { data, error } = await client.rpc("v2_admin_grant_reward_command", {

@@ -493,6 +493,35 @@ export function resolveRaceAbility(
   return resolveSkill(actor, target, ability, rules);
 }
 
+export function resolveAreaSkill(
+  actor: CombatantState,
+  targets: CombatantState[],
+  skill: ClassSkill,
+  rules: CombatRules = defaultCombatRules,
+) {
+  const [primary, ...extras] = targets;
+  if (!primary) return { actor, targets: [], events: [] as CombatEvent[] };
+  const first = resolveSkill(actor, primary, skill, rules);
+  if (first.event.kind === "error" || skill.area <= 0)
+    return { actor: first.actor, targets: [first.target], events: [first.event] };
+  const resolvedTargets = [first.target];
+  const events = [first.event];
+  for (const target of extras) {
+    const proxyActor = {
+      ...actor,
+      mana: actor.maxMana,
+      classResource: actor.maxClassResource,
+      raceResource: actor.maxRaceResource,
+      cooldowns: {},
+      itemEffects: [],
+    };
+    const result = resolveSkill(proxyActor, target, skill, rules);
+    resolvedTargets.push(result.target);
+    events.push(result.event);
+  }
+  return { actor: first.actor, targets: resolvedTargets, events };
+}
+
 export function getRaceAbilityCooldown(combatant: CombatantState, ability: ClassSkill) {
   return combatant.cooldowns[ability.key] ?? 0;
 }

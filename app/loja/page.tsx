@@ -67,20 +67,22 @@ export default async function ShopPage({
         </header>
         {query.compra ? (
           <div
-            className={`shop-purchase-notice ${query.compra === "sucesso" ? "is-success" : "is-error"}`}
+            className={`shop-purchase-notice ${query.compra === "sucesso" || query.compra === "carrinho" ? "is-success" : "is-error"}`}
             role="status"
           >
-            <span>{query.compra === "sucesso" ? "✓" : "!"}</span>
+            <span>{query.compra === "sucesso" || query.compra === "carrinho" ? "✓" : "!"}</span>
             <div>
               <strong>
-                {query.compra === "sucesso"
-                  ? "Item enviado para a mochila"
+                {query.compra === "sucesso" || query.compra === "carrinho"
+                  ? query.compra === "carrinho"
+                    ? "Carrinho comprado com sucesso"
+                    : "Item enviado para a mochila"
                   : query.compra === "saldo"
                     ? "WG insuficiente"
                     : "Compra não concluída"}
               </strong>
               <small>
-                {query.compra === "sucesso"
+                {query.compra === "sucesso" || query.compra === "carrinho"
                   ? `O equipamento já pode ser usado por ${character.name}.`
                   : "Nenhum WG foi descontado."}
               </small>

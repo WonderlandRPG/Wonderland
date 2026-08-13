@@ -22,3 +22,21 @@ export async function buyItem(formData: FormData) {
   revalidatePath(`/personagens/${characterId}`);
   redirect("/loja?compra=sucesso");
 }
+
+export async function buyCart(formData: FormData) {
+  const { characterId } = await requireActiveCharacter("/loja");
+  const ids = z.array(z.uuid()).min(1).max(50).safeParse(formData.getAll("itemId"));
+  if (!ids.success) redirect("/loja?compra=erro");
+  const client = await createServerSupabaseClient();
+  if (!client) redirect("/loja?compra=erro");
+  const { error } = await client.rpc("v2_buy_shop_cart", { p_item_ids: ids.data });
+  if (error) {
+    const reason = error.message.toLocaleLowerCase("pt-BR").includes("insuficiente")
+      ? "saldo"
+      : "erro";
+    redirect(`/loja?compra=${reason}`);
+  }
+  revalidatePath("/loja");
+  revalidatePath(`/personagens/${characterId}`);
+  redirect("/loja?compra=carrinho");
+}

@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import {
   getDungeonQueueAction,
+  getOwnActiveDungeonRunAction,
   joinDungeonQueueAction,
   leaveDungeonQueueAction,
-  startDungeonAction,
   type DungeonQueueEntry,
 } from "@/app/arena/dungeons/actions";
 import styles from "./dungeon-lobby.module.css";
@@ -29,14 +29,22 @@ export function DungeonLobby({
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+  const joinedRef = useRef(queue.some((entry) => entry.userId === userId));
   const joined = queue.some((entry) => entry.userId === userId);
   const ready = queue.length >= minimumPlayers;
 
   const refresh = useCallback(() => {
     void getDungeonQueueAction(dungeonKey).then((result) => {
-      if (result.ok) setQueue(result.data);
+      if (!result.ok) return;
+      const stillJoined = result.data.some((entry) => entry.userId === userId);
+      setQueue(result.data);
+      if (joinedRef.current && !stillJoined)
+        void getOwnActiveDungeonRunAction(dungeonKey).then((run) => {
+          if (run.ok && run.runId) router.push(`/arena/dungeons/${run.runId}`);
+        });
+      joinedRef.current = stillJoined;
     });
-  }, [dungeonKey]);
+  }, [dungeonKey, router, userId]);
 
   useEffect(() => {
     const client = createBrowserSupabaseClient();
@@ -66,17 +74,10 @@ export function DungeonLobby({
       const result = joined
         ? await leaveDungeonQueueAction(dungeonKey)
         : await joinDungeonQueueAction(dungeonKey, characterId);
-      if (result.ok) setQueue(result.data);
-      else setMessage(result.message);
-    });
-  }
-
-  function start(force: boolean) {
-    setMessage("");
-    startTransition(async () => {
-      const result = await startDungeonAction(dungeonKey, force);
-      if (!result.ok) return setMessage(result.message);
-      router.push(`/arena/dungeons/${result.data.runId}`);
+      if (result.ok) {
+        if ("runId" in result && result.runId) router.push(`/arena/dungeons/${result.runId}`);
+        else setQueue(result.data);
+      } else setMessage(result.message);
     });
   }
 
@@ -104,22 +105,11 @@ export function DungeonLobby({
           >
             {pending ? "Atualizando…" : joined ? "Sair da fila" : "Entrar na fila"}
           </button>
-          <button
-            className="button button--primary"
-            disabled={pending || !ready}
-            onClick={() => start(false)}
-            type="button"
-          >
-            Iniciar Dungeon
-          </button>
-          <button
-            className={`button ${styles.force}`}
-            disabled={pending || queue.length === 0}
-            onClick={() => start(true)}
-            type="button"
-          >
-            ⚡ Forçar início · ADM
-          </button>
+          <small>
+            {ready
+              ? "Iniciando expedição automaticamente…"
+              : `${queue.length}/${minimumPlayers} jogadores confirmados`}
+          </small>
         </div>
       </div>
       <div className={styles.list}>

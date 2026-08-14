@@ -13408,11 +13408,12 @@ body[data-rank="EX"] .rank-atmosphere i {
 .world-map__territory:focus-visible .world-map__pin { transform: translate(-50%, -50%) scale(1.14); background: color-mix(in srgb, var(--realm) 30%, #020a10); }
 .world-map__tooltip {
   position: absolute;
-  z-index: 3;
-  left: var(--pin-x);
-  top: calc(var(--pin-y) + 4%);
+  z-index: 6;
+  left: var(--tooltip-x);
+  top: var(--tooltip-y);
   display: grid;
-  width: clamp(120px, 16vw, 225px);
+  width: clamp(210px, 24vw, 280px);
+  max-width: calc(100% - 32px);
   padding: clamp(8px, 1vw, 14px);
   transform: translate(-50%, 10px);
   border: 1px solid color-mix(in srgb, var(--realm) 55%, transparent);
@@ -13423,8 +13424,18 @@ body[data-rank="EX"] .rank-atmosphere i {
   pointer-events: none;
   transition: opacity .2s ease, transform .2s ease;
 }
-.world-map__territory:hover .world-map__tooltip,
-.world-map__territory:focus-visible .world-map__tooltip { opacity: 1; transform: translate(-50%, 0); }
+.world-map__territories:has(.world-map__territory.is-oymyakon:hover) .world-map__tooltip.is-oymyakon,
+.world-map__territories:has(.world-map__territory.is-oymyakon:focus-visible) .world-map__tooltip.is-oymyakon,
+.world-map__territories:has(.world-map__territory.is-darkya:hover) .world-map__tooltip.is-darkya,
+.world-map__territories:has(.world-map__territory.is-darkya:focus-visible) .world-map__tooltip.is-darkya,
+.world-map__territories:has(.world-map__territory.is-aokigahara:hover) .world-map__tooltip.is-aokigahara,
+.world-map__territories:has(.world-map__territory.is-aokigahara:focus-visible) .world-map__tooltip.is-aokigahara,
+.world-map__territories:has(.world-map__territory.is-skypiece:hover) .world-map__tooltip.is-skypiece,
+.world-map__territories:has(.world-map__territory.is-skypiece:focus-visible) .world-map__tooltip.is-skypiece,
+.world-map__territories:has(.world-map__territory.is-lesedi:hover) .world-map__tooltip.is-lesedi,
+.world-map__territories:has(.world-map__territory.is-lesedi:focus-visible) .world-map__tooltip.is-lesedi,
+.world-map__territories:has(.world-map__territory.is-namida:hover) .world-map__tooltip.is-namida,
+.world-map__territories:has(.world-map__territory.is-namida:focus-visible) .world-map__tooltip.is-namida { opacity: 1; transform: translate(-50%, 0); }
 .world-map__tooltip small { color: var(--realm); font-size: .45rem; letter-spacing: .14em; }
 .world-map__tooltip strong { margin-top: 3px; font: 400 clamp(.85rem, 1.4vw, 1.25rem) Georgia, serif; }
 .world-map__tooltip em { margin-top: 5px; color: rgba(226, 238, 235, .72); font-size: clamp(.44rem, .65vw, .58rem); font-style: normal; line-height: 1.45; }

@@ -1,5 +1,6 @@
 export const kingdoms = [
   { key: "aokigahara", name: "Aokigahara", title: "Reino da Floresta" },
+  { key: "darkya", name: "Darkya", title: "Reino da Chuva" },
   { key: "oymyakon", name: "Oymyakon", title: "Reino do Gelo" },
   { key: "lesedi", name: "Lesedi", title: "Reino de Areia" },
   { key: "namida", name: "Namida", title: "Reino Submerso" },

@@ -1,5 +1,5 @@
 import { getPortalHeadline } from "@/lib/content/portal-settings";
-import { restorePortalHeadlineAction, savePortalHeadlineAction } from "./actions";
+import { PortalHeadlineEditor } from "@/components/admin/portal-headline-editor";
 
 export const metadata = { title: "Tela principal | Painel ADM" };
 export const dynamic = "force-dynamic";
@@ -33,33 +33,7 @@ export default async function AdminPortalPage({
         </div>
       ) : null}
 
-      <section className="admin-portal-editor">
-        <form action={savePortalHeadlineAction} className="admin-editor-card admin-form">
-          <label className="form-field">
-            Primeira linha
-            <input defaultValue={headline.firstLine} maxLength={80} name="firstLine" required />
-          </label>
-          <label className="form-field">
-            Segunda linha
-            <input defaultValue={headline.secondLine} maxLength={80} name="secondLine" required />
-          </label>
-          <div className="admin-portal-editor__actions">
-            <button className="button button--primary" type="submit">
-              Salvar e publicar <span>→</span>
-            </button>
-            <button className="button button--glass" formAction={restorePortalHeadlineAction}>
-              Restaurar texto padrão
-            </button>
-          </div>
-        </form>
-
-        <aside className="admin-portal-preview">
-          <span className="eyebrow">Prévia</span>
-          <strong>{headline.firstLine}</strong>
-          <b>{headline.secondLine}</b>
-          <small>A alteração aparece imediatamente na entrada do site.</small>
-        </aside>
-      </section>
+      <PortalHeadlineEditor initial={headline} />
     </div>
   );
 }

@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
 import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
-import { getActiveCharacterId } from "@/lib/content/active-character";
-import { getCharacterSheet } from "@/lib/content/characters";
+import { getActiveCharacterNavigation } from "@/lib/content/active-character";
 import { SignOutButton } from "@/components/account/sign-out-button";
 
 export async function PlayerNav() {
   const account = await getCurrentAccount();
-  const activeCharacterId = account ? await getActiveCharacterId(account.id) : null;
-  const activeCharacter = activeCharacterId ? await getCharacterSheet(activeCharacterId) : null;
+  const activeCharacter = account ? await getActiveCharacterNavigation(account.id) : null;
+  const activeCharacterId = activeCharacter?.id ?? null;
   return (
     <header className="player-nav page-container">
       <Link href={activeCharacter ? "/personagens" : "/"}>

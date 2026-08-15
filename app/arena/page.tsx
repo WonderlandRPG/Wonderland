@@ -13,6 +13,7 @@ import { PvpBattle } from "@/components/arena/pvp-battle";
 import type { Json } from "@/lib/db/types";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 import { leaveAllQueuesAction } from "@/app/arena/queue-actions";
+import { CombatExitGuard } from "@/components/arena/combat-exit-guard";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -246,28 +247,36 @@ export default async function ArenaPage({
               ← Trocar modo
             </Link>
             {mode === "pvp" && query.partida && arenaCharacter && arenaOpponent && pvpRoom ? (
-              <PvpBattle
-                matchId={query.partida}
-                initialRoom={pvpRoom}
-                character={arenaCharacter}
-                opponent={arenaOpponent}
-              />
+              <>
+                <CombatExitGuard kind="pvp" combatId={query.partida} />
+                <PvpBattle
+                  matchId={query.partida}
+                  initialRoom={pvpRoom}
+                  character={arenaCharacter}
+                  opponent={arenaOpponent}
+                />
+              </>
             ) : (
-              <TrainingArena
-                characters={characters
-                  .filter((character) => character.id === characterId)
-                  .map(toArenaCharacter)}
-                initialCharacterId={query.personagem}
-                mode={mode}
-                monsterIndex={
-                  typeof arenaSessionId === "string"
-                    ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
-                    : 0
-                }
-                sessionId={typeof arenaSessionId === "string" ? arenaSessionId : undefined}
-                opponent={arenaOpponent ?? undefined}
-                rules={defaultCombatRules}
-              />
+              <>
+                {mode === "pve" && typeof arenaSessionId === "string" ? (
+                  <CombatExitGuard kind="arena" combatId={arenaSessionId} />
+                ) : null}
+                <TrainingArena
+                  characters={characters
+                    .filter((character) => character.id === characterId)
+                    .map(toArenaCharacter)}
+                  initialCharacterId={query.personagem}
+                  mode={mode}
+                  monsterIndex={
+                    typeof arenaSessionId === "string"
+                      ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
+                      : 0
+                  }
+                  sessionId={typeof arenaSessionId === "string" ? arenaSessionId : undefined}
+                  opponent={arenaOpponent ?? undefined}
+                  rules={defaultCombatRules}
+                />
+              </>
             )}
           </>
         ) : null}

@@ -5,7 +5,7 @@ import { requireAdministrativeAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 const input = z.object({
   userId: z.uuid(),
-  role: z.enum(["player", "moderator", "admin", "founder"]),
+  role: z.enum(["player", "moderator", "guild_leader", "admin", "founder"]),
 });
 export async function updatePlayerRole(formData: FormData) {
   await requireAdministrativeAccount();

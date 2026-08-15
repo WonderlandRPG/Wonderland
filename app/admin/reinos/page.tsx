@@ -5,8 +5,10 @@ import {
   kingdomOfficeLabels,
   kingdomOffices,
   kingdomStarCosts,
+  kingdomUpgradeAreas,
+  kingdomUpgradeAreaInfo,
 } from "@/lib/game/kingdom-governance";
-import { setKingdomOfficeAction } from "./actions";
+import { setKingdomOfficeAction, setKingdomStarsAction } from "./actions";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Controle de Reinos | Painel ADM" };
 export default async function AdminKingdomsPage({
@@ -39,7 +41,7 @@ export default async function AdminKingdomsPage({
       <section className="admin-page-title">
         <span className="eyebrow">Coroas e conselho</span>
         <h2>Controle de Reinos</h2>
-        <p>Defina a liderança de cada reino e acompanhe o progresso do Reino Requisitado.</p>
+        <p>Defina a liderança e edite as estrelas de todas as áreas de cada reino.</p>
       </section>
       {query.status ? (
         <div className={`admin-notice ${query.status === "salvo" ? "" : "admin-notice--error"}`}>
@@ -70,8 +72,35 @@ export default async function AdminKingdomsPage({
                   <small>{kingdom.title}</small>
                   <h3>{kingdom.name}</h3>
                 </div>
-                <strong>{state?.requested_stars ?? 0}/5 ★</strong>
+                <strong>Melhorias do reino</strong>
               </header>
+              <div className="admin-kingdom-stars">
+                {kingdomUpgradeAreas.map((area) => {
+                  const value =
+                    area === "requested"
+                      ? state?.requested_stars
+                      : area === "academy"
+                        ? state?.academy_stars
+                        : state?.market_stars;
+                  return (
+                    <form action={setKingdomStarsAction} key={area}>
+                      <input name="kingdom" type="hidden" value={kingdom.key} />
+                      <input name="area" type="hidden" value={area} />
+                      <label>
+                        <span>{kingdomUpgradeAreaInfo[area].name}</span>
+                        <select name="stars" defaultValue={String(value ?? 0)}>
+                          {[0, 1, 2, 3, 4, 5].map((stars) => (
+                            <option value={stars} key={stars}>
+                              {stars} estrela{stars === 1 ? "" : "s"}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <button className="button button--small button--primary">Salvar</button>
+                    </form>
+                  );
+                })}
+              </div>
               {kingdomOffices.map((office) => (
                 <form action={setKingdomOfficeAction} key={office}>
                   <input name="kingdom" type="hidden" value={kingdom.key} />

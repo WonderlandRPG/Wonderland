@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
 import { AudioProvider } from "@/components/audio/audio-provider";
-import { RankAtmosphere } from "@/components/characters/rank-atmosphere";
 import { getCurrentAccount } from "@/lib/auth/account";
-import { getActiveCharacterRank } from "@/lib/content/active-character";
-import { getAdventureRank } from "@/lib/game/ranks";
 import { ThemeControl } from "@/components/theme/theme-control";
 import { getThemeConfiguration } from "@/lib/content/themes";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 import { PlayerPresence } from "@/components/player-presence";
-import { SeasonalAtmosphere } from "@/components/theme/seasonal-atmosphere";
 
 import "./globals.css";
 import "./theme-overrides.css";
@@ -29,23 +25,15 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     getCurrentAccount(),
     getThemeConfiguration(),
   ]);
-  const activeRank = account ? await getActiveCharacterRank(account.id) : null;
-  const rank = activeRank ? getAdventureRank(activeRank) : null;
-
   return (
     <html data-theme={themeConfiguration.defaultTheme} lang="pt-BR">
-      <body
-        data-rank={rank?.key}
-        style={rank ? ({ "--hud-rank": rank.color } as React.CSSProperties) : undefined}
-      >
+      <body>
         {account ? <PlayerPresence /> : null}
         <div className="game-world-atmosphere" aria-hidden="true">
           <span />
           <span />
           <span />
         </div>
-        <SeasonalAtmosphere />
-        <RankAtmosphere rank={rank?.key} />
         <AudioProvider>
           {children}
           <ThemeControl

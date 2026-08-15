@@ -46,7 +46,7 @@ export type CurrentKingdom = {
   wars: KingdomWar[];
   penalty: KingdomPenalty | null;
 };
-const record = (value: Json | null): Record<string, Json | undefined> =>
+const record = (value: Json | null | undefined): Record<string, Json | undefined> =>
   value && typeof value === "object" && !Array.isArray(value) ? value : {};
 const text = (value: Json | undefined) => (typeof value === "string" ? value : "");
 const number = (value: Json | undefined) =>

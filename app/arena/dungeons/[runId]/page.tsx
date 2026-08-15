@@ -10,6 +10,7 @@ import { createInitialDungeonState } from "@/lib/game/dungeon-combat";
 import { firstDungeon } from "@/lib/game/dungeons";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/db/types";
+import { CombatExitGuard } from "@/components/arena/combat-exit-guard";
 export const metadata = { title: "Combate | Ruínas de Verdantia" };
 export const dynamic = "force-dynamic";
 export default async function DungeonRunPage({ params }: { params: Promise<{ runId: string }> }) {
@@ -46,6 +47,7 @@ export default async function DungeonRunPage({ params }: { params: Promise<{ run
         <Link className="arena-mode-back" href="/arena/dungeons">
           ← Voltar à fila
         </Link>
+        <CombatExitGuard kind="dungeon" combatId={runId} />
         <DungeonBattle
           runId={runId}
           initialRoom={initialized as never}

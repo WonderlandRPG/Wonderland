@@ -792,8 +792,8 @@ export interface Database {
         Args: {
           p_character_id: string;
           p_name: string;
-          p_xp: number;
-          p_gold: number;
+          p_xp: number | string;
+          p_gold: number | string;
           p_image_url: string;
           p_kingdom: string;
           p_adventure_rank: string;

@@ -8,15 +8,16 @@ export const kingdomOfficeLabels: Record<KingdomOffice, string> = {
   war_councilor: "Conselheiro de Guerra",
 };
 export const kingdomStarCosts = [250_000, 1_000_000, 5_000_000, 25_000_000, 100_000_000] as const;
-export const kingdomUpgradeAreas = ["requested", "academy", "market"] as const;
+export const kingdomUpgradeAreas = ["requested", "market", "defense", "army"] as const;
 export type KingdomUpgradeArea = (typeof kingdomUpgradeAreas)[number];
 export const kingdomUpgradeAreaInfo: Record<
   KingdomUpgradeArea,
   { name: string; description: string }
 > = {
   requested: { name: "Reino Requisitado", description: "+10% de XP e WG por estrela" },
-  academy: { name: "Academia Real", description: "+5% de XP por estrela" },
-  market: { name: "Mercado Próspero", description: "+5% de WG por estrela" },
+  market: { name: "Mercado Próspero", description: "-3% no preço total dos itens da Loja por estrela" },
+  defense: { name: "Defesas", description: "Fortalece a proteção do reino e soma pontos durante guerras" },
+  army: { name: "Exército", description: "Fortalece o poder militar e soma pontos durante guerras" },
 };
 export type KingdomAreaState = {
   key: KingdomUpgradeArea;
@@ -24,6 +25,8 @@ export type KingdomAreaState = {
   bonusPercent: number;
   nextStarCost: number | null;
 };
+export type KingdomWar = { id: string; attacker: string; defender: string; status: string; declaredAt: string; winner: string | null; loser: string | null };
+export type KingdomPenalty = { until: string; rewardPercent: number; shopPercent: number };
 export type KingdomLeader = {
   office: KingdomOffice;
   characterId: string;
@@ -40,6 +43,8 @@ export type CurrentKingdom = {
   areas: KingdomAreaState[];
   ownOffice: KingdomOffice | null;
   leadership: KingdomLeader[];
+  wars: KingdomWar[];
+  penalty: KingdomPenalty | null;
 };
 const record = (value: Json | null): Record<string, Json | undefined> =>
   value && typeof value === "object" && !Array.isArray(value) ? value : {};
@@ -81,6 +86,9 @@ export function parseCurrentKingdom(value: Json | null): CurrentKingdom | null {
         })
         .filter((area) => kingdomUpgradeAreas.includes(area.key))
     : [];
+  const wars = Array.isArray(root.wars) ? root.wars.map((entry) => { const row = record(entry); return { id: text(row.id), attacker: text(row.attacker), defender: text(row.defender), status: text(row.status), declaredAt: text(row.declaredAt), winner: text(row.winner) || null, loser: text(row.loser) || null }; }).filter((war) => war.id) : [];
+  const penaltyRow = record(root.penalty);
+  const penalty = text(penaltyRow.until) ? { until: text(penaltyRow.until), rewardPercent: number(penaltyRow.rewardPercent), shopPercent: number(penaltyRow.shopPercent) } : null;
   return {
     kingdom,
     characterId,
@@ -88,5 +96,7 @@ export function parseCurrentKingdom(value: Json | null): CurrentKingdom | null {
     areas,
     ownOffice: kingdomOffices.includes(office as KingdomOffice) ? (office as KingdomOffice) : null,
     leadership,
+    wars,
+    penalty,
   };
 }

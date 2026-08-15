@@ -76,12 +76,7 @@ export default async function AdminKingdomsPage({
               </header>
               <div className="admin-kingdom-stars">
                 {kingdomUpgradeAreas.map((area) => {
-                  const value =
-                    area === "requested"
-                      ? state?.requested_stars
-                      : area === "academy"
-                        ? state?.academy_stars
-                        : state?.market_stars;
+                  const value = area === "requested" ? state?.requested_stars : area === "market" ? state?.market_stars : area === "defense" ? state?.defense_stars : state?.army_stars;
                   return (
                     <form action={setKingdomStarsAction} key={area}>
                       <input name="kingdom" type="hidden" value={kingdom.key} />

@@ -23,3 +23,21 @@ export async function buyKingdomStarAction(formData: FormData) {
       : "/reinos/atual?status=comprada",
   );
 }
+
+export async function declareKingdomWarAction(formData: FormData) {
+  const { characterId } = await requireActiveCharacter("/reinos/atual");
+  const defender = String(formData.get("defender"));
+  const client = await createServerSupabaseClient();
+  if (!client) redirect("/reinos/atual?status=erro");
+  const { error } = await client.rpc("v2_declare_kingdom_war", { p_character_id: characterId, p_defender: defender });
+  revalidatePath("/reinos/atual");
+  redirect(error ? `/reinos/atual?status=erro&mensagem=${encodeURIComponent(error.message)}` : "/reinos/atual?status=guerra-declarada");
+}
+export async function respondKingdomWarAction(formData: FormData) {
+  const { characterId } = await requireActiveCharacter("/reinos/atual");
+  const client = await createServerSupabaseClient();
+  if (!client) redirect("/reinos/atual?status=erro");
+  const { error } = await client.rpc("v2_respond_kingdom_war", { p_character_id: characterId, p_war_id: String(formData.get("warId")), p_response: String(formData.get("response")) });
+  revalidatePath("/reinos/atual"); revalidatePath("/loja");
+  redirect(error ? `/reinos/atual?status=erro&mensagem=${encodeURIComponent(error.message)}` : "/reinos/atual?status=guerra-resolvida");
+}

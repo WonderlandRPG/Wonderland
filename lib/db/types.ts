@@ -615,16 +615,24 @@ export interface Database {
         Row: {
           kingdom: string;
           requested_stars: number;
-          academy_stars: number;
+          defense_stars: number;
+          army_stars: number;
           market_stars: number;
+          penalty_until: string | null;
+          reward_penalty_percent: number;
+          shop_markup_percent: number;
           updated_at: string;
           updated_by: string | null;
         };
         Insert: {
           kingdom: string;
           requested_stars?: number;
-          academy_stars?: number;
+          defense_stars?: number;
+          army_stars?: number;
           market_stars?: number;
+          penalty_until?: string | null;
+          reward_penalty_percent?: number;
+          shop_markup_percent?: number;
           updated_at?: string;
           updated_by?: string | null;
         };
@@ -700,6 +708,8 @@ export interface Database {
       v2_leave_all_queues: { Args: { p_character_id: string }; Returns: Json };
       v2_get_current_kingdom: { Args: { p_character_id: string }; Returns: Json };
       v2_buy_kingdom_star: { Args: { p_character_id: string; p_area: string }; Returns: Json };
+      v2_declare_kingdom_war: { Args: { p_character_id: string; p_defender: string }; Returns: string };
+      v2_respond_kingdom_war: { Args: { p_character_id: string; p_war_id: string; p_response: string }; Returns: Json };
       v2_admin_set_kingdom_stars: {
         Args: { p_kingdom: string; p_area: string; p_stars: number };
         Returns: undefined;

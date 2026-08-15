@@ -6,6 +6,7 @@ import { itemSlotLabel } from "@/lib/game/equipment";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
 import { getShopItems } from "@/lib/game/player-portal";
 import { attributesSchema } from "@/lib/game/schemas";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const rarityLabels: Record<string, string> = {
   common: "Comum",
@@ -28,6 +29,10 @@ export default async function ShopPage({
     requireCharacterSheet(characterId),
     searchParams,
   ]);
+  const client = await createServerSupabaseClient();
+  const { data: kingdomState } = client ? await client.from("v2_kingdom_states").select("market_stars,penalty_until,shop_markup_percent").eq("kingdom", character.kingdom).maybeSingle() : { data: null };
+  const penaltyActive = Boolean(kingdomState?.penalty_until && new Date(kingdomState.penalty_until) > new Date());
+  const shopMultiplier = 1 - (kingdomState?.market_stars ?? 0) * 0.03 + (penaltyActive ? (kingdomState?.shop_markup_percent ?? 0) * 0.01 : 0);
   const items: ShopCatalogItem[] = rows.map((item) => {
     const parsed = attributesSchema.partial().safeParse(item.attributes);
     return {
@@ -35,7 +40,7 @@ export default async function ShopPage({
       name: item.name,
       description: item.description,
       category: item.category,
-      price: item.price,
+      price: Math.max(1, Math.round(item.price * shopMultiplier)),
       imageUrl: item.image_url,
       slot: item.slot,
       slotLabel: itemSlotLabel(item.slot),
@@ -89,6 +94,7 @@ export default async function ShopPage({
             </div>
           </div>
         ) : null}
+        {shopMultiplier !== 1 ? <div className={`shop-purchase-notice ${shopMultiplier < 1 ? "is-success" : "is-error"}`}><span>{shopMultiplier < 1 ? "↓" : "↑"}</span><div><strong>{shopMultiplier < 1 ? `Mercado Próspero: ${Math.round((1-shopMultiplier)*100)}% de desconto` : `Consequência de guerra: ${Math.round((shopMultiplier-1)*100)}% de aumento`}</strong><small>O preço exibido já é o valor final exclusivo para os moradores deste reino.</small></div></div> : null}
         <ShopCatalog gold={character.gold} items={items} />
       </div>
     </main>

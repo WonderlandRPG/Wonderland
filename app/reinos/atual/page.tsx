@@ -2,13 +2,13 @@ import Link from "next/link";
 import { PlayerNav } from "@/components/player-nav";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { kingdomName } from "@/lib/game/kingdoms";
+import { kingdomName, kingdoms } from "@/lib/game/kingdoms";
 import {
   kingdomOfficeLabels,
   kingdomUpgradeAreaInfo,
   parseCurrentKingdom,
 } from "@/lib/game/kingdom-governance";
-import { buyKingdomStarAction } from "./actions";
+import { buyKingdomStarAction, declareKingdomWarAction, respondKingdomWarAction } from "./actions";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Reino Atual | Wonderland" };
 export default async function CurrentKingdomPage({
@@ -94,6 +94,35 @@ export default async function CurrentKingdomPage({
                 })}
               </div>
             </section>
+            {state.penalty ? (
+              <section className="kingdom-war-alert">
+                <h2>Consequências de guerra ativas</h2>
+                <p>Até {new Date(state.penalty.until).toLocaleString("pt-BR")}, os moradores deste reino possuem {state.penalty.rewardPercent ? `-${state.penalty.rewardPercent}% nas recompensas de XP e WG` : "recompensas normais"}{state.penalty.shopPercent ? ` e +${state.penalty.shopPercent}% nos preços da Loja` : ""}.</p>
+              </section>
+            ) : null}
+            <section className="kingdom-war-panel">
+              <header><span className="eyebrow">Conflitos entre reinos</span><h2>Guerras</h2></header>
+              {state.wars.filter((war) => war.status === "pending" && war.defender === state.kingdom).map((war) => (
+                <article className="kingdom-war-request" key={war.id}>
+                  <h3>{kingdomName(war.attacker)} declarou guerra ao seu reino. O que deseja fazer?</h3>
+                  <p><b>Render-se:</b> todos os moradores perdem 50% do WG e recebem -30% de XP e WG durante 7 dias.</p>
+                  <p><b>Lutar:</b> vence a maior soma de Exército + Defesas. No empate, vence quem tiver mais moradores acima do nível 50; persistindo o empate, o defensor vence.</p>
+                  {state.ownOffice === "monarch" ? <div>
+                    <form action={respondKingdomWarAction}><input type="hidden" name="warId" value={war.id}/><input type="hidden" name="response" value="surrender"/><button className="button button--glass">Render-se</button></form>
+                    <form action={respondKingdomWarAction}><input type="hidden" name="warId" value={war.id}/><input type="hidden" name="response" value="fight"/><button className="button button--primary">Lutar</button></form>
+                  </div> : <small>Somente o Rei ou a Rainha pode responder.</small>}
+                </article>
+              ))}
+              {state.ownOffice === "monarch" && !state.wars.some((war) => war.status === "pending") ? (
+                <details className="kingdom-war-declare"><summary className="button button--danger">Declarar guerra</summary>
+                  <div><h3>Escolha o reino adversário</h3>
+                    <p>A luta compara Exército + Defesas. Empates são decididos pelos moradores acima do nível 50 e, em empate absoluto, pelo defensor.</p>
+                    <p>O derrotado perde todo o WG, todas as estrelas e paga 50% a mais na Loja por 7 dias. Os efeitos atingem somente os moradores do reino derrotado.</p>
+                    <form action={declareKingdomWarAction}><select name="defender" required><option value="">Selecione um reino</option>{kingdoms.filter((item) => item.key !== state.kingdom).map((item) => <option key={item.key} value={item.key}>{item.name}</option>)}</select><button className="button button--danger">Confirmar declaração</button></form>
+                  </div>
+                </details>
+              ) : null}
+            </section>
             <section className="kingdom-upgrade-grid">
               {state.areas.map((area) => (
                 <article className="kingdom-upgrade" key={area.key}>
@@ -111,7 +140,7 @@ export default async function CurrentKingdomPage({
                         </span>
                       ))}
                     </div>
-                    <strong>Bônus atual: +{area.bonusPercent}%</strong>
+                    <strong>{area.key === "market" ? `Desconto atual: -${area.bonusPercent}%` : area.key === "requested" ? `Bônus atual: +${area.bonusPercent}%` : `${area.stars} de 5 níveis militares`}</strong>
                   </div>
                   <aside>
                     <small>Próxima estrela</small>

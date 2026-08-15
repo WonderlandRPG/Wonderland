@@ -51,6 +51,43 @@
 @media(max-width:950px){.guild-board__grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mission-board-progress{grid-template-columns:1fr}.mission-board-progress .button{width:max-content}.mission-ledger{overflow-x:auto}.mission-ledger>header,.mission-ledger>article{min-width:900px}.admin-mission-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.mission-board-hero{grid-template-columns:1fr}.mission-board-hero>aside{min-width:0}.guild-board{padding:18px;border-width:8px}.guild-board__grid{grid-template-columns:1fr}.mission-parchment{min-height:0;transform:none}.mission-active-contract{padding:45px 25px 30px}.mission-board-rules{display:grid}.mission-management>header{align-items:start;flex-direction:column}.admin-mission-catalog>div>article{grid-template-columns:50px 1fr}.admin-mission-catalog article>dl,.admin-mission-catalog article>form{grid-column:2}}
 
+/* Mantém a tinta do pergaminho legível mesmo quando temas globais alteram títulos e textos. */
+.mission-page .mission-parchment,
+.mission-page .mission-parchment__head span {
+  color: #25190f;
+}
+.mission-page .mission-parchment__head small {
+  color: #62431f;
+  font-weight: 700;
+}
+.mission-page .mission-parchment h2 {
+  color: #21150c;
+  text-shadow: none;
+}
+.mission-page .mission-parchment p {
+  color: #49341e;
+}
+.mission-page .mission-parchment blockquote {
+  color: #2b1d11;
+  background: rgba(77, 47, 20, .12);
+}
+.mission-page .mission-parchment blockquote small,
+.mission-page .mission-parchment dt {
+  color: #68471f;
+}
+.mission-page .mission-parchment dd {
+  color: #24170d;
+}
+.mission-page .mission-parchment.is-rank-trial,
+.mission-page .mission-parchment.is-rank-trial p,
+.mission-page .mission-parchment.is-rank-trial blockquote {
+  color: #2b1b36;
+}
+.mission-page .mission-parchment.is-rank-trial h2,
+.mission-page .mission-parchment.is-rank-trial dd {
+  color: #24132f;
+}
+
 /* Atualizações na página inicial autenticada */
 .home-updates {
   display: grid;

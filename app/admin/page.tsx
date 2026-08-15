@@ -45,8 +45,14 @@ const tools = [
     text: "Configure campanhas e recompensas de acesso diário.",
   },
   {
-    href: "/admin/historico",
+    href: "/admin/missoes",
     index: "07",
+    title: "Mural de missões",
+    text: "Crie contratos, provas de Rank e recompensas para cada reino.",
+  },
+  {
+    href: "/admin/historico",
+    index: "08",
     title: "Histórico",
     text: "Consulte quem alterou cada sistema e quando.",
   },

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BrandMark } from "@/components/brand-mark";
 import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 import { getActiveCharacterNavigation } from "@/lib/content/active-character";
-import { SignOutButton } from "@/components/account/sign-out-button";
+import { PlayerWorldMenu } from "@/components/player-world-menu";
 
 export async function PlayerNav() {
   const account = await getCurrentAccount();
@@ -26,25 +26,10 @@ export async function PlayerNav() {
             <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}>Equipamentos</Link>
             <Link href="/loja">Loja</Link>
             <Link href="/presenca">Presença</Link>
-            <details className="player-nav__world-menu">
-              <summary>
-                Mundo <span aria-hidden="true">⌄</span>
-              </summary>
-              <div>
-                <small>Comunidade</small>
-                <Link href="/ranking">Ranking</Link>
-                <Link href="/ranks">Ranks</Link>
-                <Link href="/eventos">Eventos</Link>
-                <small>Informações</small>
-                <Link href="/mapas">Mapa</Link>
-                <Link href="/atualizacoes">Atualizações</Link>
-                <Link href="/perfil">Minha conta</Link>
-                {account && isAdministrativeRole(account.role) ? (
-                  <Link href="/admin">Painel ADM</Link>
-                ) : null}
-                <SignOutButton compact />
-              </div>
-            </details>
+            <PlayerWorldMenu
+              activeCharacterId={activeCharacterId}
+              isAdmin={Boolean(account && isAdministrativeRole(account.role))}
+            />
           </>
         ) : null}
         {!activeCharacterId && account && isAdministrativeRole(account.role) ? (

@@ -14,8 +14,8 @@ const nonNegativeBigintSchema = z.string().trim().regex(/^\\d+$/).refine((value)
 const schema = z.object({
   characterId: z.uuid(),
   name: z.string().trim().min(2).max(32),
-  xp: z.coerce.number().int().min(0).max(999999999),
-  gold: z.coerce.number().int().min(0).max(999999999),
+  xp: nonNegativeBigintSchema,
+  gold: nonNegativeBigintSchema,
   imageUrl: z.union([z.literal(""), z.url().refine((value) => /^https?:\/\//.test(value))]),
   kingdom: z.enum(kingdoms.map((entry) => entry.key) as [string, ...string[]]),
   adventureRank: z.enum(adventureRanks.map((entry) => entry.key) as [string, ...string[]]),

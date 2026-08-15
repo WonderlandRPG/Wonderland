@@ -596,6 +596,7 @@ export interface Database {
       v2_join_pvp_queue: { Args: { p_character_id: string }; Returns: Json };
       v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };
       v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };
+      v2_leave_all_queues: { Args: { p_character_id: string }; Returns: Json };
       v2_get_pvp_opponent: { Args: { p_match_id: string }; Returns: Json };
       v2_initialize_pvp_match: { Args: { p_match_id: string; p_state: Json }; Returns: boolean };
       v2_get_pvp_match_state: { Args: { p_match_id: string }; Returns: Json };

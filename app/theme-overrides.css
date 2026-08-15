@@ -2503,3 +2503,78 @@ html[data-theme="halloween"] {
 }
 html[data-theme="halloween"] body {
 }
+
+
+/* Menu Mundo controlado: confiável em navegadores móveis. */
+.player-nav__world-menu > button:not(.player-nav__world-backdrop) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  color: rgba(238, 247, 241, 0.72);
+  background: transparent;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.player-nav__world-menu.is-open > button:not(.player-nav__world-backdrop),
+.player-nav__world-menu > button:not(.player-nav__world-backdrop):hover {
+  color: var(--emerald-300);
+}
+.player-nav__world-backdrop {
+  position: fixed;
+  z-index: 9997;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+.player-nav__world-menu.is-open > div {
+  z-index: 9999;
+}
+@media (max-width: 900px) {
+  .player-nav__world-menu > button:not(.player-nav__world-backdrop) {
+    position: relative;
+    z-index: 10000;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--ui-line-gold);
+    border-radius: 12px;
+    color: var(--ui-gold-soft);
+    touch-action: manipulation;
+  }
+  .player-nav__world-menu.is-open > div {
+    position: fixed !important;
+    z-index: 9999 !important;
+    top: 92px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    left: 10px !important;
+    display: grid !important;
+    width: auto !important;
+    max-height: none !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    overflow-y: auto !important;
+    padding: 18px !important;
+    border-radius: 16px !important;
+    background: #050d09 !important;
+    box-shadow: 0 24px 80px rgba(0,0,0,.8) !important;
+  }
+  .player-nav__world-menu.is-open > div > small {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+  }
+  .player-nav__world-menu.is-open > div > a,
+  .player-nav__world-menu.is-open > div form,
+  .player-nav__world-menu.is-open > div .sign-out-button {
+    min-height: 44px;
+  }
+}
+@media (max-width: 430px) {
+  .player-nav__world-menu.is-open > div {
+    grid-template-columns: 1fr;
+  }
+}

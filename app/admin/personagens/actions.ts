@@ -34,7 +34,8 @@ export async function updateCharacterAdminAction(formData: FormData) {
     adventureRank: formData.get("adventureRank"),
     classPathKey: formData.get("classPathKey"),
   });
-  if (!parsed.success) redirect("/admin/personagens?status=erro");
+  if (!parsed.success)
+    redirect(`/admin/personagens?status=erro&mensagem=${encodeURIComponent("XP e WG devem ser números inteiros entre 0 e 9.223.372.036.854.775.807.")}`);
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/personagens?status=erro");
   const { error } = await client.rpc("v2_admin_update_character", {
@@ -47,7 +48,8 @@ export async function updateCharacterAdminAction(formData: FormData) {
     p_adventure_rank: parsed.data.adventureRank,
     p_class_path_key: parsed.data.classPathKey || null,
   });
-  if (error) redirect("/admin/personagens?status=erro");
+  if (error)
+    redirect(`/admin/personagens?status=erro&mensagem=${encodeURIComponent(error.message)}`);
   revalidatePath("/admin/personagens");
   revalidatePath("/personagens");
   revalidatePath(`/personagens/${parsed.data.characterId}`);

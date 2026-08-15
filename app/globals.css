@@ -14007,6 +14007,61 @@ body[data-rank="EX"] .rank-atmosphere i {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
+.arena-queue-cleanup {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 22px;
+  border: 1px solid rgba(226, 185, 91, 0.28);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(226, 185, 91, 0.1), rgba(8, 20, 19, 0.88));
+}
+.arena-queue-cleanup div {
+  display: grid;
+  gap: 5px;
+}
+.arena-queue-cleanup small {
+  color: #e2b95b;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+}
+.arena-queue-cleanup strong {
+  font-size: 1.1rem;
+}
+.arena-queue-cleanup p {
+  margin: 0;
+  color: rgba(238, 245, 239, 0.72);
+}
+.arena-queue-cleanup form {
+  flex: 0 0 auto;
+}
+.arena-queue-notice {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 12px 16px;
+  border: 1px solid currentColor;
+  border-radius: 12px;
+  font-weight: 800;
+}
+.arena-queue-notice.is-success {
+  color: #8de1b9;
+  background: rgba(52, 157, 109, 0.12);
+}
+.arena-queue-notice.is-error {
+  color: #ff9d9d;
+  background: rgba(187, 54, 54, 0.12);
+}
+@media (max-width: 680px) {
+  .arena-queue-cleanup {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .arena-queue-cleanup button {
+    width: 100%;
+  }
+}
 .arena-mode-select .arena-mode-card {
   --mode-accent: #67d9b7;
   position: relative;

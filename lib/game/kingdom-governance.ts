@@ -46,6 +46,22 @@ export type CurrentKingdom = {
   wars: KingdomWar[];
   penalty: KingdomPenalty | null;
 };
+export const kingdomResourceInfo = {
+  infrastructure: { name: "Infraestrutura", description: "Estradas, muralhas, oficinas e materiais de construção." },
+  provisions: { name: "Provisões", description: "Alimentos e reservas essenciais para os moradores." },
+  arsenal: { name: "Arsenal", description: "Minérios, armas e armaduras que sustentam a defesa do reino." },
+  livestock: { name: "Criação", description: "Animais de carga, montaria e produção rural." },
+} as const;
+export type KingdomResourceKey = keyof typeof kingdomResourceInfo;
+export type KingdomExpansion = {
+  treasury: number; weeklyLimit: number; ownOffice: KingdomOffice | null;
+  salaries: Record<KingdomOffice, number>;
+  resources: Array<{ key: KingdomResourceKey; value: number; drain: number; cost: number; penalty: string }>;
+  peaceProposals: Array<{ id:string; proposer:string; recipient:string; status:string; expiresAt:string }>;
+  peaceAgreements: Array<{ id:string; kingdom:string; createdAt:string }>;
+  wars: Array<{ id:string; attacker:string; defender:string; expiresAt:string }>;
+  votes: Array<{ id:string; office:KingdomOffice; expiresAt:string; yes:number; no:number; residents:number; ownChoice:boolean|null }>;
+};
 const record = (value: Json | null | undefined): Record<string, Json | undefined> =>
   value && typeof value === "object" && !Array.isArray(value) ? value : {};
 const text = (value: Json | undefined) => (typeof value === "string" ? value : "");
@@ -98,5 +114,18 @@ export function parseCurrentKingdom(value: Json | null): CurrentKingdom | null {
     leadership,
     wars,
     penalty,
+  };
+}
+export function parseKingdomExpansion(value: Json | null): KingdomExpansion | null {
+  const root=record(value); if(!Array.isArray(root.resources))return null;
+  const salariesRow=record(root.salaries);
+  return {
+    treasury:number(root.treasury),weeklyLimit:number(root.weeklyLimit),ownOffice:(text(root.ownOffice)||null) as KingdomOffice|null,
+    salaries:{monarch:number(salariesRow.monarch),realm_councilor:number(salariesRow.realm_councilor),war_councilor:number(salariesRow.war_councilor)},
+    resources:root.resources.map(entry=>{const r=record(entry);return{key:text(r.key) as KingdomResourceKey,value:number(r.value),drain:number(r.drain),cost:number(r.cost),penalty:text(r.penalty)}}).filter(r=>r.key in kingdomResourceInfo),
+    peaceProposals:Array.isArray(root.peaceProposals)?root.peaceProposals.map(entry=>{const r=record(entry);return{id:text(r.id),proposer:text(r.proposer),recipient:text(r.recipient),status:text(r.status),expiresAt:text(r.expiresAt)}}):[],
+    peaceAgreements:Array.isArray(root.peaceAgreements)?root.peaceAgreements.map(entry=>{const r=record(entry);return{id:text(r.id),kingdom:text(r.kingdom),createdAt:text(r.createdAt)}}):[],
+    wars:Array.isArray(root.wars)?root.wars.map(entry=>{const r=record(entry);return{id:text(r.id),attacker:text(r.attacker),defender:text(r.defender),expiresAt:text(r.expiresAt)}}):[],
+    votes:Array.isArray(root.votes)?root.votes.map(entry=>{const r=record(entry);return{id:text(r.id),office:text(r.office) as KingdomOffice,expiresAt:text(r.expiresAt),yes:number(r.yes),no:number(r.no),residents:number(r.residents),ownChoice:typeof r.ownChoice==='boolean'?r.ownChoice:null}}):[],
   };
 }

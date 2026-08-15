@@ -12,6 +12,7 @@ import { createInitialPvpState } from "@/lib/game/pvp-state";
 import { PvpBattle } from "@/components/arena/pvp-battle";
 import type { Json } from "@/lib/db/types";
 import { isAdministrativeRole } from "@/lib/auth/roles";
+import { leaveAllQueuesAction } from "@/app/arena/queue-actions";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -19,7 +20,14 @@ export const dynamic = "force-dynamic";
 export default async function ArenaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ personagem?: string; modo?: string; partida?: string }>;
+  searchParams: Promise<{
+    personagem?: string;
+    modo?: string;
+    partida?: string;
+    filas?: string;
+    quantidade?: string;
+    mensagem?: string;
+  }>;
 }) {
   const { account, characterId } = await requireActiveCharacter("/arena");
   const [characters, query] = await Promise.all([getCharacterSheets(account.id), searchParams]);
@@ -91,6 +99,30 @@ export default async function ArenaPage({
             <Link className="arena-history-link" href="/arena/historico">
               Ver histórico de vitórias e derrotas →
             </Link>
+            <aside className="arena-queue-cleanup">
+              <div>
+                <small>GERENCIAMENTO DE FILAS</small>
+                <strong>Vai aceitar uma missão?</strong>
+                <p>Encerre de uma vez todas as buscas pendentes de PvP e Dungeon.</p>
+              </div>
+              <form action={leaveAllQueuesAction}>
+                <button className="button button--danger" type="submit">
+                  Sair de todas as filas
+                </button>
+              </form>
+            </aside>
+            {query.filas === "limpas" ? (
+              <p className="arena-queue-notice is-success" role="status">
+                {Number(query.quantidade) > 0
+                  ? `${Number(query.quantidade)} fila(s) encerrada(s). Agora você pode aceitar uma missão.`
+                  : "Nenhuma fila pendente foi encontrada. Você já pode aceitar uma missão."}
+              </p>
+            ) : null}
+            {query.filas === "erro" ? (
+              <p className="arena-queue-notice is-error" role="alert">
+                {query.mensagem || "Não foi possível sair das filas. Tente novamente."}
+              </p>
+            ) : null}
             <div className="arena-mode-grid">
               <Link className="arena-mode-card is-training" href="/arena?modo=training">
                 <span className="arena-mode-card__sigil">修</span>

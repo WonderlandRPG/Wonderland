@@ -2545,3 +2545,40 @@ html[data-theme="halloween"] :is(.player-nav,.site-header,.admin-topbar,.theme-c
     min-height: 64px;
   }
 }
+
+/* O pergaminho usa tinta própria; as cores globais dos temas não podem clareá-la. */
+html[data-theme] .mission-page .mission-parchment {
+  color: #25190f !important;
+}
+html[data-theme] .mission-page .mission-parchment h2 {
+  color: #21150c !important;
+  text-shadow: none !important;
+}
+html[data-theme] .mission-page .mission-parchment p {
+  color: #49341e !important;
+}
+html[data-theme] .mission-page .mission-parchment__head span {
+  color: #25190f !important;
+}
+html[data-theme] .mission-page .mission-parchment__head small {
+  color: #62431f !important;
+}
+html[data-theme] .mission-page .mission-parchment blockquote {
+  color: #2b1d11 !important;
+}
+html[data-theme] .mission-page .mission-parchment blockquote small,
+html[data-theme] .mission-page .mission-parchment dt {
+  color: #68471f !important;
+}
+html[data-theme] .mission-page .mission-parchment dd {
+  color: #24170d !important;
+}
+html[data-theme] .mission-page .mission-parchment.is-rank-trial,
+html[data-theme] .mission-page .mission-parchment.is-rank-trial p,
+html[data-theme] .mission-page .mission-parchment.is-rank-trial blockquote {
+  color: #2b1b36 !important;
+}
+html[data-theme] .mission-page .mission-parchment.is-rank-trial h2,
+html[data-theme] .mission-page .mission-parchment.is-rank-trial dd {
+  color: #24132f !important;
+}

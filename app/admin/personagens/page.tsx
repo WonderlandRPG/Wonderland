@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminCharactersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; mensagem?: string }>;
 }) {
   const client = await createServerSupabaseClient();
   const [{ data: characters }, query] = await Promise.all([
@@ -52,7 +52,9 @@ export default async function AdminCharactersPage({
       </section>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
-          {query.status === "salvo" ? "✓ Personagem atualizado." : "! Não foi possível salvar."}
+          {query.status === "salvo"
+            ? "✓ Personagem atualizado."
+            : `! ${query.mensagem ?? "Não foi possível salvar."}`}
         </div>
       ) : null}
       <section className="admin-character-grid">
@@ -91,11 +93,11 @@ export default async function AdminCharactersPage({
                 </label>
                 <label>
                   <span>XP total</span>
-                  <input name="xp" type="number" min="0" defaultValue={character.xp} required />
+                  <input name="xp" type="text" inputMode="numeric" pattern="[0-9]+" defaultValue={String(character.xp)} required />
                 </label>
                 <label>
                   <span>Wonderland Gold</span>
-                  <input name="gold" type="number" min="0" defaultValue={character.gold} required />
+                  <input name="gold" type="text" inputMode="numeric" pattern="[0-9]+" defaultValue={String(character.gold)} required />
                 </label>
                 <label>
                   <span>Reino de origem</span>

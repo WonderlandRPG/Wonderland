@@ -27,7 +27,7 @@ create policy "kingdom residents read wars" on public.v2_kingdom_wars for select
 
 create or replace function public.v2_kingdom_reward_multiplier(p_kingdom text)
 returns numeric language sql stable security definer set search_path='' as $$
- select greatest(0,1+coalesce((select requested_stars*.10-case when penalty_until>now() then reward_penalty_percent*.01 else 0 end from public.v2_kingdom_states where kingdom=p_kingdom),0));
+ select greatest(0,coalesce((select (1+requested_stars*.10)*case when penalty_until>now() then 1-reward_penalty_percent*.01 else 1 end from public.v2_kingdom_states where kingdom=p_kingdom),1));
 $$;
 create or replace function public.v2_kingdom_reward_multiplier(p_kingdom text,p_reward_type text)
 returns numeric language sql stable security definer set search_path='' as $$ select public.v2_kingdom_reward_multiplier(p_kingdom); $$;

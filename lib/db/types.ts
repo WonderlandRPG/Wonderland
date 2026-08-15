@@ -706,6 +706,10 @@ export interface Database {
       v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };
       v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };
       v2_leave_all_queues: { Args: { p_character_id: string }; Returns: Json };
+      v2_leave_combat_screen: {
+        Args: { p_kind: "arena" | "pvp" | "dungeon"; p_combat_id: string };
+        Returns: boolean;
+      };
       v2_get_current_kingdom: { Args: { p_character_id: string }; Returns: Json };
       v2_buy_kingdom_star: { Args: { p_character_id: string; p_area: string }; Returns: Json };
       v2_declare_kingdom_war: { Args: { p_character_id: string; p_defender: string }; Returns: string };

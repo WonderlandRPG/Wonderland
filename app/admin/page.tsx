@@ -51,6 +51,12 @@ const tools = [
     text: "Crie contratos, provas de Rank e recompensas para cada reino.",
   },
   {
+    href: "/admin/reinos",
+    index: "♛",
+    title: "Controle de Reinos",
+    text: "Nomeie Reis, Rainhas e Conselheiros e acompanhe as estrelas de cada reino.",
+  },
+  {
     href: "/admin/historico",
     index: "08",
     title: "Histórico",

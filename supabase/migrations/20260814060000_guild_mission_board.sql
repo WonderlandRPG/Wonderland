@@ -277,34 +277,37 @@ with realms(key,label,motif,subjects) as (values
   ('skypiece','Skypiece','as ilhas suspensas pelo Cristal Azul de Mana',array[
     'Ponte do Arco-Íris','Pedreira de Quartzo Branco','Estrada das Nuvens Sólidas','Jardim da Névoa Rasteira','Torre dos Cristais Translúcidos',
     'Ilha dos Ventos Alaranjados','Palácio da Aurora Celeste','Celeiro das Nuvens','Santuário do Cristal Azul','Ancoradouro das Ilhas Flutuantes']::text[])
-), ranks(rank,min_level,xp,gold,tier,threat) as (values
-  ('E',1,350::bigint,80::bigint,'Iniciação','ameaças locais de baixa complexidade'),
-  ('D',20,1400::bigint,500::bigint,'Operação de Campo','ameaças organizadas que exigem experiência'),
-  ('C',40,3000::bigint,1100::bigint,'Alto Risco','ameaças severas capazes de afetar uma região inteira'),
-  ('B',60,6500::bigint,2400::bigint,'Ordem Prioritária','ameaças críticas que podem desestabilizar o reino')
+), ranks(rank,min_level,xp,gold,tier,warning) as (values
+  ('E',1,500::bigint,100::bigint,'Iniciação',''),
+  ('D',20,1000::bigint,250::bigint,'Operação de Campo',' Atenção: há resistência organizada.'),
+  ('C',40,2000::bigint,600::bigint,'Alto Risco',' Área de alto risco.'),
+  ('B',60,4000::bigint,1500::bigint,'Ordem Prioritária',' Ameaça crítica: não permita que ela avance.')
 ), templates as (select
   array['Patrulha','Entrega','Coleta','Escolta','Investigação','Resgate','Contenção','Recuperação','Vigília','Expedição']::text[] names,
   array[
-    'Patrulhe todo o perímetro e neutralize os riscos encontrados.',
-    'Entregue a carga lacrada ao contato indicado sem sofrer perdas.',
-    'Reúna os materiais solicitados e preserve sua qualidade.',
-    'Proteja o alvo durante todo o trajeto até o ponto seguro.',
-    'Localize a origem dos sinais e retorne com provas verificáveis.',
-    'Encontre os desaparecidos e conduza-os em segurança até a Guilda.',
-    'Contenha a ameaça sem permitir que ela avance para áreas habitadas.',
-    'Recupere o objeto desaparecido e identifique os responsáveis.',
-    'Mantenha o posto protegido até a chegada da equipe de rendição.',
-    'Mapeie a área, registre seus perigos e estabeleça uma rota segura.'
+    'Patrulhe a área de %s e elimine as ameaças encontradas.',
+    'Leve a carga da Guilda até %s sem perder os suprimentos.',
+    'Colete os materiais solicitados em %s.',
+    'Escolte o viajante em segurança através de %s.',
+    'Investigue os sinais estranhos em %s e encontre sua origem.',
+    'Encontre os desaparecidos em %s e traga-os de volta.',
+    'Contenha a ameaça em %s.',
+    'Recupere o objeto perdido em %s.',
+    'Proteja o posto da Guilda em %s até a troca da guarda.',
+    'Explore %s e marque uma rota segura.'
+  ]::text[] instructions,
+  array[
+    'Deixe a área segura para os moradores.','Entregue a carga intacta.','Entregue os materiais à Guilda.',
+    'Leve o viajante ao destino.','Retorne com provas da investigação.','Traga todos de volta em segurança.',
+    'Impeça a ameaça de chegar às áreas habitadas.','Devolva o objeto ao responsável.',
+    'Mantenha o posto protegido.','Entregue o mapa da nova rota.'
   ]::text[] objectives)
 insert into public.v2_missions(slug,name,description,objective,kingdom,rank,min_level,reward_xp,reward_gold)
 select lower(r.key||'-'||rk.rank||'-'||lpad(action_index::text,2,'0')||'-'||lpad(subject_index::text,2,'0')),
   rk.tier||' — '||t.names[action_index]||': '||r.subjects[subject_index],
-  'Contrato Rank '||rk.rank||' de '||r.label||' sobre '||r.subjects[subject_index]||'. A Guilda classificou o chamado como '||
-    rk.threat||', ligado a '||r.motif||'. Conclua a ordem e apresente um relatório completo ao mural.',
-  t.objectives[action_index]||' Local da missão: '||r.subjects[subject_index]||'.',
-  r.key,rk.rank,rk.min_level,
-  rk.xp+(action_index*55)+(subject_index*20),
-  rk.gold+(action_index*14)+(subject_index*6)
+  format(t.instructions[action_index],r.subjects[subject_index])||rk.warning,
+  t.objectives[action_index],
+  r.key,rk.rank,rk.min_level,rk.xp,rk.gold
 from realms r
 cross join ranks rk
 cross join templates t
@@ -316,8 +319,8 @@ with realms(key,label,motif) as (values
   ('oymyakon','Oymyakon','as Muralhas de Gelo'),('lesedi','Lesedi','a Estrela de Mana'),
   ('namida','Namida','a Redoma de Mana'),('skypiece','Skypiece','o Cristal Azul de Mana')
 ), trials(rank,promotion,min_level,xp,gold) as (values
-  ('E','D',20,3000::bigint,750::bigint),('D','C',40,6000::bigint,1500::bigint),
-  ('C','B',60,12000::bigint,3000::bigint),('B','A',80,24000::bigint,6000::bigint)
+  ('E','D',20,500::bigint,100::bigint),('D','C',40,1000::bigint,250::bigint),
+  ('C','B',60,2000::bigint,600::bigint),('B','A',80,4000::bigint,1500::bigint)
 )
 insert into public.v2_missions(slug,name,description,objective,kingdom,rank,min_level,reward_xp,reward_gold,is_rank_trial,promotion_rank)
 select r.key||'-prova-'||lower(t.promotion),'Prova de Ascensão ao Rank '||t.promotion||' — '||r.label,

@@ -36,10 +36,35 @@ export default async function ArenaPage({
     : null;
   const activeCharacter = characters.find((character) => character.id === characterId);
   const client = activeCharacter ? await createServerSupabaseClient() : null;
-  const { data: missionLock } = client && activeCharacter
-    ? await client.from("v2_mission_assignments").select("id").eq("character_id", activeCharacter.id).eq("status", "in_progress").maybeSingle()
-    : { data: null };
-  if (missionLock) return <main className="arena-page"><PlayerNav/><div className="page-container arena-page__inner"><section className="arena-mission-lock"><span>✥</span><small>CONTRATO ATIVO</small><h1>A Guilda requer sua atenção</h1><p>Enquanto uma missão estiver em andamento, este personagem não pode participar de Treino, PvE, PvP ou Dungeons.</p><Link className="button button--primary" href="/missoes">Voltar ao Mural de Missões</Link></section></div></main>;
+  const { data: missionLock } =
+    client && activeCharacter
+      ? await client
+          .from("v2_mission_assignments")
+          .select("id")
+          .eq("character_id", activeCharacter.id)
+          .eq("status", "in_progress")
+          .maybeSingle()
+      : { data: null };
+  if (missionLock)
+    return (
+      <main className="arena-page">
+        <PlayerNav />
+        <div className="page-container arena-page__inner">
+          <section className="arena-mission-lock">
+            <span>✥</span>
+            <small>CONTRATO ATIVO</small>
+            <h1>A Guilda requer sua atenção</h1>
+            <p>
+              Enquanto uma missão estiver em andamento, este personagem não pode participar de
+              Treino, PvE, PvP ou Dungeons.
+            </p>
+            <Link className="button button--primary" href="/missoes">
+              Voltar ao Mural de Missões
+            </Link>
+          </section>
+        </div>
+      </main>
+    );
   const arenaSessionResult =
     client && activeCharacter && mode === "pve"
       ? await client.rpc("v2_start_arena_session", {
@@ -103,7 +128,7 @@ export default async function ArenaPage({
               <div>
                 <small>GERENCIAMENTO DE FILAS</small>
                 <strong>Vai aceitar uma missão?</strong>
-                <p>Encerre de uma vez todas as buscas pendentes de PvP e Dungeon.</p>
+                <p>Encerre de uma vez filas e combates pendentes de Arena, PvP e Dungeon.</p>
               </div>
               <form action={leaveAllQueuesAction}>
                 <button className="button button--danger" type="submit">
@@ -114,13 +139,18 @@ export default async function ArenaPage({
             {query.filas === "limpas" ? (
               <p className="arena-queue-notice is-success" role="status">
                 {Number(query.quantidade) > 0
-                  ? `${Number(query.quantidade)} fila(s) encerrada(s). Agora você pode aceitar uma missão.`
-                  : "Nenhuma fila pendente foi encontrada. Você já pode aceitar uma missão."}
+                  ? `${Number(query.quantidade)} atividade(s) encerrada(s). Agora você pode aceitar uma missão.`
+                  : "Nenhuma fila ou combate pendente foi encontrado. Você já pode aceitar uma missão."}
               </p>
             ) : null}
             {query.filas === "erro" ? (
               <p className="arena-queue-notice is-error" role="alert">
                 {query.mensagem || "Não foi possível sair das filas. Tente novamente."}
+              </p>
+            ) : null}
+            {query.filas === "ativas" ? (
+              <p className="arena-queue-notice is-error" role="alert">
+                Existe um combate iniciado recentemente. Encerre a luta antes de aceitar uma missão.
               </p>
             ) : null}
             <div className="arena-mode-grid">

@@ -26,5 +26,10 @@ export async function leaveAllQueuesAction() {
     data && !Array.isArray(data) && typeof data === "object" && "total" in data
       ? Number(data.total) || 0
       : 0;
+  const blocked =
+    data && !Array.isArray(data) && typeof data === "object" && "blocked" in data
+      ? Number(data.blocked) || 0
+      : 0;
+  if (blocked > 0) redirect(`/arena?filas=ativas&quantidade=${blocked}`);
   redirect(`/arena?filas=limpas&quantidade=${total}`);
 }

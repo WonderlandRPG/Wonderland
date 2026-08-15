@@ -8,6 +8,22 @@ export const kingdomOfficeLabels: Record<KingdomOffice, string> = {
   war_councilor: "Conselheiro de Guerra",
 };
 export const kingdomStarCosts = [250_000, 1_000_000, 5_000_000, 25_000_000, 100_000_000] as const;
+export const kingdomUpgradeAreas = ["requested", "academy", "market"] as const;
+export type KingdomUpgradeArea = (typeof kingdomUpgradeAreas)[number];
+export const kingdomUpgradeAreaInfo: Record<
+  KingdomUpgradeArea,
+  { name: string; description: string }
+> = {
+  requested: { name: "Reino Requisitado", description: "+10% de XP e WG por estrela" },
+  academy: { name: "Academia Real", description: "+5% de XP por estrela" },
+  market: { name: "Mercado Próspero", description: "+5% de WG por estrela" },
+};
+export type KingdomAreaState = {
+  key: KingdomUpgradeArea;
+  stars: number;
+  bonusPercent: number;
+  nextStarCost: number | null;
+};
 export type KingdomLeader = {
   office: KingdomOffice;
   characterId: string;
@@ -21,9 +37,7 @@ export type CurrentKingdom = {
   kingdom: string;
   characterId: string;
   characterGold: number;
-  stars: number;
-  bonusPercent: number;
-  nextStarCost: number | null;
+  areas: KingdomAreaState[];
   ownOffice: KingdomOffice | null;
   leadership: KingdomLeader[];
 };
@@ -54,13 +68,24 @@ export function parseCurrentKingdom(value: Json | null): CurrentKingdom | null {
         .filter((entry) => kingdomOffices.includes(entry.office) && entry.characterId)
     : [];
   const office = text(root.ownOffice);
+  const areas = Array.isArray(root.areas)
+    ? root.areas
+        .map((entry) => {
+          const row = record(entry);
+          return {
+            key: text(row.key) as KingdomUpgradeArea,
+            stars: number(row.stars),
+            bonusPercent: number(row.bonusPercent),
+            nextStarCost: row.nextStarCost === null ? null : number(row.nextStarCost),
+          };
+        })
+        .filter((area) => kingdomUpgradeAreas.includes(area.key))
+    : [];
   return {
     kingdom,
     characterId,
     characterGold: number(root.characterGold),
-    stars: number(root.stars),
-    bonusPercent: number(root.bonusPercent),
-    nextStarCost: root.nextStarCost === null ? null : number(root.nextStarCost),
+    areas,
     ownOffice: kingdomOffices.includes(office as KingdomOffice) ? (office as KingdomOffice) : null,
     leadership,
   };

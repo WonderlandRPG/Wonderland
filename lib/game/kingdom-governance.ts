@@ -25,7 +25,9 @@ export type KingdomAreaState = {
   bonusPercent: number;
   nextStarCost: number | null;
 };
-export type KingdomWar = { id: string; attacker: string; defender: string; status: string; declaredAt: string; winner: string | null; loser: string | null };\nexport type KingdomPenalty = { until: string; rewardPercent: number; shopPercent: number };\nexport type KingdomLeader = {
+export type KingdomWar = { id: string; attacker: string; defender: string; status: string; declaredAt: string; winner: string | null; loser: string | null };
+export type KingdomPenalty = { until: string; rewardPercent: number; shopPercent: number };
+export type KingdomLeader = {
   office: KingdomOffice;
   characterId: string;
   userId: string;
@@ -40,7 +42,10 @@ export type CurrentKingdom = {
   characterGold: number;
   areas: KingdomAreaState[];
   ownOffice: KingdomOffice | null;
-  leadership: KingdomLeader[];\n  wars: KingdomWar[];\n  penalty: KingdomPenalty | null;\n};
+  leadership: KingdomLeader[];
+  wars: KingdomWar[];
+  penalty: KingdomPenalty | null;
+};
 const record = (value: Json | null): Record<string, Json | undefined> =>
   value && typeof value === "object" && !Array.isArray(value) ? value : {};
 const text = (value: Json | undefined) => (typeof value === "string" ? value : "");
@@ -81,10 +86,17 @@ export function parseCurrentKingdom(value: Json | null): CurrentKingdom | null {
         })
         .filter((area) => kingdomUpgradeAreas.includes(area.key))
     : [];
-  const wars = Array.isArray(root.wars) ? root.wars.map((entry) => { const row = record(entry); return { id: text(row.id), attacker: text(row.attacker), defender: text(row.defender), status: text(row.status), declaredAt: text(row.declaredAt), winner: text(row.winner) || null, loser: text(row.loser) || null }; }).filter((war) => war.id) : [];\n  const penaltyRow = record(root.penalty);\n  const penalty = text(penaltyRow.until) ? { until: text(penaltyRow.until), rewardPercent: number(penaltyRow.rewardPercent), shopPercent: number(penaltyRow.shopPercent) } : null;\n  return {\n    kingdom,
+  const wars = Array.isArray(root.wars) ? root.wars.map((entry) => { const row = record(entry); return { id: text(row.id), attacker: text(row.attacker), defender: text(row.defender), status: text(row.status), declaredAt: text(row.declaredAt), winner: text(row.winner) || null, loser: text(row.loser) || null }; }).filter((war) => war.id) : [];
+  const penaltyRow = record(root.penalty);
+  const penalty = text(penaltyRow.until) ? { until: text(penaltyRow.until), rewardPercent: number(penaltyRow.rewardPercent), shopPercent: number(penaltyRow.shopPercent) } : null;
+  return {
+    kingdom,
     characterId,
     characterGold: number(root.characterGold),
     areas,
     ownOffice: kingdomOffices.includes(office as KingdomOffice) ? (office as KingdomOffice) : null,
-    leadership,\n    wars,\n    penalty,\n  };
+    leadership,
+    wars,
+    penalty,
+  };
 }

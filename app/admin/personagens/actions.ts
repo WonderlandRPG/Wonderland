@@ -8,7 +8,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { kingdoms } from "@/lib/game/kingdoms";
 import { adventureRanks } from "@/lib/game/ranks";
 
-const schema = z.object({
+const postgresBigintMax = 9_223_372_036_854_775_807n;\nconst nonNegativeBigintSchema = z.string().trim().regex(/^\\d+$/).refine((value) => BigInt(value) <= postgresBigintMax);\n\nconst schema = z.object({
   characterId: z.uuid(),
   name: z.string().trim().min(2).max(32),
   xp: z.coerce.number().int().min(0).max(999999999),

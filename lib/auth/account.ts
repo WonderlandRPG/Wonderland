@@ -3,12 +3,12 @@ import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 
-import { isAdministrativeRole } from "@/lib/auth/roles";
+import { canManageGuildMissions, isAdministrativeRole } from "@/lib/auth/roles";
 import type { CurrentAccount } from "@/lib/auth/roles";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type { CurrentAccount } from "@/lib/auth/roles";
-export { isAdministrativeRole, roleLabels } from "@/lib/auth/roles";
+export { canManageGuildMissions, isAdministrativeRole, roleLabels } from "@/lib/auth/roles";
 
 export const getCurrentAccount = cache(async (): Promise<CurrentAccount | null> => {
   const supabase = await createServerSupabaseClient();
@@ -64,5 +64,11 @@ export async function requireAdministrativeAccount() {
     redirect("/perfil?status=acesso-negado");
   }
 
+  return account;
+}
+
+export async function requireMissionManager() {
+  const account = await requireCurrentAccount("/missoes/gerenciar");
+  if (!canManageGuildMissions(account.role)) redirect("/missoes?status=acesso-negado");
   return account;
 }

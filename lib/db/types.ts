@@ -2,7 +2,7 @@ export type Json = string | number | boolean | null | { [key: string]: Json | un
 
 type ContentStatus = "draft" | "published" | "archived";
 
-export type UserRole = "player" | "moderator" | "admin" | "founder";
+export type UserRole = "player" | "moderator" | "guild_leader" | "admin" | "founder";
 
 export interface Database {
   public: {
@@ -533,6 +533,24 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_arena_sessions"]["Insert"]>;
         Relationships: [];
       };
+      v2_missions: {
+        Row: { id:string; slug:string; name:string; description:string; objective:string; kingdom:string; rank:string; min_level:number; reward_xp:number; reward_gold:number; is_rank_trial:boolean; promotion_rank:string|null; active:boolean; available_after:string|null; created_by:string|null; created_at:string; updated_at:string };
+        Insert: { id?:string; slug:string; name:string; description:string; objective:string; kingdom:string; rank:string; min_level?:number; reward_xp?:number; reward_gold?:number; is_rank_trial?:boolean; promotion_rank?:string|null; active?:boolean; available_after?:string|null; created_by?:string|null; created_at?:string; updated_at?:string };
+        Update: Partial<Database["public"]["Tables"]["v2_missions"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_mission_assignments: {
+        Row: { id:string; mission_id:string; user_id:string; character_id:string; status:string; accepted_at:string; resolved_at:string|null; resolved_by:string|null; retry_after:string|null; reward_xp:number; reward_gold:number };
+        Insert: { id?:string; mission_id:string; user_id:string; character_id:string; status?:string; accepted_at?:string; resolved_at?:string|null; resolved_by?:string|null; retry_after?:string|null; reward_xp?:number; reward_gold?:number };
+        Update: Partial<Database["public"]["Tables"]["v2_mission_assignments"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_rank_mission_requirements: {
+        Row: { rank:string; required_completions:number; promotion_rank:string };
+        Insert: { rank:string; required_completions:number; promotion_rank:string };
+        Update: Partial<Database["public"]["Tables"]["v2_rank_mission_requirements"]["Insert"]>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -540,6 +558,12 @@ export interface Database {
         Args: Record<PropertyKey, never>;
         Returns: boolean;
       };
+      v2_is_mission_manager: { Args: Record<PropertyKey, never>; Returns: boolean };
+      v2_character_has_active_mission: { Args: { p_character_id:string }; Returns:boolean };
+      v2_get_mission_board: { Args: { p_character_id:string }; Returns:Json };
+      v2_accept_mission: { Args: { p_mission_id:string; p_character_id:string }; Returns:Json };
+      v2_get_managed_missions: { Args: Record<PropertyKey, never>; Returns:Json };
+      v2_resolve_mission: { Args: { p_assignment_id:string; p_completed:boolean }; Returns:Json };
       v2_touch_player_presence: { Args: Record<PropertyKey, never>; Returns: undefined };
       v2_get_online_player_count: { Args: Record<PropertyKey, never>; Returns: number };
       v2_join_dungeon_queue: {

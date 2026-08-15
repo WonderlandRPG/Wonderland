@@ -9,7 +9,7 @@ import { kingdoms } from "@/lib/game/kingdoms";
 import { adventureRanks } from "@/lib/game/ranks";
 
 const postgresBigintMax = 9_223_372_036_854_775_807n;
-const nonNegativeBigintSchema = z.string().trim().regex(/^\\d+$/).refine((value) => BigInt(value) <= postgresBigintMax);
+const nonNegativeBigintSchema = z.string().trim().regex(/^\d+$/).refine((value) => BigInt(value) <= postgresBigintMax);
 
 const schema = z.object({
   characterId: z.uuid(),

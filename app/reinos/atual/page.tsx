@@ -129,10 +129,7 @@ export default async function CurrentKingdomPage({
                   <div>
                     <span className="eyebrow">Melhoria do reino</span>
                     <h2>{kingdomUpgradeAreaInfo[area.key].name}</h2>
-                    <p>
-                      {kingdomUpgradeAreaInfo[area.key].description} em PvP, PvE, Missões e
-                      Dungeons.
-                    </p>
+                    <p>{kingdomUpgradeAreaInfo[area.key].description}</p>
                     <div className="kingdom-stars" aria-label={`${area.stars} de 5 estrelas`}>
                       {Array.from({ length: 5 }, (_, i) => (
                         <span className={i < area.stars ? "is-active" : ""} key={i}>

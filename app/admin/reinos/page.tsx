@@ -8,7 +8,12 @@ import {
   kingdomUpgradeAreas,
   kingdomUpgradeAreaInfo,
 } from "@/lib/game/kingdom-governance";
-import { setKingdomOfficeAction, setKingdomStarsAction,setKingdomEconomyAction } from "./actions";
+import {
+  setKingdomEconomyAction,
+  setKingdomOfficeAction,
+  setKingdomResourcesAction,
+  setKingdomStarsAction,
+} from "./actions";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Controle de Reinos | Painel ADM" };
 export default async function AdminKingdomsPage({
@@ -36,8 +41,15 @@ export default async function AdminKingdomsPage({
       item.character_id,
     ]),
   );
-  const economyResult=client?await (client.rpc as unknown as (name:string,args?:Record<string,unknown>)=>Promise<{data:Record<string,number>|null}>)("v2_admin_get_kingdom_economy"): {data:null};
-  const economy=economyResult.data??{};
+  const economyResult = client
+    ? await (
+        client.rpc as unknown as (
+          name: string,
+          args?: Record<string, unknown>,
+        ) => Promise<{ data: Record<string, number> | null }>
+      )("v2_admin_get_kingdom_economy")
+    : { data: null };
+  const economy = economyResult.data ?? {};
   return (
     <div className="admin-content admin-kingdoms">
       <section className="admin-page-title">
@@ -61,10 +73,95 @@ export default async function AdminKingdomsPage({
           </span>
         ))}
       </section>
-      <section className="admin-section admin-kingdom-economy"><header><div><small>ECONOMIA SEMANAL</small><h3>Salários, consumo e recursos</h3><p>Configure os valores aplicados aos domingos e o custo de recuperação de 1%.</p></div></header><form className="admin-form" action={setKingdomEconomyAction}><div className="admin-form-grid"><label>Salário Rei/Rainha<input name="monarchSalary" inputMode="numeric" defaultValue={String(economy.monarch_salary??50000)}/></label><label>Salário Conselheiro do Reino<input name="realmSalary" inputMode="numeric" defaultValue={String(economy.realm_councilor_salary??25000)}/></label><label>Salário Conselheiro de Guerra<input name="warSalary" inputMode="numeric" defaultValue={String(economy.war_councilor_salary??25000)}/></label><label>Limite semanal por área (%)<input name="weeklyLimit" type="number" min="1" max="100" defaultValue={economy.weekly_purchase_limit??25}/></label></div><div className="admin-form-grid">{[["infrastructure","Infraestrutura"],["provisions","Provisões"],["arsenal","Arsenal"],["livestock","Criação"]].map(([key,label])=><fieldset key={key}><legend>{label}</legend><label>Consumo domingo (%)<input name={`${key}Drain`} type="number" min="0" max="100" defaultValue={economy[`${key}_drain`]??10}/></label><label>Custo por 1%<input name={`${key}Cost`} inputMode="numeric" defaultValue={String(economy[`${key}_cost`]??15000)}/></label></fieldset>)}</div><button className="button button--primary">Salvar economia dos reinos</button></form></section>
+      <section className="admin-section admin-kingdom-economy">
+        <header>
+          <div>
+            <small>ECONOMIA SEMANAL</small>
+            <h3>Salários, consumo e recursos</h3>
+            <p>Configure os valores aplicados aos domingos e o custo de recuperação de 1%.</p>
+          </div>
+        </header>
+        <form className="admin-form" action={setKingdomEconomyAction}>
+          <div className="admin-form-grid">
+            <label>
+              Salário Rei/Rainha
+              <input
+                name="monarchSalary"
+                inputMode="numeric"
+                defaultValue={String(economy.monarch_salary ?? 50000)}
+              />
+            </label>
+            <label>
+              Salário Conselheiro do Reino
+              <input
+                name="realmSalary"
+                inputMode="numeric"
+                defaultValue={String(economy.realm_councilor_salary ?? 25000)}
+              />
+            </label>
+            <label>
+              Salário Conselheiro de Guerra
+              <input
+                name="warSalary"
+                inputMode="numeric"
+                defaultValue={String(economy.war_councilor_salary ?? 25000)}
+              />
+            </label>
+            <label>
+              Limite semanal total (%)
+              <input
+                name="weeklyLimit"
+                type="number"
+                min="1"
+                max="100"
+                defaultValue={economy.weekly_purchase_limit ?? 30}
+              />
+            </label>
+          </div>
+          <div className="admin-form-grid">
+            {[
+              ["infrastructure", "Infraestrutura"],
+              ["provisions", "Provisões"],
+              ["arsenal", "Arsenal"],
+              ["livestock", "Criação"],
+            ].map(([key, label]) => (
+              <fieldset key={key}>
+                <legend>{label}</legend>
+                <label>
+                  Consumo domingo (%)
+                  <input
+                    name={`${key}Drain`}
+                    type="number"
+                    min="0"
+                    max="100"
+                    defaultValue={economy[`${key}_drain`] ?? 10}
+                  />
+                </label>
+                <label>
+                  Custo por 1%
+                  <input
+                    name={`${key}Cost`}
+                    inputMode="numeric"
+                    defaultValue={String(economy[`${key}_cost`] ?? 15000)}
+                  />
+                </label>
+              </fieldset>
+            ))}
+          </div>
+          <button className="button button--primary">Salvar economia dos reinos</button>
+        </form>
+      </section>
       <section className="admin-kingdom-grid">
         {kingdoms.map((kingdom) => {
           const state = states.get(kingdom.key);
+          const resourceState = state as
+            | (typeof state & {
+                infrastructure: number;
+                provisions: number;
+                arsenal: number;
+                livestock: number;
+              })
+            | undefined;
           const candidates = (characterResult.data ?? []).filter(
             (character) => character.kingdom === kingdom.key,
           );
@@ -79,7 +176,14 @@ export default async function AdminKingdomsPage({
               </header>
               <div className="admin-kingdom-stars">
                 {kingdomUpgradeAreas.map((area) => {
-                  const value = area === "requested" ? state?.requested_stars : area === "market" ? state?.market_stars : area === "defense" ? state?.defense_stars : state?.army_stars;
+                  const value =
+                    area === "requested"
+                      ? state?.requested_stars
+                      : area === "market"
+                        ? state?.market_stars
+                        : area === "defense"
+                          ? state?.defense_stars
+                          : state?.army_stars;
                   return (
                     <form action={setKingdomStarsAction} key={area}>
                       <input name="kingdom" type="hidden" value={kingdom.key} />
@@ -99,6 +203,53 @@ export default async function AdminKingdomsPage({
                   );
                 })}
               </div>
+              <form className="admin-kingdom-resources-form" action={setKingdomResourcesAction}>
+                <input name="kingdom" type="hidden" value={kingdom.key} />
+                <strong>Reservas atuais (%)</strong>
+                <div>
+                  <label>
+                    Infraestrutura
+                    <input
+                      name="infrastructure"
+                      type="number"
+                      min="0"
+                      max="100"
+                      defaultValue={resourceState?.infrastructure ?? 100}
+                    />
+                  </label>
+                  <label>
+                    Provisões
+                    <input
+                      name="provisions"
+                      type="number"
+                      min="0"
+                      max="100"
+                      defaultValue={resourceState?.provisions ?? 100}
+                    />
+                  </label>
+                  <label>
+                    Arsenal
+                    <input
+                      name="arsenal"
+                      type="number"
+                      min="0"
+                      max="100"
+                      defaultValue={resourceState?.arsenal ?? 100}
+                    />
+                  </label>
+                  <label>
+                    Criação
+                    <input
+                      name="livestock"
+                      type="number"
+                      min="0"
+                      max="100"
+                      defaultValue={resourceState?.livestock ?? 100}
+                    />
+                  </label>
+                </div>
+                <button className="button button--small button--primary">Salvar recursos</button>
+              </form>
               {kingdomOffices.map((office) => (
                 <form action={setKingdomOfficeAction} key={office}>
                   <input name="kingdom" type="hidden" value={kingdom.key} />

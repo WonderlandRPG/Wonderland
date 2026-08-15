@@ -617,6 +617,9 @@ export interface Database {
           requested_stars: number;
           defense_stars: number;\n          army_stars: number;
           market_stars: number;
+          penalty_until: string | null;
+          reward_penalty_percent: number;
+          shop_markup_percent: number;
           updated_at: string;
           updated_by: string | null;
         };
@@ -625,6 +628,9 @@ export interface Database {
           requested_stars?: number;
           defense_stars?: number;\n          army_stars?: number;
           market_stars?: number;
+          penalty_until?: string | null;
+          reward_penalty_percent?: number;
+          shop_markup_percent?: number;
           updated_at?: string;
           updated_by?: string | null;
         };

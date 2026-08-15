@@ -25,12 +25,12 @@ export async function getThemeAvailability(): Promise<ThemeAvailability> {
 export async function getThemeConfiguration(): Promise<ThemeConfiguration> {
   const client = await createServerSupabaseClient();
   if (!client) return { availability: defaults, defaultTheme: "classic" };
-  const { data } = await client
+  const { data: rows } = await client
     .from("v2_game_settings")
-    .select("value")
-    .eq("key", "appearance.available_themes")
-    .eq("status", "published")
-    .maybeSingle();
+    .select("key,value")
+    .in("key", ["appearance.available_themes", "appearance.default_theme"])
+    .eq("status", "published");
+  const data = rows?.find((row) => row.key === "appearance.available_themes");
   const value = data?.value;
   const availability =
     !value || typeof value !== "object" || Array.isArray(value)
@@ -41,12 +41,7 @@ export async function getThemeConfiguration(): Promise<ThemeConfiguration> {
           christmas: value.christmas === true,
           halloween: value.halloween === true,
         };
-  const { data: defaultRow } = await client
-    .from("v2_game_settings")
-    .select("value")
-    .eq("key", "appearance.default_theme")
-    .eq("status", "published")
-    .maybeSingle();
+  const defaultRow = rows?.find((row) => row.key === "appearance.default_theme");
   const candidate = typeof defaultRow?.value === "string" ? defaultRow.value : "classic";
   const valid = themeDefinitions.some((theme) => theme.key === candidate);
   const defaultTheme =

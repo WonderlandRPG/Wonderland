@@ -28,6 +28,10 @@ export default async function ArenaPage({
     : null;
   const activeCharacter = characters.find((character) => character.id === characterId);
   const client = activeCharacter ? await createServerSupabaseClient() : null;
+  const { data: missionLock } = client && activeCharacter
+    ? await client.from("v2_mission_assignments").select("id").eq("character_id", activeCharacter.id).eq("status", "in_progress").maybeSingle()
+    : { data: null };
+  if (missionLock) return <main className="arena-page"><PlayerNav/><div className="page-container arena-page__inner"><section className="arena-mission-lock"><span>✥</span><small>CONTRATO ATIVO</small><h1>A Guilda requer sua atenção</h1><p>Enquanto uma missão estiver em andamento, este personagem não pode participar de Treino, PvE, PvP ou Dungeons.</p><Link className="button button--primary" href="/missoes">Voltar ao Mural de Missões</Link></section></div></main>;
   const arenaSessionResult =
     client && activeCharacter && mode === "pve"
       ? await client.rpc("v2_start_arena_session", {

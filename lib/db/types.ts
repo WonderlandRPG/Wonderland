@@ -534,21 +534,115 @@ export interface Database {
         Relationships: [];
       };
       v2_missions: {
-        Row: { id:string; slug:string; name:string; description:string; objective:string; kingdom:string; rank:string; min_level:number; reward_xp:number; reward_gold:number; is_rank_trial:boolean; promotion_rank:string|null; active:boolean; available_after:string|null; created_by:string|null; created_at:string; updated_at:string };
-        Insert: { id?:string; slug:string; name:string; description:string; objective:string; kingdom:string; rank:string; min_level?:number; reward_xp?:number; reward_gold?:number; is_rank_trial?:boolean; promotion_rank?:string|null; active?:boolean; available_after?:string|null; created_by?:string|null; created_at?:string; updated_at?:string };
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          description: string;
+          objective: string;
+          kingdom: string;
+          rank: string;
+          min_level: number;
+          reward_xp: number;
+          reward_gold: number;
+          is_rank_trial: boolean;
+          promotion_rank: string | null;
+          active: boolean;
+          available_after: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          description: string;
+          objective: string;
+          kingdom: string;
+          rank: string;
+          min_level?: number;
+          reward_xp?: number;
+          reward_gold?: number;
+          is_rank_trial?: boolean;
+          promotion_rank?: string | null;
+          active?: boolean;
+          available_after?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_missions"]["Insert"]>;
         Relationships: [];
       };
       v2_mission_assignments: {
-        Row: { id:string; mission_id:string; user_id:string; character_id:string; status:string; accepted_at:string; resolved_at:string|null; resolved_by:string|null; retry_after:string|null; reward_xp:number; reward_gold:number };
-        Insert: { id?:string; mission_id:string; user_id:string; character_id:string; status?:string; accepted_at?:string; resolved_at?:string|null; resolved_by?:string|null; retry_after?:string|null; reward_xp?:number; reward_gold?:number };
+        Row: {
+          id: string;
+          mission_id: string;
+          user_id: string;
+          character_id: string;
+          status: string;
+          accepted_at: string;
+          resolved_at: string | null;
+          resolved_by: string | null;
+          retry_after: string | null;
+          reward_xp: number;
+          reward_gold: number;
+        };
+        Insert: {
+          id?: string;
+          mission_id: string;
+          user_id: string;
+          character_id: string;
+          status?: string;
+          accepted_at?: string;
+          resolved_at?: string | null;
+          resolved_by?: string | null;
+          retry_after?: string | null;
+          reward_xp?: number;
+          reward_gold?: number;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_mission_assignments"]["Insert"]>;
         Relationships: [];
       };
       v2_rank_mission_requirements: {
-        Row: { rank:string; required_completions:number; promotion_rank:string };
-        Insert: { rank:string; required_completions:number; promotion_rank:string };
+        Row: { rank: string; required_completions: number; promotion_rank: string };
+        Insert: { rank: string; required_completions: number; promotion_rank: string };
         Update: Partial<Database["public"]["Tables"]["v2_rank_mission_requirements"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_kingdom_states: {
+        Row: {
+          kingdom: string;
+          requested_stars: number;
+          updated_at: string;
+          updated_by: string | null;
+        };
+        Insert: {
+          kingdom: string;
+          requested_stars?: number;
+          updated_at?: string;
+          updated_by?: string | null;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_kingdom_states"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_kingdom_leadership: {
+        Row: {
+          kingdom: string;
+          office: "monarch" | "realm_councilor" | "war_councilor";
+          character_id: string;
+          assigned_by: string | null;
+          assigned_at: string;
+        };
+        Insert: {
+          kingdom: string;
+          office: "monarch" | "realm_councilor" | "war_councilor";
+          character_id: string;
+          assigned_by?: string | null;
+          assigned_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_kingdom_leadership"]["Insert"]>;
         Relationships: [];
       };
     };
@@ -559,11 +653,14 @@ export interface Database {
         Returns: boolean;
       };
       v2_is_mission_manager: { Args: Record<PropertyKey, never>; Returns: boolean };
-      v2_character_has_active_mission: { Args: { p_character_id:string }; Returns:boolean };
-      v2_get_mission_board: { Args: { p_character_id:string }; Returns:Json };
-      v2_accept_mission: { Args: { p_mission_id:string; p_character_id:string }; Returns:Json };
-      v2_get_managed_missions: { Args: Record<PropertyKey, never>; Returns:Json };
-      v2_resolve_mission: { Args: { p_assignment_id:string; p_completed:boolean }; Returns:Json };
+      v2_character_has_active_mission: { Args: { p_character_id: string }; Returns: boolean };
+      v2_get_mission_board: { Args: { p_character_id: string }; Returns: Json };
+      v2_accept_mission: { Args: { p_mission_id: string; p_character_id: string }; Returns: Json };
+      v2_get_managed_missions: { Args: Record<PropertyKey, never>; Returns: Json };
+      v2_resolve_mission: {
+        Args: { p_assignment_id: string; p_completed: boolean };
+        Returns: Json;
+      };
       v2_touch_player_presence: { Args: Record<PropertyKey, never>; Returns: undefined };
       v2_get_online_player_count: { Args: Record<PropertyKey, never>; Returns: number };
       v2_join_dungeon_queue: {
@@ -597,6 +694,12 @@ export interface Database {
       v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };
       v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };
       v2_leave_all_queues: { Args: { p_character_id: string }; Returns: Json };
+      v2_get_current_kingdom: { Args: { p_character_id: string }; Returns: Json };
+      v2_buy_kingdom_star: { Args: { p_character_id: string }; Returns: Json };
+      v2_admin_set_kingdom_office: {
+        Args: { p_kingdom: string; p_office: string; p_character_id?: string | null };
+        Returns: undefined;
+      };
       v2_get_pvp_opponent: { Args: { p_match_id: string }; Returns: Json };
       v2_initialize_pvp_match: { Args: { p_match_id: string; p_state: Json }; Returns: boolean };
       v2_get_pvp_match_state: { Args: { p_match_id: string }; Returns: Json };

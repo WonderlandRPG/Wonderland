@@ -29,6 +29,7 @@ const navigation = [
       { label: "Chat de conteúdo", glyph: "AI", href: "/admin/importar" },
       { label: "Itens", glyph: "05", href: "/admin/itens" },
       { label: "Missões", glyph: "✥", href: "/admin/missoes" },
+      { label: "Controle de Reinos", glyph: "♛", href: "/admin/reinos" },
       { label: "Títulos", glyph: "✦", href: "/admin/titulos" },
       { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
       { label: "Presença", glyph: "07", href: "/admin/presenca" },

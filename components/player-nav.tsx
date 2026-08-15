@@ -23,6 +23,7 @@ export async function PlayerNav() {
           <>
             <Link href="/personagens">Jogar</Link>
             <Link href="/arena">Arena</Link>
+            <Link href="/missoes">Missões</Link>
             <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}>Equipamentos</Link>
             <Link href="/loja">Loja</Link>
             <Link href="/presenca">Presença</Link>

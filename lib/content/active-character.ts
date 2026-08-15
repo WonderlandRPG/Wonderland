@@ -16,6 +16,24 @@ export async function getActiveCharacterId(userId: string) {
   return data?.character_id ?? null;
 }
 
+export async function getActiveCharacterNavigation(userId: string) {
+  const client = await createServerSupabaseClient();
+  if (!client) return null;
+  const { data: active } = await client
+    .from("v2_active_characters")
+    .select("character_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (!active?.character_id) return null;
+  const { data } = await client
+    .from("v2_characters")
+    .select("id,name,level,image_url")
+    .eq("id", active.character_id)
+    .eq("user_id", userId)
+    .maybeSingle();
+  return data ?? null;
+}
+
 export async function getActiveCharacterRank(userId: string) {
   const client = await createServerSupabaseClient();
   if (!client) return null;

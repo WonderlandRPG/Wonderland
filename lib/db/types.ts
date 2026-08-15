@@ -615,12 +615,16 @@ export interface Database {
         Row: {
           kingdom: string;
           requested_stars: number;
+          academy_stars: number;
+          market_stars: number;
           updated_at: string;
           updated_by: string | null;
         };
         Insert: {
           kingdom: string;
           requested_stars?: number;
+          academy_stars?: number;
+          market_stars?: number;
           updated_at?: string;
           updated_by?: string | null;
         };
@@ -695,7 +699,11 @@ export interface Database {
       v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };
       v2_leave_all_queues: { Args: { p_character_id: string }; Returns: Json };
       v2_get_current_kingdom: { Args: { p_character_id: string }; Returns: Json };
-      v2_buy_kingdom_star: { Args: { p_character_id: string }; Returns: Json };
+      v2_buy_kingdom_star: { Args: { p_character_id: string; p_area: string }; Returns: Json };
+      v2_admin_set_kingdom_stars: {
+        Args: { p_kingdom: string; p_area: string; p_stars: number };
+        Returns: undefined;
+      };
       v2_admin_set_kingdom_office: {
         Args: { p_kingdom: string; p_office: string; p_character_id?: string | null };
         Returns: undefined;

@@ -1,8 +1,11 @@
 import Link from "next/link";
+
 import { BrandMark } from "@/components/brand-mark";
+import { PlayerWorldMenu } from "@/components/player-world-menu";
 import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 import { getActiveCharacterNavigation } from "@/lib/content/active-character";
-import { PlayerWorldMenu } from "@/components/player-world-menu";
+
+import styles from "./player-nav.module.css";
 
 export async function PlayerNav() {
   const account = await getCurrentAccount();
@@ -10,21 +13,22 @@ export async function PlayerNav() {
   const activeCharacterId = activeCharacter?.id ?? null;
 
   return (
-    <header className="player-nav page-container">
-      <Link className="player-nav__brand" href={activeCharacter ? "/personagens" : "/"}>
+    <header className={styles.header}>
+      <div className={styles.brand}>
         <BrandMark inverse />
-      </Link>
-      <nav aria-label="Portal dos jogadores">
-        <div className="player-nav__chronicles">
-          <Link href="/racas">Raças</Link>
-          <Link href="/classes">Classes</Link>
-          <Link href="/historia">História</Link>
-          <Link href="/reinos">Reinos</Link>
+      </div>
+
+      <nav className={styles.nav} aria-label="Portal dos jogadores">
+        <div className={styles.chronicles}>
+          <Link className={styles.link} href="/racas">Raças</Link>
+          <Link className={styles.link} href="/classes">Classes</Link>
+          <Link className={styles.link} href="/historia">História</Link>
+          <Link className={styles.link} href="/reinos">Reinos</Link>
         </div>
 
         {activeCharacterId ? (
-          <div className="player-nav__adventure">
-            <Link href="/personagens">Jogar</Link>
+          <div className={styles.adventure}>
+            <Link className={styles.link} href="/personagens">Jogar</Link>
             <PlayerWorldMenu
               activeCharacterId={activeCharacterId}
               isAdmin={Boolean(account && isAdministrativeRole(account.role))}
@@ -33,13 +37,13 @@ export async function PlayerNav() {
         ) : null}
 
         {!activeCharacterId && account && isAdministrativeRole(account.role) ? (
-          <Link href="/admin">Painel ADM</Link>
+          <Link className={styles.link} href="/admin">Painel ADM</Link>
         ) : null}
 
         {activeCharacter ? (
-          <Link className="player-nav__character" href="/personagens">
+          <Link className={styles.character} href="/personagens">
             <span
-              className={activeCharacter.image_url ? "is-image" : ""}
+              className={styles.avatar}
               style={
                 activeCharacter.image_url
                   ? { backgroundImage: `url(${activeCharacter.image_url})` }

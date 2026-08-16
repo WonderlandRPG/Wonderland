@@ -8,6 +8,7 @@ import { PlayerPresence } from "@/components/player-presence";
 
 import "./globals.css";
 import "./fantasy-theme.css";
+import "./immersive-rpg.css";
 
 export const metadata: Metadata = {
   title: {

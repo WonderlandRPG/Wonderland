@@ -4,6 +4,7 @@ import { getCurrentAccount } from "@/lib/auth/account";
 import { PlayerPresence } from "@/components/player-presence";
 
 import "./barebones.css";
+import "./wonderland-pages.css";
 
 export const metadata: Metadata = {
   title: {

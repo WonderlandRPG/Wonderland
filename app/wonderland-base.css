@@ -1,0 +1,130 @@
+/* Wonderland RPG — base visual canônica
+ * Esta folha substitui as antigas camadas globais conflitantes.
+ * Componentes com CSS Module continuam responsáveis por sua própria apresentação.
+ */
+
+:root{
+  --ink:#2f241d;
+  --ink-soft:#5b4a3b;
+  --forest:#234c3a;
+  --forest-2:#356a50;
+  --moss:#7c9273;
+  --wine:#6d3f43;
+  --gold:#b8842f;
+  --gold-soft:#ddbd78;
+  --parchment:#f3e4bc;
+  --parchment-2:#ead4a2;
+  --paper:#fff4d8;
+  --wood:#68472f;
+  --wood-dark:#3d291f;
+  --line:#aa8859;
+  --line-soft:rgba(91,65,39,.22);
+  --shadow:0 18px 45px rgba(43,31,20,.16);
+  --shadow-soft:0 8px 22px rgba(43,31,20,.10);
+  --radius:18px;
+  --page:1120px;
+}
+
+*{box-sizing:border-box}
+html{min-width:320px;background:#cfd1bd;scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Georgia,'Times New Roman',serif;background-color:#d5d4bf;background-repeat:no-repeat;background-position:center top;background-size:cover;background-attachment:fixed;overflow-x:hidden}
+img,svg,video{max-width:100%;height:auto}
+a{color:var(--forest);text-decoration:none}
+a:hover{text-decoration:none}
+button,input,select,textarea{font:inherit}
+button,a,[role='button']{-webkit-tap-highlight-color:transparent}
+button:not(:disabled),a{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.58}
+
+/* Fundos por família de página */
+body:has(.home-landing),body:has(.world-page){background-image:linear-gradient(rgba(238,231,209,.84),rgba(199,207,188,.90)),url('/backgrounds/lore.svg')}
+body:has(.realms-page),body:has(.kingdom-current-page){background-image:linear-gradient(rgba(238,229,201,.83),rgba(190,202,184,.91)),url('/backgrounds/realms.svg')}
+body:has(.sheet-page),body:has(.characters-page),body:has(.character-creator),body:has(.guild-registry-page),body:has(.public-character-page){background-image:linear-gradient(rgba(239,228,201,.86),rgba(197,204,186,.92)),url('/backgrounds/character.svg')}
+body:has(.market-page){background-image:linear-gradient(rgba(240,226,192,.84),rgba(200,200,181,.92)),url('/backgrounds/market.svg')}
+body:has(.champions-hall),body:has(.ranking-page),body:has(.guild-decrees){background-image:linear-gradient(rgba(238,227,199,.84),rgba(196,201,185,.92)),url('/backgrounds/ranking.svg')}
+body:has(.arena-page),body:has(.dungeon-page),body:has(.pvp-battle),body:has(.dungeon-battle){background-image:linear-gradient(rgba(226,220,200,.86),rgba(182,194,178,.94)),url('/backgrounds/arena.svg')}
+body:has(.mission-page),body:has(.presence-page),body:has(.royal-chronicle),body:has(.realm-notice-board){background-image:linear-gradient(rgba(240,232,207,.84),rgba(197,205,187,.92)),url('/backgrounds/lore.svg')}
+body:has(.admin-shell){background-image:linear-gradient(rgba(220,212,194,.88),rgba(184,190,176,.94)),url('/backgrounds/admin.svg')}
+
+/* Larguras e ritmo */
+.page-container,.world-page,.home-landing,.realms-page,.kingdom-current-page,.market-page,.presence-page,.mission-page,.sheet-page,.characters-page,.guild-registry-page,.public-character-page,.arena-page{width:min(var(--page),calc(100% - 36px));margin-inline:auto}
+.page-container{width:100%}
+main{min-width:0}
+h1,h2,h3,h4,p{overflow-wrap:break-word}
+h1,h2,h3{line-height:1.03}
+h1{font-size:clamp(2.7rem,6vw,5.5rem);letter-spacing:-.035em}
+h2{font-size:clamp(1.6rem,3vw,2.7rem)}
+p{line-height:1.65}
+.eyebrow,[class$='__eyebrow']{display:inline-block;color:var(--forest);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.15em}
+
+/* Marca e navegação */
+.player-nav{position:sticky;top:12px;z-index:100;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:20px;width:min(var(--page),calc(100% - 36px));margin:18px auto 30px;padding:9px 12px;border:1px solid #4d3827;border-radius:16px;background:linear-gradient(180deg,#765239,#5a3b29);box-shadow:0 8px 22px rgba(33,23,16,.22);color:#fff3d2}
+.brand-mark{display:flex;align-items:center;gap:9px;min-width:0;color:#fff3d2}
+.brand-mark__crest{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:#f3e5b8;border:2px solid #d8b96d;box-shadow:inset 0 0 0 3px rgba(72,55,34,.12)}
+.brand-mark__crest img{width:34px;height:34px;object-fit:contain}
+.brand-mark__copy{display:grid;line-height:1}.brand-mark__copy strong{font-size:1.08rem;letter-spacing:.035em}.brand-mark__copy small{font-size:.58rem;text-transform:uppercase;letter-spacing:.14em;opacity:.72}
+.player-nav__links{display:flex;align-items:center;justify-content:flex-end;gap:4px;min-width:0}
+.player-nav__links>a,.player-nav__world-menu>button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:8px 10px;border:0;border-radius:9px;background:transparent;color:#fff0cc;font-size:.67rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;white-space:nowrap}
+.player-nav__links>a:hover,.player-nav__world-menu>button:hover,.player-nav__world-menu.is-open>button{background:rgba(255,238,190,.12);color:white}
+.player-nav__character>a{display:grid;min-width:112px;padding:7px 11px;border-radius:10px;background:#f1dfa9;color:#37271c;border:1px solid #d1b66c;line-height:1.05}
+.player-nav__character span{font-weight:800}.player-nav__character small{margin-top:4px;font-size:.56rem;text-transform:uppercase;letter-spacing:.09em;color:#6f5838}
+.player-nav__world-menu{position:relative;z-index:150}
+.player-nav__world-backdrop{position:fixed!important;inset:0!important;z-index:140!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+#player-world-navigation{position:absolute;z-index:160;right:0;top:calc(100% + 10px);display:grid;grid-template-columns:repeat(2,minmax(150px,1fr));gap:6px;width:min(390px,calc(100vw - 32px));padding:14px;border:1px solid #6d4c32;border-radius:15px;background:#f6e7bd;box-shadow:0 18px 42px rgba(42,30,20,.28);color:var(--ink)}
+#player-world-navigation small{grid-column:1/-1;margin-top:4px;padding:5px 7px 3px;color:#7e6749;font-size:.61rem;font-weight:800;text-transform:uppercase;letter-spacing:.13em;border-bottom:1px solid rgba(104,71,47,.18)}
+#player-world-navigation a,#player-world-navigation form button{display:flex;align-items:center;min-height:38px;padding:8px 10px;border:1px solid transparent;border-radius:9px;background:#fff2cf;color:#3d2b20;font-size:.8rem;font-weight:700;text-align:left}
+#player-world-navigation a:hover,#player-world-navigation form button:hover{border-color:#b38d55;background:#ead6a6;color:#234c3a}
+#player-world-navigation form{display:contents}
+
+/* Botões e formulários */
+.button,button:not(.player-nav__world-backdrop),input[type='submit']{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:9px 15px;border:1px solid #65462f;border-radius:10px;background:linear-gradient(180deg,#805a3c,#62402c);color:#fff2cd;font-weight:800;box-shadow:0 3px 0 #3c281d,0 7px 14px rgba(55,38,24,.13);transition:transform .15s ease,filter .15s ease,box-shadow .15s ease}
+.button:hover,button:not(.player-nav__world-backdrop):hover,input[type='submit']:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.button:active,button:not(.player-nav__world-backdrop):active{transform:translateY(1px);box-shadow:0 1px 0 #3c281d}
+.button--primary,.button--gold{background:linear-gradient(180deg,#c7953f,#9d6c25);border-color:#79521f;color:#fff7da}
+.button--dark{background:linear-gradient(180deg,#405f4b,#294936);border-color:#1e3a2b}
+input,select,textarea{max-width:100%;min-height:40px;padding:9px 11px;border:1px solid #aa895c;border-radius:9px;background:#fff6dc;color:#34261e;outline:none}
+textarea{min-height:110px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:#356a50;box-shadow:0 0 0 3px rgba(53,106,80,.14)}
+form label{display:grid;gap:5px;color:#5c4938;font-weight:700}
+
+/* Home */
+.home-landing{padding-bottom:70px}
+.home-hero{position:relative;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:34px;align-items:center;min-height:590px;padding:clamp(42px,7vw,84px);overflow:hidden;border:1px solid rgba(94,70,42,.34);border-radius:28px;background:linear-gradient(115deg,rgba(249,236,200,.95),rgba(216,224,202,.91));box-shadow:var(--shadow)}
+.home-hero:after{content:'';position:absolute;right:-130px;bottom:-170px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle,rgba(57,107,76,.26),rgba(57,107,76,0) 68%);pointer-events:none}
+.home-hero__copy{position:relative;z-index:1;max-width:760px}.home-hero__copy h1{margin:12px 0 22px}.home-hero__copy h1 em{display:block;color:#a36f27;font-weight:normal}.home-hero__lead{max-width:650px;font-size:1.06rem;color:#554437}.home-hero__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:27px}.home-hero__actions a{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;border-radius:11px;background:#2f6047;color:#fff3cf;font-weight:800;border:1px solid #234633;box-shadow:0 5px 14px rgba(37,70,53,.18)}.home-hero__actions a+ a{background:#f4e2b3;color:#493425;border-color:#a88758}
+.home-hero__aside{position:relative;z-index:1}.home-hero__tale{padding:28px;border-radius:50% 50% 44% 44%;background:rgba(50,86,64,.92);color:#fff0c8;text-align:center;box-shadow:0 18px 34px rgba(37,64,50,.18)}.home-hero__tale b{display:block;font-size:2rem}.home-hero__tale strong{display:block;margin:8px 0;font-size:1.45rem}.home-hero__tale p{margin:0;font-size:.9rem}
+.home-paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.home-path{display:grid;gap:7px;padding:22px;border:1px solid #a4865c;border-radius:18px;background:rgba(247,232,194,.94);box-shadow:var(--shadow-soft);color:var(--ink)}.home-path:hover{transform:translateY(-2px);border-color:#54775d}.home-path small{color:#44715a;font-weight:800;text-transform:uppercase;letter-spacing:.1em}.home-path strong{font-size:1.35rem}.home-path span{color:#665343;line-height:1.45}
+
+/* Portal compartilhado */
+.world-page{padding-bottom:60px}.world-page__intro{padding:34px 38px;margin-bottom:18px;border:1px solid #ad8c5d;border-radius:22px;background:rgba(246,231,191,.96);box-shadow:var(--shadow)}.world-page__intro small{color:#3d6f54;font-weight:800;text-transform:uppercase;letter-spacing:.12em}.world-page__intro h1{margin:8px 0 10px;font-size:clamp(2.6rem,5vw,4.8rem)}.world-page__intro p{max-width:760px;margin:0;color:#5a4838}.world-page__content{min-width:0}.world-page__footer{margin-top:28px;padding:18px 4px;border-top:1px solid rgba(91,71,48,.22);font-size:.7rem;color:#74624f}
+
+/* Superfícies e tabelas */
+.account-notice{margin:12px 0;padding:12px 14px;border:1px solid #6e8e75;border-radius:10px;background:#dbe8d4;color:#24472f;font-weight:700}.account-notice.is-warning{border-color:#ad775e;background:#f1d7c3;color:#6c382c}
+table{width:100%;border-collapse:collapse;background:#fff0cb;border:1px solid #ae9066}th,td{padding:10px 12px;border-bottom:1px solid rgba(110,83,51,.22);text-align:left;vertical-align:middle}th{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:#6c553f;background:#e7d2a5}
+[class*='table'],[class*='grid'],[class*='list']{min-width:0}
+
+/* Reinos: garantir que o mapa nunca desapareça */
+.world-map{position:relative;isolation:isolate;min-height:520px;overflow:hidden;border:10px solid #60422d;border-radius:20px;background:#182b30;box-shadow:var(--shadow)}
+.world-map__painting{position:absolute!important;inset:0!important;z-index:0!important;display:block!important;opacity:1!important;background:url('/images/kingdoms/wonderland-map.webp') center/cover no-repeat!important;filter:none!important}
+.world-map__territories{position:absolute;inset:0;z-index:2}.world-map__territory{position:absolute;inset:0;display:block;clip-path:var(--territory);background:transparent;transition:background .18s ease,filter .18s ease}.world-map__territory:hover{background:color-mix(in srgb,var(--realm) 28%,transparent);filter:brightness(1.1)}
+.world-map__pin{position:absolute;left:var(--pin-x);top:var(--pin-y);transform:translate(-50%,-50%);display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#f4dfaa;border:2px solid #5f412c;color:#3a2a20;box-shadow:0 5px 12px rgba(0,0,0,.24)}.world-map__pin i{position:absolute;right:-6px;bottom:-4px;padding:2px 4px;border-radius:5px;background:#24513e;color:#fff;font-size:.5rem;font-style:normal}
+.world-map__title{position:absolute;z-index:4;left:16px;top:16px;padding:10px 12px;border-radius:9px;background:rgba(255,237,192,.94);border:1px solid #7b5a36}.world-map__title small,.world-map__title strong{display:block}.world-map__legend{position:absolute;z-index:4;left:16px;bottom:14px;display:flex;gap:12px;padding:8px 10px;border-radius:8px;background:rgba(255,239,204,.92);font-size:.72rem}.world-map__compass{position:absolute;z-index:4;right:16px;bottom:14px;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#f3dfad;border:1px solid #65482e}.world-map__tooltip{display:none}
+
+/* Utilitários que evitam texto esmagado */
+.inventory-slot,.equipment-slot,.inventory-command__slot,.inventory-character-card,.shop-item,.classic-item-card,.presence-reward-grid>article,.guild-decree,.realm-notice{overflow-wrap:normal;word-break:normal;hyphens:none}
+.inventory-slot strong,.equipment-slot strong,.inventory-command__slot strong,.shop-item strong,.classic-item-card strong{white-space:normal;word-break:normal;overflow-wrap:anywhere}
+
+/* Admin: base de segurança */
+.admin-shell{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh;width:100%}.admin-sidebar{position:sticky;top:0;height:100vh;overflow:auto;padding:16px;background:#203f31;color:#f7e8bd}.admin-sidebar a{color:#f8e8ba}.admin-sidebar__nav{display:grid;gap:5px}.admin-sidebar__nav a{display:block;padding:9px 10px;border-radius:8px;background:rgba(255,255,255,.04)}.admin-sidebar__nav a:hover{background:rgba(255,239,194,.12)}.admin-workspace{min-width:0;padding:18px}.admin-topbar,.admin-content{width:min(1180px,100%);margin-inline:auto}.admin-topbar{padding:14px 16px;border:1px solid #a98a5f;border-radius:15px;background:#f2e0b5}.admin-content{margin-top:14px}.admin-content>section,.admin-content>article{min-width:0}
+
+@media(max-width:900px){
+  :root{--page:100%}
+  .player-nav{position:relative;top:auto;grid-template-columns:1fr auto;gap:8px}.player-nav__links{grid-column:1/-1;order:3;justify-content:flex-start;overflow-x:auto;padding-bottom:2px}.player-nav__character{grid-column:2;grid-row:1}.home-hero{grid-template-columns:1fr;min-height:0}.home-hero__aside{max-width:420px}.home-paths{grid-template-columns:1fr}.admin-shell{display:block}.admin-sidebar{position:relative;height:auto}.admin-sidebar__nav{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-workspace{padding:12px}
+}
+@media(max-width:640px){
+  .page-container,.world-page,.home-landing,.realms-page,.kingdom-current-page,.market-page,.presence-page,.mission-page,.sheet-page,.characters-page,.guild-registry-page,.public-character-page,.arena-page{width:min(100% - 18px,var(--page))}
+  .player-nav{width:calc(100% - 14px);margin:7px auto 16px;padding:8px}.brand-mark__copy strong{font-size:.95rem}.player-nav__links>a,.player-nav__world-menu>button{font-size:.6rem;padding:7px 8px}.player-nav__character>a{min-width:86px;padding:6px 8px}
+  #player-world-navigation{position:fixed;left:8px;right:8px;top:72px;width:auto;max-height:calc(100vh - 90px);overflow:auto;grid-template-columns:1fr 1fr}
+  .home-hero{padding:28px 20px;border-radius:20px}.home-hero__copy h1{font-size:clamp(2.7rem,14vw,4.2rem)}.home-hero__actions{display:grid}.home-hero__actions a{justify-content:center}.home-hero__aside{display:none}
+  .world-page__intro{padding:24px 18px}.world-map{min-height:400px;border-width:6px}.world-map__legend{right:12px;flex-wrap:wrap}.admin-sidebar__nav{grid-template-columns:1fr}
+}

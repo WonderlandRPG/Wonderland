@@ -12,6 +12,7 @@ import "./immersive-rpg.css";
 import "./immersive-cleanup.css";
 import "./rpg-overhaul.css";
 import "./rpg-finishing.css";
+import "./structural-rpg.css";
 
 export const metadata: Metadata = {
   title: {

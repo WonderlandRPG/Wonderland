@@ -12,15 +12,15 @@ export function PortalShell({
   children: React.ReactNode;
 }) {
   return (
-    <main>
+    <main className="world-page">
       <PlayerNav />
-      <header>
-        <p>{eyebrow}</p>
+      <header className="world-page__intro">
+        <small>{eyebrow}</small>
         <h1>{title}</h1>
         <p>{description}</p>
       </header>
-      <section>{children}</section>
-      <footer>© 2026 Wonderland Ltda.</footer>
+      <section className="world-page__content">{children}</section>
+      <footer className="world-page__footer">Wonderland · crônicas de um mundo vivo</footer>
     </main>
   );
 }

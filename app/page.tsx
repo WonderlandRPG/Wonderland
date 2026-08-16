@@ -10,53 +10,51 @@ export default async function Home() {
   const [account, headline] = await Promise.all([getCurrentAccount(), getPortalHeadline()]);
 
   return (
-    <main className="wonderland-home">
+    <main className="home-landing">
       <PlayerNav />
 
-      <section className="home-hero" aria-labelledby="wonderland-title">
-        <div className="home-hero__content">
-          <p className="eyebrow"><span aria-hidden="true">✦</span> Temporada inaugural <span aria-hidden="true">✦</span></p>
-          <h1 id="wonderland-title">
-            <span>{headline.firstLine}</span>
+      <section className="home-hero">
+        <div className="home-hero__copy">
+          <span className="home-hero__eyebrow">Temporada inaugural</span>
+          <h1>
+            {headline.firstLine}
             <em>{headline.secondLine}</em>
           </h1>
           <p className="home-hero__lead">
-            Um mundo de reinos, guerras, dungeons e lendas espera pelo próximo nome digno de ser lembrado.
+            Entre por florestas antigas, reinos em guerra, ruínas esquecidas e cidades erguidas sobre lendas. Em Wonderland, seu personagem não observa a história: ele deixa marcas nela.
           </p>
-
           <div className="home-hero__actions">
-            <Link className="rpg-button rpg-button--primary" href={account ? "/personagens" : "/cadastro"}>
-              <span>{account ? "Entrar em Wonderland" : "Criar meu aventureiro"}</span>
+            <Link href={account ? "/personagens" : "/cadastro"}>
+              {account ? "Continuar minha jornada" : "Criar meu aventureiro"}
             </Link>
-            <Link className="rpg-button rpg-button--secondary" href="/historia">
-              <span>Conhecer a história</span>
-            </Link>
+            <Link href="/historia">Abrir as crônicas</Link>
           </div>
         </div>
 
-        <aside className="home-hero__sigil" aria-hidden="true">
-          <div className="home-hero__sigil-ring">
-            <span>W</span>
+        <aside className="home-hero__aside" aria-label="Boas-vindas a Wonderland">
+          <div className="home-hero__tale">
+            <b>✦</b>
+            <strong>Um mundo vivo</strong>
+            <p>Escolha um povo, uma vocação e um reino. Depois, deixe que suas escolhas façam o restante.</p>
           </div>
-          <small>O Reino dos Sonhos</small>
         </aside>
       </section>
 
-      <nav className="home-paths" aria-label="Atalhos de exploração">
-        <Link href="/racas">
-          <small>I · POVOS</small>
-          <strong>Raças</strong>
-          <span>Descubra sua origem</span>
+      <nav className="home-paths" aria-label="Comece a explorar Wonderland">
+        <Link className="home-path" href="/racas">
+          <small>Primeiro passo</small>
+          <strong>Escolha seu povo</strong>
+          <span>Conheça as raças, seus traços e suas heranças.</span>
         </Link>
-        <Link href="/classes">
-          <small>II · VOCAÇÕES</small>
-          <strong>Classes</strong>
-          <span>Escolha seu caminho</span>
+        <Link className="home-path" href="/classes">
+          <small>Seu estilo de jogo</small>
+          <strong>Escolha sua vocação</strong>
+          <span>Descubra classes, caminhos, recursos e habilidades.</span>
         </Link>
-        <Link href="/reinos">
-          <small>III · TERRAS</small>
-          <strong>Reinos</strong>
-          <span>Conheça as coroas</span>
+        <Link className="home-path" href="/reinos">
+          <small>Onde tudo acontece</small>
+          <strong>Explore os reinos</strong>
+          <span>Viaje por territórios, culturas e disputas de Wonderland.</span>
         </Link>
       </nav>
     </main>

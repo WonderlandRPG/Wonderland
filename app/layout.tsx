@@ -13,6 +13,7 @@ import "./immersive-cleanup.css";
 import "./rpg-overhaul.css";
 import "./rpg-finishing.css";
 import "./structural-rpg.css";
+import "./inventory-rebuild.css";
 
 export const metadata: Metadata = {
   title: {

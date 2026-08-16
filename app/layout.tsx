@@ -5,6 +5,7 @@ import { PlayerPresence } from "@/components/player-presence";
 
 import "./barebones.css";
 import "./wonderland-pages.css";
+import "./wonderland-complete.css";
 
 export const metadata: Metadata = {
   title: {

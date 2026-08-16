@@ -1,0 +1,1012 @@
+/*
+ * Wonderland — Grimório Vivo
+ * Camada visual global carregada por último.
+ * Mantém a estrutura funcional existente e unifica o portal em fantasia medieval.
+ */
+
+:root,
+html[data-theme="accessible"] {
+  color-scheme: dark;
+  --ui-bg: #050a07;
+  --ui-bg-2: #0a130e;
+  --ui-surface: rgba(12, 23, 17, 0.94);
+  --ui-surface-solid: #0d1913;
+  --ui-surface-raised: #14241b;
+  --ui-glass: rgba(6, 15, 10, 0.82);
+  --ui-ink: #f4ecd7;
+  --ui-muted: #b7c4b9;
+  --ui-faint: #7f9184;
+  --ui-gold: #caa858;
+  --ui-gold-soft: #efd889;
+  --ui-arcane: #69d7b0;
+  --ui-arcane-rgb: 105, 215, 176;
+  --ui-danger: #dc7168;
+  --ui-success: #76cf96;
+  --ui-line: rgba(223, 211, 172, 0.13);
+  --ui-line-gold: rgba(202, 168, 88, 0.42);
+  --ui-shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
+  --ui-shadow-small: 0 14px 38px rgba(0, 0, 0, 0.32);
+  --ui-radius: 8px;
+  --ui-radius-small: 5px;
+  --game-bg: var(--ui-bg);
+  --game-bg-deep: #020503;
+  --game-panel: var(--ui-surface);
+  --game-panel-strong: var(--ui-surface-raised);
+  --game-panel-soft: var(--ui-glass);
+  --game-text: var(--ui-ink);
+  --game-muted: var(--ui-muted);
+  --game-muted-soft: var(--ui-faint);
+  --game-gold: var(--ui-gold);
+  --game-gold-bright: var(--ui-gold-soft);
+  --game-line: var(--ui-line);
+  --game-line-strong: var(--ui-line-gold);
+  --game-shadow: var(--ui-shadow);
+}
+
+html[data-theme="classic"] {
+  color-scheme: light;
+  --ui-bg: #d8cfb8;
+  --ui-bg-2: #ece3cd;
+  --ui-surface: rgba(246, 237, 214, 0.96);
+  --ui-surface-solid: #f4ead2;
+  --ui-surface-raised: #e4d7ba;
+  --ui-glass: rgba(242, 232, 207, 0.88);
+  --ui-ink: #2c251b;
+  --ui-muted: #62594b;
+  --ui-faint: #867b68;
+  --ui-gold: #8e6828;
+  --ui-gold-soft: #a77b30;
+  --ui-arcane: #226d5b;
+  --ui-arcane-rgb: 34, 109, 91;
+  --ui-danger: #9d3e38;
+  --ui-success: #397351;
+  --ui-line: rgba(60, 47, 28, 0.16);
+  --ui-line-gold: rgba(119, 84, 31, 0.42);
+  --ui-shadow: 0 24px 58px rgba(52, 40, 23, 0.2);
+  --ui-shadow-small: 0 12px 30px rgba(52, 40, 23, 0.14);
+  --game-bg: var(--ui-bg);
+  --game-bg-deep: #c8bea7;
+  --game-panel: var(--ui-surface);
+  --game-panel-strong: var(--ui-surface-raised);
+  --game-panel-soft: var(--ui-glass);
+  --game-text: var(--ui-ink);
+  --game-muted: var(--ui-muted);
+  --game-muted-soft: var(--ui-faint);
+  --game-gold: var(--ui-gold);
+  --game-gold-bright: var(--ui-gold-soft);
+  --game-line: var(--ui-line);
+  --game-line-strong: var(--ui-line-gold);
+  --game-shadow: var(--ui-shadow);
+}
+
+html {
+  background: var(--ui-bg);
+}
+
+body {
+  color: var(--ui-ink);
+  background:
+    linear-gradient(rgba(202, 168, 88, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(202, 168, 88, 0.018) 1px, transparent 1px),
+    radial-gradient(circle at 50% -15%, rgba(var(--ui-arcane-rgb), 0.13), transparent 42rem),
+    radial-gradient(circle at 8% 50%, rgba(202, 168, 88, 0.06), transparent 34rem),
+    linear-gradient(160deg, var(--ui-bg-2), var(--ui-bg) 52%, var(--game-bg-deep));
+  background-attachment: fixed;
+  background-size: 72px 72px, 72px 72px, auto, auto, auto;
+}
+
+body::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  opacity: 0.32;
+  background:
+    radial-gradient(circle at 15% 18%, rgba(239, 216, 137, 0.22) 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 27%, rgba(105, 215, 176, 0.2) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 79%, rgba(239, 216, 137, 0.15) 0 1px, transparent 2px);
+  background-size: 137px 137px, 181px 181px, 223px 223px;
+}
+
+::selection {
+  color: #151006;
+  background: var(--ui-gold-soft);
+}
+
+:focus-visible {
+  outline: 2px solid var(--ui-gold-soft) !important;
+  outline-offset: 3px;
+}
+
+.page-container {
+  width: min(calc(100% - 40px), 1240px);
+}
+
+.portal-shell,
+.account-shell,
+.admin-shell,
+.sheet-page,
+.shop-page,
+.inventory-page,
+.ranking-page,
+.kingdom-current-page {
+  color: var(--ui-ink);
+  background: transparent;
+}
+
+/* Navegação: barra de guilda */
+.player-nav {
+  position: sticky;
+  z-index: 100;
+  top: 14px;
+  display: flex;
+  min-height: 74px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 14px;
+  padding: 10px 14px 10px 20px;
+  border: 1px solid var(--ui-line-gold);
+  border-radius: 9px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 30%),
+    linear-gradient(135deg, rgba(19, 35, 26, 0.97), rgba(5, 12, 8, 0.98));
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.36),
+    inset 0 1px rgba(255, 242, 197, 0.06);
+  backdrop-filter: blur(14px);
+}
+
+.player-nav::before,
+.player-nav::after {
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 1px;
+  content: "";
+  background: linear-gradient(90deg, transparent, var(--ui-gold));
+  opacity: 0.55;
+}
+
+.player-nav::before {
+  right: 100%;
+}
+
+.player-nav::after {
+  left: 100%;
+  transform: rotate(180deg);
+}
+
+.player-nav > a:first-child {
+  flex: 0 0 auto;
+}
+
+.player-nav nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(10px, 1.5vw, 24px);
+}
+
+.player-nav nav > a:not(.player-nav__character):not(.button),
+.player-nav__world-menu > button:not(.player-nav__world-backdrop) {
+  position: relative;
+  color: var(--ui-muted);
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.115em;
+  text-transform: uppercase;
+}
+
+.player-nav nav > a:not(.player-nav__character):not(.button)::after {
+  position: absolute;
+  right: 50%;
+  bottom: -10px;
+  left: 50%;
+  height: 1px;
+  content: "";
+  background: var(--ui-gold);
+  transition: right 160ms ease, left 160ms ease;
+}
+
+.player-nav nav > a:not(.player-nav__character):not(.button):hover {
+  color: var(--ui-gold-soft);
+}
+
+.player-nav nav > a:not(.player-nav__character):not(.button):hover::after {
+  right: 0;
+  left: 0;
+}
+
+.player-nav__character {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: 6px !important;
+  background: rgba(var(--ui-arcane-rgb), 0.06) !important;
+}
+
+.player-nav__character > span {
+  border-color: var(--ui-gold) !important;
+  border-radius: 50% !important;
+}
+
+.player-nav__character b {
+  color: var(--ui-ink) !important;
+}
+
+.player-nav__character small {
+  color: var(--ui-muted) !important;
+}
+
+/* Cabeçalhos como páginas de crônica */
+.portal-hero {
+  position: relative;
+  padding-top: clamp(72px, 9vw, 128px);
+  padding-bottom: clamp(38px, 6vw, 72px);
+  border-bottom: 1px solid var(--ui-line-gold);
+}
+
+.portal-hero::after {
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 9px;
+  height: 9px;
+  content: "";
+  border: 1px solid var(--ui-gold);
+  background: var(--ui-bg);
+  transform: rotate(45deg);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: var(--ui-gold-soft) !important;
+  font-size: 0.63rem !important;
+  font-weight: 850;
+  letter-spacing: 0.18em !important;
+  text-transform: uppercase;
+}
+
+.eyebrow::before {
+  width: 24px;
+  height: 1px;
+  content: "";
+  background: var(--ui-gold);
+}
+
+.portal-hero h1,
+.account-hero h1,
+.admin-hero h1,
+.sheet-hero h1,
+.ranking-hero h1,
+.kingdom-current-hero h1,
+.mission-board-hero h1 {
+  color: var(--ui-ink) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  text-shadow: 0 3px 22px rgba(0, 0, 0, 0.22);
+}
+
+.portal-hero h1 {
+  max-width: 920px;
+  margin: 13px 0 18px;
+  font-size: clamp(3.1rem, 7vw, 6.8rem);
+  line-height: 0.9;
+}
+
+.portal-hero > p,
+.account-hero > p,
+.admin-hero > p,
+.sheet-hero > p {
+  max-width: 760px;
+  color: var(--ui-muted) !important;
+  font-size: clamp(0.82rem, 1.5vw, 0.98rem);
+  line-height: 1.8;
+}
+
+.portal-content {
+  padding-top: clamp(36px, 6vw, 72px);
+  padding-bottom: clamp(70px, 8vw, 112px);
+}
+
+/* Superfícies: pedra, couro e metal */
+:is(
+  .portal-card,
+  .sheet-section,
+  .account-card,
+  .admin-editor-card,
+  .ranking-board,
+  .ranking-season-banner,
+  .lore-dossier,
+  .lore-browser__index,
+  .arena-command-panel,
+  .arena-toolbar,
+  .kingdom-leadership,
+  .kingdom-upgrade,
+  .kingdom-war-panel,
+  .kingdom-peace-panel,
+  .kingdom-resources,
+  .kingdom-treasury,
+  .kingdom-crown-panel,
+  .update-featured,
+  .update-archive,
+  .structured-composer,
+  .structured-composer__preview
+) {
+  position: relative;
+  border: 1px solid var(--ui-line-gold) !important;
+  border-radius: var(--ui-radius) !important;
+  color: var(--ui-ink);
+  background:
+    linear-gradient(135deg, rgba(255, 244, 203, 0.025), transparent 36%),
+    linear-gradient(150deg, var(--ui-surface-raised), var(--ui-surface)) !important;
+  box-shadow:
+    var(--ui-shadow-small),
+    inset 3px 0 rgba(var(--ui-arcane-rgb), 0.14),
+    inset 0 1px rgba(255, 240, 190, 0.045) !important;
+}
+
+:is(
+  .portal-card,
+  .sheet-section,
+  .account-card,
+  .admin-editor-card,
+  .ranking-board,
+  .lore-dossier,
+  .arena-command-panel,
+  .kingdom-upgrade
+)::after {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 7px;
+  height: 7px;
+  content: "";
+  border-top: 1px solid var(--ui-gold);
+  border-right: 1px solid var(--ui-gold);
+  opacity: 0.55;
+}
+
+:is(.portal-card, .sheet-section, .admin-editor-card, .account-card):hover {
+  border-color: rgba(239, 216, 137, 0.55) !important;
+  transform: translateY(-2px);
+}
+
+:is(.portal-card, .sheet-section, .admin-editor-card, .account-card) {
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+
+/* Tipografia e contraste */
+:is(h1, h2, h3, h4, h5, h6) {
+  color: var(--ui-ink);
+}
+
+:is(.portal-content, .sheet-section, .account-card, .admin-shell, .ranking-board, .kingdom-current-page)
+  :is(p, li, dd) {
+  color: var(--ui-muted);
+}
+
+:is(.portal-content, .sheet-section, .account-card, .admin-shell, .ranking-board, .kingdom-current-page)
+  :is(strong, b) {
+  color: var(--ui-ink);
+}
+
+:is(.portal-content, .sheet-section, .account-card, .admin-shell, .ranking-board, .kingdom-current-page)
+  :is(small, dt) {
+  color: var(--ui-faint);
+}
+
+a {
+  text-underline-offset: 4px;
+}
+
+a:hover {
+  color: var(--ui-gold-soft);
+}
+
+/* Botões e controles */
+.button,
+button:not(.unstyled-button),
+input[type="submit"] {
+  min-height: 42px;
+  border-radius: var(--ui-radius-small);
+  font-weight: 850;
+  letter-spacing: 0.075em;
+}
+
+.button--primary,
+:is(button, input[type="submit"]):not(.button--danger):not(.unstyled-button) {
+  border: 1px solid #e5c770;
+  color: #1c1609;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.26), transparent 42%),
+    linear-gradient(135deg, #e1c36d, #ad7d2e);
+  box-shadow:
+    0 8px 24px rgba(174, 126, 47, 0.2),
+    inset 0 1px rgba(255, 247, 211, 0.65);
+}
+
+.button--primary:hover,
+:is(button, input[type="submit"]):not(.button--danger):not(.unstyled-button):hover {
+  color: #120e06;
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.button--secondary,
+.button--glass,
+.button--ghost {
+  border: 1px solid var(--ui-line-gold) !important;
+  color: var(--ui-gold-soft) !important;
+  background: rgba(6, 15, 10, 0.68) !important;
+  box-shadow: inset 0 1px rgba(255, 245, 207, 0.04) !important;
+}
+
+.button--danger {
+  border: 1px solid #c56b60 !important;
+  color: #fff2e8 !important;
+  background: linear-gradient(135deg, #8f3833, #5d2421) !important;
+}
+
+:is(input, select, textarea) {
+  border: 1px solid var(--ui-line-gold) !important;
+  border-radius: var(--ui-radius-small) !important;
+  color: var(--ui-ink) !important;
+  background: rgba(3, 10, 6, 0.72) !important;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.23);
+}
+
+html[data-theme="classic"] :is(input, select, textarea) {
+  background: rgba(255, 250, 235, 0.74) !important;
+}
+
+:is(input, select, textarea)::placeholder {
+  color: var(--ui-faint);
+}
+
+:is(input, select, textarea):focus {
+  border-color: var(--ui-gold-soft) !important;
+  box-shadow: 0 0 0 3px rgba(202, 168, 88, 0.13) !important;
+}
+
+label {
+  color: var(--ui-muted);
+}
+
+/* Tabelas, listas e registros */
+table {
+  overflow: hidden;
+  border: 1px solid var(--ui-line);
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--ui-radius);
+  background: var(--ui-surface);
+}
+
+thead {
+  background: rgba(202, 168, 88, 0.09);
+}
+
+th {
+  color: var(--ui-gold-soft) !important;
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+td {
+  color: var(--ui-muted);
+  border-color: var(--ui-line) !important;
+}
+
+tr:hover td {
+  background: rgba(var(--ui-arcane-rgb), 0.035);
+}
+
+:is(.admin-table, .ranking-table, .inventory-list, .shop-list) {
+  scrollbar-color: var(--ui-gold) transparent;
+}
+
+/* Personagem e ficha */
+.sheet-hero,
+.character-sheet-hero {
+  border-color: var(--ui-line-gold) !important;
+  background:
+    radial-gradient(circle at 82% 15%, rgba(var(--ui-arcane-rgb), 0.12), transparent 28rem),
+    linear-gradient(145deg, var(--ui-surface-raised), var(--ui-bg)) !important;
+}
+
+.sheet-tabs {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: var(--ui-radius) !important;
+  background: rgba(5, 13, 8, 0.88) !important;
+}
+
+.sheet-tabs a {
+  color: var(--ui-muted) !important;
+}
+
+.sheet-tabs a.is-active {
+  color: #1a1307 !important;
+  background: linear-gradient(135deg, var(--ui-gold-soft), var(--ui-gold)) !important;
+}
+
+.character-stat,
+.stat-card,
+.sheet-stat {
+  border-color: var(--ui-line) !important;
+  border-radius: 5px !important;
+  background: rgba(var(--ui-arcane-rgb), 0.045) !important;
+}
+
+.rank-badge,
+.rank-seal,
+[class*="rank-badge"] {
+  font-family: Georgia, "Times New Roman", serif !important;
+  text-shadow: none !important;
+}
+
+/* Loja e inventário */
+.shop-browser,
+.inventory-browser {
+  gap: 22px;
+}
+
+.shop-sidebar,
+.inventory-sidebar {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: var(--ui-radius) !important;
+  background: var(--ui-surface) !important;
+  box-shadow: var(--ui-shadow-small);
+}
+
+.shop-card,
+.inventory-card,
+.item-card {
+  overflow: hidden;
+  border-color: var(--ui-line) !important;
+  border-radius: 7px !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.025), transparent 40%),
+    var(--ui-surface-raised) !important;
+}
+
+:is(.shop-card, .inventory-card, .item-card):hover {
+  border-color: var(--ui-line-gold) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Reinos: salão da coroa */
+.kingdom-current-page {
+  background:
+    radial-gradient(circle at 50% 0, rgba(202, 168, 88, 0.14), transparent 36rem),
+    transparent !important;
+}
+
+.kingdom-current-hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ui-line-gold) !important;
+  border-radius: var(--ui-radius);
+  background:
+    linear-gradient(90deg, rgba(202, 168, 88, 0.08), transparent 45%),
+    linear-gradient(145deg, var(--ui-surface-raised), var(--ui-bg)) !important;
+  box-shadow: var(--ui-shadow);
+}
+
+.kingdom-current-hero::before {
+  position: absolute;
+  top: -80px;
+  right: 5%;
+  width: 240px;
+  height: 240px;
+  content: "";
+  border: 1px solid rgba(202, 168, 88, 0.14);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 28px rgba(202, 168, 88, 0.025);
+}
+
+.kingdom-leadership article,
+.kingdom-resources article {
+  border-color: var(--ui-line) !important;
+  border-radius: 6px !important;
+  background: rgba(var(--ui-arcane-rgb), 0.035) !important;
+}
+
+.kingdom-leadership article > span {
+  border-color: var(--ui-gold) !important;
+  box-shadow: 0 0 0 5px rgba(202, 168, 88, 0.08);
+}
+
+.kingdom-stars span.is-active {
+  color: #ffd86c !important;
+  filter: drop-shadow(0 0 7px rgba(255, 216, 108, 0.45));
+}
+
+.kingdom-war-alert,
+.kingdom-war-request {
+  border-color: rgba(220, 113, 104, 0.52) !important;
+  border-radius: 6px;
+  background: rgba(83, 27, 24, 0.52) !important;
+}
+
+/* Missões: pergaminho legível preservado */
+.mission-page {
+  background:
+    radial-gradient(circle at 50% 5%, rgba(136, 86, 39, 0.2), transparent 36rem),
+    linear-gradient(160deg, #12140f, #070a07) !important;
+}
+
+.mission-board-progress,
+.mission-board-hero > aside {
+  border-color: rgba(202, 168, 88, 0.34) !important;
+  border-radius: 7px !important;
+  background: rgba(15, 22, 16, 0.94) !important;
+}
+
+.mission-parchment {
+  border-radius: 2px !important;
+  box-shadow:
+    0 28px 55px rgba(0, 0, 0, 0.48),
+    inset 0 0 70px rgba(111, 72, 26, 0.16) !important;
+}
+
+/* Arena e dungeons: tático, não futurista */
+.arena-page,
+.dungeon-page,
+.pve-page,
+.pvp-page {
+  background:
+    radial-gradient(circle at 50% 0, rgba(var(--ui-arcane-rgb), 0.08), transparent 34rem),
+    transparent !important;
+}
+
+.arena-toolbar,
+.arena-command-panel,
+.arena-combat-log,
+.tactical-board {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: 6px !important;
+  background:
+    linear-gradient(145deg, rgba(24, 39, 29, 0.95), rgba(6, 14, 9, 0.97)) !important;
+}
+
+.tactical-cell {
+  border-color: rgba(202, 168, 88, 0.15) !important;
+  background: rgba(19, 34, 25, 0.74) !important;
+}
+
+.tactical-cell.is-reachable {
+  background: rgba(var(--ui-arcane-rgb), 0.2) !important;
+  box-shadow: inset 0 0 0 1px rgba(var(--ui-arcane-rgb), 0.46);
+}
+
+.tactical-cell.is-targetable {
+  background: rgba(220, 113, 104, 0.19) !important;
+}
+
+/* História: arquivo antigo */
+.lore-dossier,
+.lore-browser__index {
+  background:
+    linear-gradient(145deg, rgba(37, 43, 29, 0.96), rgba(8, 17, 11, 0.98)) !important;
+}
+
+.lore-dossier blockquote {
+  border-color: var(--ui-gold) !important;
+  color: var(--ui-gold-soft) !important;
+  background: rgba(202, 168, 88, 0.06) !important;
+}
+
+/* Atualizações: crônicas oficiais */
+.update-featured__masthead {
+  border-color: var(--ui-line-gold) !important;
+  background: rgba(202, 168, 88, 0.055);
+}
+
+.update-featured__seal {
+  border-color: var(--ui-gold) !important;
+  color: var(--ui-gold-soft) !important;
+  background: rgba(202, 168, 88, 0.06);
+  box-shadow: 0 0 0 5px rgba(202, 168, 88, 0.045);
+}
+
+.update-featured__body > aside {
+  border-color: var(--ui-line-gold) !important;
+  background: rgba(202, 168, 88, 0.055) !important;
+}
+
+.update-image {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: 6px !important;
+  background: #020604 !important;
+}
+
+.update-image img {
+  display: block;
+}
+
+/* Ranking: livro de feitos */
+.ranking-podium__place,
+.ranking-table > a,
+.pvp-ranking-table > a,
+.pvp-history-ledger > article {
+  border-color: var(--ui-line) !important;
+  border-radius: 5px !important;
+  background: rgba(var(--ui-arcane-rgb), 0.03) !important;
+}
+
+.ranking-table > a:hover,
+.pvp-ranking-table > a:hover {
+  border-color: var(--ui-line-gold) !important;
+  background: rgba(202, 168, 88, 0.07) !important;
+}
+
+/* Administração: oficina do mestre, simples e consistente */
+.admin-shell {
+  background: transparent !important;
+}
+
+.admin-sidebar {
+  border-right: 1px solid var(--ui-line-gold) !important;
+  background:
+    linear-gradient(180deg, rgba(20, 34, 25, 0.98), rgba(5, 12, 8, 0.99)) !important;
+  box-shadow: 16px 0 46px rgba(0, 0, 0, 0.24);
+}
+
+.admin-sidebar a {
+  border-radius: 5px !important;
+  color: var(--ui-muted) !important;
+}
+
+.admin-sidebar a:hover,
+.admin-sidebar a.is-active {
+  color: var(--ui-gold-soft) !important;
+  background: rgba(202, 168, 88, 0.09) !important;
+  box-shadow: inset 2px 0 var(--ui-gold);
+}
+
+.admin-editor-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 380px;
+}
+
+/* Rodapé e elementos flutuantes */
+.portal-footer {
+  border-color: var(--ui-line) !important;
+  color: var(--ui-faint) !important;
+}
+
+.theme-control__toggle,
+.audio-player,
+.audio-dock {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: 8px !important;
+  background: rgba(6, 15, 10, 0.92) !important;
+  box-shadow: var(--ui-shadow-small) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* Manutenção */
+.maintenance-page {
+  overflow-x: hidden;
+  color: var(--ui-ink);
+  background:
+    radial-gradient(circle at 50% 5%, rgba(var(--ui-arcane-rgb), 0.13), transparent 38rem),
+    linear-gradient(160deg, var(--ui-bg-2), var(--ui-bg)) !important;
+}
+
+.maintenance-page > section {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: 9px !important;
+  background:
+    linear-gradient(145deg, rgba(19, 35, 26, 0.95), rgba(4, 12, 8, 0.97)) !important;
+}
+
+.maintenance-page__mark {
+  border-color: var(--ui-gold) !important;
+  background: rgba(202, 168, 88, 0.06) !important;
+}
+
+/* Movimento somente onde ajuda; acessibilidade e celular primeiro */
+@media (prefers-reduced-motion: no-preference) and (min-width: 901px) {
+  body::before {
+    animation: grimoire-dust 28s linear infinite;
+  }
+
+  @keyframes grimoire-dust {
+    to {
+      background-position: 137px -137px, -181px 181px, 223px -223px;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Tablet e celular */
+@media (max-width: 1100px) {
+  .player-nav {
+    position: relative;
+    top: 0;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .player-nav nav {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 4px 2px 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ui-gold) transparent;
+  }
+
+  .player-nav nav > * {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 760px) {
+  body {
+    background-attachment: scroll;
+    background-size: auto;
+  }
+
+  body::before {
+    display: none;
+  }
+
+  .page-container {
+    width: min(calc(100% - 22px), 1240px);
+  }
+
+  .player-nav {
+    min-height: 0;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 7px;
+    backdrop-filter: none;
+  }
+
+  .player-nav > a:first-child {
+    align-self: center;
+  }
+
+  .player-nav nav {
+    gap: 8px;
+    padding-bottom: 5px;
+  }
+
+  .player-nav nav > a:not(.player-nav__character):not(.button),
+  .player-nav__world-menu > button:not(.player-nav__world-backdrop) {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    border: 1px solid var(--ui-line) !important;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.025);
+    font-size: 0.64rem;
+  }
+
+  .player-nav nav > a::after {
+    display: none;
+  }
+
+  .player-nav__character {
+    min-width: 150px;
+  }
+
+  .portal-hero {
+    padding-top: 58px;
+    padding-bottom: 34px;
+  }
+
+  .portal-hero h1 {
+    font-size: clamp(2.65rem, 15vw, 4.6rem);
+    line-height: 0.93;
+  }
+
+  .portal-content {
+    padding-top: 28px;
+  }
+
+  :is(
+    .portal-card,
+    .sheet-section,
+    .account-card,
+    .admin-editor-card,
+    .ranking-board,
+    .update-archive,
+    .kingdom-leadership,
+    .kingdom-upgrade,
+    .kingdom-war-panel,
+    .kingdom-resources
+  ) {
+    border-radius: 6px !important;
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.28),
+      inset 2px 0 rgba(var(--ui-arcane-rgb), 0.12) !important;
+  }
+
+  :is(.portal-card, .sheet-section, .admin-editor-card, .account-card):hover {
+    transform: none;
+  }
+
+  .update-featured__body {
+    grid-template-columns: 1fr !important;
+  }
+
+  .update-featured__body > aside {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--ui-line-gold);
+  }
+
+  .update-featured__body > div {
+    padding: 28px 18px !important;
+  }
+
+  .kingdom-current-shell {
+    padding-top: 2.5rem !important;
+  }
+
+  .kingdom-current-hero {
+    padding: 1.25rem !important;
+  }
+
+  .kingdom-leadership > div {
+    grid-template-columns: 1fr !important;
+  }
+
+  .admin-shell {
+    overflow-x: hidden;
+  }
+
+  table {
+    min-width: 680px;
+  }
+
+  .table-scroll,
+  .admin-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 430px) {
+  .portal-hero h1 {
+    font-size: clamp(2.45rem, 14vw, 3.7rem);
+  }
+
+  .eyebrow {
+    font-size: 0.56rem !important;
+  }
+
+  .button,
+  button,
+  input[type="submit"] {
+    min-height: 44px;
+  }
+
+  .theme-control__toggle,
+  .audio-player,
+  .audio-dock {
+    max-width: calc(100vw - 20px);
+  }
+}

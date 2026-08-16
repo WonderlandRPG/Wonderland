@@ -8,6 +8,7 @@ import "./wonderland-pages.css";
 import "./wonderland-complete.css";
 import "./wonderland-fixes.css";
 import "./wonderland-backgrounds.css";
+import "./wonderland-hotfix.css";
 
 export const metadata: Metadata = {
   title: {

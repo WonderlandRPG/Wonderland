@@ -4,15 +4,12 @@ import { getCurrentAccount } from "@/lib/auth/account";
 import { PlayerPresence } from "@/components/player-presence";
 
 /*
- * Ordem de estilos do Wonderland:
- * 1. fundos e correções históricas que ainda cobrem componentes reais;
- * 2. camada canônica atual;
- * 3. reparo final, carregado por último para impedir novas regressões.
+ * Sistema visual do Wonderland:
+ * 1. uma única base global, responsável por navegação, superfícies e controles;
+ * 2. a camada de reparo cobre os componentes específicos já existentes.
+ * CSS Modules continuam isolados em seus próprios componentes.
  */
-import "./wonderland-backgrounds.css";
-import "./wonderland-fixes.css";
-import "./wonderland-hotfix.css";
-import "./wonderland-ui.css";
+import "./wonderland-base.css";
 import "./wonderland-repair.css";
 
 export const metadata: Metadata = {

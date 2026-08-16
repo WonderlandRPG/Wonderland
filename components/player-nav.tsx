@@ -8,33 +8,34 @@ export async function PlayerNav() {
   const account = await getCurrentAccount();
   const activeCharacter = account ? await getActiveCharacterNavigation(account.id) : null;
   const activeCharacterId = activeCharacter?.id ?? null;
+
   return (
     <header className="player-nav page-container">
-      <Link href={activeCharacter ? "/personagens" : "/"}>
+      <Link className="player-nav__brand" href={activeCharacter ? "/personagens" : "/"}>
         <BrandMark inverse />
       </Link>
       <nav aria-label="Portal dos jogadores">
-        <Link href="/racas">Raças</Link>
-        <Link href="/classes">Classes</Link>
-        <Link href="/historia">História</Link>
-        <Link href="/reinos">Reinos</Link>
+        <div className="player-nav__chronicles">
+          <Link href="/racas">Raças</Link>
+          <Link href="/classes">Classes</Link>
+          <Link href="/historia">História</Link>
+          <Link href="/reinos">Reinos</Link>
+        </div>
+
         {activeCharacterId ? (
-          <>
+          <div className="player-nav__adventure">
             <Link href="/personagens">Jogar</Link>
-            <Link href="/arena">Arena</Link>
-            <Link href="/missoes">Missões</Link>
-            <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}>Equipamentos</Link>
-            <Link href="/loja">Loja</Link>
-            <Link href="/presenca">Presença</Link>
             <PlayerWorldMenu
               activeCharacterId={activeCharacterId}
               isAdmin={Boolean(account && isAdministrativeRole(account.role))}
             />
-          </>
+          </div>
         ) : null}
+
         {!activeCharacterId && account && isAdministrativeRole(account.role) ? (
           <Link href="/admin">Painel ADM</Link>
         ) : null}
+
         {activeCharacter ? (
           <Link className="player-nav__character" href="/personagens">
             <span

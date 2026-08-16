@@ -1,0 +1,2 @@
+/* Fundo ilustrado para qualquer rota sem arte específica; seletores temáticos de wonderland-fixes.css prevalecem. */
+body{background-image:linear-gradient(rgba(241,233,209,.82),rgba(219,220,201,.91)),url('/backgrounds/lore.svg');background-attachment:fixed;background-size:cover;background-position:center}

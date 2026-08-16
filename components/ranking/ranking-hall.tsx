@@ -6,117 +6,41 @@ import { PlayerRanking } from "@/components/ranking/player-ranking";
 import { RankBadge } from "@/components/characters/rank-badge";
 import type { PvpRankingEntry, RankingEntry } from "@/lib/game/player-portal";
 
-export function RankingHall({
-  levelEntries,
-  pvpEntries,
-}: {
-  levelEntries: RankingEntry[];
-  pvpEntries: PvpRankingEntry[];
-}) {
+export function RankingHall({ levelEntries, pvpEntries }: { levelEntries: RankingEntry[]; pvpEntries: PvpRankingEntry[] }) {
   const [mode, setMode] = useState<"level" | "pvp">("level");
   return (
-    <div className="ranking-hall">
-      <nav className="ranking-mode-tabs" aria-label="Tipo de ranking">
-        <button
-          className={mode === "level" ? "is-active" : ""}
-          onClick={() => setMode("level")}
-          type="button"
-        >
-          <small>Progressão geral</small>
-          <strong>Ranking por nível</strong>
-          <span>Nível e XP</span>
-        </button>
-        <button
-          className={mode === "pvp" ? "is-active" : ""}
-          onClick={() => setMode("pvp")}
-          type="button"
-        >
-          <small>Arena competitiva</small>
-          <strong>Ranking PvP</strong>
-          <span>Taxa de vitória</span>
-        </button>
-      </nav>
-      {mode === "level" ? (
-        <PlayerRanking entries={levelEntries} />
-      ) : (
-        <PvpRanking entries={pvpEntries} />
-      )}
-    </div>
+    <section className="champions-hall">
+      <header className="champions-hall__switcher">
+        <div><small>LIVRO DE HONRA</small><h2>Escolha o registro</h2></div>
+        <nav aria-label="Tipo de ranking">
+          <button className={mode === "level" ? "is-active" : ""} onClick={() => setMode("level")} type="button"><span>Ⅰ</span><div><small>PROGRESSÃO DOS AVENTUREIROS</small><strong>Nível & Experiência</strong></div></button>
+          <button className={mode === "pvp" ? "is-active" : ""} onClick={() => setMode("pvp")} type="button"><span>Ⅱ</span><div><small>ARENA DOS REINOS</small><strong>Vitórias & Derrotas</strong></div></button>
+        </nav>
+      </header>
+      {mode === "level" ? <PlayerRanking entries={levelEntries} /> : <PvpRanking entries={pvpEntries} />}
+    </section>
   );
 }
 
 function PvpRanking({ entries }: { entries: PvpRankingEntry[] }) {
-  if (!entries.length)
-    return (
-      <section className="ranking-empty pvp-ranking-empty">
-        <span>VS</span>
-        <h2>A temporada PvP aguarda seu primeiro campeão</h2>
-        <p>As classificações aparecerão quando uma luta oficial for concluída.</p>
-      </section>
-    );
+  if (!entries.length) return <section className="champions-empty"><span>⚔</span><h2>O salão aguarda seu primeiro campeão</h2><p>As placas de honra serão gravadas depois da primeira luta oficial.</p></section>;
   const leader = entries[0];
   return (
-    <div className="pvp-ranking">
-      <section className="pvp-ranking-hero">
-        <div>
-          <span className="eyebrow">Temporada competitiva</span>
-          <h2>Glória na Arena</h2>
-          <p>
-            A taxa de vitória define a posição. Em caso de empate, vence quem possuir mais vitórias
-            e partidas.
-          </p>
-        </div>
-        <article>
-          <span className="pvp-leader-portrait">
-            <span className="ranking-crown" aria-label="Primeiro colocado">♛</span>
-            <Avatar entry={leader} />
-          </span>
-          <div>
-            <small>Líder PvP</small>
-            <h3>{leader.name}</h3>
-            {leader.title_name ? <em className="ranking-equipped-title">✦ {leader.title_name}</em> : null}
-            <strong>{Number(leader.win_rate).toFixed(1)}%</strong>
-            <span>
-              {leader.victories} vitórias em {leader.matches} partidas
-            </span>
-          </div>
-        </article>
+    <div className="duelist-hall">
+      <section className="duelist-banner">
+        <div className="duelist-banner__portrait"><span className="ranking-crown" aria-label="Primeiro colocado">♛</span><Avatar entry={leader} /></div>
+        <div><small>CAMPEÃO DA ARENA</small><h2>{leader.name}</h2>{leader.title_name ? <em>✦ {leader.title_name}</em> : null}<strong>{Number(leader.win_rate).toFixed(1)}%</strong><p>{leader.victories} vitórias em {leader.matches} partidas</p></div>
+        <aside><span>W</span><small>PLACA DE HONRA</small></aside>
       </section>
-      <section className="ranking-board pvp-ranking-board">
-        <header className="ranking-board__header">
-          <div>
-            <span className="eyebrow">Classificação oficial</span>
-            <h2>Melhores duelistas</h2>
-          </div>
-          <small>{entries.length} combatentes classificados</small>
-        </header>
-        <div className="pvp-ranking-table">
-          <div className="pvp-ranking-labels">
-            <span>Posição</span>
-            <span>Personagem</span>
-            <span>Partidas</span>
-            <span>Vitórias</span>
-            <span>Derrotas</span>
-            <span>Taxa</span>
-          </div>
+      <section className="duelist-roll">
+        <header><div><small>REGISTRO OFICIAL</small><h2>Ordem dos duelistas</h2></div><span>{entries.length} nomes gravados</span></header>
+        <div>
           {entries.map((entry) => (
-            <Link href={`/jogadores/${entry.id}`} key={entry.id}>
-              <b>#{entry.position}</b>
-              <span className="pvp-ranking-player">
-                <Avatar entry={entry} />
-                <span>
-                  <strong>{entry.name}</strong>
-                  {entry.title_name ? <em className="ranking-equipped-title">✦ {entry.title_name}</em> : null}
-                  <small>
-                    {entry.race_name} · {entry.class_name}
-                  </small>
-                </span>
-                <RankBadge compact rank={entry.adventure_rank} />
-              </span>
-              <span>{entry.matches}</span>
-              <span className="is-win">{entry.victories}</span>
-              <span className="is-loss">{entry.defeats}</span>
-              <strong className="pvp-win-rate">{Number(entry.win_rate).toFixed(1)}%</strong>
+            <Link className="duelist-roll__entry" href={`/jogadores/${entry.id}`} key={entry.id}>
+              <b>{String(entry.position).padStart(2, "0")}</b>
+              <span className="duelist-roll__identity"><Avatar entry={entry} /><span><strong>{entry.name}</strong>{entry.title_name ? <em>✦ {entry.title_name}</em> : null}<small>{entry.race_name} · {entry.class_name}</small></span></span>
+              <RankBadge compact rank={entry.adventure_rank} />
+              <dl><div><dt>Lutas</dt><dd>{entry.matches}</dd></div><div><dt>Vitórias</dt><dd>{entry.victories}</dd></div><div><dt>Derrotas</dt><dd>{entry.defeats}</dd></div><div><dt>Taxa</dt><dd>{Number(entry.win_rate).toFixed(1)}%</dd></div></dl>
             </Link>
           ))}
         </div>
@@ -126,12 +50,5 @@ function PvpRanking({ entries }: { entries: PvpRankingEntry[] }) {
 }
 
 function Avatar({ entry }: { entry: { name: string; image_url: string | null } }) {
-  return (
-    <span
-      className={`ranking-avatar ${entry.image_url ? "is-image" : ""}`}
-      style={entry.image_url ? { backgroundImage: `url(${entry.image_url})` } : undefined}
-    >
-      {entry.image_url ? "" : entry.name.slice(0, 2).toUpperCase()}
-    </span>
-  );
+  return <span className={`ranking-avatar ${entry.image_url ? "is-image" : ""}`} style={entry.image_url ? { backgroundImage: `url(${entry.image_url})` } : undefined}>{entry.image_url ? "" : entry.name.slice(0, 2).toUpperCase()}</span>;
 }

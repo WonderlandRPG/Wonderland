@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import type { RacePayload } from "@/lib/game/races";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
+import styles from "./codex.module.css";
 
 type Entry = { id: string; name: string; slug: string; payload: RacePayload };
 export function RaceCodex({ entries }: { entries: Entry[] }) {
@@ -20,7 +21,7 @@ export function RaceCodex({ entries }: { entries: Entry[] }) {
   if (!entry) return null;
   const abilities = getStructuredRaceAbilities(entry.payload);
   return (
-    <div className="lore-browser">
+    <div className={`${styles.codex} lore-browser`}>
       <aside className="lore-browser__index">
         <label>
           <span>Buscar raça</span>

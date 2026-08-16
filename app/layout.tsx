@@ -8,7 +8,6 @@ import { PlayerPresence } from "@/components/player-presence";
 
 import "./globals.css";
 import "./theme-overrides.css";
-import "./fantasy-theme.css";
 
 export const metadata: Metadata = {
   title: {

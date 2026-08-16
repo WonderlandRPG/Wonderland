@@ -3,12 +3,7 @@ import { AudioProvider } from "@/components/audio/audio-provider";
 import { getCurrentAccount } from "@/lib/auth/account";
 import { PlayerPresence } from "@/components/player-presence";
 
-import "./barebones.css";
-import "./wonderland-pages.css";
-import "./wonderland-complete.css";
-import "./wonderland-fixes.css";
-import "./wonderland-backgrounds.css";
-import "./wonderland-hotfix.css";
+import "./wonderland-ui.css";
 
 export const metadata: Metadata = {
   title: {

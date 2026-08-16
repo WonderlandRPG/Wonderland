@@ -1,0 +1,69 @@
+/* Final visual hotfix — removes remaining dark Codex panels and restores legibility. */
+
+/* CHARACTER SHEET */
+.sheet-page .sheet-section,
+.sheet-page .combat-formulas,
+.sheet-page .sheet-columns > .sheet-section,
+.sheet-page .inventory-command__loadout,
+.sheet-page .inventory-browser__catalog,
+.sheet-page .inventory-inspector {
+  border: 8px solid #3b2817 !important;
+  outline: 1px solid #88602c !important;
+  background: linear-gradient(100deg,#d8c28e,#bda06a) !important;
+  box-shadow: 0 18px 42px rgba(0,0,0,.45), inset 0 0 0 2px rgba(91,59,26,.24) !important;
+  color:#352414 !important;
+}
+.sheet-page .sheet-section :is(h2,h3,h4,strong,b,span,small,p,li,dt,dd),
+.sheet-page .combat-formulas :is(h2,h3,h4,strong,b,span,small,p,li,code),
+.sheet-page .sheet-columns :is(h2,h3,h4,strong,b,span,small,p,li),
+.sheet-page .inventory-browser__catalog :is(h2,h3,h4,strong,b,span,small,p,i),
+.sheet-page .inventory-inspector :is(h2,h3,h4,strong,b,span,small,p,dt,dd) { color:#3a2817 !important; }
+.sheet-page .sheet-section .eyebrow,
+.sheet-page .combat-formulas .eyebrow { color:#7c511e !important; }
+.sheet-page .combat-formulas > div > article,
+.sheet-page .sheet-lore-block article { border:1px solid rgba(82,53,23,.34)!important;background:rgba(255,247,220,.16)!important; }
+.sheet-page .combat-formulas code { background:#efe0b8!important;border:1px solid rgba(72,46,20,.35)!important;color:#3c2917!important; }
+.sheet-page .sheet-attributes article { border:6px solid #4a311b!important;background:linear-gradient(#ead6a5,#c8a96c)!important;color:#382514!important;box-shadow:none!important; }
+.sheet-page .sheet-attributes article :is(span,strong,small,p){color:#382514!important}
+.sheet-page .sheet-tabs { border:6px solid #382311!important;background:#1a1008!important;box-shadow:none!important; }
+.sheet-page .sheet-tabs a { color:#d9c7a0!important;border-radius:0!important; }
+.sheet-page .sheet-tabs a.is-active { color:#2e1d0d!important;background:linear-gradient(#e0c273,#a9762e)!important; }
+
+/* RANKING */
+.ranking-hall .ranking-board,
+.ranking-hall .pvp-ranking-board,
+.player-ranking .ranking-board {
+  border:10px solid #3b2817!important;
+  outline:1px solid #88602c!important;
+  background:linear-gradient(100deg,#d8c28e,#b99b62)!important;
+  box-shadow:0 20px 48px rgba(0,0,0,.5),inset 0 0 0 2px rgba(82,53,23,.2)!important;
+}
+.ranking-hall .ranking-board :is(h2,h3,strong,b,span,small,p,em),
+.player-ranking .ranking-board :is(h2,h3,strong,b,span,small,p,em),
+.ranking-table a :is(strong,b,span,small,em),
+.pvp-ranking-table a :is(strong,b,span,small,em) { color:#382514!important; }
+.ranking-table__labels span,.pvp-ranking-labels span{color:#6c4a26!important}
+.ranking-table > a,.pvp-ranking-table > a{border-bottom:1px solid rgba(74,48,21,.38)!important;background:rgba(255,246,214,.08)!important}
+.ranking-table > a:hover,.pvp-ranking-table > a:hover{background:rgba(255,246,214,.24)!important}
+.ranking-search input{background:#f1dfb2!important;color:#3a2817!important;border:1px solid #765024!important}
+.ranking-filters button{color:#4b331b!important;background:rgba(255,247,220,.2)!important;border:1px solid #765024!important}
+.ranking-filters button.is-active{background:#3c2816!important;color:#f0ddb2!important}
+
+/* REALMS HERO — stop title/text overlap */
+.realms-page .realms-hero{grid-template-columns:minmax(0,1fr) minmax(330px,.72fr)!important;column-gap:72px!important;row-gap:24px!important;align-items:center!important;padding:72px 0 46px!important}
+.realms-page .realms-hero h1{max-width:620px!important;font-size:clamp(4.5rem,7vw,7.3rem)!important;line-height:.84!important;letter-spacing:-.045em!important}
+.realms-page .realms-hero>p{margin:0!important;padding:24px 28px!important;align-self:center!important;max-width:390px!important;background:#171006!important;border-left:3px solid #b78336!important;color:#ead8af!important;line-height:1.8!important}
+.realms-page .realms-hero>.button{grid-column:1!important;width:max-content!important}
+.realms-page .realms-hero>nav{grid-column:2!important;align-self:start!important}
+@media(max-width:900px){.realms-page .realms-hero{grid-template-columns:1fr!important}.realms-page .realms-hero>p,.realms-page .realms-hero>.button,.realms-page .realms-hero>nav{grid-column:1!important}.realms-page .realms-hero h1{font-size:clamp(3.8rem,12vw,6rem)!important}}
+
+/* ARENA — remove the giant empty history card */
+.arena-page .arena-mode-select{position:relative!important;padding-top:70px!important}
+.arena-page .arena-mode-select>header{max-width:760px!important;margin:0 auto 28px!important;text-align:center!important}
+.arena-page .arena-history-link{display:inline-flex!important;position:static!important;width:auto!important;min-height:0!important;margin:0 auto 32px!important;padding:11px 18px!important;border:1px solid #8a6029!important;border-radius:0!important;background:#1b1008!important;color:#e0c58e!important;box-shadow:none!important;writing-mode:horizontal-tb!important;transform:none!important}
+.arena-page .arena-history-link::before,.arena-page .arena-history-link::after{display:none!important}
+.arena-page .arena-mode-select{display:flex!important;flex-direction:column!important;align-items:stretch!important}
+.arena-page .arena-mode-select .arena-history-link{align-self:center!important}
+
+/* keep global floating audio controls above new framed surfaces */
+.audio-dock,.music-control,[class*="audio-control"],[class*="music-control"]{z-index:500!important}

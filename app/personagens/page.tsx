@@ -2,15 +2,16 @@ import Link from "next/link";
 
 import { PlayerNav } from "@/components/player-nav";
 import { DeleteCharacterButton } from "@/components/characters/delete-character-button";
+import { RankBadge } from "@/components/characters/rank-badge";
+import { EquippedTitle } from "@/components/characters/equipped-title";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
 import { getActiveCharacterId } from "@/lib/content/active-character";
-import { selectCharacterAction } from "./select-actions";
-import { RankBadge } from "@/components/characters/rank-badge";
 import { getAdventureRank } from "@/lib/game/ranks";
-import { EquippedTitle } from "@/components/characters/equipped-title";
 import { getRecentPortalUpdates } from "@/lib/game/player-portal";
+import { selectCharacterAction } from "./select-actions";
+import styles from "./personagens.module.css";
 
 export const metadata = { title: "Meus Personagens" };
 export const dynamic = "force-dynamic";
@@ -21,303 +22,91 @@ const noticeMessages: Record<string, string> = {
   erro: "Não foi possível concluir a operação.",
 };
 
-export default async function CharactersPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ notice?: string; selecionar?: string; next?: string }>;
-}) {
+export default async function CharactersPage({ searchParams }: { searchParams: Promise<{ notice?: string; selecionar?: string; next?: string }> }) {
   const account = await requireCurrentAccount("/personagens");
   const [characters, rules, query, activeCharacterId, recentUpdates] = await Promise.all([
-    getCharacterSheets(account.id),
-    getCharacterRules(),
-    searchParams,
-    getActiveCharacterId(account.id),
-    getRecentPortalUpdates(3),
+    getCharacterSheets(account.id), getCharacterRules(), searchParams, getActiveCharacterId(account.id), getRecentPortalUpdates(3),
   ]);
   const selecting = query.selecionar === "1" || !activeCharacterId;
   const activeCharacter = characters.find((character) => character.id === activeCharacterId);
-  const visibleCharacters = selecting
-    ? characters
-    : activeCharacter
-      ? [activeCharacter]
-      : characters;
+  const visibleCharacters = selecting ? characters : activeCharacter ? [activeCharacter] : characters;
+
   return (
-    <main className="character-page">
+    <main className={styles.page}>
       <PlayerNav />
-      <div className="page-container character-page__inner">
-        <header className="character-page__header">
+      <div className={styles.inner}>
+        <header className={styles.intro}>
           <div>
-            <span className="eyebrow">
-              {selecting ? `Companhia de ${account.displayName}` : "Sessão de jogo"}
-            </span>
-            <h1>{selecting ? "Escolha seu personagem" : `Bem-vindo, ${activeCharacter?.name}`}</h1>
-            <p>
-              {selecting
-                ? "Selecione uma ficha para entrar em Wonderland."
-                : "Seu personagem está online e pronto para continuar a jornada."}
-            </p>
+            <small>{selecting ? `Salão de ${account.displayName}` : "Aventureiro em jornada"}</small>
+            <h1>{selecting ? "Escolha seu aventureiro" : `Bem-vindo, ${activeCharacter?.name}`}</h1>
+            <p>{selecting ? "Cada ficha representa uma história diferente. Escolha quem atravessará os portões de Wonderland." : "Seu personagem está em campo. Continue a jornada a partir daqui."}</p>
           </div>
-          {!selecting ? (
-            <div className="character-online-status">
-              <span aria-hidden="true" /> Online
-            </div>
-          ) : characters.length < rules.maximumSlots ? (
-            <Link className="button button--primary" href="/personagens/novo">
-              Criar personagem ＋
-            </Link>
-          ) : (
-            <span>
-              {characters.length} / {rules.maximumSlots} fichas
-            </span>
-          )}
+          {!selecting ? <div className={styles.online}>Online em Wonderland</div> : characters.length < rules.maximumSlots ? <Link className="button button--primary" href="/personagens/novo">Criar personagem ＋</Link> : <span>{characters.length} / {rules.maximumSlots} fichas</span>}
         </header>
-        {query.notice && noticeMessages[query.notice] ? (
-          <div
-            className={`account-notice ${query.notice === "erro" ? "is-warning" : ""}`}
-            data-sfx-on-mount={query.notice === "erro" ? "error" : "confirm"}
-            role="status"
-          >
-            <span>{query.notice === "erro" ? "!" : "✓"}</span>
-            {noticeMessages[query.notice]}
-          </div>
-        ) : null}
-        {selecting && characters.length > 0 ? (
-          <div className="account-notice" role="status">
-            <span>♜</span>Escolha o personagem com quem deseja jogar nesta sessão.
-          </div>
-        ) : null}
+
+        {query.notice && noticeMessages[query.notice] ? <div className={styles.notice} role="status">{noticeMessages[query.notice]}</div> : null}
+
         {characters.length > 0 ? (
-          <section className={`character-card-grid ${selecting ? "is-selecting" : "is-lobby"}`}>
+          <section className={`${styles.roster} ${!selecting ? styles.rosterLobby : ""}`}>
             {visibleCharacters.map((character) => {
               const rank = getAdventureRank(character.adventure_rank);
-              const equippedTitle =
-                character.inventory.find((item) => item.equippedSlot === "title") ?? null;
+              const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
               return (
-                <article
-                  className="character-card"
-                  key={character.id}
-                  style={{ "--card-rank": rank.color } as React.CSSProperties}
-                  data-card-rank={rank.key}
-                >
-                  <div className="character-card__portrait">
-                    {character.image_url ? (
-                      <span
-                        className="is-image"
-                        role="img"
-                        aria-label={`Retrato de ${character.name}`}
-                        style={{ backgroundImage: `url(${character.image_url})` }}
-                      />
-                    ) : (
-                      <span>{character.name.slice(0, 2).toUpperCase()}</span>
-                    )}
-                    <small>Nível {character.level}</small>
-                    <RankBadge compact rank={character.adventure_rank} />
+                <article className={styles.heroCard} key={character.id} style={{ "--card-rank": rank.color } as React.CSSProperties}>
+                  <div className={styles.portrait}>
+                    <span role="img" aria-label={`Retrato de ${character.name}`} style={character.image_url ? { backgroundImage: `url(${character.image_url})` } : undefined}>{character.image_url ? "" : character.name.slice(0, 2).toUpperCase()}</span>
+                    <div className={styles.portraitMeta}><RankBadge compact rank={character.adventure_rank} /><span className={styles.level}>Nível {character.level}</span></div>
                     <EquippedTitle title={equippedTitle} />
                   </div>
-                  <div className="character-card__body">
-                    <span className="eyebrow">Herói de Wonderland</span>
-                    <h2>{character.name}</h2>
-                    {character.id === activeCharacterId ? (
-                      <small className="character-card__online">● Online agora</small>
-                    ) : null}
-                    <dl className="character-card__identity">
-                      <div>
-                        <dt>Raça</dt>
-                        <dd>{character.race.name}</dd>
-                      </div>
-                      <div>
-                        <dt>Classe</dt>
-                        <dd>{character.characterClass.name}</dd>
-                      </div>
-                      <div>
-                        <dt>Nível</dt>
-                        <dd>{character.level}</dd>
-                      </div>
-                    </dl>
-                    <p className="character-card__wallet">
-                      <small>Carteira</small>
-                      {character.gold.toLocaleString("pt-BR")} WG
-                    </p>
-                    <div className="character-card__stats">
-                      <span>
-                        HP <strong>{character.stats.maxHp}</strong>
-                      </span>
-                      <span>
-                        Recurso <strong>{character.characterClass.payload.resource.name}</strong>
-                      </span>
-                      <span>
-                        INI <strong>{character.stats.initiative}</strong>
-                      </span>
-                    </div>
+                  <div className={styles.body}>
+                    <small>Herói de Wonderland</small><h2>{character.name}</h2>
+                    <dl className={styles.identity}><div><dt>Raça</dt><dd>{character.race.name}</dd></div><div><dt>Classe</dt><dd>{character.characterClass.name}</dd></div><div><dt>Rank</dt><dd>{rank.key}</dd></div></dl>
+                    <p className={styles.wallet}><span>Carteira</span><strong>{character.gold.toLocaleString("pt-BR")} WG</strong></p>
+                    <div className={styles.stats}><span>HP <strong>{character.stats.maxHp}</strong></span><span>Recurso <strong>{character.characterClass.payload.resource.name}</strong></span><span>INI <strong>{character.stats.initiative}</strong></span></div>
                   </div>
-                  <footer>
-                    {selecting ? (
-                      <form action={selectCharacterAction}>
-                        <input name="characterId" type="hidden" value={character.id} />
-                        <input name="next" type="hidden" value={query.next ?? "/personagens"} />
-                        <button className="button button--dark" type="submit">
-                          {character.id === activeCharacterId
-                            ? "Continuar jogando"
-                            : "Jogar com este"}
-                        </button>
-                      </form>
-                    ) : (
-                      <Link className="button button--dark" href="/arena">
-                        Entrar na arena
-                      </Link>
-                    )}
-                    {selecting ? (
-                      <form action={selectCharacterAction}>
-                        <input name="characterId" type="hidden" value={character.id} />
-                        <input name="next" type="hidden" value={`/personagens/${character.id}`} />
-                        <button className="button button--primary" type="submit">
-                          Abrir ficha
-                        </button>
-                      </form>
-                    ) : (
-                      <Link
-                        className="button button--primary"
-                        href={`/personagens/${character.id}`}
-                      >
-                        Abrir ficha
-                      </Link>
-                    )}
-                    {selecting ? (
-                      <DeleteCharacterButton id={character.id} name={character.name} />
-                    ) : null}
+                  <footer className={styles.footer}>
+                    {selecting ? <form action={selectCharacterAction}><input name="characterId" type="hidden" value={character.id} /><input name="next" type="hidden" value={query.next ?? "/personagens"} /><button className="button button--dark" type="submit">{character.id === activeCharacterId ? "Continuar jornada" : "Jogar com este"}</button></form> : <Link className="button button--dark" href="/arena">Ir para a Arena</Link>}
+                    {selecting ? <form action={selectCharacterAction}><input name="characterId" type="hidden" value={character.id} /><input name="next" type="hidden" value={`/personagens/${character.id}`} /><button className="button button--primary" type="submit">Abrir ficha</button></form> : <Link className="button button--primary" href={`/personagens/${character.id}`}>Abrir ficha</Link>}
+                    {selecting ? <DeleteCharacterButton id={character.id} name={character.name} /> : null}
                   </footer>
                 </article>
               );
             })}
+
             {!selecting && activeCharacter ? (
-              <aside className="character-session-card">
-                <span className="eyebrow">Você está em Wonderland</span>
-                <h2>Sessão ativa</h2>
-                <p>
-                  Todas as ações de presença, loja, inventário e arena serão feitas por{" "}
-                  {activeCharacter.name}.
-                </p>
-                <dl>
-                  <div>
-                    <dt>Personagem</dt>
-                    <dd>{activeCharacter.name}</dd>
-                  </div>
-                  <div>
-                    <dt>Raça</dt>
-                    <dd>{activeCharacter.race.name}</dd>
-                  </div>
-                  <div>
-                    <dt>Classe</dt>
-                    <dd>{activeCharacter.characterClass.name}</dd>
-                  </div>
-                  <div>
-                    <dt>Nível</dt>
-                    <dd>{activeCharacter.level}</dd>
-                  </div>
-                </dl>
-                <Link className="button button--glass" href="/personagens?selecionar=1">
-                  Trocar personagem
-                </Link>
+              <aside className={styles.session}>
+                <small>Registro da jornada</small><h2>{activeCharacter.name} está em campo</h2>
+                <p>Todas as ações de combate, comércio, inventário e presença serão realizadas por este aventureiro até que você troque de personagem.</p>
+                <dl><div><dt>Personagem</dt><dd>{activeCharacter.name}</dd></div><div><dt>Raça</dt><dd>{activeCharacter.race.name}</dd></div><div><dt>Classe</dt><dd>{activeCharacter.characterClass.name}</dd></div><div><dt>Nível</dt><dd>{activeCharacter.level}</dd></div></dl>
+                <Link className="button button--secondary" href="/personagens?selecionar=1">Trocar aventureiro</Link>
               </aside>
             ) : null}
           </section>
         ) : (
-          <section className="character-empty">
-            <span>00/03</span>
-            <h2>Sua primeira ficha começa aqui</h2>
-            <p>Escolha raça, classe e distribua 100 pontos para entrar no Wonderland.</p>
-            <Link className="button button--primary" href="/personagens/novo">
-              Criar primeiro personagem
-            </Link>
-          </section>
+          <section className={styles.empty}><h2>Sua primeira lenda começa aqui</h2><p>Escolha raça, classe e distribua seus pontos para atravessar os portões de Wonderland.</p><Link className="button button--primary" href="/personagens/novo">Criar primeiro personagem</Link></section>
         )}
+
         {!selecting && activeCharacter ? (
-          <section className="game-command-center">
-            <header>
-              <span className="eyebrow">Central de jogo</span>
-              <h2>O que você quer fazer agora?</h2>
-            </header>
-            <div>
-              <Link className="game-command-card is-primary" href="/arena">
-                <span aria-hidden="true">⚔</span>
-                <small>Combate</small>
-                <strong>Entrar na Arena</strong>
-                <i>→</i>
-              </Link>
-              <Link
-                className="game-command-card"
-                href={`/personagens/${activeCharacter.id}?tab=equipamentos`}
-              >
-                <span aria-hidden="true">◈</span>
-                <small>Personagem</small>
-                <strong>Equipamentos</strong>
-                <i>→</i>
-              </Link>
-              <Link className="game-command-card" href="/loja">
-                <span aria-hidden="true">◆</span>
-                <small>Economia</small>
-                <strong>Visitar a Loja</strong>
-                <i>→</i>
-              </Link>
-              <div className="game-command-card is-disabled" aria-disabled="true">
-                <span aria-hidden="true">⌖</span>
-                <small>Exploração · em manutenção</small>
-                <strong>Mapa indisponível</strong>
-                <i>×</i>
-              </div>
-              <Link className="game-command-card" href="/eventos">
-                <span aria-hidden="true">◇</span>
-                <small>Agenda</small>
-                <strong>Próximos eventos</strong>
-                <i>→</i>
-              </Link>
-              <Link className="game-command-card" href="/ranking">
-                <span aria-hidden="true">♜</span>
-                <small>Comunidade</small>
-                <strong>Ver Ranking</strong>
-                <i>→</i>
-              </Link>
+          <section className={styles.commands}>
+            <header><small>Escolha o próximo destino</small><h2>Para onde a jornada segue?</h2></header>
+            <div className={styles.signs}>
+              <Link className={styles.sign} href="/arena"><span>⚔</span><small>Combate</small><strong>Arena</strong></Link>
+              <Link className={styles.sign} href={`/personagens/${activeCharacter.id}?tab=equipamentos`}><span>◈</span><small>Preparação</small><strong>Equipamentos</strong></Link>
+              <Link className={styles.sign} href="/loja"><span>◆</span><small>Comércio</small><strong>Mercado</strong></Link>
+              <div className={`${styles.sign} ${styles.disabled}`}><span>⌖</span><small>Exploração</small><strong>Mapa em manutenção</strong></div>
+              <Link className={styles.sign} href="/eventos"><span>◇</span><small>Agenda</small><strong>Eventos</strong></Link>
+              <Link className={styles.sign} href="/ranking"><span>♜</span><small>Prestígio</small><strong>Ranking</strong></Link>
             </div>
           </section>
         ) : null}
+
         {recentUpdates.length > 0 ? (
-          <section className="home-updates" aria-labelledby="home-updates-title">
-            <header>
-              <div>
-                <span className="eyebrow">Diário de Wonderland</span>
-                <h2 id="home-updates-title">Últimas atualizações</h2>
-                <p>Novidades, ajustes e conteúdos que acabaram de chegar ao jogo.</p>
-              </div>
-              <Link href="/atualizacoes">Ver todas as atualizações →</Link>
-            </header>
-            <div className="home-updates__grid">
-              {recentUpdates.map((update, index) => {
-                const summary = update.notes.find((block) =>
-                  ["paragraph", "highlight", "list"].includes(block.type),
-                )?.content;
-                return (
-                  <Link
-                    className={`home-update-card ${index === 0 ? "is-featured" : ""}`}
-                    href="/atualizacoes"
-                    key={update.id}
-                  >
-                    <div>
-                      <span>{index === 0 ? "Mais recente" : `Atualização 0${index + 1}`}</span>
-                      <time dateTime={update.published_on}>
-                        {new Date(`${update.published_on}T00:00:00Z`).toLocaleDateString("pt-BR", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                          timeZone: "UTC",
-                        })}
-                      </time>
-                    </div>
-                    <small>Versão {update.version}</small>
-                    <h3>{update.title}</h3>
-                    <p>{summary ?? "Abra o diário para conhecer todos os detalhes desta versão."}</p>
-                    <strong>Ler atualização <i>→</i></strong>
-                  </Link>
-                );
+          <section className={styles.updates}>
+            <header><div><small>Crônicas recentes</small><h2>O que mudou em Wonderland</h2></div><Link href="/atualizacoes">Abrir diário completo →</Link></header>
+            <div className={styles.updatesGrid}>
+              {recentUpdates.map((update) => {
+                const summary = update.notes.find((block) => ["paragraph", "highlight", "list"].includes(block.type))?.content;
+                return <Link className={styles.update} href="/atualizacoes" key={update.id}><small>Versão {update.version}</small><h3>{update.title}</h3><p>{summary ?? "Abra as crônicas para conhecer os detalhes desta atualização."}</p></Link>;
               })}
             </div>
           </section>

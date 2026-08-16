@@ -16,14 +16,36 @@ export function PortalShell({
   return (
     <main className={styles.shell}>
       <PlayerNav />
-      <section className={styles.hero}>
-        <span className={styles.eyebrow}>{eyebrow}</span>
-        <h1>{title}</h1>
-        <p>{description}</p>
-      </section>
-      <section className={styles.content}>{children}</section>
+
+      <div className={styles.stage}>
+        <aside className={styles.rail} aria-hidden="true">
+          <span>✦</span>
+          <i />
+          <b>W</b>
+          <i />
+          <span>✦</span>
+        </aside>
+
+        <section className={styles.chronicle}>
+          <header className={styles.banner}>
+            <span className={styles.eyebrow}>{eyebrow}</span>
+            <h1>{title}</h1>
+            <p>{description}</p>
+          </header>
+
+          <div className={styles.divider} aria-hidden="true">
+            <span />
+            <b>◆</b>
+            <span />
+          </div>
+
+          <section className={styles.content}>{children}</section>
+        </section>
+      </div>
+
       <footer className={styles.footer}>
-        Wonderland RPG <span>© 2026 Wonderland Ltda.</span>
+        <span>Crônicas oficiais de Wonderland</span>
+        <b>© 2026 Wonderland Ltda.</b>
       </footer>
     </main>
   );

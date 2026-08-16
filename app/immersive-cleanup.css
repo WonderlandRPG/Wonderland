@@ -1,0 +1,6 @@
+/* Última limpeza visual: remove símbolos/neon remanescentes do antigo Codex. */
+.arena-mode-card__sigil,.arena-mode-locked>span{font-size:0!important}.arena-mode-card::before,.arena-mode-locked::before{position:absolute;right:34px;bottom:26px;z-index:1;color:rgba(63,39,17,.14);font:400 7rem/1 Georgia,serif}.arena-mode-card.is-training::before{content:"⚔"}.arena-mode-card.is-pve::before,.arena-mode-locked::before{content:"♞"}.arena-mode-card.is-pvp::before{content:"⚜"}.arena-mode-card.is-dungeon::before{content:"⌂"}
+.item-artwork g[filter]{filter:none!important}.item-artwork circle[stroke-dasharray]{opacity:.18!important}.classic-item-card__art .item-artwork,.presence-reward-icon .item-artwork{filter:sepia(.35) saturate(.8) contrast(1.04)!important}
+.rank-guide-card,.ranking-podium__place,.classic-item-card,.presence-reward-grid>article,.arena-mode-card{backdrop-filter:none!important}
+/* O painel de áudio continua funcional, mas deixa de parecer HUD. */
+.audio-now-playing,.audio-control,.theme-control{border-radius:2px!important;backdrop-filter:none!important}

@@ -2,69 +2,47 @@ import { PortalShell } from "@/components/portal-shell";
 import { getPortalUpdates } from "@/lib/game/player-portal";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { UpdateBlocks } from "@/components/updates/update-blocks";
+
 export const dynamic = "force-dynamic";
+
 export default async function UpdatesPage() {
   await requireActiveCharacter("/atualizacoes");
   const updates = await getPortalUpdates();
-  const date = new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    timeZone: "UTC",
-  });
+  const date = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "long", year: "numeric", timeZone: "UTC" });
+  const latest = updates[0];
+
   return (
-    <PortalShell
-      eyebrow="Diário de atualizações"
-      title="Novidades do mundo"
-      description="Todas as mudanças importantes, explicadas para quem vive a aventura."
-    >
-      <div className="update-list">
-        {updates.slice(0, 1).map((update) => (
-          <article className="update-featured" key={update.version}>
-            <div className="update-featured__masthead">
-              <span className="update-featured__seal">W</span>
-              <div>
-                <small>EDIÇÃO MAIS RECENTE</small>
-                <strong>Crônicas de Wonderland</strong>
-              </div>
-              <time>{date.format(new Date(`${update.published_on}T00:00:00Z`))}</time>
-            </div>
-            <div className="update-featured__body">
-              <aside>
-                <span>VERSÃO</span>
-                <b>v{update.version}</b>
-                <small>Notas oficiais</small>
-              </aside>
-              <div>
-                <h2>{update.title}</h2>
-                <UpdateBlocks blocks={update.notes} />
-              </div>
-            </div>
-          </article>
-        ))}
-        {updates.length > 1 ? (
-          <section className="update-archive">
-            <header>
-              <span className="eyebrow">Versões anteriores</span>
-              <h2>Arquivo de atualizações</h2>
-              <p>Clique em uma versão para abrir todas as notas.</p>
+    <PortalShell eyebrow="Imprensa da Coroa" title="Crônicas de Wonderland" description="Relatos oficiais das mudanças que atravessam os reinos.">
+      <section className="royal-chronicle">
+        {latest ? (
+          <article className="royal-chronicle__edition">
+            <header className="royal-chronicle__masthead">
+              <div className="royal-chronicle__seal">W</div>
+              <div><small>GAZETA OFICIAL DOS REINOS</small><h2>Crônicas de Wonderland</h2><p>Folha de registro da Guilda e da Coroa</p></div>
+              <time>{date.format(new Date(`${latest.published_on}T00:00:00Z`))}</time>
             </header>
-            {updates.slice(1).map((update, index) => (
-              <details className="update-archive__entry" key={update.version}>
-                <summary>
-                  <span>{String(index + 1).padStart(2, "0")} · v{update.version}</span>
-                  <strong>{update.title}</strong>
-                  <time>{date.format(new Date(`${update.published_on}T00:00:00Z`))}</time>
-                  <i aria-hidden="true">＋</i>
-                </summary>
-                <div>
-                  <UpdateBlocks blocks={update.notes} />
-                </div>
-              </details>
-            ))}
+            <div className="royal-chronicle__headline">
+              <aside><small>EDIÇÃO</small><strong>v{latest.version}</strong><span>Arquivo oficial</span></aside>
+              <div><small>ÚLTIMAS NOTÍCIAS</small><h3>{latest.title}</h3></div>
+            </div>
+            <div className="royal-chronicle__story"><UpdateBlocks blocks={latest.notes} /></div>
+          </article>
+        ) : <p className="royal-chronicle__empty">Nenhuma crônica foi publicada ainda.</p>}
+
+        {updates.length > 1 ? (
+          <section className="royal-chronicle__archive">
+            <header><small>ARQUIVO DA GUILDA</small><h2>Edições anteriores</h2><p>Consulte os volumes preservados no arquivo real.</p></header>
+            <div>
+              {updates.slice(1).map((update, index) => (
+                <details className="royal-chronicle__volume" key={update.version}>
+                  <summary><span>{String(index + 1).padStart(2, "0")}</span><div><small>VOLUME v{update.version}</small><strong>{update.title}</strong></div><time>{date.format(new Date(`${update.published_on}T00:00:00Z`))}</time><b>ABRIR</b></summary>
+                  <div className="royal-chronicle__volume-copy"><UpdateBlocks blocks={update.notes} /></div>
+                </details>
+              ))}
+            </div>
           </section>
         ) : null}
-      </div>
+      </section>
     </PortalShell>
   );
 }

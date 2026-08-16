@@ -6,65 +6,27 @@ export const metadata = { title: "Ranks" };
 
 export default async function RanksPage() {
   return (
-    <PortalShell
-      eyebrow="Guilda dos Aventureiros"
-      title="Ascenda além do comum"
-      description="Os Ranks definem as missões, dungeons e ameaças que um aventureiro está autorizado a enfrentar."
-    >
-      <section className="ranks-intro-card">
-        <div>
-          <span className="eyebrow">Como funciona</span>
-          <h2>Nível e Rank são sistemas diferentes</h2>
-        </div>
-        <p>
-          O nível mede a evolução individual. O Rank mede prestígio, experiência comprovada e
-          autorização oficial da Guilda. Para ascender, o personagem deve cumprir requisitos,
-          concluir missões e vencer uma Prova da Guilda.
-        </p>
-      </section>
-      <blockquote className="ranks-quote">
-        “O nível mostra o quanto você cresceu. O Rank mostra aquilo que o mundo reconhece em você.”
-      </blockquote>
-      <section className="rank-guide rank-ladder">
-        {adventureRanks.map((rank, index) => (
-          <article
-            className={`rank-guide-card ${rank.key === "EX" ? "is-ex" : ""}`}
-            key={rank.key}
-            style={{ "--rank-color": rank.color } as React.CSSProperties}
-          >
-            <span className="rank-guide-card__order">{String(index + 1).padStart(2, "0")}</span>
-            <RankBadge rank={rank.key} />
-            <div>
-              <small>{rank.title}</small>
-              <h2>Rank {rank.key}</h2>
-              <p>{rank.description}</p>
-              <small className="rank-guide-card__atmosphere">
-                Assinatura visual · {rank.atmosphere}
-              </small>
-              <ul>
-                {rank.access.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </div>
-          </article>
-        ))}
-      </section>
-      <section className="guild-trials">
-        <header>
-          <span className="eyebrow">Ascensão oficial</span>
-          <h2>Provas da Guilda</h2>
-          <p>Cada promoção exige um feito digno do novo Rank.</p>
+    <PortalShell eyebrow="Arquivo da Guilda" title="Patentes dos Aventureiros" description="Decretos oficiais que definem prestígio, autorização e deveres em Wonderland.">
+      <section className="guild-decrees">
+        <header className="guild-decrees__intro">
+          <span className="guild-decrees__wax">W</span>
+          <div><small>DECRETO DE CLASSIFICAÇÃO</small><h2>Nível mede crescimento. Rank mede reconhecimento.</h2><p>Para ascender, um aventureiro precisa cumprir os requisitos de sua patente, concluir missões e vencer a Prova da Guilda correspondente.</p></div>
         </header>
-        <div className="trial-grid">
-          {guildTrials.map((trial) => (
-            <article key={trial.from}>
-              <span>{trial.from}</span>
-              <h3>{trial.name}</h3>
-              <p>{trial.description}</p>
+
+        <div className="guild-decrees__roll">
+          {adventureRanks.map((rank, index) => (
+            <article className={`guild-decree ${rank.key === "EX" ? "is-ex" : ""}`} key={rank.key} style={{ "--rank-color": rank.color } as React.CSSProperties}>
+              <div className="guild-decree__index"><span>{String(index + 1).padStart(2, "0")}</span><RankBadge rank={rank.key} /></div>
+              <div className="guild-decree__copy"><small>{rank.title}</small><h2>Patente {rank.key}</h2><p>{rank.description}</p><ul>{rank.access.map((item) => <li key={item}>{item}</li>)}</ul></div>
+              <aside><small>ASSINATURA</small><strong>{rank.atmosphere}</strong></aside>
             </article>
           ))}
         </div>
+
+        <section className="guild-trials-scroll">
+          <header><span>✦</span><div><small>RITO DE ASCENSÃO</small><h2>Provas da Guilda</h2><p>Cada nova patente exige um feito digno do reconhecimento dos reinos.</p></div></header>
+          <div>{guildTrials.map((trial) => <article key={trial.from}><span>{trial.from}</span><div><small>PROVA OFICIAL</small><h3>{trial.name}</h3><p>{trial.description}</p></div></article>)}</div>
+        </section>
       </section>
     </PortalShell>
   );

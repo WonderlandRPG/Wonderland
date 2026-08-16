@@ -1,11 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import { musicTrackForPath, musicTracks } from "@/lib/audio/sources";
-
-type AudioStatus = "loading" | "blocked" | "playing" | "paused" | "error";
 
 const enabledKey = "wonderland:music-enabled";
 const positionsKey = "wonderland:music-positions";
@@ -48,17 +46,13 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const enabledRef = useRef(true);
   const previousTrackRef = useRef(trackKey);
   const deferredRef = useRef(false);
-  const [enabled, setEnabled] = useState(true);
-  const [status, setStatus] = useState<AudioStatus>("loading");
 
   const savePosition = useCallback((key: string, position: number) => {
     try {
       const positions = readPositions();
       positions[key] = position;
       window.localStorage.setItem(positionsKey, JSON.stringify(positions));
-    } catch {
-      // A troca de música continua funcionando sem armazenamento local.
-    }
+    } catch {}
   }, []);
 
   const play = useCallback(async () => {
@@ -66,21 +60,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (!audio || !enabledRef.current) return;
     try {
       await audio.play();
-      setStatus("playing");
-    } catch (error) {
-      setStatus(
-        error instanceof DOMException && error.name === "NotAllowedError" ? "blocked" : "error",
-      );
-    }
+    } catch {}
   }, []);
 
   useEffect(() => {
-    const storedEnabled = readEnabled();
-    enabledRef.current = storedEnabled;
-    queueMicrotask(() => {
-      setEnabled(storedEnabled);
-      setStatus(storedEnabled ? "loading" : "paused");
-    });
+    enabledRef.current = readEnabled();
   }, []);
 
   useEffect(() => {
@@ -96,13 +80,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       deferredRef.current = true;
       audio.removeAttribute("src");
       audio.load();
-      setStatus(enabledRef.current ? "blocked" : "paused");
       return;
     }
+
     deferredRef.current = false;
     audio.src = track.source;
     audio.load();
-    setStatus(enabledRef.current ? "loading" : "paused");
 
     const restoreAndPlay = () => {
       const savedPosition = readPositions()[trackKey] ?? 0;
@@ -120,8 +103,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, [play, savePosition, track.source, trackKey]);
 
   useEffect(() => {
-    const unlock = (event: Event) => {
-      if (event.target instanceof Element && event.target.closest(".audio-control")) return;
+    const unlock = () => {
       const audio = audioRef.current;
       if (!audio || !enabledRef.current) return;
       if (deferredRef.current) {
@@ -139,61 +121,12 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("pointerdown", unlock, true);
       window.removeEventListener("keydown", unlock, true);
     };
-  }, [play, track.source, trackKey]);
-
-  function toggle() {
-    const audio = audioRef.current;
-    if (status === "playing" && enabledRef.current) {
-      enabledRef.current = false;
-      setEnabled(false);
-      try {
-        window.localStorage.setItem(enabledKey, "false");
-      } catch {}
-      audio?.pause();
-      setStatus("paused");
-    } else {
-      enabledRef.current = true;
-      setEnabled(true);
-      try {
-        window.localStorage.setItem(enabledKey, "true");
-      } catch {}
-      setStatus("loading");
-      if (audio && deferredRef.current) {
-        deferredRef.current = false;
-        audio.src = track.source;
-        audio.load();
-        audio.addEventListener("loadedmetadata", () => void play(), { once: true });
-        return;
-      }
-      void play();
-    }
-  }
+  }, [play, track.source]);
 
   return (
     <>
       {children}
-      <audio
-        aria-hidden="true"
-        hidden
-        loop
-        onError={() => setStatus("error")}
-        onPlaying={() => setStatus("playing")}
-        preload="metadata"
-        ref={audioRef}
-      />
-      <button
-        aria-label={enabled ? "Pausar música" : "Ativar música"}
-        aria-pressed={status === "playing"}
-        className={`audio-control ${status === "playing" ? "is-playing" : ""} ${status === "error" ? "has-error" : ""}`}
-        onClick={toggle}
-        type="button"
-      >
-        <span aria-hidden="true">{status === "playing" ? "♫" : "♪"}</span>
-        <small>
-          <b>{enabled ? track.label : "Música pausada"}</b>
-          <em>{status === "blocked" ? "Clique para ativar" : "Trilha dinâmica"}</em>
-        </small>
-      </button>
+      <audio aria-hidden="true" hidden loop preload="metadata" ref={audioRef} />
     </>
   );
 }

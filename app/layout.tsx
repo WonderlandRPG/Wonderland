@@ -7,6 +7,7 @@ import "./barebones.css";
 import "./wonderland-pages.css";
 import "./wonderland-complete.css";
 import "./wonderland-fixes.css";
+import "./wonderland-backgrounds.css";
 
 export const metadata: Metadata = {
   title: {

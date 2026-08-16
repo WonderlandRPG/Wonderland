@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { PlayerWorldMenu } from "@/components/player-world-menu";
+import { BrandMark } from "@/components/brand-mark";
 import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 import { getActiveCharacterNavigation } from "@/lib/content/active-character";
 
@@ -10,9 +11,9 @@ export async function PlayerNav() {
   const activeCharacterId = activeCharacter?.id ?? null;
 
   return (
-    <header>
-      <Link href="/">Wonderland</Link>
-      <nav aria-label="Portal dos jogadores">
+    <header className="player-nav">
+      <BrandMark compact />
+      <nav className="player-nav__links" aria-label="Portal dos jogadores">
         <Link href="/racas">Raças</Link>
         <Link href="/classes">Classes</Link>
         <Link href="/historia">História</Link>
@@ -27,16 +28,19 @@ export async function PlayerNav() {
         {!activeCharacterId && account && isAdministrativeRole(account.role) ? (
           <Link href="/admin">Painel ADM</Link>
         ) : null}
+      </nav>
+      <div className="player-nav__character">
         {activeCharacter ? (
           <Link href="/personagens">
-            {activeCharacter.name} — Nível {activeCharacter.level}
+            <span>{activeCharacter.name}</span>
+            <small>Nível {activeCharacter.level}</small>
           </Link>
         ) : (
           <Link href={account ? "/personagens?selecionar=1" : "/entrar"}>
             {account ? "Escolher personagem" : "Entrar"}
           </Link>
         )}
-      </nav>
+      </div>
     </header>
   );
 }

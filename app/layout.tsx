@@ -16,6 +16,7 @@ import "./structural-rpg.css";
 import "./inventory-rebuild.css";
 import "./readability-hotfix.css";
 import "./shop-legibility-fix.css";
+import "./shop-final.css";
 
 export const metadata: Metadata = {
   title: {

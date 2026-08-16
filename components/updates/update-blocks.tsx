@@ -8,8 +8,7 @@ export function UpdateBlocks({ blocks }: { blocks: UpdateBlock[] }) {
           return (
             <figure className="update-image" key={block.id}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt={block.label || "Imagem da atualização"} src={block.content} />
-              {block.label ? <figcaption>{block.label}</figcaption> : null}
+              <img alt="Imagem da atualização" src={block.content} />
             </figure>
           );
         if (block.type === "heading") return <h3 key={block.id}>{block.content}</h3>;

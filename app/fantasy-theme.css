@@ -1010,3 +1010,335 @@ tr:hover td {
     max-width: calc(100vw - 20px);
   }
 }
+
+
+/* Página inicial: portal para o mundo */
+.player-home {
+  color: var(--ui-ink);
+  background:
+    radial-gradient(circle at 64% 26%, rgba(var(--ui-arcane-rgb), 0.12), transparent 26rem),
+    linear-gradient(90deg, rgba(3, 9, 5, 0.98), rgba(5, 13, 8, 0.78), rgba(3, 9, 5, 0.94)) !important;
+}
+
+.player-hero {
+  min-height: 100svh;
+}
+
+.hero__backdrop {
+  opacity: 0.5;
+  filter: saturate(0.72) contrast(1.06);
+}
+
+.hero__grid {
+  opacity: 0.12 !important;
+  background-size: 72px 72px !important;
+}
+
+.hero__content {
+  padding-top: clamp(110px, 15vh, 180px);
+  padding-bottom: 80px;
+}
+
+.hero__status {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: 999px !important;
+  color: var(--ui-muted) !important;
+  background: rgba(6, 15, 10, 0.78) !important;
+  backdrop-filter: blur(10px);
+}
+
+.hero__kicker {
+  color: var(--ui-gold-soft) !important;
+  letter-spacing: 0.2em !important;
+}
+
+.player-hero h1 {
+  max-width: 940px;
+  color: var(--ui-ink) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
+  text-shadow: 0 8px 40px rgba(0, 0, 0, 0.55);
+}
+
+.hero__lead {
+  max-width: 700px;
+  color: #c4d0c7 !important;
+  line-height: 1.8;
+}
+
+/* Entrada e criação de conta */
+.auth-page,
+.auth-shell {
+  color: var(--ui-ink);
+  background:
+    radial-gradient(circle at 25% 18%, rgba(202, 168, 88, 0.1), transparent 30rem),
+    radial-gradient(circle at 82% 75%, rgba(var(--ui-arcane-rgb), 0.09), transparent 34rem),
+    linear-gradient(150deg, var(--ui-bg-2), var(--ui-bg)) !important;
+}
+
+.auth-card,
+.auth-panel,
+.auth-form {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: var(--ui-radius) !important;
+  color: var(--ui-ink);
+  background:
+    linear-gradient(145deg, rgba(255, 244, 203, 0.025), transparent 35%),
+    var(--ui-surface) !important;
+  box-shadow: var(--ui-shadow) !important;
+}
+
+.auth-card h1,
+.auth-panel h1 {
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 400;
+}
+
+.auth-status-banner {
+  border-color: var(--ui-line-gold) !important;
+  color: var(--ui-muted) !important;
+  background: rgba(202, 168, 88, 0.07) !important;
+}
+
+/* Salão dos aventureiros */
+.character-page {
+  min-height: 100svh;
+  color: var(--ui-ink);
+  background:
+    radial-gradient(circle at 50% 0, rgba(var(--ui-arcane-rgb), 0.11), transparent 34rem),
+    transparent !important;
+}
+
+.character-page__header {
+  position: relative;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--ui-line-gold);
+}
+
+.character-page__header h1 {
+  color: var(--ui-ink) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.045em;
+}
+
+.character-card,
+.character-session-card,
+.game-command-card,
+.home-update-card,
+.character-empty {
+  border: 1px solid var(--ui-line-gold) !important;
+  border-radius: var(--ui-radius) !important;
+  color: var(--ui-ink);
+  background:
+    linear-gradient(145deg, rgba(255, 245, 208, 0.025), transparent 38%),
+    linear-gradient(150deg, var(--ui-surface-raised), var(--ui-surface)) !important;
+  box-shadow: var(--ui-shadow-small) !important;
+}
+
+.character-card {
+  overflow: hidden;
+}
+
+.character-card__portrait {
+  border-color: var(--ui-line-gold) !important;
+  background-color: #07110b !important;
+}
+
+.character-card__identity,
+.character-card__wallet,
+.character-card__stats {
+  border-color: var(--ui-line) !important;
+}
+
+.character-card__body :is(p, small),
+.character-session-card :is(p, small),
+.game-command-card :is(p, small),
+.home-update-card :is(p, small) {
+  color: var(--ui-muted) !important;
+}
+
+.character-card__body :is(h2, h3, strong),
+.character-session-card :is(h2, h3, strong),
+.game-command-card :is(h2, h3, strong),
+.home-update-card :is(h2, h3, strong) {
+  color: var(--ui-ink) !important;
+}
+
+.game-command-card.is-primary {
+  border-color: rgba(var(--ui-arcane-rgb), 0.5) !important;
+  box-shadow:
+    var(--ui-shadow-small),
+    inset 3px 0 rgba(var(--ui-arcane-rgb), 0.35) !important;
+}
+
+.game-command-card.is-disabled {
+  filter: grayscale(0.45);
+  opacity: 0.68;
+}
+
+/* Grimórios de Classes e Raças */
+.lore-page {
+  min-height: 100svh;
+  color: var(--ui-ink);
+  background:
+    radial-gradient(circle at 12% 10%, rgba(202, 168, 88, 0.09), transparent 30rem),
+    radial-gradient(circle at 90% 42%, rgba(var(--ui-arcane-rgb), 0.07), transparent 34rem),
+    transparent !important;
+}
+
+.lore-hero {
+  border-bottom: 1px solid var(--ui-line-gold);
+}
+
+.lore-hero h1 {
+  color: var(--ui-ink) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.05em;
+}
+
+.lore-browser,
+.lore-browser__content {
+  gap: 24px;
+}
+
+.lore-browser__index button,
+.lore-browser__index a {
+  border-color: var(--ui-line) !important;
+  border-radius: 4px !important;
+  color: var(--ui-muted) !important;
+  background: rgba(255, 255, 255, 0.018) !important;
+}
+
+.lore-browser__index button:hover,
+.lore-browser__index button.is-active,
+.lore-browser__index a:hover,
+.lore-browser__index a.is-active {
+  border-color: var(--ui-line-gold) !important;
+  color: var(--ui-gold-soft) !important;
+  background: rgba(202, 168, 88, 0.08) !important;
+}
+
+.lore-dossier :is(p, li, dd) {
+  color: var(--ui-muted) !important;
+}
+
+.lore-dossier :is(h2, h3, h4, strong, dt) {
+  color: var(--ui-ink) !important;
+}
+
+/* Mercado dos reinos */
+.market-page {
+  min-height: 100svh;
+  color: var(--ui-ink);
+  background:
+    radial-gradient(circle at 72% 5%, rgba(202, 168, 88, 0.1), transparent 32rem),
+    transparent !important;
+}
+
+.market-hero {
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--ui-line-gold);
+}
+
+.market-hero h1 {
+  color: var(--ui-ink) !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.05em;
+}
+
+.market-hero :is(p, small) {
+  color: var(--ui-muted) !important;
+}
+
+.shop-purchase-notice {
+  border-radius: 5px !important;
+}
+
+/* Calendário, presença e conquistas */
+.calendar-card,
+.presence-card,
+.achievement-card,
+.event-card {
+  border-color: var(--ui-line-gold) !important;
+  border-radius: 7px !important;
+  color: var(--ui-ink);
+  background: linear-gradient(145deg, var(--ui-surface-raised), var(--ui-surface)) !important;
+  box-shadow: var(--ui-shadow-small);
+}
+
+.calendar-day,
+.presence-day {
+  border-color: var(--ui-line) !important;
+  background: rgba(var(--ui-arcane-rgb), 0.025) !important;
+}
+
+.calendar-day.is-current,
+.presence-day.is-current {
+  border-color: var(--ui-gold) !important;
+  background: rgba(202, 168, 88, 0.1) !important;
+}
+
+/* Mensagens de estado */
+:is(.account-notice, .form-message, .portal-notice, .shop-purchase-notice) {
+  border-radius: 5px !important;
+}
+
+:is(.account-notice, .form-message, .portal-notice, .shop-purchase-notice).is-success {
+  border-color: rgba(118, 207, 150, 0.5) !important;
+  color: #a9e8bf !important;
+  background: rgba(35, 98, 59, 0.28) !important;
+}
+
+:is(.account-notice, .form-message, .portal-notice, .shop-purchase-notice).is-warning,
+:is(.account-notice, .form-message, .portal-notice, .shop-purchase-notice).is-error {
+  border-color: rgba(220, 113, 104, 0.52) !important;
+  color: #f0aaa3 !important;
+  background: rgba(105, 39, 35, 0.32) !important;
+}
+
+@media (max-width: 760px) {
+  .hero__content {
+    padding-top: 96px;
+  }
+
+  .player-hero h1 {
+    font-size: clamp(3rem, 16vw, 5rem) !important;
+    line-height: 0.9 !important;
+  }
+
+  .character-card-grid,
+  .game-command-center,
+  .home-updates__grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .character-page__inner,
+  .market-shell,
+  .lore-page__inner {
+    padding-top: 28px !important;
+  }
+
+  .lore-browser {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lore-browser__index {
+    position: static !important;
+    max-height: none !important;
+  }
+
+  .shop-browser,
+  .inventory-browser {
+    grid-template-columns: 1fr !important;
+  }
+
+  .shop-sidebar,
+  .inventory-sidebar {
+    position: static !important;
+  }
+}

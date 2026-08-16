@@ -1,5 +1,7 @@
 import { PlayerNav } from "@/components/player-nav";
 
+import styles from "./portal-shell.module.css";
+
 export function PortalShell({
   eyebrow,
   title,
@@ -12,15 +14,15 @@ export function PortalShell({
   children: React.ReactNode;
 }) {
   return (
-    <main className="portal-shell">
+    <main className={styles.shell}>
       <PlayerNav />
-      <section className="portal-hero page-container">
-        <span className="eyebrow">{eyebrow}</span>
+      <section className={styles.hero}>
+        <span className={styles.eyebrow}>{eyebrow}</span>
         <h1>{title}</h1>
         <p>{description}</p>
       </section>
-      <section className="portal-content page-container">{children}</section>
-      <footer className="portal-footer page-container">
+      <section className={styles.content}>{children}</section>
+      <footer className={styles.footer}>
         Wonderland RPG <span>© 2026 Wonderland Ltda.</span>
       </footer>
     </main>

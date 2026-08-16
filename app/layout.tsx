@@ -1,22 +1,9 @@
 import type { Metadata } from "next";
 import { AudioProvider } from "@/components/audio/audio-provider";
 import { getCurrentAccount } from "@/lib/auth/account";
-import { ThemeControl } from "@/components/theme/theme-control";
-import { getThemeConfiguration } from "@/lib/content/themes";
-import { isAdministrativeRole } from "@/lib/auth/roles";
 import { PlayerPresence } from "@/components/player-presence";
 
-import "./globals.css";
-import "./fantasy-theme.css";
-import "./immersive-rpg.css";
-import "./immersive-cleanup.css";
-import "./rpg-overhaul.css";
-import "./rpg-finishing.css";
-import "./structural-rpg.css";
-import "./inventory-rebuild.css";
-import "./readability-hotfix.css";
-import "./shop-legibility-fix.css";
-import "./shop-final.css";
+import "./barebones.css";
 
 export const metadata: Metadata = {
   title: {
@@ -30,27 +17,13 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const [account, themeConfiguration] = await Promise.all([
-    getCurrentAccount(),
-    getThemeConfiguration(),
-  ]);
+  const account = await getCurrentAccount();
+
   return (
-    <html data-theme={themeConfiguration.defaultTheme} lang="pt-BR">
+    <html lang="pt-BR">
       <body>
         {account ? <PlayerPresence /> : null}
-        <div className="game-world-atmosphere" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
-        <AudioProvider>
-          {children}
-          <ThemeControl
-            availability={themeConfiguration.availability}
-            defaultTheme={themeConfiguration.defaultTheme}
-            isAdmin={Boolean(account && isAdministrativeRole(account.role))}
-          />
-        </AudioProvider>
+        <AudioProvider>{children}</AudioProvider>
       </body>
     </html>
   );

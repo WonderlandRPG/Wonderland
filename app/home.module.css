@@ -21,8 +21,9 @@
   content: "";
   opacity: .38;
   background:
-    linear-gradient(90deg, rgba(5,3,3,.96), rgba(10,5,4,.54) 52%, rgba(4,3,3,.82)),
-    url("/brand/wonderland-hero.png") center/cover no-repeat;
+    radial-gradient(circle at 78% 42%, rgba(146,104,201,.22), transparent 24rem),
+    radial-gradient(circle at 18% 80%, rgba(191,133,47,.14), transparent 28rem),
+    linear-gradient(110deg, rgba(5,3,3,.98), rgba(27,13,10,.82) 52%, rgba(4,3,3,.96));
   filter: sepia(.22) saturate(.75);
 }
 

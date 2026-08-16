@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import type { ClassPayload } from "@/lib/game/classes";
+import styles from "./codex.module.css";
 
 type Entry = { id: string; name: string; slug: string; payload: ClassPayload };
 export function ClassCodex({ entries }: { entries: Entry[] }) {
@@ -18,7 +19,7 @@ export function ClassCodex({ entries }: { entries: Entry[] }) {
   const entry = entries.find((item) => item.slug === selected) ?? visible[0] ?? entries[0];
   if (!entry) return null;
   return (
-    <div className="lore-browser">
+    <div className={`${styles.codex} lore-browser`}>
       <aside className="lore-browser__index">
         <label>
           <span>Buscar classe</span>

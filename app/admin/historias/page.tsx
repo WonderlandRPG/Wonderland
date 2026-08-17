@@ -1,3 +1,4 @@
+import { HistoryCoverUpload } from "@/components/admin/history-cover-upload";
 import { LoreRichEditor } from "@/components/admin/lore-rich-editor";
 import { parseLoreStoryPayload, type LoreStoryPayload } from "@/lib/game/lore-stories";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -100,6 +101,7 @@ function StoryForm({ story }: { story?: { id: string; slug: string; title: strin
         <label><span>Autor / assinatura</span><input name="authorName" defaultValue={story?.payload.authorName} placeholder="Arquivo Real" /></label>
         <label><span>Capa do livro</span><select name="coverTone" defaultValue={story?.payload.coverTone ?? "forest"}><option value="forest">Verde da Guilda</option><option value="wine">Vinho Real</option><option value="midnight">Azul da Meia-noite</option><option value="royal">Dourado Real</option><option value="ember">Brasa Carmesim</option><option value="ocean">Azul Oceânico</option></select></label>
       </div>
+      <HistoryCoverUpload initialUrl={story?.payload.coverImageUrl ?? ""} />
       <label><span>Resumo da capa</span><textarea name="excerpt" defaultValue={story?.payload.excerpt} placeholder="Uma breve apresentação para a estante da biblioteca." maxLength={320} /></label>
       <div className={styles.editorShell}><LoreRichEditor initial={story?.payload.bodyHtml ?? ""} /></div>
       <div className={styles.publishRow}>

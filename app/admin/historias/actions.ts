@@ -19,6 +19,12 @@ function resultPath(formData: FormData, status: "salvo" | "erro") {
     : `/admin/historias?status=${status}`;
 }
 
+function deleteResultPath(formData: FormData, status: "apagado" | "erro") {
+  return text(formData, "returnTo") === "/historia"
+    ? `/historia?status=${status}#biblioteca`
+    : `/admin/historias?status=${status}`;
+}
+
 export async function saveLoreStoryAction(formData: FormData) {
   const account = await requireAdministrativeAccount();
   const client = await createServerSupabaseClient();
@@ -72,10 +78,19 @@ export async function deleteLoreStoryAction(formData: FormData) {
   await requireAdministrativeAccount();
   const client = await createServerSupabaseClient();
   const id = text(formData, "id");
-  if (!client || !id) redirect("/admin/historias?status=erro");
+  if (!client || !id) redirect(deleteResultPath(formData, "erro"));
+
+  const { data: story } = await client
+    .from("v2_content")
+    .select("slug")
+    .eq("id", id)
+    .eq("content_type", "lore_story")
+    .maybeSingle();
   const { error } = await client.from("v2_content").delete().eq("id", id).eq("content_type", "lore_story");
-  if (error) redirect("/admin/historias?status=erro");
+  if (error) redirect(deleteResultPath(formData, "erro"));
+
   revalidatePath("/historia");
+  if (story?.slug) revalidatePath(`/historia/${story.slug}`);
   revalidatePath("/admin/historias");
-  redirect("/admin/historias?status=apagado");
+  redirect(deleteResultPath(formData, "apagado"));
 }

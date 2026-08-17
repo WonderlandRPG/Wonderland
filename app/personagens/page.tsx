@@ -1,9 +1,8 @@
 import Link from "next/link";
 
 import { PlayerNav } from "@/components/player-nav";
+import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { DeleteCharacterButton } from "@/components/characters/delete-character-button";
-import { RankBadge } from "@/components/characters/rank-badge";
-import { EquippedTitle } from "@/components/characters/equipped-title";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
@@ -53,11 +52,14 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
               const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
               return (
                 <article className={styles.heroCard} key={character.id} style={{ "--card-rank": rank.color } as React.CSSProperties}>
-                  <div className={styles.portrait}>
-                    <span role="img" aria-label={`Retrato de ${character.name}`} style={character.image_url ? { backgroundImage: `url(${character.image_url})` } : undefined}>{character.image_url ? "" : character.name.slice(0, 2).toUpperCase()}</span>
-                    <div className={styles.portraitMeta}><RankBadge compact rank={character.adventure_rank} /><span className={styles.level}>Nível {character.level}</span></div>
-                    <EquippedTitle title={equippedTitle} />
-                  </div>
+                  <CharacterPortraitCard
+                    imageUrl={character.image_url}
+                    level={character.level}
+                    name={character.name}
+                    rank={character.adventure_rank}
+                    title={equippedTitle}
+                    variant="standard"
+                  />
                   <div className={styles.body}>
                     <small>Herói de Wonderland</small><h2>{character.name}</h2>
                     <dl className={styles.identity}><div><dt>Raça</dt><dd>{character.race.name}</dd></div><div><dt>Classe</dt><dd>{character.characterClass.name}</dd></div><div><dt>Rank</dt><dd>{rank.key}</dd></div></dl>

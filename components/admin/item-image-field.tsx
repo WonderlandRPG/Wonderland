@@ -2,7 +2,23 @@
 
 import { useRef, useState } from "react";
 
-export function ItemImageField({ initialUrl, itemName }: { initialUrl: string | null; itemName: string }) {
+type ItemImageFieldProps = {
+  initialUrl: string | null;
+  itemName: string;
+  label?: string;
+  description?: string;
+  emptyLabel?: string;
+  inputName?: string;
+};
+
+export function ItemImageField({
+  initialUrl,
+  itemName,
+  label = "Imagem do item",
+  description = "Envie JPG, PNG, WEBP ou GIF de até 8 MB diretamente do computador.",
+  emptyLabel = "Sem imagem personalizada",
+  inputName = "imageUrl",
+}: ItemImageFieldProps) {
   const [url, setUrl] = useState(initialUrl ?? "");
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -28,7 +44,7 @@ export function ItemImageField({ initialUrl, itemName }: { initialUrl: string | 
       const data = (await response.json()) as { url?: string; error?: string };
       if (!response.ok || !data.url) throw new Error(data.error || "Não foi possível enviar a imagem.");
       setUrl(data.url);
-      setStatus("Imagem enviada. Salve o item para aplicar a alteração.");
+      setStatus("Imagem enviada. Salve para aplicar a alteração.");
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "Não foi possível enviar a imagem.");
     } finally {
@@ -43,13 +59,13 @@ export function ItemImageField({ initialUrl, itemName }: { initialUrl: string | 
         className={`admin-item-image-preview ${url ? "has-image" : ""}`}
         style={url ? { backgroundImage: `url(${url})` } : undefined}
         role="img"
-        aria-label={url ? `Prévia da imagem de ${itemName}` : `Item ${itemName} sem imagem`}
+        aria-label={url ? `Prévia de ${itemName}` : `${itemName} sem imagem`}
       >
-        {!url ? <span>Sem imagem personalizada</span> : null}
+        {!url ? <span>{emptyLabel}</span> : null}
       </div>
       <div className="admin-item-image-controls">
-        <strong>Imagem do item</strong>
-        <small>Envie JPG, PNG, WEBP ou GIF de até 8 MB diretamente do computador.</small>
+        <strong>{label}</strong>
+        <small>{description}</small>
         <label className="admin-upload-picker">
           <input
             ref={inputRef}
@@ -66,7 +82,7 @@ export function ItemImageField({ initialUrl, itemName }: { initialUrl: string | 
         <label>
           <span>Ou usar uma imagem por link</span>
           <input
-            name="imageUrl"
+            name={inputName}
             type="url"
             value={url}
             onChange={(event) => {
@@ -74,7 +90,7 @@ export function ItemImageField({ initialUrl, itemName }: { initialUrl: string | 
               setStatus("");
               setError("");
             }}
-            placeholder="https://exemplo.com/item.webp"
+            placeholder="https://exemplo.com/imagem.webp"
           />
         </label>
         {status ? <p className="admin-item-image-status" role="status">{status}</p> : null}
@@ -85,7 +101,7 @@ export function ItemImageField({ initialUrl, itemName }: { initialUrl: string | 
               type="button"
               onClick={() => {
                 setUrl("");
-                setStatus("Imagem removida. Salve o item para confirmar.");
+                setStatus("Imagem removida. Salve para confirmar.");
                 setError("");
               }}
             >

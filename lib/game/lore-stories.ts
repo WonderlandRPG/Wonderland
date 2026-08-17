@@ -8,6 +8,7 @@ export type LoreStoryPayload = {
   authorName: string;
   publishedOn: string;
   coverTone: LoreStoryTone;
+  coverImageUrl: string;
 };
 
 const toneSet = new Set<LoreStoryTone>(["forest", "wine", "midnight", "royal", "ember", "ocean"]);
@@ -75,6 +76,7 @@ export function parseLoreStoryPayload(payload: Json | null | undefined): LoreSto
   const bodyHtml = typeof get("bodyHtml") === "string" ? sanitizeLoreHtml(get("bodyHtml") as string) : "";
   const excerptSource = typeof get("excerpt") === "string" ? (get("excerpt") as string).trim() : "";
   const coverToneRaw = typeof get("coverTone") === "string" ? (get("coverTone") as string) : "forest";
+  const coverImageRaw = typeof get("coverImageUrl") === "string" ? (get("coverImageUrl") as string).trim() : "";
   return {
     excerpt: excerptSource || plainTextFromLoreHtml(bodyHtml).slice(0, 180),
     bodyHtml,
@@ -84,6 +86,7 @@ export function parseLoreStoryPayload(payload: Json | null | undefined): LoreSto
         ? (get("publishedOn") as string)
         : new Date().toISOString().slice(0, 10),
     coverTone: toneSet.has(coverToneRaw as LoreStoryTone) ? (coverToneRaw as LoreStoryTone) : "forest",
+    coverImageUrl: /^https?:\/\//i.test(coverImageRaw) ? coverImageRaw.slice(0, 1200) : "",
   };
 }
 

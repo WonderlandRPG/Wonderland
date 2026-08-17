@@ -13,10 +13,16 @@ function text(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }
 
+function resultPath(formData: FormData, status: "salvo" | "erro") {
+  return text(formData, "returnTo") === "/historia"
+    ? `/historia?status=${status}#biblioteca`
+    : `/admin/historias?status=${status}`;
+}
+
 export async function saveLoreStoryAction(formData: FormData) {
   const account = await requireAdministrativeAccount();
   const client = await createServerSupabaseClient();
-  if (!client) redirect("/admin/historias?status=erro");
+  if (!client) redirect(resultPath(formData, "erro"));
 
   const id = text(formData, "id");
   const title = text(formData, "title");
@@ -32,7 +38,7 @@ export async function saveLoreStoryAction(formData: FormData) {
   const bodyHtml = sanitizeLoreHtml(text(formData, "bodyHtml"));
   const published = formData.get("published") === "on";
 
-  if (!title || !slug || !bodyHtml) redirect("/admin/historias?status=erro");
+  if (!title || !slug || !bodyHtml) redirect(resultPath(formData, "erro"));
 
   const payload = { excerpt, bodyHtml, authorName, publishedOn, coverTone };
   const status = published ? "published" : "draft";
@@ -55,11 +61,11 @@ export async function saveLoreStoryAction(formData: FormData) {
         updated_by: account.id,
       });
 
-  if (result.error) redirect("/admin/historias?status=erro");
+  if (result.error) redirect(resultPath(formData, "erro"));
   revalidatePath("/historia");
   revalidatePath(`/historia/${slug}`);
   revalidatePath("/admin/historias");
-  redirect("/admin/historias?status=salvo");
+  redirect(resultPath(formData, "salvo"));
 }
 
 export async function deleteLoreStoryAction(formData: FormData) {

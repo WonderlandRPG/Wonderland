@@ -3,11 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  musicTrackForPath,
-  musicTracks,
-  type MusicTrackDefinition,
-} from "@/lib/audio/sources";
+import { musicTrackForPath, musicTracks } from "@/lib/audio/sources";
 import styles from "./audio-provider.module.css";
 
 const enabledKey = "wonderland:music-enabled";
@@ -40,33 +36,13 @@ function readPositions(): Record<string, number> {
   }
 }
 
-async function buildChunkedAudio(parts: readonly string[], mimeType: string) {
-  const encoded = (
-    await Promise.all(
-      parts.map(async (part) => {
-        const response = await fetch(part, { cache: "force-cache" });
-        if (!response.ok) throw new Error(`Falha ao carregar ${part}`);
-        return response.text();
-      }),
-    )
-  )
-    .join("")
-    .replace(/\s+/g, "");
-
-  const binary = window.atob(encoded);
-  const bytes = new Uint8Array(binary.length);
-  for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
-  return URL.createObjectURL(new Blob([bytes], { type: mimeType }));
-}
-
 export function AudioProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const trackKey = musicTrackForPath(pathname);
-  const track = musicTracks[trackKey] as MusicTrackDefinition;
+  const track = musicTracks[trackKey];
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const enabledRef = useRef(true);
   const previousTrackRef = useRef(trackKey);
-  const objectUrlsRef = useRef<Record<string, string>>({});
   const [enabled, setEnabled] = useState(true);
   const [volume, setVolume] = useState(defaultVolume);
   const [open, setOpen] = useState(false);
@@ -85,24 +61,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     try {
       await audio.play();
     } catch {
-      // Navegadores podem exigir a primeira interação. O listener global abaixo libera o áudio.
+      // Alguns navegadores exigem a primeira interação do usuário para liberar áudio.
     }
   }, []);
-
-  const resolveTrackSource = useCallback(
-    async (key: string, definition: MusicTrackDefinition) => {
-      if (!definition.parts?.length) return definition.source;
-      if (objectUrlsRef.current[key]) return objectUrlsRef.current[key];
-      try {
-        const objectUrl = await buildChunkedAudio(definition.parts, definition.mimeType ?? "audio/mpeg");
-        objectUrlsRef.current[key] = objectUrl;
-        return objectUrl;
-      } catch {
-        return definition.fallback ?? definition.source;
-      }
-    },
-    [],
-  );
 
   useEffect(() => {
     const storedEnabled = readEnabled();
@@ -116,37 +77,39 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    let cancelled = false;
 
     const previousTrack = previousTrackRef.current;
     if (previousTrack !== trackKey) savePosition(previousTrack, audio.currentTime || 0);
     previousTrackRef.current = trackKey;
     audio.pause();
+    audio.src = track.source;
+    audio.volume = readVolume();
+    audio.load();
 
-    const prepare = async () => {
-      const source = await resolveTrackSource(trackKey, track);
-      if (cancelled || !source) return;
-      audio.src = source;
-      audio.volume = readVolume();
+    let usingFallback = false;
+    const restoreAndPlay = () => {
+      const savedPosition = readPositions()[trackKey] ?? 0;
+      if (savedPosition > 0 && Number.isFinite(audio.duration) && audio.duration > 0) {
+        audio.currentTime = savedPosition % audio.duration;
+      }
+      if (enabledRef.current) void play();
+    };
+    const useFallback = () => {
+      if (usingFallback || !("fallback" in track) || !track.fallback) return;
+      usingFallback = true;
+      audio.src = track.fallback;
       audio.load();
-
-      const restoreAndPlay = () => {
-        const savedPosition = readPositions()[trackKey] ?? 0;
-        if (savedPosition > 0 && Number.isFinite(audio.duration) && audio.duration > 0) {
-          audio.currentTime = savedPosition % audio.duration;
-        }
-        if (enabledRef.current) void play();
-      };
-
-      audio.addEventListener("loadedmetadata", restoreAndPlay, { once: true });
+      if (enabledRef.current) void play();
     };
 
-    void prepare();
+    audio.addEventListener("loadedmetadata", restoreAndPlay);
+    audio.addEventListener("error", useFallback);
     return () => {
-      cancelled = true;
       savePosition(trackKey, audio.currentTime || 0);
+      audio.removeEventListener("loadedmetadata", restoreAndPlay);
+      audio.removeEventListener("error", useFallback);
     };
-  }, [play, resolveTrackSource, savePosition, track, trackKey]);
+  }, [play, savePosition, track, trackKey]);
 
   useEffect(() => {
     const unlock = () => {
@@ -159,13 +122,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       window.removeEventListener("keydown", unlock, true);
     };
   }, [play, trackKey]);
-
-  useEffect(
-    () => () => {
-      Object.values(objectUrlsRef.current).forEach((url) => URL.revokeObjectURL(url));
-    },
-    [],
-  );
 
   const toggleEnabled = () => {
     const next = !enabledRef.current;

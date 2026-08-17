@@ -6,8 +6,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { musicTrackForPath, musicTracks } from "@/lib/audio/sources";
 import styles from "./audio-provider.module.css";
 
-const enabledKey = "wonderland:music-enabled";
-const positionsKey = "wonderland:music-positions";
+// v2 intentionally resets stale on/off state left by older versions of the player.
+// Volume keeps the original key so a player's chosen percentage follows every page.
+const enabledKey = "wonderland:music-enabled-v2";
+const positionsKey = "wonderland:music-positions-v2";
 const volumeKey = "wonderland:music-volume";
 const defaultVolume = 0.5;
 
@@ -23,7 +25,9 @@ function readEnabled() {
 
 function readVolume() {
   try {
-    const value = Number(window.localStorage.getItem(volumeKey));
+    const stored = window.localStorage.getItem(volumeKey);
+    if (stored === null) return defaultVolume;
+    const value = Number(stored);
     return Number.isFinite(value) && value >= 0 && value <= 1 ? value : defaultVolume;
   } catch {
     return defaultVolume;
@@ -61,7 +65,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const play = useCallback(async () => {
     const audio = audioRef.current;
     if (!audio || !enabledRef.current) return false;
+    if (!audio.src) return false;
+
     try {
+      audio.muted = false;
+      audio.volume = readVolume();
       await audio.play();
       setPlaybackState("playing");
       return true;
@@ -71,13 +79,25 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const enableAndPlay = useCallback(async () => {
+    enabledRef.current = true;
+    setEnabled(true);
+    try {
+      window.localStorage.setItem(enabledKey, "true");
+    } catch {}
+    return play();
+  }, [play]);
+
   useEffect(() => {
     const storedEnabled = readEnabled();
     const storedVolume = readVolume();
     enabledRef.current = storedEnabled;
     setEnabled(storedEnabled);
     setVolume(storedVolume);
-    if (audioRef.current) audioRef.current.volume = storedVolume;
+    if (audioRef.current) {
+      audioRef.current.muted = false;
+      audioRef.current.volume = storedVolume;
+    }
   }, []);
 
   useEffect(() => {
@@ -95,7 +115,9 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       if (restored) return;
       const savedPosition = readPositions()[trackKey] ?? 0;
       if (savedPosition > 0 && Number.isFinite(audio.duration) && audio.duration > 0) {
-        audio.currentTime = savedPosition % audio.duration;
+        try {
+          audio.currentTime = savedPosition % audio.duration;
+        } catch {}
       }
       restored = true;
     };
@@ -106,7 +128,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
 
     const useFallback = () => {
-      if (usingFallback || !("fallback" in track) || !track.fallback) {
+      if (usingFallback || !track.fallback) {
         setPlaybackState("error");
         return;
       }
@@ -115,25 +137,29 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       setPlaybackState("loading");
       audio.pause();
       audio.src = track.fallback;
+      audio.muted = false;
       audio.volume = readVolume();
       audio.load();
     };
 
     const markPlaying = () => setPlaybackState("playing");
     const markPaused = () => {
-      if (enabledRef.current && playbackState !== "loading") setPlaybackState("paused");
+      if (enabledRef.current) setPlaybackState("paused");
     };
+    const markWaiting = () => setPlaybackState("loading");
 
     audio.addEventListener("loadedmetadata", restorePosition);
     audio.addEventListener("canplay", tryToPlay);
     audio.addEventListener("error", useFallback);
     audio.addEventListener("playing", markPlaying);
     audio.addEventListener("pause", markPaused);
+    audio.addEventListener("waiting", markWaiting);
 
     restored = false;
     setPlaybackState("loading");
     audio.pause();
     audio.src = track.source;
+    audio.muted = false;
     audio.volume = readVolume();
     audio.load();
 
@@ -144,79 +170,89 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       audio.removeEventListener("error", useFallback);
       audio.removeEventListener("playing", markPlaying);
       audio.removeEventListener("pause", markPaused);
+      audio.removeEventListener("waiting", markWaiting);
     };
   }, [play, savePosition, track, trackKey]);
 
   useEffect(() => {
+    // Browsers can reject autoplay. Keep retrying on genuine user interaction
+    // until the selected track actually starts playing.
     const unlock = () => {
       const audio = audioRef.current;
       if (enabledRef.current && audio?.paused) void play();
     };
-
-    // Mantemos os listeners enquanto o site estiver aberto. Se uma primeira
-    // tentativa ocorrer cedo demais ou o navegador bloquear autoplay, a próxima
-    // interação real do jogador tenta novamente em vez de abandonar o áudio.
     window.addEventListener("pointerdown", unlock, true);
     window.addEventListener("keydown", unlock, true);
+    window.addEventListener("touchstart", unlock, true);
     return () => {
       window.removeEventListener("pointerdown", unlock, true);
       window.removeEventListener("keydown", unlock, true);
+      window.removeEventListener("touchstart", unlock, true);
     };
   }, [play, trackKey]);
 
   const toggleEnabled = () => {
-    const next = !enabledRef.current;
-    enabledRef.current = next;
-    setEnabled(next);
-    try {
-      window.localStorage.setItem(enabledKey, String(next));
-    } catch {}
-    if (next) void play();
-    else {
-      audioRef.current?.pause();
-      setPlaybackState("paused");
+    if (!enabledRef.current) {
+      void enableAndPlay();
+      return;
     }
+
+    enabledRef.current = false;
+    setEnabled(false);
+    try {
+      window.localStorage.setItem(enabledKey, "false");
+    } catch {}
+    audioRef.current?.pause();
+    setPlaybackState("paused");
   };
 
   const changeVolume = (next: number) => {
     const normalized = Math.max(0, Math.min(1, next));
     setVolume(normalized);
-    if (audioRef.current) audioRef.current.volume = normalized;
+    if (audioRef.current) {
+      audioRef.current.muted = false;
+      audioRef.current.volume = normalized;
+    }
     try {
       window.localStorage.setItem(volumeKey, String(normalized));
     } catch {}
-    if (normalized > 0 && enabledRef.current && audioRef.current?.paused) void play();
+    if (normalized > 0 && audioRef.current?.paused) void enableAndPlay();
   };
 
   const togglePanel = () => {
     setOpen((value) => !value);
-    // O clique no controle é uma ação explícita do usuário e, portanto, é a
-    // melhor oportunidade para liberar áudio em navegadores com autoplay restrito.
-    if (enabledRef.current && audioRef.current?.paused) void play();
+    // Clicking the music control itself is explicit user interaction. Always
+    // enable playback here so stale settings can never leave the player silent.
+    if (audioRef.current?.paused || !enabledRef.current) void enableAndPlay();
   };
 
   const stateLabel =
     playbackState === "blocked"
-      ? " · clique para tocar"
+      ? " · clique em ▶ para liberar o áudio"
       : playbackState === "error"
-        ? " · tentando trilha reserva"
-        : "";
+        ? " · não foi possível carregar esta trilha"
+        : playbackState === "loading"
+          ? " · carregando"
+          : "";
 
   return (
     <>
       {children}
-      <audio aria-hidden="true" hidden loop preload="auto" ref={audioRef} />
+      <audio aria-hidden="true" hidden loop playsInline preload="auto" ref={audioRef} />
       <div className={styles.dock}>
         {open ? (
           <div className={styles.panel} role="group" aria-label="Controle de música">
-            <span className={styles.label}>{track.label}{stateLabel}</span>
+            <span className={styles.label}>
+              {track.label}
+              {stateLabel}
+            </span>
             <button
-              aria-label={enabled ? "Pausar música" : "Ativar música"}
+              aria-label={enabled && playbackState === "playing" ? "Pausar música" : "Tocar música"}
               className={styles.mute}
               onClick={toggleEnabled}
               type="button"
             >
-              {enabled ? (playbackState === "playing" ? "♫" : "▶") : "×"}
+              {enabled && playbackState === "playing" ? "Ⅱ" : "▶"}
             </button>
             <input
               aria-label="Volume da música"
@@ -232,14 +268,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         ) : null}
         <button
           aria-expanded={open}
-          aria-label="Abrir controle de música"
+          aria-label="Abrir controle de música e tocar"
           className={styles.toggle}
           data-enabled={enabled}
           onClick={togglePanel}
           title="Música e volume"
           type="button"
         >
-          {enabled ? (playbackState === "playing" ? "♪" : "▶") : "♩"}
+          {enabled && playbackState === "playing" ? "♪" : "▶"}
         </button>
       </div>
     </>

@@ -49,15 +49,16 @@ export default async function PublicCharacterProfile({
       <div className="page-container public-character-shell">
         <Link className="public-character-back" href="/ranking">← Voltar aos rankings</Link>
         <section className="public-character-hero" data-rank={sheet.adventure_rank}>
-          <CharacterPortraitCard
-            className="public-character-hero__portrait"
-            imageUrl={sheet.image_url}
-            level={sheet.level}
-            name={sheet.name}
-            rank={sheet.adventure_rank}
-            title={equippedTitle}
-            variant="hero"
-          />
+          <div className="public-character-hero__portrait official-character-card-host">
+            <CharacterPortraitCard
+              imageUrl={sheet.image_url}
+              level={sheet.level}
+              name={sheet.name}
+              rank={sheet.adventure_rank}
+              title={equippedTitle}
+              variant="hero"
+            />
+          </div>
           <div className="public-character-hero__copy">
             <span className="eyebrow">Ficha pública de aventureiro</span>
             <h1>{sheet.name}</h1>

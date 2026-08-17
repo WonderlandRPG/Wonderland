@@ -45,11 +45,7 @@ export function CharacterPortraitCard({
 
       <div className={styles.topMeta}>
         <div className={styles.rankMeta}>
-          <RankBadge compact rank={rank} />
-          <span>
-            <small>Rank</small>
-            <strong>{rank}</strong>
-          </span>
+          <RankBadge rank={rank} />
         </div>
         <div className={styles.levelMeta}>
           <small>Nível</small>

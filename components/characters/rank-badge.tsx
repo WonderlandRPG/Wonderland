@@ -7,8 +7,10 @@ export function RankBadge({ rank, compact = false }: { rank: string; compact?: b
 
   return (
     <span
+      aria-label={`Rank ${definition.key} · ${definition.title}`}
       className={`rank-emblem ${compact ? "is-compact" : ""} ${definition.key === "EX" ? "is-ex" : ""}`}
       data-rank={definition.key}
+      role="img"
       style={style}
       title={`Rank ${definition.key} · ${definition.title}`}
     >
@@ -27,7 +29,6 @@ export function RankBadge({ rank, compact = false }: { rank: string; compact?: b
           {definition.key}
         </text>
       </svg>
-      <span className="sr-only">Rank {definition.key}</span>
     </span>
   );
 }

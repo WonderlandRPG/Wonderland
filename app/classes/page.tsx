@@ -12,7 +12,7 @@ export default async function ClassesPage() {
   const classes = published.length ? published : officialClasses.map((entry) => ({ ...entry, id: entry.slug }));
 
   return (
-    <main className={styles.page}>
+    <main className={`grimoire-page grimoire-page--classes ${styles.page}`}>
       <PlayerNav />
       <div className={styles.inner}>
         <header className={styles.hero}>

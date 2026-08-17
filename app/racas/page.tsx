@@ -12,7 +12,7 @@ export default async function RacesPage() {
   const races = published.length ? published : officialRaces.map((entry) => ({ ...entry, id: entry.slug }));
 
   return (
-    <main className={styles.page}>
+    <main className={`grimoire-page grimoire-page--races ${styles.page}`}>
       <PlayerNav />
       <div className={styles.inner}>
         <header className={styles.hero}>

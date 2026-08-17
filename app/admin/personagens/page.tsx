@@ -5,6 +5,7 @@ import { kingdoms } from "@/lib/game/kingdoms";
 import { adventureRanks } from "@/lib/game/ranks";
 import { RankBadge } from "@/components/characters/rank-badge";
 import { parseClassPayload } from "@/lib/game/classes";
+import { ItemImageField } from "@/components/admin/item-image-field";
 
 export const metadata = { title: "Personagens | Painel ADM" };
 export const dynamic = "force-dynamic";
@@ -42,13 +43,17 @@ export default async function AdminCharactersPage({
     }),
   );
   return (
-    <div className="admin-content">
+    <div className="admin-content admin-characters-page">
       <section className="admin-page-title">
-        <span className="eyebrow">Fichas do mundo</span>
-        <h2>Editar personagens</h2>
-        <p>
-          Altere nome, XP, WG e retrato. O nível é calculado automaticamente pela tabela oficial.
-        </p>
+        <div>
+          <span className="eyebrow">Fichas do mundo</span>
+          <h2>Editar personagens</h2>
+          <p>
+            Altere identidade, progressão, reino, Rank, caminho e retrato. O nível continua sendo
+            calculado automaticamente pela tabela oficial.
+          </p>
+        </div>
+        <span className="admin-page-count">{characters?.length ?? 0} fichas</span>
       </section>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
@@ -65,27 +70,26 @@ export default async function AdminCharactersPage({
               <header>
                 {character.image_url ? (
                   <span
-                    className="is-image"
+                    className="admin-character-portrait is-image"
                     role="img"
                     aria-label={`Retrato de ${character.name}`}
                     style={{ backgroundImage: `url(${character.image_url})` }}
                   />
                 ) : (
-                  <span>{character.name.slice(0, 2).toUpperCase()}</span>
+                  <span className="admin-character-portrait">{character.name.slice(0, 2).toUpperCase()}</span>
                 )}
-                <div>
-                  <small>
-                    {names.get(character.race_id)} · {names.get(character.class_id)}
-                  </small>
+                <div className="admin-character-identity">
+                  <small>{names.get(character.race_id)} · {names.get(character.class_id)}</small>
                   <h3>{character.name}</h3>
-                  <RankBadge compact rank={character.adventure_rank} />
-                  <p>
-                    Nível {character.level} · próximo nível em{" "}
-                    {progress.next.toLocaleString("pt-BR")} XP
-                  </p>
+                  <div className="admin-character-rank"><RankBadge compact rank={character.adventure_rank} /></div>
+                  <dl>
+                    <div><dt>Nível</dt><dd>{character.level}</dd></div>
+                    <div><dt>XP atual</dt><dd>{character.xp.toLocaleString("pt-BR")}</dd></div>
+                    <div><dt>Próximo marco</dt><dd>{progress.next.toLocaleString("pt-BR")}</dd></div>
+                  </dl>
                 </div>
               </header>
-              <form className="admin-form" action={updateCharacterAdminAction}>
+              <form className="admin-form admin-character-form" action={updateCharacterAdminAction}>
                 <input name="characterId" type="hidden" value={character.id} />
                 <label>
                   <span>Nome</span>
@@ -103,9 +107,7 @@ export default async function AdminCharactersPage({
                   <span>Reino de origem</span>
                   <select name="kingdom" defaultValue={character.kingdom} required>
                     {kingdoms.map((kingdom) => (
-                      <option key={kingdom.key} value={kingdom.key}>
-                        {kingdom.name}
-                      </option>
+                      <option key={kingdom.key} value={kingdom.key}>{kingdom.name}</option>
                     ))}
                   </select>
                 </label>
@@ -113,9 +115,7 @@ export default async function AdminCharactersPage({
                   <span>Rank do aventureiro</span>
                   <select name="adventureRank" defaultValue={character.adventure_rank} required>
                     {adventureRanks.map((rank) => (
-                      <option key={rank.key} value={rank.key}>
-                        Rank {rank.key} · {rank.colorName}
-                      </option>
+                      <option key={rank.key} value={rank.key}>Rank {rank.key} · {rank.colorName}</option>
                     ))}
                   </select>
                 </label>
@@ -124,22 +124,18 @@ export default async function AdminCharactersPage({
                   <select name="classPathKey" defaultValue={character.class_path_key ?? ""}>
                     <option value="">Nenhum caminho</option>
                     {(classPaths.get(character.class_id) ?? []).map((path) => (
-                      <option key={path.key} value={path.key}>
-                        {path.name}
-                      </option>
+                      <option key={path.key} value={path.key}>{path.name}</option>
                     ))}
                   </select>
                 </label>
-                <label>
-                  <span>Link da imagem</span>
-                  <input
-                    name="imageUrl"
-                    type="url"
-                    defaultValue={character.image_url ?? ""}
-                    placeholder="https://..."
-                  />
-                </label>
-                <button className="button button--primary">Salvar personagem</button>
+                <ItemImageField
+                  initialUrl={character.image_url}
+                  itemName={character.name}
+                  label="Retrato do personagem"
+                  description="Envie JPG, PNG, WEBP ou GIF de até 8 MB pelo computador/celular, ou mantenha um link externo."
+                  emptyLabel="Personagem sem retrato"
+                />
+                <button className="button button--primary admin-save-character">Salvar personagem</button>
               </form>
             </article>
           );

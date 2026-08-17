@@ -1,3 +1,4 @@
+import "./loja.css";
 import { PlayerNav } from "@/components/player-nav";
 import { ShopCatalog, type ShopCatalogItem } from "@/components/shop/shop-catalog";
 import { requireActiveCharacter } from "@/lib/content/active-character";

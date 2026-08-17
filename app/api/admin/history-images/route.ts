@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     if (error) return NextResponse.json({ error: "Não foi possível enviar a imagem da capa." }, { status: 400 });
 
     const { data } = client.storage.from("update-images").getPublicUrl(path);
-    return NextResponse.json({ url: data.publicUrl });
+    return NextResponse.json({ url: data.publicUrl, imageUrl: data.publicUrl });
   } catch {
     return NextResponse.json({ error: "Acesso administrativo necessário." }, { status: 403 });
   }

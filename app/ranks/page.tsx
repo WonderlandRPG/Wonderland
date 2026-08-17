@@ -1,4 +1,5 @@
 import { PortalShell } from "@/components/portal-shell";
+import { RankAtmosphere } from "@/components/characters/rank-atmosphere";
 import { RankBadge } from "@/components/characters/rank-badge";
 import { adventureRanks, guildTrials } from "@/lib/game/ranks";
 
@@ -15,10 +16,23 @@ export default async function RanksPage() {
 
         <div className="guild-decrees__roll">
           {adventureRanks.map((rank, index) => (
-            <article className={`guild-decree ${rank.key === "EX" ? "is-ex" : ""}`} key={rank.key} style={{ "--rank-color": rank.color } as React.CSSProperties}>
-              <div className="guild-decree__index"><span>{String(index + 1).padStart(2, "0")}</span><RankBadge rank={rank.key} /></div>
+            <article className={`guild-decree ${rank.key === "EX" ? "is-ex" : ""}`} data-rank={rank.key} key={rank.key} style={{ "--rank-color": rank.color } as React.CSSProperties}>
+              <div className="guild-decree__index">
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <RankBadge rank={rank.key} />
+                <small>{rank.colorName}</small>
+              </div>
               <div className="guild-decree__copy"><small>{rank.title}</small><h2>Patente {rank.key}</h2><p>{rank.description}</p><ul>{rank.access.map((item) => <li key={item}>{item}</li>)}</ul></div>
-              <aside><small>ASSINATURA</small><strong>{rank.atmosphere}</strong></aside>
+              <aside className="guild-decree__rank-effect">
+                <small>EFEITO DO RANK</small>
+                <div className="rank-effect-preview">
+                  <RankAtmosphere rank={rank.key} variant="preview" />
+                  <RankBadge compact rank={rank.key} />
+                </div>
+                <strong>{rank.atmosphere}</strong>
+                <p>{rank.effectDescription}</p>
+                <span>Aplicado aos retratos e ao Inventário</span>
+              </aside>
             </article>
           ))}
         </div>

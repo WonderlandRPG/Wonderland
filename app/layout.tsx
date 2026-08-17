@@ -6,11 +6,13 @@ import { PlayerPresence } from "@/components/player-presence";
 /*
  * Sistema visual do Wonderland:
  * 1. uma única base global, responsável por navegação, superfícies e controles;
- * 2. a camada de reparo cobre os componentes específicos já existentes.
+ * 2. a camada de reparo cobre os componentes específicos já existentes;
+ * 3. rank-visuals é isolado nos emblemas, retratos e efeitos de Rank.
  * CSS Modules continuam isolados em seus próprios componentes.
  */
 import "./wonderland-base.css";
 import "./wonderland-repair.css";
+import "./rank-visuals.css";
 
 export const metadata: Metadata = {
   title: {

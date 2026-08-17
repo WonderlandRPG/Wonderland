@@ -8,6 +8,7 @@ export const adventureRanks = [
       "O primeiro Rank de Wonderland. Representa aventureiros iniciantes que estão começando a enfrentar os perigos do mundo.",
     access: ["Missões E", "Dungeons E", "Recompensas e XP básicos"],
     atmosphere: "Poeira de estrada",
+    effectDescription: "Uma névoa de poeira e fagulhas cinzentas acompanha o retrato do aventureiro.",
   },
   {
     key: "D",
@@ -18,6 +19,7 @@ export const adventureRanks = [
       "Aventureiros que já adquiriram alguma experiência e estão preparados para desafios além das missões mais básicas.",
     access: ["Missões D", "Dungeons D", "XP superior ao Rank E"],
     atmosphere: "Folhas da fronteira",
+    effectDescription: "Folhas e partículas verdes percorrem a moldura como o vento das fronteiras.",
   },
   {
     key: "C",
@@ -28,6 +30,7 @@ export const adventureRanks = [
       "Aventureiros experientes, capazes de enfrentar ameaças consideráveis e assumir missões de maior responsabilidade.",
     access: ["Missões C", "Dungeons C", "Maior variedade de recompensas"],
     atmosphere: "Orbes arcanos",
+    effectDescription: "Pequenos orbes cianos orbitam o personagem e pulsam com energia arcana.",
   },
   {
     key: "B",
@@ -38,6 +41,7 @@ export const adventureRanks = [
       "Aventureiros poderosos que já se destacam entre os demais e são preparados para missões de alto risco.",
     access: ["Missões B", "Dungeons B", "Chefes de elite"],
     atmosphere: "Chuva de aço",
+    effectDescription: "Reflexos safira atravessam a moldura como lâminas e fragmentos de aço.",
   },
   {
     key: "A",
@@ -48,6 +52,7 @@ export const adventureRanks = [
       "Aventureiros excepcionais, reconhecidos por grandes feitos e capazes de enfrentar ameaças que colocam regiões em perigo.",
     access: ["Missões A", "Dungeons A", "Incursões de alto risco"],
     atmosphere: "Runas ametistas",
+    effectDescription: "Runas ametistas despertam ao redor do retrato em um círculo mágico vivo.",
   },
   {
     key: "S",
@@ -58,6 +63,7 @@ export const adventureRanks = [
       "O maior Rank alcançável pela progressão normal, reservado aos aventureiros mais poderosos e lendários de Wonderland.",
     access: ["Missões S", "Dungeons S", "Eventos mundiais"],
     atmosphere: "Constelação dourada",
+    effectDescription: "Estrelas douradas cintilam e formam uma constelação ao redor do herói.",
   },
   {
     key: "EX",
@@ -68,6 +74,7 @@ export const adventureRanks = [
       "Um Rank que não pode ser conquistado por missões. É concedido apenas àqueles cujas ações mudaram o curso da história de Wonderland.",
     access: ["Sem requisitos públicos", "Concedido por feitos únicos", "Reconhecimento narrativo"],
     atmosphere: "Fendas do destino",
+    effectDescription: "Fendas cristalinas rasgam o espaço ao redor do personagem com energia ciano-cósmica.",
   },
 ] as const;
 

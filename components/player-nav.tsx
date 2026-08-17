@@ -11,7 +11,10 @@ export async function PlayerNav() {
   const activeCharacterId = activeCharacter?.id ?? null;
 
   return (
-    <header className="player-nav">
+    <header
+      className="player-nav"
+      data-active-character-rank={activeCharacter?.adventure_rank ?? undefined}
+    >
       <BrandMark compact />
       <nav className="player-nav__links" aria-label="Portal dos jogadores">
         <Link href="/racas">Raças</Link>
@@ -33,7 +36,7 @@ export async function PlayerNav() {
         {activeCharacter ? (
           <Link href="/personagens">
             <span>{activeCharacter.name}</span>
-            <small>Nível {activeCharacter.level}</small>
+            <small>Nível {activeCharacter.level} · Rank {activeCharacter.adventure_rank}</small>
           </Link>
         ) : (
           <Link href={account ? "/personagens?selecionar=1" : "/entrar"}>

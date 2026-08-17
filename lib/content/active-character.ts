@@ -27,7 +27,7 @@ export async function getActiveCharacterNavigation(userId: string) {
   if (!active?.character_id) return null;
   const { data } = await client
     .from("v2_characters")
-    .select("id,name,level,image_url")
+    .select("id,name,level,image_url,adventure_rank")
     .eq("id", active.character_id)
     .eq("user_id", userId)
     .maybeSingle();

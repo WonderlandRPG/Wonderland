@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "./history-cover-upload.module.css";
 
 export function HistoryCoverUpload({ initialUrl = "" }: { initialUrl?: string }) {
   const [url, setUrl] = useState(initialUrl);
@@ -32,7 +33,7 @@ export function HistoryCoverUpload({ initialUrl = "" }: { initialUrl?: string })
   };
 
   return (
-    <div className="history-cover-upload">
+    <div className={styles.root}>
       <input name="coverImageUrl" type="hidden" value={url} readOnly />
       <label>
         <span>Imagem da capa <small>(opcional)</small></span>
@@ -43,10 +44,10 @@ export function HistoryCoverUpload({ initialUrl = "" }: { initialUrl?: string })
           type="file"
         />
       </label>
-      {state === "uploading" ? <small>Enviando capa...</small> : null}
-      {state === "error" ? <small className="is-error">{message}</small> : null}
+      {state === "uploading" ? <small className={styles.status}>Enviando capa...</small> : null}
+      {state === "error" ? <small className={styles.error}>{message}</small> : null}
       {url ? (
-        <div className="history-cover-upload__preview">
+        <div className={styles.preview}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="Prévia da capa da história" src={url} />
           <button onClick={() => setUrl("")} type="button">Remover capa</button>

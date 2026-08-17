@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CharacterImageUploader } from "@/components/characters/character-image-uploader";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { PlayerNav } from "@/components/player-nav";
 import { requireActiveCharacter } from "@/lib/content/active-character";
@@ -123,18 +124,22 @@ export default async function CharacterSheetPage({
               <Link className="button button--dark" href="/loja">Visitar loja</Link>
             </nav>
             <details className="character-command-hero__image-editor">
-              <summary>Alterar retrato por link</summary>
-              <form action={updateCharacterImageAction.bind(null, character.id)}>
-                <label className="sr-only" htmlFor="character-image-url">URL da imagem</label>
-                <input
-                  id="character-image-url"
-                  name="imageUrl"
-                  type="url"
-                  defaultValue={character.image_url ?? ""}
-                  placeholder="https://exemplo.com/personagem.png"
-                />
-                <button className="button button--primary">Salvar retrato</button>
-              </form>
+              <summary>Alterar retrato do personagem</summary>
+              <CharacterImageUploader characterId={character.id} currentImageUrl={character.image_url} />
+              <div className="character-image-url-option">
+                <span>ou usar uma imagem por link</span>
+                <form action={updateCharacterImageAction.bind(null, character.id)}>
+                  <label className="sr-only" htmlFor="character-image-url">URL da imagem</label>
+                  <input
+                    id="character-image-url"
+                    name="imageUrl"
+                    type="url"
+                    defaultValue={character.image_url ?? ""}
+                    placeholder="https://exemplo.com/personagem.png"
+                  />
+                  <button className="button button--dark">Salvar link</button>
+                </form>
+              </div>
             </details>
           </div>
         </section>

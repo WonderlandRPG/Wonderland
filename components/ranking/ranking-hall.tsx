@@ -2,11 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { PlayerRanking } from "@/components/ranking/player-ranking";
 import { RankBadge } from "@/components/characters/rank-badge";
 import type { PvpRankingEntry, RankingEntry } from "@/lib/game/player-portal";
 
-export function RankingHall({ levelEntries, pvpEntries }: { levelEntries: RankingEntry[]; pvpEntries: PvpRankingEntry[] }) {
+type PvpDisplayEntry = PvpRankingEntry & { level: number };
+
+function titleData(title?: string | null) {
+  return title ? { name: title, rarity: "title", titleStyle: null } : null;
+}
+
+export function RankingHall({ levelEntries, pvpEntries }: { levelEntries: RankingEntry[]; pvpEntries: PvpDisplayEntry[] }) {
   const [mode, setMode] = useState<"level" | "pvp">("level");
   return (
     <section className="champions-hall">
@@ -22,13 +29,23 @@ export function RankingHall({ levelEntries, pvpEntries }: { levelEntries: Rankin
   );
 }
 
-function PvpRanking({ entries }: { entries: PvpRankingEntry[] }) {
+function PvpRanking({ entries }: { entries: PvpDisplayEntry[] }) {
   if (!entries.length) return <section className="champions-empty"><span>⚔</span><h2>O salão aguarda seu primeiro campeão</h2><p>As placas de honra serão gravadas depois da primeira luta oficial.</p></section>;
   const leader = entries[0];
   return (
     <div className="duelist-hall">
       <section className="duelist-banner">
-        <div className="duelist-banner__portrait"><span className="ranking-crown" aria-label="Primeiro colocado">♛</span><Avatar entry={leader} /></div>
+        <div className="duelist-banner__portrait official-pvp-card-host">
+          <span className="ranking-crown" aria-label="Primeiro colocado">♛</span>
+          <CharacterPortraitCard
+            imageUrl={leader.image_url}
+            level={leader.level}
+            name={leader.name}
+            rank={leader.adventure_rank}
+            title={titleData(leader.title_name)}
+            variant="standard"
+          />
+        </div>
         <div><small>CAMPEÃO DA ARENA</small><h2>{leader.name}</h2>{leader.title_name ? <em>✦ {leader.title_name}</em> : null}<strong>{Number(leader.win_rate).toFixed(1)}%</strong><p>{leader.victories} vitórias em {leader.matches} partidas</p></div>
         <aside><span>W</span><small>PLACA DE HONRA</small></aside>
       </section>
@@ -38,7 +55,10 @@ function PvpRanking({ entries }: { entries: PvpRankingEntry[] }) {
           {entries.map((entry) => (
             <Link className="duelist-roll__entry" href={`/jogadores/${entry.id}`} key={entry.id}>
               <b>{String(entry.position).padStart(2, "0")}</b>
-              <span className="duelist-roll__identity"><Avatar entry={entry} /><span><strong>{entry.name}</strong>{entry.title_name ? <em>✦ {entry.title_name}</em> : null}<small>{entry.race_name} · {entry.class_name}</small></span></span>
+              <span className="duelist-roll__identity">
+                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry.title_name)} variant="compact" />
+                <span><strong>{entry.name}</strong>{entry.title_name ? <em>✦ {entry.title_name}</em> : null}<small>{entry.race_name} · {entry.class_name}</small></span>
+              </span>
               <RankBadge compact rank={entry.adventure_rank} />
               <dl><div><dt>Lutas</dt><dd>{entry.matches}</dd></div><div><dt>Vitórias</dt><dd>{entry.victories}</dd></div><div><dt>Derrotas</dt><dd>{entry.defeats}</dd></div><div><dt>Taxa</dt><dd>{Number(entry.win_rate).toFixed(1)}%</dd></div></dl>
             </Link>
@@ -47,8 +67,4 @@ function PvpRanking({ entries }: { entries: PvpRankingEntry[] }) {
       </section>
     </div>
   );
-}
-
-function Avatar({ entry }: { entry: { name: string; image_url: string | null } }) {
-  return <span className={`ranking-avatar ${entry.image_url ? "is-image" : ""}`} style={entry.image_url ? { backgroundImage: `url(${entry.image_url})` } : undefined}>{entry.image_url ? "" : entry.name.slice(0, 2).toUpperCase()}</span>;
 }

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { saveLoreStoryAction } from "@/app/admin/historias/actions";
+import { deleteLoreStoryAction, saveLoreStoryAction } from "@/app/admin/historias/actions";
 import { LoreRichEditor } from "@/components/admin/lore-rich-editor";
 import { PlayerNav } from "@/components/player-nav";
 import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
@@ -20,8 +20,12 @@ type StoryRow = {
   published_at: string | null;
 };
 
-export default async function HistoryPage() {
-  const [account, client] = await Promise.all([getCurrentAccount(), createServerSupabaseClient()]);
+export default async function HistoryPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+  const [account, client, query] = await Promise.all([
+    getCurrentAccount(),
+    createServerSupabaseClient(),
+    searchParams,
+  ]);
   const { data } = client
     ? await client
         .from("v2_content")
@@ -78,18 +82,40 @@ export default async function HistoryPage() {
             <div><small>NOVAS OBRAS · ACERVO VIVO</small><h2>Contos da Biblioteca</h2></div>
             <p>Histórias posteriores ao registro original ficam guardadas como livros. Abra uma capa para ler a obra completa.</p>
           </header>
+
+          {query.status ? (
+            <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`} style={{ marginBottom: 16 }}>
+              {query.status === "apagado"
+                ? "✓ História apagada da Biblioteca."
+                : query.status === "salvo"
+                  ? "✓ História publicada na Biblioteca."
+                  : "! Não foi possível concluir a operação."}
+            </div>
+          ) : null}
+
           <div className={styles.bookGrid}>
             {stories.length ? stories.map((story, index) => {
               const payload = parseLoreStoryPayload(story.payload as never);
               return (
-                <Link className={styles.book} data-tone={payload.coverTone} href={`/historia/${story.slug}`} key={story.id}>
-                  <div>
-                    <span className={styles.bookNumber}>Tomo {String(stories.length - index).padStart(2, "0")}</span>
-                    <h3>{story.name}</h3>
-                    <p>{payload.excerpt}</p>
-                  </div>
-                  <footer><span>{payload.authorName}</span><small>{new Date(`${payload.publishedOn}T12:00:00Z`).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</small></footer>
-                </Link>
+                <div key={story.id} style={{ display: "grid", gap: 8, minWidth: 0 }}>
+                  <Link className={styles.book} data-tone={payload.coverTone} href={`/historia/${story.slug}`}>
+                    <div>
+                      <span className={styles.bookNumber}>Tomo {String(stories.length - index).padStart(2, "0")}</span>
+                      <h3>{story.name}</h3>
+                      <p>{payload.excerpt}</p>
+                    </div>
+                    <footer><span>{payload.authorName}</span><small>{new Date(`${payload.publishedOn}T12:00:00Z`).toLocaleDateString("pt-BR", { timeZone: "UTC" })}</small></footer>
+                  </Link>
+                  {canWrite ? (
+                    <form action={deleteLoreStoryAction} style={{ display: "flex", justifyContent: "flex-end" }}>
+                      <input name="id" type="hidden" value={story.id} />
+                      <input name="returnTo" type="hidden" value="/historia" />
+                      <button className="button button--danger" style={{ minHeight: 34, padding: "7px 11px" }}>
+                        Apagar história
+                      </button>
+                    </form>
+                  ) : null}
+                </div>
               );
             }) : <div className={styles.emptyShelf}><strong>A estante de novos contos ainda está vazia.</strong><p>Quando um ADM publicar uma nova história, ela aparecerá aqui como um livro.</p></div>}
           </div>

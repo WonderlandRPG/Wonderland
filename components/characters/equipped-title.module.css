@@ -1,0 +1,80 @@
+.title{
+  --title-primary:#fff1b5;
+  --title-secondary:#1f7a4c;
+  --title-glow:#d7ad45;
+  position:relative;
+  isolation:isolate;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  width:max-content;
+  max-width:min(100%,380px);
+  min-height:32px;
+  padding:6px 14px 6px 11px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--title-primary) 62%,#76552e);
+  border-radius:7px 18px 7px 18px;
+  background:
+    radial-gradient(circle at 14% 50%,color-mix(in srgb,var(--title-glow) 24%,transparent),transparent 28%),
+    linear-gradient(180deg,color-mix(in srgb,var(--title-secondary) 88%,#fff 12%),color-mix(in srgb,var(--title-secondary) 82%,#000 18%));
+  color:var(--title-primary);
+  box-shadow:
+    0 5px 14px rgba(46,31,19,.2),
+    0 0 13px color-mix(in srgb,var(--title-glow) 32%,transparent),
+    inset 0 1px rgba(255,255,255,.18);
+  text-shadow:0 1px #2a1c13,0 0 7px color-mix(in srgb,var(--title-glow) 70%,transparent);
+  font-size:.72rem;
+  font-weight:900;
+  line-height:1.15;
+  letter-spacing:.055em;
+  text-align:center;
+  text-transform:uppercase;
+}
+.title::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  z-index:-1;
+  border:1px solid color-mix(in srgb,var(--title-primary) 18%,transparent);
+  border-radius:5px 15px 5px 15px;
+  pointer-events:none;
+}
+.title::after{
+  content:"";
+  position:absolute;
+  left:17%;
+  right:17%;
+  bottom:3px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--title-glow),transparent);
+  opacity:.78;
+  pointer-events:none;
+}
+.sigil{
+  flex:0 0 auto;
+  color:var(--title-primary);
+  font-size:.92rem;
+  line-height:1;
+  filter:drop-shadow(0 0 5px var(--title-glow));
+  animation:titleSigil 2.8s ease-in-out infinite;
+}
+.name{
+  min-width:0;
+  overflow-wrap:break-word;
+}
+.title[data-title="legendary"],
+.title[data-title="mythic"],
+.title[data-title="awakened"]{
+  box-shadow:
+    0 6px 16px rgba(46,31,19,.24),
+    0 0 18px color-mix(in srgb,var(--title-glow) 48%,transparent),
+    inset 0 1px rgba(255,255,255,.22);
+  animation:titlePulse 3.2s ease-in-out infinite;
+}
+.title[data-title="mythic"] .sigil,
+.title[data-title="awakened"] .sigil{animation-duration:1.9s}
+@keyframes titleSigil{0%,100%{transform:scale(.9) rotate(-5deg);opacity:.72}50%{transform:scale(1.08) rotate(5deg);opacity:1}}
+@keyframes titlePulse{0%,100%{filter:brightness(.98)}50%{filter:brightness(1.12)}}
+@media(max-width:620px){.title{max-width:260px;padding:5px 10px;font-size:.64rem;letter-spacing:.035em}}
+@media(prefers-reduced-motion:reduce){.title,.sigil{animation:none!important}}

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { PlayerNav } from "@/components/player-nav";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
@@ -7,14 +8,12 @@ import { getLevelProgress } from "@/lib/game/experience";
 import { attributeLabels } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
 import { kingdomName } from "@/lib/game/kingdoms";
-import { RankBadge } from "@/components/characters/rank-badge";
 import { InventoryWorkbench } from "@/components/inventory/inventory-workbench";
 import { getAdventureRank } from "@/lib/game/ranks";
 import { defaultCombatRules, getConvertedResourceBonus } from "@/lib/game/combat";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
 import { compatibleEquipSlots, equipmentSlots, itemSlotLabel } from "@/lib/game/equipment";
 import { updateCharacterImageAction } from "./equipment-actions";
-import { EquippedTitle } from "@/components/characters/equipped-title";
 import { completePathQuestAction } from "./path-actions";
 
 export const metadata = { title: "Ficha do Personagem" };
@@ -73,6 +72,7 @@ export default async function CharacterSheetPage({
     character.stats.attributes.INT,
     character.race.payload.resource?.maximum ?? 0,
   );
+
   return (
     <main className="sheet-page">
       <PlayerNav />
@@ -84,73 +84,48 @@ export default async function CharacterSheetPage({
         ) : null}
         {query.status === "caminho-escolhido" ? (
           <div className="account-notice" role="status">
-            <span>✓</span>Missão concluída. O caminho e a habilidade de nível 50 foram
-            desbloqueados.
+            <span>✓</span>Missão concluída. O caminho e a habilidade de nível 50 foram desbloqueados.
           </div>
         ) : null}
         {query.status === "caminho-erro" || query.status === "caminho-bloqueado" ? (
           <div className="account-notice is-warning" role="alert">
-            <span>!</span>Não foi possível concluir a escolha do caminho. Confirme o nível e tente
-            novamente.
+            <span>!</span>Não foi possível concluir a escolha do caminho. Confirme o nível e tente novamente.
           </div>
         ) : null}
+
         <section
           className="character-command-hero"
           style={{ "--character-rank": rank.color } as React.CSSProperties}
           data-character-rank={rank.key}
         >
-          <div className="character-command-hero__art">
-            {character.image_url ? (
-              <span
-                className="is-image"
-                role="img"
-                aria-label={`Retrato de ${character.name}`}
-                style={{ backgroundImage: `url(${character.image_url})` }}
-              />
-            ) : (
-              <span>{character.name.slice(0, 2).toUpperCase()}</span>
-            )}
-            <RankBadge rank={character.adventure_rank} />
-            <EquippedTitle title={equippedTitle} />
+          <div className="character-command-hero__art official-character-card-host">
+            <CharacterPortraitCard
+              imageUrl={character.image_url}
+              level={character.level}
+              name={character.name}
+              rank={character.adventure_rank}
+              title={equippedTitle}
+              variant="hero"
+            />
           </div>
           <div className="character-command-hero__identity">
             <span className="eyebrow">Personagem online · {kingdomName(character.kingdom)}</span>
             <h1>{character.name}</h1>
-            <p>
-              {character.race.name} · {character.characterClass.name}
-            </p>
+            <p>{character.race.name} · {character.characterClass.name}</p>
             <dl className="character-command-hero__facts">
-              <div>
-                <dt>Rank</dt>
-                <dd>{rank.key}</dd>
-              </div>
-              <div>
-                <dt>Nível</dt>
-                <dd>{character.level}</dd>
-              </div>
-              <div>
-                <dt>Reino</dt>
-                <dd>{kingdomName(character.kingdom)}</dd>
-              </div>
-              <div>
-                <dt>Caminho</dt>
-                <dd>{classPath?.name ?? "Não definido"}</dd>
-              </div>
+              <div><dt>Rank</dt><dd>{rank.key}</dd></div>
+              <div><dt>Nível</dt><dd>{character.level}</dd></div>
+              <div><dt>Reino</dt><dd>{kingdomName(character.kingdom)}</dd></div>
+              <div><dt>Caminho</dt><dd>{classPath?.name ?? "Não definido"}</dd></div>
             </dl>
             <nav className="character-command-hero__actions">
-              <Link className="button button--primary" href={`/arena?personagem=${character.id}`}>
-                Entrar na Arena
-              </Link>
-              <Link className="button button--dark" href="/loja">
-                Visitar loja
-              </Link>
+              <Link className="button button--primary" href={`/arena?personagem=${character.id}`}>Entrar na Arena</Link>
+              <Link className="button button--dark" href="/loja">Visitar loja</Link>
             </nav>
             <details className="character-command-hero__image-editor">
               <summary>Alterar retrato por link</summary>
               <form action={updateCharacterImageAction.bind(null, character.id)}>
-                <label className="sr-only" htmlFor="character-image-url">
-                  URL da imagem
-                </label>
+                <label className="sr-only" htmlFor="character-image-url">URL da imagem</label>
                 <input
                   id="character-image-url"
                   name="imageUrl"
@@ -163,48 +138,26 @@ export default async function CharacterSheetPage({
             </details>
           </div>
         </section>
+
         <section
           className="character-progress-strip character-vitals-panel"
           style={{ "--character-rank": rank.color } as React.CSSProperties}
         >
-          <div>
-            <small>Nível atual</small>
-            <strong>{character.level}</strong>
-          </div>
+          <div><small>Nível atual</small><strong>{character.level}</strong></div>
           <div className="player-xp">
             <small>Experiência</small>
-            <strong>
-              {character.xp.toLocaleString("pt-BR")} / {progress.next.toLocaleString("pt-BR")} XP
-            </strong>
-            <span>
-              <i style={{ width: `${progress.percent}%` }} />
-            </span>
+            <strong>{character.xp.toLocaleString("pt-BR")} / {progress.next.toLocaleString("pt-BR")} XP</strong>
+            <span><i style={{ width: `${progress.percent}%` }} /></span>
           </div>
-          <div>
-            <small>WG de {character.name}</small>
-            <strong>◆ {character.gold.toLocaleString("pt-BR")}</strong>
-          </div>
+          <div><small>WG de {character.name}</small><strong>◆ {character.gold.toLocaleString("pt-BR")}</strong></div>
         </section>
+
         <nav className="sheet-tabs" aria-label="Seções da ficha">
-          <Link
-            className={tab === "resumo" ? "is-active" : ""}
-            href={`/personagens/${character.id}?tab=resumo`}
-          >
-            Ficha
-          </Link>
-          <Link
-            className={tab === "habilidades" ? "is-active" : ""}
-            href={`/personagens/${character.id}?tab=habilidades`}
-          >
-            Habilidades
-          </Link>
-          <Link
-            className={tab === "equipamentos" ? "is-active" : ""}
-            href={`/personagens/${character.id}?tab=equipamentos`}
-          >
-            Equipamentos
-          </Link>
+          <Link className={tab === "resumo" ? "is-active" : ""} href={`/personagens/${character.id}?tab=resumo`}>Ficha</Link>
+          <Link className={tab === "habilidades" ? "is-active" : ""} href={`/personagens/${character.id}?tab=habilidades`}>Habilidades</Link>
+          <Link className={tab === "equipamentos" ? "is-active" : ""} href={`/personagens/${character.id}?tab=equipamentos`}>Equipamentos</Link>
         </nav>
+
         {tab === "resumo" ? (
           <>
             {!classPath ? (
@@ -223,65 +176,39 @@ export default async function CharacterSheetPage({
                     <article key={path.key} className={character.level < 50 ? "is-locked" : ""}>
                       <header>
                         <span>{path.name.slice(0, 1)}</span>
-                        <div>
-                          <small>Nível 50</small>
-                          <h3>{path.quest.title}</h3>
-                        </div>
+                        <div><small>Nível 50</small><h3>{path.quest.title}</h3></div>
                       </header>
                       <p>{path.quest.briefing}</p>
-                      <ol>
-                        {path.quest.objectives.map((objective) => (
-                          <li key={objective}>{objective}</li>
-                        ))}
-                      </ol>
+                      <ol>{path.quest.objectives.map((objective) => <li key={objective}>{objective}</li>)}</ol>
                       <div className="path-passive">
-                        <small>Doutrina recebida</small>
-                        <b>{path.passive.name}</b>
-                        <span>{path.passive.description}</span>
+                        <small>Doutrina recebida</small><b>{path.passive.name}</b><span>{path.passive.description}</span>
                       </div>
                       {character.level >= 50 ? (
                         <form action={completePathQuestAction.bind(null, character.id)}>
                           <input name="pathKey" type="hidden" value={path.key} />
-                          <button className="button button--primary">
-                            Concluir missão e escolher {path.name}
-                          </button>
+                          <button className="button button--primary">Concluir missão e escolher {path.name}</button>
                         </form>
                       ) : (
-                        <button className="button button--dark" disabled>
-                          Bloqueado até o nível 50
-                        </button>
+                        <button className="button button--dark" disabled>Bloqueado até o nível 50</button>
                       )}
                     </article>
                   ))}
                 </div>
               </section>
             ) : null}
+
             <section className="sheet-stat-grid">
-              <article>
-                <span>HP máximo</span>
-                <strong>{character.stats.maxHp}</strong>
-              </article>
+              <article><span>HP máximo</span><strong>{character.stats.maxHp}</strong></article>
               <article>
                 <span>Recursos iniciais</span>
                 <strong>{`+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}</strong>
               </article>
-              <article>
-                <span>Iniciativa</span>
-                <strong>{character.stats.initiative}</strong>
-              </article>
-              <article>
-                <span>Poder físico</span>
-                <strong>{character.stats.physicalPower}</strong>
-              </article>
-              <article>
-                <span>Poder mágico</span>
-                <strong>{character.stats.magicalPower}</strong>
-              </article>
-              <article>
-                <span>Poder de suporte</span>
-                <strong>{character.stats.supportPower}</strong>
-              </article>
+              <article><span>Iniciativa</span><strong>{character.stats.initiative}</strong></article>
+              <article><span>Poder físico</span><strong>{character.stats.physicalPower}</strong></article>
+              <article><span>Poder mágico</span><strong>{character.stats.magicalPower}</strong></article>
+              <article><span>Poder de suporte</span><strong>{character.stats.supportPower}</strong></article>
             </section>
+
             <section className="sheet-section combat-formulas">
               <header>
                 <span className="eyebrow">Transparência de combate</span>
@@ -297,6 +224,7 @@ export default async function CharacterSheetPage({
                 <article><b>Escudo e defesa</b><code>Escudo absorve primeiro · Defender bloqueia o próximo dano</code><p>Dano verdadeiro ignora DEF e RES. O dano mínimo normal é {defaultCombatRules.minimumDamage}.</p></article>
               </div>
             </section>
+
             <section className="sheet-section">
               <header>
                 <span className="eyebrow">Atributos finais</span>
@@ -312,126 +240,71 @@ export default async function CharacterSheetPage({
                     <p>
                       {20} base + {character.allocatedAttributes[attribute]} livre +{" "}
                       {character.race.payload.attributeBonuses[attribute]} racial +{" "}
-                      {character.stats.attributes[attribute] -
-                        20 -
-                        character.allocatedAttributes[attribute] -
-                        character.race.payload.attributeBonuses[attribute]}{" "}
-                      equipamento
+                      {character.stats.attributes[attribute] - 20 - character.allocatedAttributes[attribute] - character.race.payload.attributeBonuses[attribute]} equipamento
                     </p>
                   </article>
                 ))}
               </div>
             </section>
+
             <div className="sheet-columns">
               <section className="sheet-section">
-                <header>
-                  <span className="eyebrow">Identidade racial</span>
-                  <h2>{character.race.name}</h2>
-                </header>
+                <header><span className="eyebrow">Identidade racial</span><h2>{character.race.name}</h2></header>
                 <div className="sheet-lore-block">
                   <h3>Mecânica racial</h3>
-                  {character.race.payload.mechanics.map((entry) => (
-                    <article key={entry.name}>
-                      <strong>{entry.name}</strong>
-                      <p>{entry.description}</p>
-                    </article>
-                  ))}
+                  {character.race.payload.mechanics.map((entry) => <article key={entry.name}><strong>{entry.name}</strong><p>{entry.description}</p></article>)}
                 </div>
                 <div className="sheet-lore-block">
                   <h3>Traços passivos</h3>
-                  {character.race.payload.traits.map((entry) => (
-                    <article key={entry.name}>
-                      <strong>{entry.name}</strong>
-                      <p>{entry.description}</p>
-                    </article>
-                  ))}
+                  {character.race.payload.traits.map((entry) => <article key={entry.name}><strong>{entry.name}</strong><p>{entry.description}</p></article>)}
                 </div>
               </section>
               <section className="sheet-section">
-                <header>
-                  <span className="eyebrow">Identidade da classe</span>
-                  <h2>{character.characterClass.name}</h2>
-                </header>
+                <header><span className="eyebrow">Identidade da classe</span><h2>{character.characterClass.name}</h2></header>
                 <div className="sheet-lore-block">
                   <h3>Mecânica exclusiva</h3>
-                  <article>
-                    <strong>{character.characterClass.payload.mechanic.name}</strong>
-                    <p>{character.characterClass.payload.mechanic.description}</p>
-                  </article>
+                  <article><strong>{character.characterClass.payload.mechanic.name}</strong><p>{character.characterClass.payload.mechanic.description}</p></article>
                 </div>
                 <div className="sheet-lore-block">
                   <h3>Passiva da classe</h3>
-                  <article>
-                    <strong>{character.characterClass.payload.passive.name}</strong>
-                    <p>{character.characterClass.payload.passive.description}</p>
-                  </article>
+                  <article><strong>{character.characterClass.payload.passive.name}</strong><p>{character.characterClass.payload.passive.description}</p></article>
                 </div>
               </section>
             </div>
           </>
         ) : null}
+
         {tab === "habilidades" ? (
           <section className="sheet-section grimoire">
             <header>
               <span className="eyebrow">Grimório automático</span>
               <h2>Habilidades disponíveis</h2>
-              <p>
-                O nível da ficha controla os desbloqueios; alterações do Painel ADM aparecem aqui
-                automaticamente.
-              </p>
+              <p>O nível da ficha controla os desbloqueios; alterações do Painel ADM aparecem aqui automaticamente.</p>
             </header>
             <div className="grimoire-columns">
               <SkillList
                 title="Habilidades da raça"
-                unlocked={character.unlockedRaceAbilities.map((entry) => ({
-                  level: entry.level,
-                  name: entry.name,
-                  description: entry.playerDescription,
-                }))}
-                locked={futureRaceSkills.map((entry) => ({
-                  level: entry.level,
-                  name: entry.name,
-                  description: entry.playerDescription,
-                }))}
+                unlocked={character.unlockedRaceAbilities.map((entry) => ({ level: entry.level, name: entry.name, description: entry.playerDescription }))}
+                locked={futureRaceSkills.map((entry) => ({ level: entry.level, name: entry.name, description: entry.playerDescription }))}
               />
               <SkillList
                 title="Habilidades da classe"
                 unlocked={character.unlockedClassSkills
-                  .filter(
-                    (entry) => !(classPath?.skills ?? []).some((skill) => skill.key === entry.key),
-                  )
-                  .map((entry) => ({
-                    level: entry.level,
-                    name: entry.name,
-                    description: entry.effect,
-                  }))}
-                locked={futureClassSkills.map((entry) => ({
-                  level: entry.level,
-                  name: entry.name,
-                  description: entry.effect,
-                }))}
+                  .filter((entry) => !(classPath?.skills ?? []).some((skill) => skill.key === entry.key))
+                  .map((entry) => ({ level: entry.level, name: entry.name, description: entry.effect }))}
+                locked={futureClassSkills.map((entry) => ({ level: entry.level, name: entry.name, description: entry.effect }))}
               />
               <SkillList
                 title={`Caminho · ${classPath?.name ?? "Não definido"}`}
-                unlocked={unlockedPathSkills.map((entry) => ({
-                  level: entry.level,
-                  name: entry.name,
-                  description: entry.playerDescription,
-                }))}
-                locked={futurePathSkills.map((entry) => ({
-                  level: entry.level,
-                  name: entry.name,
-                  description: entry.playerDescription,
-                }))}
+                unlocked={unlockedPathSkills.map((entry) => ({ level: entry.level, name: entry.name, description: entry.playerDescription }))}
+                locked={futurePathSkills.map((entry) => ({ level: entry.level, name: entry.name, description: entry.playerDescription }))}
               />
             </div>
           </section>
         ) : null}
+
         {tab === "equipamentos" ? (
-          <section
-            className="sheet-section inventory-hud"
-            style={{ "--character-rank": rank.color } as React.CSSProperties}
-          >
+          <section className="sheet-section inventory-hud" style={{ "--character-rank": rank.color } as React.CSSProperties}>
             <header>
               <span className="eyebrow">Arsenal do personagem</span>
               <h2>Equipamentos de {character.name}</h2>
@@ -443,6 +316,7 @@ export default async function CharacterSheetPage({
                 name: character.name,
                 imageUrl: character.image_url,
                 rank: character.adventure_rank,
+                level: character.level,
               }}
               slots={equipmentSlots.map((slot) => {
                 const item = equippedItems.get(slot.key);
@@ -460,17 +334,7 @@ export default async function CharacterSheetPage({
                 rarity: entry.rarity,
                 price: entry.price,
                 rarityLabel:
-                  (
-                    {
-                      common: "Comum",
-                      uncommon: "Incomum",
-                      rare: "Raro",
-                      epic: "Épico",
-                      legendary: "Lendário",
-                      mythic: "Mítico",
-                      awakened: "Desperto",
-                    } as Record<string, string>
-                  )[entry.rarity] ?? entry.rarity,
+                  ({ common: "Comum", uncommon: "Incomum", rare: "Raro", epic: "Épico", legendary: "Lendário", mythic: "Mítico", awakened: "Desperto" } as Record<string, string>)[entry.rarity] ?? entry.rarity,
                 slot: entry.slot,
                 slotLabel: itemSlotLabel(entry.slot),
                 quantity: entry.quantity,
@@ -501,22 +365,14 @@ function SkillList({
   return (
     <div className="grimoire-list">
       <h3>{title}</h3>
-      {unlocked.length === 0 ? (
-        <p>Nenhuma habilidade desbloqueada neste nível.</p>
-      ) : (
-        unlocked.map((skill) => (
-          <article className="is-unlocked" key={`${skill.level}-${skill.name}`}>
-            <span>Nível {skill.level}</span>
-            <strong>{skill.name}</strong>
-            <p>{skill.description}</p>
-          </article>
-        ))
-      )}
+      {unlocked.length === 0 ? <p>Nenhuma habilidade desbloqueada neste nível.</p> : unlocked.map((skill) => (
+        <article className="is-unlocked" key={`${skill.level}-${skill.name}`}>
+          <span>Nível {skill.level}</span><strong>{skill.name}</strong><p>{skill.description}</p>
+        </article>
+      ))}
       {locked.slice(0, 4).map((skill) => (
         <article className="is-locked" key={`${skill.level}-${skill.name}`}>
-          <span>Desbloqueia no nível {skill.level}</span>
-          <strong>{skill.name}</strong>
-          <p>{skill.description}</p>
+          <span>Desbloqueia no nível {skill.level}</span><strong>{skill.name}</strong><p>{skill.description}</p>
         </article>
       ))}
     </div>

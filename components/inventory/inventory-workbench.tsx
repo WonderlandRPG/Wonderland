@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   equipItemAction,
   sellInventoryItemAction,
   unequipItemAction,
 } from "@/app/personagens/[id]/equipment-actions";
+import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { ItemArtwork } from "@/components/items/item-artwork";
-import { RankBadge } from "@/components/characters/rank-badge";
 
 type InventoryItem = {
   id: string;
@@ -35,7 +35,7 @@ export function InventoryWorkbench({
   slots,
   items,
 }: {
-  character: { id: string; name: string; imageUrl: string | null; rank: string };
+  character: { id: string; name: string; imageUrl: string | null; rank: string; level: number };
   slots: Slot[];
   items: InventoryItem[];
 }) {
@@ -90,6 +90,14 @@ export function InventoryWorkbench({
   );
   const occupied = slots.filter((slot) => slot.itemId).length;
   const equippedTitle = items.find((item) => item.equippedSlot === "title") ?? null;
+  const equippedTitleData = equippedTitle
+    ? {
+        name: equippedTitle.name,
+        rarity: equippedTitle.rarity,
+        titleStyle: equippedTitle.titleStyle,
+      }
+    : null;
+
   useEffect(() => {
     if (!activeSlotKey) return;
     const close = (event: KeyboardEvent) => {
@@ -112,7 +120,10 @@ export function InventoryWorkbench({
       items.find((item) => item.compatibleSlots.includes(slot.key));
     if (candidate) setSelectedId(candidate.id);
   };
-  const leftSlotKeys = new Set(["head", "torso", "hands", "legs", "feet", "cape"]);
+
+  // 7 espaços de cada lado do card oficial do personagem.
+  const leftSlotKeys = new Set(["head", "torso", "hands", "legs", "feet", "cape", "necklace"]);
+
   const renderSlot = (slot: Slot) => {
     const item = items.find((entry) => entry.id === slot.itemId);
     return (
@@ -133,51 +144,42 @@ export function InventoryWorkbench({
       </button>
     );
   };
+
   return (
     <div className="inventory-command">
       <section className="inventory-command__loadout">
         <header className="inventory-loadout-heading">
-          <div><span className="eyebrow">Conjunto equipado</span><h3>Espaços de combate</h3></div>
+          <div>
+            <span className="eyebrow">Conjunto equipado</span>
+            <h3>Espaços de combate</h3>
+          </div>
           <small>Clique em um espaço para trocar o equipamento.</small>
         </header>
+
         <div className="inventory-slot-column is-left">
           {slots.filter((slot) => leftSlotKeys.has(slot.key)).map(renderSlot)}
         </div>
-        <aside className="inventory-character-card is-centered">
-          <div
-            className={character.imageUrl ? "is-image" : ""}
-            style={
-              character.imageUrl ? { backgroundImage: `url(${character.imageUrl})` } : undefined
-            }
-          >
-            {character.imageUrl ? "" : character.name.slice(0, 2).toUpperCase()}
+
+        <aside className="inventory-character-card is-centered has-official-character-card">
+          <CharacterPortraitCard
+            imageUrl={character.imageUrl}
+            level={character.level}
+            name={character.name}
+            rank={character.rank}
+            title={equippedTitleData}
+            variant="inventory"
+          />
+          <div className="inventory-character-card__caption">
+            <strong>{character.name}</strong>
+            <small>{occupied} / {slots.length} espaços ocupados</small>
           </div>
-          <RankBadge rank={character.rank} />
-          {equippedTitle ? (
-            <div
-              className="character-equipped-title"
-              data-title={equippedTitle.rarity}
-              style={
-                {
-                  "--title-primary": equippedTitle.titleStyle?.primary ?? "#fff1b5",
-                  "--title-secondary": equippedTitle.titleStyle?.secondary ?? "#1f7a4c",
-                  "--title-glow": equippedTitle.titleStyle?.glow ?? "#d7ad45",
-                } as CSSProperties
-              }
-            >
-              ✦ {equippedTitle.name}
-            </div>
-          ) : null}
-          <span>CONJUNTO ATIVO</span>
-          <strong>{character.name}</strong>
-          <small>
-            {occupied} / {slots.length} espaços ocupados
-          </small>
         </aside>
+
         <div className="inventory-slot-column is-right">
           {slots.filter((slot) => !leftSlotKeys.has(slot.key)).map(renderSlot)}
         </div>
       </section>
+
       <section className="inventory-browser">
         <div className="inventory-browser__catalog">
           <header>
@@ -186,44 +188,17 @@ export function InventoryWorkbench({
               <h3>Mochila e equipamentos</h3>
             </div>
             <nav>
-              <button
-                className={view === "all" ? "is-active" : ""}
-                onClick={() => setView("all")}
-                type="button"
-              >
-                Todos
-              </button>
-              <button
-                className={view === "bag" ? "is-active" : ""}
-                onClick={() => setView("bag")}
-                type="button"
-              >
-                Mochila
-              </button>
-              <button
-                className={view === "equipped" ? "is-active" : ""}
-                onClick={() => setView("equipped")}
-                type="button"
-              >
-                Equipados
-              </button>
-              <button
-                className={view === "rewards" ? "is-active" : ""}
-                onClick={() => setView("rewards")}
-                type="button"
-              >
-                Recompensas ADM
-              </button>
+              <button className={view === "all" ? "is-active" : ""} onClick={() => setView("all")} type="button">Todos</button>
+              <button className={view === "bag" ? "is-active" : ""} onClick={() => setView("bag")} type="button">Mochila</button>
+              <button className={view === "equipped" ? "is-active" : ""} onClick={() => setView("equipped")} type="button">Equipados</button>
+              <button className={view === "rewards" ? "is-active" : ""} onClick={() => setView("rewards")} type="button">Recompensas ADM</button>
             </nav>
           </header>
+
           <div className="inventory-search">
             <label>
               <span>⌕</span>
-              <input
-                placeholder="Pesquisar item"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
+              <input placeholder="Pesquisar item" value={search} onChange={(event) => setSearch(event.target.value)} />
             </label>
             {slotFilter ? (
               <button onClick={() => setSlotFilter("")} type="button">
@@ -232,6 +207,7 @@ export function InventoryWorkbench({
             ) : null}
             <small>{visible.length} itens</small>
           </div>
+
           {visible.length ? (
             <div className="inventory-classic-grid">
               {visible.map((item) => (
@@ -246,15 +222,13 @@ export function InventoryWorkbench({
                     <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
                     {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
                   </div>
-                  <small>
-                    {item.rarityLabel} · {item.slotLabel}
-                  </small>
+                  <small>{item.rarityLabel} · {item.slotLabel}</small>
                   <strong>{item.name}</strong>
-                  {item.slot === "title" ? (
-                    <em className="inventory-reward-tag">Presente ADM</em>
-                  ) : null}
+                  {item.slot === "title" ? <em className="inventory-reward-tag">Presente ADM</em> : null}
                   {item.effects.slice(0, 1).map((effect) => (
-                    <span className="inventory-card-effect" key={effect.key}>✦ {effect.name}<small>{effect.description}</small></span>
+                    <span className="inventory-card-effect" key={effect.key}>
+                      ✦ {effect.name}<small>{effect.description}</small>
+                    </span>
                   ))}
                   <footer>
                     {item.equippedSlot ? <span>✓ Equipado</span> : <span>Na mochila</span>}
@@ -280,18 +254,15 @@ export function InventoryWorkbench({
             </div>
           )}
         </div>
+
         <aside className="inventory-inspector">
           {selected ? (
             <>
               <header>
-                <span>
-                  {selected.rarityLabel} · {selected.slotLabel}
-                </span>
+                <span>{selected.rarityLabel} · {selected.slotLabel}</span>
                 <h3>{selected.name}</h3>
                 {selected.equippedSlot ? (
-                  <b>
-                    Equipado em {slots.find((slot) => slot.key === selected.equippedSlot)?.label}
-                  </b>
+                  <b>Equipado em {slots.find((slot) => slot.key === selected.equippedSlot)?.label}</b>
                 ) : (
                   <b>Disponível na mochila</b>
                 )}
@@ -302,10 +273,7 @@ export function InventoryWorkbench({
               <p>{selected.description}</p>
               <dl>
                 {Object.entries(selected.attributes).map(([key, value]) => (
-                  <div key={key}>
-                    <dt>{key}</dt>
-                    <dd>+{value}</dd>
-                  </div>
+                  <div key={key}><dt>{key}</dt><dd>+{value}</dd></div>
                 ))}
               </dl>
               {selected.effects.map((effect) => (
@@ -328,9 +296,7 @@ export function InventoryWorkbench({
                       <span>Equipar em</span>
                       <select name="slot" defaultValue={selected.compatibleSlots[0]}>
                         {selected.compatibleSlots.map((slot) => (
-                          <option key={slot} value={slot}>
-                            {slots.find((entry) => entry.key === slot)?.label ?? slot}
-                          </option>
+                          <option key={slot} value={slot}>{slots.find((entry) => entry.key === slot)?.label ?? slot}</option>
                         ))}
                       </select>
                     </label>
@@ -340,9 +306,7 @@ export function InventoryWorkbench({
                 {!selected.equippedSlot && selected.slot !== "title" && selected.price > 0 ? (
                   <form action={sellInventoryItemAction.bind(null, character.id)}>
                     <input name="inventoryId" type="hidden" value={selected.id} />
-                    <button className="button button--danger">
-                      Vender por {Math.floor(selected.price / 3).toLocaleString("pt-BR")} WG
-                    </button>
+                    <button className="button button--danger">Vender por {Math.floor(selected.price / 3).toLocaleString("pt-BR")} WG</button>
                   </form>
                 ) : null}
               </footer>
@@ -355,6 +319,7 @@ export function InventoryWorkbench({
           )}
         </aside>
       </section>
+
       {activeSlot && typeof document !== "undefined"
         ? createPortal(
             <div
@@ -380,62 +345,40 @@ export function InventoryWorkbench({
                         : `Escolha um dos ${compatibleItems.length} itens compatíveis da mochila.`}
                     </p>
                   </div>
-                  <button
-                    aria-label="Fechar seleção de equipamento"
-                    onClick={() => setActiveSlotKey(null)}
-                    ref={closeButtonRef}
-                    type="button"
-                  >
-                    ×
-                  </button>
+                  <button aria-label="Fechar seleção de equipamento" onClick={() => setActiveSlotKey(null)} ref={closeButtonRef} type="button">×</button>
                 </header>
+
                 {activeSlot.reserved && activeSlotItem ? (
                   <div className="equipment-modal__two-handed">
                     <ItemArtwork name={activeSlotItem.name} rarity={activeSlotItem.rarity} slot={activeSlotItem.slot} />
                     <span>
                       <strong>Espaço reservado por arma de duas mãos</strong>
-                      <small>
-                        Equipar outra arma aqui substituirá {activeSlotItem.name} e liberará os dois
-                        espaços.
-                      </small>
+                      <small>Equipar outra arma aqui substituirá {activeSlotItem.name} e liberará os dois espaços.</small>
                     </span>
                   </div>
                 ) : null}
+
                 <div className="equipment-modal__list">
                   {compatibleItems.length ? (
                     compatibleItems.map((item) => {
                       const equippedHere = item.id === activeSlot.itemId;
                       const equippedElsewhere = Boolean(item.equippedSlot && !equippedHere);
                       return (
-                        <article
-                          className={equippedHere ? "is-equipped" : ""}
-                          data-rarity={item.rarity}
-                          key={item.id}
-                        >
+                        <article className={equippedHere ? "is-equipped" : ""} data-rarity={item.rarity} key={item.id}>
                           <div className="equipment-modal__glyph">
                             <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
                             {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
                           </div>
                           <div className="equipment-modal__item-copy">
-                            <small>
-                              {item.rarityLabel} · {item.twoHanded ? "Duas mãos" : item.slotLabel}
-                            </small>
+                            <small>{item.rarityLabel} · {item.twoHanded ? "Duas mãos" : item.slotLabel}</small>
                             <strong>{item.name}</strong>
                             <p>{item.description}</p>
                             <div>
                               {Object.entries(item.attributes).map(([key, value]) => (
-                                <span key={key}>
-                                  {key} <b>+{value}</b>
-                                </span>
+                                <span key={key}>{key} <b>+{value}</b></span>
                               ))}
                               {item.effects.map((effect) => (
-                                <span
-                                  className="is-effect"
-                                  key={effect.key}
-                                  title={effect.description}
-                                >
-                                  ✦ {effect.name}
-                                </span>
+                                <span className="is-effect" key={effect.key} title={effect.description}>✦ {effect.name}</span>
                               ))}
                             </div>
                           </div>
@@ -452,14 +395,8 @@ export function InventoryWorkbench({
                               <form action={equipItemAction.bind(null, character.id)}>
                                 <input name="inventoryId" type="hidden" value={item.id} />
                                 <input name="slot" type="hidden" value={activeSlot.key} />
-                                {equippedElsewhere ? (
-                                  <small>
-                                    Em {slots.find((slot) => slot.key === item.equippedSlot)?.label}
-                                  </small>
-                                ) : null}
-                                <button className="button button--primary">
-                                  {equippedElsewhere ? "Mover para cá" : "Equipar"}
-                                </button>
+                                {equippedElsewhere ? <small>Em {slots.find((slot) => slot.key === item.equippedSlot)?.label}</small> : null}
+                                <button className="button button--primary">{equippedElsewhere ? "Mover para cá" : "Equipar"}</button>
                               </form>
                             )}
                           </div>
@@ -469,9 +406,7 @@ export function InventoryWorkbench({
                   ) : (
                     <div className="inventory-empty">
                       <ItemGlyph slot={activeSlot.key} />
-                      <strong>
-                        Nenhum {activeSlot.label.toLocaleLowerCase("pt-BR")} na mochila
-                      </strong>
+                      <strong>Nenhum {activeSlot.label.toLocaleLowerCase("pt-BR")} na mochila</strong>
                       <p>
                         {activeSlot.key === "title"
                           ? "Títulos são concedidos exclusivamente pela administração."
@@ -480,11 +415,10 @@ export function InventoryWorkbench({
                     </div>
                   )}
                 </div>
+
                 <footer className="equipment-modal__footer">
                   <span>{compatibleItems.length} itens compatíveis</span>
-                  <button className="button button--dark" onClick={() => setActiveSlotKey(null)}>
-                    Voltar ao inventário
-                  </button>
+                  <button className="button button--dark" onClick={() => setActiveSlotKey(null)}>Voltar ao inventário</button>
                 </footer>
               </section>
             </div>,

@@ -2,6 +2,12 @@
  * O componente é renderizado em document.body via createPortal, portanto precisa
  * de uma camada própria fora de .inventory-hud.
  */
+
+/* O efeito de Rank não pode pintar a área inteira do inventário. O card oficial já
+ * possui RankAtmosphere próprio, então a decoração global fica restrita ao retrato. */
+.inventory-hud:has(.rank-emblem)::after{content:none!important;display:none!important}
+.inventory-character-card.has-official-character-card:has(.rank-emblem)::after{content:none!important;display:none!important}
+
 body.has-equipment-modal{overflow:hidden!important}
 .equipment-modal{position:fixed!important;inset:0!important;z-index:10000!important;display:grid!important;place-items:center!important;width:100vw!important;height:100vh!important;padding:24px!important;overflow-y:auto!important;background:rgba(27,20,15,.74)!important;backdrop-filter:blur(6px)!important}
 .equipment-modal__dialog{width:min(1060px,calc(100vw - 32px))!important;max-height:min(88vh,860px)!important;min-width:0!important;display:grid!important;grid-template-rows:auto auto minmax(0,1fr) auto!important;overflow:hidden!important;border:2px solid #735337!important;border-radius:20px!important;background:linear-gradient(145deg,#f7e7bd,#e3c894)!important;box-shadow:0 26px 70px rgba(18,12,8,.52),inset 0 0 0 1px rgba(255,248,221,.65)!important;color:#38291d!important}

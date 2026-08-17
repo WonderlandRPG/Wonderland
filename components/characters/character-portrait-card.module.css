@@ -20,4 +20,7 @@
 :global(.official-character-card-host)>.card{width:min(100%,360px)!important}
 :global(.official-ranking-card-host){width:158px!important;height:198px!important;overflow:visible!important}
 :global(.official-ranking-card-host)>.card{width:150px!important;min-height:188px!important}
+:global(.official-pvp-card-host){width:180px!important;height:225px!important;overflow:visible!important}
+:global(.official-pvp-card-host)>.card{width:176px!important;min-height:220px!important}
+:global(.duelist-roll__identity:has([data-character-card='official'])){grid-template-columns:74px minmax(0,1fr)!important}
 @media(max-width:620px){.inventory{max-width:320px;min-height:390px}.hero{min-height:380px}.topMeta{left:8px;right:8px;top:8px}.titleMeta{left:8px;right:8px;bottom:8px}}

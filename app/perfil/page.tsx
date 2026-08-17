@@ -2,13 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ProfileForm } from "@/components/account/profile-form";
+import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { PlayerNav } from "@/components/player-nav";
 import { roleLabels } from "@/lib/auth/account";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
-import { RankBadge } from "@/components/characters/rank-badge";
 import { getAdventureRank } from "@/lib/game/ranks";
-import { EquippedTitle } from "@/components/characters/equipped-title";
 
 export const metadata: Metadata = { title: "Minha conta" };
 export const dynamic = "force-dynamic";
@@ -70,11 +69,15 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
         <aside className="guild-registry-folio guild-registry-folio--character" style={{ "--card-rank": activeRank.color } as React.CSSProperties} data-card-rank={activeRank.key}>
           <header><span>FÓLIO II</span><div><small>PERSONAGEM ATIVO</small><h2>{activeCharacter.name}</h2></div></header>
-          <div className="guild-registry-character-portrait" style={activeCharacter.image_url ? { backgroundImage: `url(${activeCharacter.image_url})` } : undefined}>
-            {!activeCharacter.image_url ? activeCharacter.name.slice(0, 2).toUpperCase() : null}
-            <RankBadge compact rank={activeCharacter.adventure_rank} />
-            <EquippedTitle title={equippedTitle} />
-          </div>
+          <CharacterPortraitCard
+            className="guild-registry-character-portrait"
+            imageUrl={activeCharacter.image_url}
+            level={activeCharacter.level}
+            name={activeCharacter.name}
+            rank={activeCharacter.adventure_rank}
+            title={equippedTitle}
+            variant="standard"
+          />
           <div className="guild-registry-character-copy">
             <p>{activeCharacter.race.name} · {activeCharacter.characterClass.name}</p>
             <dl><div><dt>Nível</dt><dd>{activeCharacter.level}</dd></div><div><dt>Rank</dt><dd>{activeRank.key}</dd></div></dl>

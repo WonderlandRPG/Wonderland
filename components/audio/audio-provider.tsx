@@ -64,8 +64,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const play = useCallback(async () => {
     const audio = audioRef.current;
-    if (!audio || !enabledRef.current) return false;
-    if (!audio.src) return false;
+    if (!audio || !enabledRef.current || !audio.src) return false;
 
     try {
       audio.muted = false;
@@ -175,8 +174,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, [play, savePosition, track, trackKey]);
 
   useEffect(() => {
-    // Browsers can reject autoplay. Keep retrying on genuine user interaction
-    // until the selected track actually starts playing.
     const unlock = () => {
       const audio = audioRef.current;
       if (enabledRef.current && audio?.paused) void play();
@@ -191,8 +188,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
   }, [play, trackKey]);
 
-  const toggleEnabled = () => {
-    if (!enabledRef.current) {
+  const togglePlayback = () => {
+    const audio = audioRef.current;
+    const isActuallyPlaying = Boolean(audio && !audio.paused && !audio.ended);
+
+    if (!isActuallyPlaying) {
       void enableAndPlay();
       return;
     }
@@ -202,7 +202,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     try {
       window.localStorage.setItem(enabledKey, "false");
     } catch {}
-    audioRef.current?.pause();
+    audio?.pause();
     setPlaybackState("paused");
   };
 
@@ -221,8 +221,6 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const togglePanel = () => {
     setOpen((value) => !value);
-    // Clicking the music control itself is explicit user interaction. Always
-    // enable playback here so stale settings can never leave the player silent.
     if (audioRef.current?.paused || !enabledRef.current) void enableAndPlay();
   };
 
@@ -249,7 +247,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
             <button
               aria-label={enabled && playbackState === "playing" ? "Pausar música" : "Tocar música"}
               className={styles.mute}
-              onClick={toggleEnabled}
+              onClick={togglePlayback}
               type="button"
             >
               {enabled && playbackState === "playing" ? "Ⅱ" : "▶"}

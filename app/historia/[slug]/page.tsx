@@ -28,7 +28,17 @@ export default async function LoreStoryPage({ params }: { params: Promise<{ slug
       <div className={styles.shell}>
         <Link className={styles.back} href="/historia#biblioteca">← Voltar para a Biblioteca</Link>
         <header className={styles.storyHero}>
-          <div className={styles.miniBook} data-tone={payload.coverTone}>{data.name}</div>
+          <div
+            className={styles.miniBook}
+            data-tone={payload.coverTone}
+            style={payload.coverImageUrl ? {
+              backgroundImage: `linear-gradient(rgba(28,23,18,.28),rgba(28,23,18,.62)),url(${payload.coverImageUrl})`,
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+            } : undefined}
+          >
+            {data.name}
+          </div>
           <div>
             <small>BIBLIOTECA REAL · CONTO DE WONDERLAND</small>
             <h1>{data.name}</h1>

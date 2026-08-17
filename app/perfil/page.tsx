@@ -69,15 +69,16 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
 
         <aside className="guild-registry-folio guild-registry-folio--character" style={{ "--card-rank": activeRank.color } as React.CSSProperties} data-card-rank={activeRank.key}>
           <header><span>FÓLIO II</span><div><small>PERSONAGEM ATIVO</small><h2>{activeCharacter.name}</h2></div></header>
-          <CharacterPortraitCard
-            className="guild-registry-character-portrait"
-            imageUrl={activeCharacter.image_url}
-            level={activeCharacter.level}
-            name={activeCharacter.name}
-            rank={activeCharacter.adventure_rank}
-            title={equippedTitle}
-            variant="standard"
-          />
+          <div className="guild-registry-character-portrait official-character-card-host">
+            <CharacterPortraitCard
+              imageUrl={activeCharacter.image_url}
+              level={activeCharacter.level}
+              name={activeCharacter.name}
+              rank={activeCharacter.adventure_rank}
+              title={equippedTitle}
+              variant="standard"
+            />
+          </div>
           <div className="guild-registry-character-copy">
             <p>{activeCharacter.race.name} · {activeCharacter.characterClass.name}</p>
             <dl><div><dt>Nível</dt><dd>{activeCharacter.level}</dd></div><div><dt>Rank</dt><dd>{activeRank.key}</dd></div></dl>

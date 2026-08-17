@@ -11,6 +11,8 @@ const positionsKey = "wonderland:music-positions";
 const volumeKey = "wonderland:music-volume";
 const defaultVolume = 0.5;
 
+type PlaybackState = "idle" | "loading" | "playing" | "paused" | "blocked" | "error";
+
 function readEnabled() {
   try {
     return window.localStorage.getItem(enabledKey) !== "false";
@@ -46,6 +48,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const [enabled, setEnabled] = useState(true);
   const [volume, setVolume] = useState(defaultVolume);
   const [open, setOpen] = useState(false);
+  const [playbackState, setPlaybackState] = useState<PlaybackState>("idle");
 
   const savePosition = useCallback((key: string, position: number) => {
     try {
@@ -57,11 +60,14 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
 
   const play = useCallback(async () => {
     const audio = audioRef.current;
-    if (!audio || !enabledRef.current) return;
+    if (!audio || !enabledRef.current) return false;
     try {
       await audio.play();
+      setPlaybackState("playing");
+      return true;
     } catch {
-      // Alguns navegadores exigem a primeira interação do usuário para liberar áudio.
+      setPlaybackState(audio.error ? "error" : "blocked");
+      return false;
     }
   }, []);
 
@@ -81,42 +87,77 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     const previousTrack = previousTrackRef.current;
     if (previousTrack !== trackKey) savePosition(previousTrack, audio.currentTime || 0);
     previousTrackRef.current = trackKey;
+
+    let usingFallback = false;
+    let restored = false;
+
+    const restorePosition = () => {
+      if (restored) return;
+      const savedPosition = readPositions()[trackKey] ?? 0;
+      if (savedPosition > 0 && Number.isFinite(audio.duration) && audio.duration > 0) {
+        audio.currentTime = savedPosition % audio.duration;
+      }
+      restored = true;
+    };
+
+    const tryToPlay = () => {
+      restorePosition();
+      if (enabledRef.current) void play();
+    };
+
+    const useFallback = () => {
+      if (usingFallback || !("fallback" in track) || !track.fallback) {
+        setPlaybackState("error");
+        return;
+      }
+      usingFallback = true;
+      restored = false;
+      setPlaybackState("loading");
+      audio.pause();
+      audio.src = track.fallback;
+      audio.volume = readVolume();
+      audio.load();
+    };
+
+    const markPlaying = () => setPlaybackState("playing");
+    const markPaused = () => {
+      if (enabledRef.current && playbackState !== "loading") setPlaybackState("paused");
+    };
+
+    audio.addEventListener("loadedmetadata", restorePosition);
+    audio.addEventListener("canplay", tryToPlay);
+    audio.addEventListener("error", useFallback);
+    audio.addEventListener("playing", markPlaying);
+    audio.addEventListener("pause", markPaused);
+
+    restored = false;
+    setPlaybackState("loading");
     audio.pause();
     audio.src = track.source;
     audio.volume = readVolume();
     audio.load();
 
-    let usingFallback = false;
-    const restoreAndPlay = () => {
-      const savedPosition = readPositions()[trackKey] ?? 0;
-      if (savedPosition > 0 && Number.isFinite(audio.duration) && audio.duration > 0) {
-        audio.currentTime = savedPosition % audio.duration;
-      }
-      if (enabledRef.current) void play();
-    };
-    const useFallback = () => {
-      if (usingFallback || !("fallback" in track) || !track.fallback) return;
-      usingFallback = true;
-      audio.src = track.fallback;
-      audio.load();
-      if (enabledRef.current) void play();
-    };
-
-    audio.addEventListener("loadedmetadata", restoreAndPlay);
-    audio.addEventListener("error", useFallback);
     return () => {
       savePosition(trackKey, audio.currentTime || 0);
-      audio.removeEventListener("loadedmetadata", restoreAndPlay);
+      audio.removeEventListener("loadedmetadata", restorePosition);
+      audio.removeEventListener("canplay", tryToPlay);
       audio.removeEventListener("error", useFallback);
+      audio.removeEventListener("playing", markPlaying);
+      audio.removeEventListener("pause", markPaused);
     };
   }, [play, savePosition, track, trackKey]);
 
   useEffect(() => {
     const unlock = () => {
-      if (enabledRef.current && audioRef.current?.paused) void play();
+      const audio = audioRef.current;
+      if (enabledRef.current && audio?.paused) void play();
     };
-    window.addEventListener("pointerdown", unlock, { once: true, capture: true });
-    window.addEventListener("keydown", unlock, { once: true, capture: true });
+
+    // Mantemos os listeners enquanto o site estiver aberto. Se uma primeira
+    // tentativa ocorrer cedo demais ou o navegador bloquear autoplay, a próxima
+    // interação real do jogador tenta novamente em vez de abandonar o áudio.
+    window.addEventListener("pointerdown", unlock, true);
+    window.addEventListener("keydown", unlock, true);
     return () => {
       window.removeEventListener("pointerdown", unlock, true);
       window.removeEventListener("keydown", unlock, true);
@@ -131,7 +172,10 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       window.localStorage.setItem(enabledKey, String(next));
     } catch {}
     if (next) void play();
-    else audioRef.current?.pause();
+    else {
+      audioRef.current?.pause();
+      setPlaybackState("paused");
+    }
   };
 
   const changeVolume = (next: number) => {
@@ -141,23 +185,38 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     try {
       window.localStorage.setItem(volumeKey, String(normalized));
     } catch {}
+    if (normalized > 0 && enabledRef.current && audioRef.current?.paused) void play();
   };
+
+  const togglePanel = () => {
+    setOpen((value) => !value);
+    // O clique no controle é uma ação explícita do usuário e, portanto, é a
+    // melhor oportunidade para liberar áudio em navegadores com autoplay restrito.
+    if (enabledRef.current && audioRef.current?.paused) void play();
+  };
+
+  const stateLabel =
+    playbackState === "blocked"
+      ? " · clique para tocar"
+      : playbackState === "error"
+        ? " · tentando trilha reserva"
+        : "";
 
   return (
     <>
       {children}
-      <audio aria-hidden="true" hidden loop preload="metadata" ref={audioRef} />
+      <audio aria-hidden="true" hidden loop preload="auto" ref={audioRef} />
       <div className={styles.dock}>
         {open ? (
           <div className={styles.panel} role="group" aria-label="Controle de música">
-            <span className={styles.label}>{track.label}</span>
+            <span className={styles.label}>{track.label}{stateLabel}</span>
             <button
               aria-label={enabled ? "Pausar música" : "Ativar música"}
               className={styles.mute}
               onClick={toggleEnabled}
               type="button"
             >
-              {enabled ? "♫" : "×"}
+              {enabled ? (playbackState === "playing" ? "♫" : "▶") : "×"}
             </button>
             <input
               aria-label="Volume da música"
@@ -176,11 +235,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
           aria-label="Abrir controle de música"
           className={styles.toggle}
           data-enabled={enabled}
-          onClick={() => setOpen((value) => !value)}
+          onClick={togglePanel}
           title="Música e volume"
           type="button"
         >
-          {enabled ? "♪" : "♩"}
+          {enabled ? (playbackState === "playing" ? "♪" : "▶") : "♩"}
         </button>
       </div>
     </>

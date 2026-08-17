@@ -1,3 +1,5 @@
+import "./admin.css";
+
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopbar } from "@/components/admin/admin-topbar";
 import { requireAdministrativeAccount } from "@/lib/auth/account";

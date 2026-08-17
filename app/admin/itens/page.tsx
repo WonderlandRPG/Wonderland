@@ -3,6 +3,7 @@ import { itemSlotLabel } from "@/lib/game/equipment";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { updateItemAdminAction } from "./actions";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
+import { ItemImageField } from "@/components/admin/item-image-field";
 
 export const metadata = { title: "Itens | Painel ADM" };
 export const dynamic = "force-dynamic";
@@ -45,7 +46,7 @@ export default async function AdminItemsPage({
           <span className="eyebrow">Economia do reino</span>
           <h2>Editar itens</h2>
           <p>
-            Altere nome, raridade, atributos, preço, slot e o efeito especial aplicado na Arena.
+            Altere nome, imagem, raridade, atributos, preço, slot e o efeito especial aplicado na Arena.
           </p>
         </div>
       </header>
@@ -122,18 +123,9 @@ export default async function AdminItemsPage({
                 </label>
                 <label>
                   <span>Ordem na loja</span>
-                  <input
-                    name="sortOrder"
-                    type="number"
-                    min="0"
-                    defaultValue={item.sort_order}
-                    required
-                  />
+                  <input name="sortOrder" type="number" min="0" defaultValue={item.sort_order} required />
                 </label>
-                <label>
-                  <span>Imagem por link</span>
-                  <input name="imageUrl" type="url" defaultValue={item.image_url ?? ""} />
-                </label>
+                <ItemImageField initialUrl={item.image_url} itemName={item.name} />
                 <label>
                   <span>Descrição</span>
                   <textarea name="description" defaultValue={item.description} rows={3} />
@@ -167,11 +159,7 @@ export default async function AdminItemsPage({
                   </label>
                   <label>
                     <span>Nome do efeito</span>
-                    <input
-                      name="effectName"
-                      defaultValue={effect?.name ?? ""}
-                      placeholder="Ex.: Gelo Eterno"
-                    />
+                    <input name="effectName" defaultValue={effect?.name ?? ""} placeholder="Ex.: Gelo Eterno" />
                   </label>
                   <label>
                     <span>Descrição</span>
@@ -179,33 +167,19 @@ export default async function AdminItemsPage({
                   </label>
                   <label>
                     <span>Potência</span>
-                    <input
-                      name="effectPower"
-                      type="number"
-                      min="0"
-                      max="1000"
-                      defaultValue={effect?.power ?? 0}
-                    />
+                    <input name="effectPower" type="number" min="0" max="1000" defaultValue={effect?.power ?? 0} />
                   </label>
                   <label>
                     <span>Duração em rodadas</span>
-                    <input
-                      name="effectDuration"
-                      type="number"
-                      min="0"
-                      max="20"
-                      defaultValue={effect?.duration ?? 0}
-                    />
+                    <input name="effectDuration" type="number" min="0" max="20" defaultValue={effect?.duration ?? 0} />
                   </label>
                   <small>Somente itens Lendários e Míticos podem salvar efeitos especiais.</small>
                 </fieldset>
                 <label>
-                  <input name="twoHanded" type="checkbox" defaultChecked={item.two_handed} /> Ocupa
-                  as duas mãos (bloqueia a arma secundária)
+                  <input name="twoHanded" type="checkbox" defaultChecked={item.two_handed} /> Ocupa as duas mãos (bloqueia a arma secundária)
                 </label>
                 <label>
-                  <input name="active" type="checkbox" defaultChecked={item.active} /> Disponível na
-                  loja
+                  <input name="active" type="checkbox" defaultChecked={item.active} /> Disponível na loja
                 </label>
                 <button className="button button--primary">Salvar item</button>
               </form>
@@ -215,15 +189,11 @@ export default async function AdminItemsPage({
       </section>
       {(count ?? 0) > 50 ? (
         <nav className="admin-pagination">
-          <a
-            href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${Math.max(1, page - 1)}`}
-          >
+          <a href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${Math.max(1, page - 1)}`}>
             ← Anterior
           </a>
           <span>Página {page}</span>
-          <a
-            href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${page + 1}`}
-          >
+          <a href={`/admin/itens?raridade=${query.raridade ?? ""}&busca=${query.busca ?? ""}&pagina=${page + 1}`}>
             Próxima →
           </a>
         </nav>

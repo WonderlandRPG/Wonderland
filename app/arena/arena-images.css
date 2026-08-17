@@ -1,0 +1,32 @@
+/* Wonderland · imagens reais da Arena
+ * Correção restrita à rota /arena. O sistema de Rank continua por cima do retrato,
+ * mas não pode apagar a imagem do personagem/monstro.
+ */
+.arena-page .arena-fighter__portrait,
+.arena-page .arena-map-piece>div,
+.arena-page .pvp-fighter-card__image,
+.arena-page .pvp-history-avatar,
+.arena-page .pvp-match-card>span,
+.dungeon-page .dungeon-bestiary__portrait,
+.dungeon-battle .dungeon-party-panel article>div{
+  background-color:#38483b!important;
+  background-position:center top!important;
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
+}
+
+.arena-page .arena-fighter__portrait.is-image{
+  color:transparent!important;
+}
+
+/* O efeito identifica o Rank, mas o retrato precisa continuar sendo o foco. */
+body:has(.arena-page) .arena-fighter.is-player .arena-fighter__portrait::after,
+body:has(.arena-page) .arena-map button.has-player .arena-map-piece>div:first-child::after,
+body:has(.arena-page) .pvp-fighter-card__image::after{
+  opacity:.34!important;
+  mix-blend-mode:screen!important;
+}
+
+.arena-page .arena-fighter__portrait.is-training-fallback>span:first-of-type{
+  opacity:.78!important;
+}

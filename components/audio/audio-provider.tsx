@@ -107,6 +107,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     if (previousTrack !== trackKey) savePosition(previousTrack, audio.currentTime || 0);
     previousTrackRef.current = trackKey;
 
+    const fallback = "fallback" in track ? track.fallback : undefined;
     let usingFallback = false;
     let restored = false;
 
@@ -127,7 +128,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
     };
 
     const useFallback = () => {
-      if (usingFallback || !track.fallback) {
+      if (usingFallback || !fallback) {
         setPlaybackState("error");
         return;
       }
@@ -135,7 +136,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       restored = false;
       setPlaybackState("loading");
       audio.pause();
-      audio.src = track.fallback;
+      audio.src = fallback;
       audio.muted = false;
       audio.volume = readVolume();
       audio.load();
@@ -236,7 +237,7 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
-      <audio aria-hidden="true" hidden loop playsInline preload="auto" ref={audioRef} />
+      <audio aria-hidden="true" hidden loop preload="auto" ref={audioRef} />
       <div className={styles.dock}>
         {open ? (
           <div className={styles.panel} role="group" aria-label="Controle de música">

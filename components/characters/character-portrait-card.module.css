@@ -23,7 +23,8 @@
 :global(.ranking-character-card) .topMeta{left:7px!important;right:7px!important;top:7px!important;gap:4px!important}
 :global(.ranking-character-card) .rankMeta :global(.rank-emblem){width:32px!important;height:38px!important;flex-basis:32px!important}
 :global(.ranking-character-card) .levelMeta{min-width:41px!important;padding:3px 5px!important;border-radius:8px!important}
-:global(.ranking-character-card) .levelMeta small{font-size:.38rem!important}.ranking-character-card .levelMeta strong{font-size:.7rem!important}
+:global(.ranking-character-card) .levelMeta small{font-size:.38rem!important}
+:global(.ranking-character-card) .levelMeta strong{font-size:.7rem!important}
 :global(.ranking-character-card) .titleMeta{left:7px!important;right:7px!important;bottom:7px!important}
 :global(.ranking-character-card) .titleMeta :global(.character-equipped-title){min-height:20px!important;padding:3px 6px!important;font-size:.46rem!important}
 :global(.official-pvp-card-host){width:180px!important;height:225px!important;overflow:visible!important}

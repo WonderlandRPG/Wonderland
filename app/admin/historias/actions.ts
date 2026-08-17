@@ -41,12 +41,14 @@ export async function saveLoreStoryAction(formData: FormData) {
     : new Date().toISOString().slice(0, 10);
   const rawTone = text(formData, "coverTone") as LoreStoryTone;
   const coverTone = tones.has(rawTone) ? rawTone : "forest";
+  const requestedCoverImageUrl = text(formData, "coverImageUrl").slice(0, 1200);
+  const coverImageUrl = /^https?:\/\//i.test(requestedCoverImageUrl) ? requestedCoverImageUrl : "";
   const bodyHtml = sanitizeLoreHtml(text(formData, "bodyHtml"));
   const published = formData.get("published") === "on";
 
   if (!title || !slug || !bodyHtml) redirect(resultPath(formData, "erro"));
 
-  const payload = { excerpt, bodyHtml, authorName, publishedOn, coverTone };
+  const payload = { excerpt, bodyHtml, authorName, publishedOn, coverTone, coverImageUrl };
   const status = published ? "published" : "draft";
   const publishedAt = published ? `${publishedOn}T12:00:00.000Z` : null;
 

@@ -1,0 +1,96 @@
+/* Brilho de raridade — escopo exclusivo da Loja. */
+.market-page .classic-item-card{
+  --rarity-rgb:154,134,104;
+  --rarity-solid:#9a8668;
+  position:relative!important;
+  isolation:isolate;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease!important;
+  border-color:rgba(var(--rarity-rgb),.78)!important;
+  box-shadow:
+    0 8px 18px rgba(45,31,18,.09),
+    0 0 0 1px rgba(var(--rarity-rgb),.15),
+    0 0 14px rgba(var(--rarity-rgb),.18)!important;
+}
+.market-page .classic-item-card[data-rarity='common']{--rarity-rgb:146,137,124;--rarity-solid:#81796e}
+.market-page .classic-item-card[data-rarity='uncommon']{--rarity-rgb:67,132,80;--rarity-solid:#3f7d4c}
+.market-page .classic-item-card[data-rarity='rare']{--rarity-rgb:58,116,178;--rarity-solid:#3a74b2}
+.market-page .classic-item-card[data-rarity='epic']{--rarity-rgb:132,74,176;--rarity-solid:#844ab0}
+.market-page .classic-item-card[data-rarity='legendary']{--rarity-rgb:214,145,44;--rarity-solid:#c98221}
+.market-page .classic-item-card[data-rarity='mythic']{--rarity-rgb:202,58,84;--rarity-solid:#be3652}
+
+.market-page .classic-item-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  border-radius:inherit;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.55),
+    inset 0 0 24px rgba(var(--rarity-rgb),.09)!important;
+}
+.market-page .classic-item-card::after{
+  content:"";
+  position:absolute;
+  z-index:3;
+  pointer-events:none;
+  top:-28%;
+  left:-34%;
+  width:52%;
+  height:160%;
+  opacity:.22;
+  transform:rotate(16deg);
+  background:linear-gradient(90deg,transparent,rgba(var(--rarity-rgb),.34),transparent);
+  transition:left .45s ease,opacity .2s ease;
+}
+.market-page .classic-item-card:hover{
+  transform:translateY(-3px)!important;
+  border-color:var(--rarity-solid)!important;
+  box-shadow:
+    0 14px 28px rgba(45,31,18,.14),
+    0 0 0 2px rgba(var(--rarity-rgb),.20),
+    0 0 20px rgba(var(--rarity-rgb),.42),
+    0 0 38px rgba(var(--rarity-rgb),.20)!important;
+}
+.market-page .classic-item-card:hover::after{left:88%;opacity:.42}
+
+.market-page .classic-item-card__art{
+  border:1px solid rgba(var(--rarity-rgb),.36)!important;
+  box-shadow:inset 0 0 20px rgba(var(--rarity-rgb),.12)!important;
+}
+.market-page .classic-item-card__body>span{
+  display:inline-flex!important;
+  align-items:center!important;
+  min-height:21px!important;
+  padding:3px 7px!important;
+  border-radius:999px!important;
+  background:rgba(var(--rarity-rgb),.13)!important;
+  border:1px solid rgba(var(--rarity-rgb),.42)!important;
+  color:var(--rarity-solid)!important;
+  font-weight:900!important;
+  letter-spacing:.07em!important;
+}
+.market-page .classic-item-card[data-rarity='legendary'] .classic-item-card__body>span,
+.market-page .classic-item-card[data-rarity='mythic'] .classic-item-card__body>span{
+  box-shadow:0 0 10px rgba(var(--rarity-rgb),.24)!important;
+}
+
+/* O filtro também comunica a raridade antes mesmo de abrir os cards. */
+.market-page .shop-controls>nav button[data-rarity='common']{--filter-rarity:#81796e}
+.market-page .shop-controls>nav button[data-rarity='uncommon']{--filter-rarity:#3f7d4c}
+.market-page .shop-controls>nav button[data-rarity='rare']{--filter-rarity:#3a74b2}
+.market-page .shop-controls>nav button[data-rarity='epic']{--filter-rarity:#844ab0}
+.market-page .shop-controls>nav button[data-rarity='legendary']{--filter-rarity:#c98221}
+.market-page .shop-controls>nav button[data-rarity='mythic']{--filter-rarity:#be3652}
+.market-page .shop-controls>nav button[data-rarity].is-active{
+  background:var(--filter-rarity)!important;
+  border-color:var(--filter-rarity)!important;
+  color:#fff7df!important;
+  box-shadow:0 0 13px color-mix(in srgb,var(--filter-rarity) 46%,transparent)!important;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .market-page .classic-item-card,
+  .market-page .classic-item-card::after{transition:none!important}
+  .market-page .classic-item-card:hover{transform:none!important}
+}

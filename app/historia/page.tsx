@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { deleteLoreStoryAction, saveLoreStoryAction } from "@/app/admin/historias/actions";
+import { HistoryCoverUpload } from "@/components/admin/history-cover-upload";
 import { LoreRichEditor } from "@/components/admin/lore-rich-editor";
 import { PlayerNav } from "@/components/player-nav";
 import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
@@ -137,6 +138,7 @@ export default async function HistoryPage({ searchParams }: { searchParams: Prom
                   <label><span>Capa</span><select name="coverTone" defaultValue="forest"><option value="forest">Verde da Guilda</option><option value="wine">Vinho Real</option><option value="midnight">Azul da Meia-noite</option><option value="royal">Dourado Real</option><option value="ember">Brasa Carmesim</option><option value="ocean">Azul Oceânico</option></select></label>
                   <label><span>Identificador opcional</span><input name="slug" placeholder="gerado pelo título" /></label>
                 </div>
+                <HistoryCoverUpload />
                 <div className={styles.adminEditor}><LoreRichEditor /></div>
                 <label><input name="published" type="checkbox" defaultChecked /> Publicar imediatamente</label>
                 <button className="button button--primary">Publicar na Biblioteca</button>

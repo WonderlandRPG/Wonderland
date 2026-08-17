@@ -1,44 +1,50 @@
 /* Wonderland · Equipamentos
- * Correção estrutural restrita à rota /personagens.
- * Mantém a lógica do inventário intacta e impede compressão, quebra vertical e espaços mortos.
+ * Layout oficial: 7 slots à esquerda, card do personagem no centro e 7 slots à direita.
+ * Escopo restrito à rota /personagens.
  */
-.inventory-hud .inventory-command{width:100%!important;min-width:0!important;display:grid!important;gap:20px!important}
+.inventory-hud .inventory-command{width:100%!important;min-width:0!important;display:grid!important;gap:22px!important}
 .inventory-hud .inventory-command__loadout{
   width:100%!important;
   min-width:0!important;
   display:grid!important;
-  grid-template-columns:minmax(250px,290px) minmax(300px,350px) minmax(250px,290px)!important;
+  grid-template-columns:minmax(250px,290px) minmax(310px,360px) minmax(250px,290px)!important;
   grid-template-areas:"head head head" "left hero right"!important;
   justify-content:center!important;
-  align-items:start!important;
+  align-items:stretch!important;
   gap:18px!important;
   padding:22px!important;
   overflow:visible!important;
 }
 .inventory-hud .inventory-loadout-heading{grid-area:head!important;width:100%!important;min-width:0!important}
-.inventory-hud .inventory-slot-column{min-width:0!important;width:100%!important;display:grid!important;grid-auto-rows:minmax(72px,auto)!important;gap:10px!important;align-content:start!important}
+.inventory-hud .inventory-slot-column{
+  min-width:0!important;
+  width:100%!important;
+  display:grid!important;
+  grid-template-rows:repeat(7,minmax(68px,1fr))!important;
+  gap:10px!important;
+  align-content:stretch!important;
+}
 .inventory-hud .inventory-slot-column.is-left{grid-area:left!important}
 .inventory-hud .inventory-slot-column.is-right{grid-area:right!important}
 .inventory-hud .inventory-slot-column>button{
   width:100%!important;
   min-width:0!important;
   max-width:none!important;
-  min-height:72px!important;
+  min-height:68px!important;
   display:grid!important;
   grid-template-columns:40px minmax(0,1fr)!important;
   align-items:center!important;
   justify-items:stretch!important;
   gap:10px!important;
-  padding:10px 12px!important;
+  padding:9px 11px!important;
   overflow:hidden!important;
   text-align:left!important;
   white-space:normal!important;
 }
-.inventory-hud .inventory-slot-column>button>:first-child{width:38px!important;max-width:38px!important;min-width:38px!important;justify-self:center!important}
-.inventory-hud .inventory-slot-column>button>span:last-child{
+.inventory-hud .inventory-slot-column>button>svg{width:36px!important;height:36px!important;max-width:36px!important;justify-self:center!important}
+.inventory-hud .inventory-slot-column>button>span{
   display:grid!important;
-  grid-template-columns:minmax(0,1fr)!important;
-  gap:2px!important;
+  gap:1px!important;
   width:100%!important;
   min-width:0!important;
   max-width:none!important;
@@ -46,7 +52,7 @@
   text-align:left!important;
   writing-mode:horizontal-tb!important;
 }
-.inventory-hud .inventory-slot-column>button>span:last-child :where(small,strong,em){
+.inventory-hud .inventory-slot-column>button>span :where(small,strong,em){
   display:block!important;
   width:100%!important;
   min-width:0!important;
@@ -54,74 +60,39 @@
   margin:0!important;
   white-space:normal!important;
   word-break:normal!important;
-  overflow-wrap:anywhere!important;
+  overflow-wrap:break-word!important;
   hyphens:none!important;
   writing-mode:horizontal-tb!important;
   text-orientation:mixed!important;
-  line-height:1.18!important;
+  line-height:1.14!important;
 }
-.inventory-hud .inventory-slot-column>button>span:last-child small{font-size:.67rem!important;letter-spacing:.02em!important}
-.inventory-hud .inventory-slot-column>button>span:last-child strong{margin-top:2px!important;font-size:.9rem!important;line-height:1.12!important}
-.inventory-hud .inventory-slot-column>button>span:last-child em{margin-top:2px!important;font-size:.64rem!important}
+.inventory-hud .inventory-slot-column>button>span small{font-size:.62rem!important;letter-spacing:.02em!important}
+.inventory-hud .inventory-slot-column>button>span strong{margin-top:1px!important;font-size:.83rem!important;line-height:1.08!important}
+.inventory-hud .inventory-slot-column>button>span em{margin-top:1px!important;font-size:.59rem!important}
 
-.inventory-hud .inventory-character-card{
+.inventory-hud .inventory-character-card.has-official-character-card{
   grid-area:hero!important;
+  align-self:stretch!important;
   justify-self:center!important;
-  align-self:start!important;
   width:100%!important;
-  max-width:350px!important;
+  max-width:360px!important;
   min-width:0!important;
   min-height:0!important;
-  display:grid!important;
-  grid-template-rows:300px auto auto auto auto!important;
-  align-content:start!important;
-  justify-items:center!important;
-  gap:8px!important;
-  padding:0 14px 16px!important;
-  overflow:hidden!important;
-}
-.inventory-hud .inventory-character-card>div:first-child{
-  width:calc(100% + 28px)!important;
-  height:300px!important;
-  min-height:0!important;
-  margin:0 -14px!important;
-  align-self:start!important;
-  background-position:center 18%!important;
-  background-size:cover!important;
-  background-repeat:no-repeat!important;
-  background-color:#d7c39a!important;
-}
-.inventory-hud .inventory-character-card>.rank-emblem{margin-top:-28px!important;z-index:12!important}
-.inventory-hud .inventory-character-card>.character-equipped-title{
-  position:relative!important;
-  inset:auto!important;
-  transform:none!important;
-  z-index:13!important;
-  display:inline-flex!important;
+  display:flex!important;
+  flex-direction:column!important;
   align-items:center!important;
   justify-content:center!important;
-  width:max-content!important;
-  max-width:calc(100% - 16px)!important;
-  min-height:30px!important;
-  padding:6px 12px!important;
-  border:1px solid color-mix(in srgb,var(--title-primary,#fff1b5) 62%,#76552e)!important;
-  border-radius:7px 18px 7px 18px!important;
-  background:linear-gradient(180deg,color-mix(in srgb,var(--title-secondary,#1f7a4c) 88%,#fff 12%),color-mix(in srgb,var(--title-secondary,#1f7a4c) 82%,#000 18%))!important;
-  color:var(--title-primary,#fff1b5)!important;
-  box-shadow:0 4px 13px rgba(46,31,19,.2),0 0 13px color-mix(in srgb,var(--title-glow,#d7ad45) 35%,transparent)!important;
-  text-shadow:0 1px #2a1c13,0 0 7px color-mix(in srgb,var(--title-glow,#d7ad45) 70%,transparent)!important;
-  font-size:.68rem!important;
-  font-weight:900!important;
-  line-height:1.15!important;
-  letter-spacing:.045em!important;
-  text-align:center!important;
-  text-transform:uppercase!important;
-  white-space:normal!important;
-  writing-mode:horizontal-tb!important;
+  gap:10px!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
 }
-.inventory-hud .inventory-character-card>span:not(.character-equipped-title){margin-top:2px!important;font-size:.6rem!important;letter-spacing:.12em!important}
-.inventory-hud .inventory-character-card>strong{font-size:1.7rem!important;line-height:1!important;text-align:center!important}
-.inventory-hud .inventory-character-card>small{padding:5px 9px!important;border-radius:999px!important;background:rgba(255,240,202,.74)!important}
+.inventory-hud .inventory-character-card.has-official-character-card::after{content:none!important;display:none!important}
+.inventory-hud .inventory-character-card__caption{display:grid!important;justify-items:center!important;gap:3px!important;width:100%!important;padding:7px 10px!important;border-radius:12px!important;background:rgba(255,240,202,.82)!important;border:1px solid #b99c70!important}
+.inventory-hud .inventory-character-card__caption strong{font-size:1.05rem!important}
+.inventory-hud .inventory-character-card__caption small{font-size:.65rem!important;color:#6d583f!important}
 
 .inventory-hud .inventory-browser{
   width:100%!important;
@@ -137,94 +108,33 @@
 .inventory-hud .inventory-search{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:8px!important;min-width:0!important}
 .inventory-hud .inventory-search label{flex:1 1 220px!important;min-width:180px!important;max-width:360px!important}
 .inventory-hud .inventory-search input{width:100%!important;min-width:0!important}
-.inventory-hud .inventory-classic-grid{
-  display:grid!important;
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  align-items:stretch!important;
-  gap:12px!important;
-  margin-top:12px!important;
-}
-.inventory-hud .inventory-classic-card{
-  width:100%!important;
-  min-width:0!important;
-  max-width:none!important;
-  min-height:285px!important;
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:stretch!important;
-  justify-content:flex-start!important;
-  gap:7px!important;
-  padding:11px!important;
-  overflow:hidden!important;
-  text-align:left!important;
-  white-space:normal!important;
-}
-.inventory-hud .inventory-classic-card>div:first-child{
-  position:relative!important;
-  display:grid!important;
-  place-items:center!important;
-  flex:0 0 128px!important;
-  width:100%!important;
-  min-width:0!important;
-  height:128px!important;
-  max-height:128px!important;
-  overflow:hidden!important;
-  border-radius:10px!important;
-}
+.inventory-hud .inventory-classic-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch!important;gap:12px!important;margin-top:12px!important}
+.inventory-hud .inventory-classic-card{width:100%!important;min-width:0!important;max-width:none!important;min-height:285px!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:7px!important;padding:11px!important;overflow:hidden!important;text-align:left!important;white-space:normal!important}
+.inventory-hud .inventory-classic-card>div:first-child{position:relative!important;display:grid!important;place-items:center!important;flex:0 0 128px!important;width:100%!important;min-width:0!important;height:128px!important;max-height:128px!important;overflow:hidden!important;border-radius:10px!important}
 .inventory-hud .inventory-classic-card>div:first-child>*{max-width:100%!important;max-height:100%!important}
-.inventory-hud .inventory-classic-card>small,
-.inventory-hud .inventory-classic-card>strong,
-.inventory-hud .inventory-classic-card>em,
-.inventory-hud .inventory-classic-card>.inventory-card-effect,
-.inventory-hud .inventory-classic-card>footer{
-  display:block!important;
-  width:100%!important;
-  min-width:0!important;
-  max-width:none!important;
-  writing-mode:horizontal-tb!important;
-  text-orientation:mixed!important;
-  white-space:normal!important;
-  word-break:normal!important;
-  overflow-wrap:anywhere!important;
-}
+.inventory-hud .inventory-classic-card>small,.inventory-hud .inventory-classic-card>strong,.inventory-hud .inventory-classic-card>em,.inventory-hud .inventory-classic-card>.inventory-card-effect,.inventory-hud .inventory-classic-card>footer{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important}
 .inventory-hud .inventory-classic-card>small{font-size:.66rem!important;line-height:1.2!important}
 .inventory-hud .inventory-classic-card>strong{font-size:.9rem!important;line-height:1.2!important}
 .inventory-hud .inventory-classic-card>.inventory-card-effect{margin-top:2px!important;font-size:.68rem!important;line-height:1.25!important}
 .inventory-hud .inventory-classic-card>.inventory-card-effect small{display:block!important;margin-top:3px!important;font-size:.62rem!important;line-height:1.25!important}
-.inventory-hud .inventory-classic-card>footer{
-  margin-top:auto!important;
-  padding-top:8px!important;
-  border-top:1px solid rgba(255,240,202,.2)!important;
-}
-.inventory-hud .inventory-classic-card>footer span,
-.inventory-hud .inventory-classic-card>footer i{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important;writing-mode:horizontal-tb!important}
+.inventory-hud .inventory-classic-card>footer{margin-top:auto!important;padding-top:8px!important;border-top:1px solid rgba(255,240,202,.2)!important}
 .inventory-hud .inventory-inspector{position:sticky!important;top:90px!important;padding:16px!important;overflow:hidden!important}
-.inventory-hud .inventory-inspector header,.inventory-hud .inventory-inspector p,.inventory-hud .inventory-inspector dl,.inventory-hud .inventory-inspector article,.inventory-hud .inventory-inspector footer{min-width:0!important;max-width:100%!important}
-.inventory-hud .inventory-inspector h3,.inventory-hud .inventory-inspector p,.inventory-hud .inventory-inspector strong{white-space:normal!important;word-break:normal!important;overflow-wrap:anywhere!important}
+.inventory-hud .inventory-inspector :where(header,p,dl,article,footer){min-width:0!important;max-width:100%!important}
+.inventory-hud .inventory-inspector :where(h3,p,strong){white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important}
 
 @media(max-width:1120px){
-  .inventory-hud .inventory-command__loadout{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
-    grid-template-areas:"head head" "hero hero" "left right"!important;
-  }
-  .inventory-hud .inventory-character-card{max-width:380px!important}
+  .inventory-hud .inventory-command__loadout{grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-areas:"head head" "hero hero" "left right"!important}
+  .inventory-hud .inventory-character-card.has-official-character-card{max-width:360px!important;margin-bottom:8px!important}
   .inventory-hud .inventory-browser{grid-template-columns:1fr!important}
   .inventory-hud .inventory-inspector{position:relative!important;top:auto!important}
-  .inventory-hud .inventory-classic-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
 }
 @media(max-width:780px){
-  .inventory-hud .inventory-command__loadout{
-    grid-template-columns:1fr!important;
-    grid-template-areas:"head" "hero" "left" "right"!important;
-    padding:12px!important;
-  }
-  .inventory-hud .inventory-character-card{max-width:430px!important;grid-template-rows:300px auto auto auto auto!important}
-  .inventory-hud .inventory-character-card>div:first-child{height:300px!important}
+  .inventory-hud .inventory-command__loadout{grid-template-columns:1fr!important;grid-template-areas:"head" "hero" "left" "right"!important;padding:12px!important}
+  .inventory-hud .inventory-slot-column{grid-template-rows:none!important;grid-auto-rows:minmax(68px,auto)!important}
+  .inventory-hud .inventory-character-card.has-official-character-card{max-width:330px!important}
   .inventory-hud .inventory-classic-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 @media(max-width:520px){
   .inventory-hud .inventory-classic-grid{grid-template-columns:1fr!important}
-  .inventory-hud .inventory-character-card{grid-template-rows:280px auto auto auto auto!important}
-  .inventory-hud .inventory-character-card>div:first-child{height:280px!important}
   .inventory-hud .inventory-slot-column>button{grid-template-columns:36px minmax(0,1fr)!important}
 }

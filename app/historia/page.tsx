@@ -100,6 +100,7 @@ export default async function HistoryPage() {
             <summary><span>✒ Mesa do escriba</span><b>Publicar um conto sem sair da História</b></summary>
             <div className={styles.adminWriteBody}>
               <form action={saveLoreStoryAction} className={styles.adminForm}>
+                <input name="returnTo" type="hidden" value="/historia" />
                 <div className={styles.adminFormGrid}>
                   <label><span>Título</span><input name="title" required /></label>
                   <label><span>Autor</span><input name="authorName" defaultValue={account?.displayName} /></label>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import {
   getCombatSurrenderStatusAction,
   requestCombatSurrenderAction,
@@ -20,15 +20,26 @@ export function CombatSurrenderButton({
   const [status, setStatus] = useState<Status | null>(null);
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
+  const previousCompleted = useRef<boolean | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    previousCompleted.current = null;
+
     async function refresh() {
       const result = await getCombatSurrenderStatusAction(kind, combatId);
       if (cancelled || !result.ok) return;
+
+      const wasCompleted = previousCompleted.current;
+      previousCompleted.current = result.data.completed;
       setStatus(result.data);
-      if (result.data.completed) onCompleted?.();
+
+      // Do not redirect just because the first status request says that an old
+      // combat is already closed. Redirect only when this mounted screen sees
+      // an active combat transition from open -> completed.
+      if (wasCompleted === false && result.data.completed) onCompleted?.();
     }
+
     void refresh();
     const timer = window.setInterval(() => void refresh(), 2500);
     return () => {
@@ -50,6 +61,7 @@ export function CombatSurrenderButton({
         setError(result.message);
         return;
       }
+      previousCompleted.current = result.data.completed;
       setStatus(result.data);
       if (result.data.completed) onCompleted?.();
     });

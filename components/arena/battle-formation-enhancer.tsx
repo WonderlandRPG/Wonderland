@@ -30,7 +30,7 @@ function ensureBadge(fighter: HTMLElement, label: string) {
     badge.className = "combat-formation-badge";
     fighter.prepend(badge);
   }
-  badge.textContent = label;
+  if (badge.textContent !== label) badge.textContent = label;
 }
 
 function classifyFighter(fighter: HTMLElement) {
@@ -125,10 +125,31 @@ function enhanceAll() {
 
 export function BattleFormationEnhancer() {
   useEffect(() => {
+    let frame = 0;
+    let disposed = false;
+
+    const observer = new MutationObserver(() => {
+      if (disposed || frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        if (disposed) return;
+        observer.disconnect();
+        enhanceAll();
+        observer.observe(document.body, { childList: true, subtree: true });
+      });
+    });
+
+    // Run the initial pass before observing. This is important: the enhancer itself
+    // inserts formation badges, and observing those writes used to recursively
+    // trigger another full pass until some browsers became unresponsive.
     enhanceAll();
-    const observer = new MutationObserver(() => enhanceAll());
     observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
+
+    return () => {
+      disposed = true;
+      if (frame) window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, []);
   return null;
 }

@@ -45,7 +45,9 @@ export function PvpLobby({
     if (queue?.status === "matched" && queue.matchId) {
       if (queue.format === "duo") router.replace(`/arena/pvp-duo/${queue.matchId}`);
       else router.replace(`/arena?modo=pvp&partida=${queue.matchId}`);
-      router.refresh();
+      // replace() already requests the destination Server Component. Calling
+      // refresh() immediately afterwards issued a second competing navigation
+      // and could leave slower browsers apparently frozen while opening PvP.
     }
   }, [queue, router]);
 

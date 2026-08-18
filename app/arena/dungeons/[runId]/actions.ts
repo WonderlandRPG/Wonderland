@@ -17,15 +17,13 @@ import {
   getEffectiveAttributes,
   guardCombatant,
   resolveBasicAttack,
-  resolveAreaSkill,
-  resolveRaceAbility,
-  resolveSkill,
   tickCooldowns,
 } from "@/lib/game/combat";
 import { resolvePeriodicItemDamage } from "@/lib/game/item-effects";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/db/types";
-import { appendBattleLog } from "@/lib/game/turn-engine";
+import { appendBattleLog, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
+import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 
 const idSchema = z.uuid();
 const actionSchema = z.discriminatedUnion("kind", [
@@ -82,7 +80,6 @@ function advance(state: DungeonBattleState) {
 }
 
 function resolveMonsterTurn(state: DungeonBattleState) {
-  if (state.status !== "active" || state.activeCharacterId !== state.monster.id) return "";
   const alive = state.partyOrder.filter((id) => state.fighters[id]?.hp > 0);
   if (!alive.length) {
     state.status = "defeat";
@@ -134,6 +131,32 @@ function resolveMonsterTurn(state: DungeonBattleState) {
   return message;
 }
 
+function settleAutomaticTurns(state: DungeonBattleState) {
+  const messages: string[] = [];
+  for (let safety = 0; safety < state.turnOrder.length * 2 && state.status === "active"; safety += 1) {
+    if (state.activeCharacterId === state.monster.id) {
+      if (isTurnBlocked(state.monster)) {
+        messages.push(`${state.monster.name} está incapacitado e perdeu o turno.`);
+        state.monster = tickCooldowns(state.monster);
+      } else {
+        messages.push(resolveMonsterTurn(state));
+      }
+      if (state.status === "active") advance(state);
+      continue;
+    }
+
+    const fighter = state.fighters[state.activeCharacterId];
+    if (fighter && isTurnBlocked(fighter)) {
+      messages.push(`${fighter.name} está incapacitado e perdeu o turno.`);
+      state.fighters[fighter.id] = tickCooldowns(fighter);
+      advance(state);
+      continue;
+    }
+    break;
+  }
+  return messages.filter(Boolean);
+}
+
 export async function performDungeonAction(runId: string, expectedVersion: number, input: unknown) {
   const account = await requireAdministrativeAccount();
   const parsed = idSchema.safeParse(runId);
@@ -177,18 +200,18 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
     actor = { ...actor, hp: actor.hp + healed };
     message = `${actor.name} usou ${item.name} e recuperou ${healed} de HP.`;
   } else {
+    if (isSilenced(actor))
+      return { ok: false as const, message: `${actor.name} está silenciado e não pode usar habilidades.` };
     const list = action.data.kind === "class" ? character.skills : character.raceAbilities;
     const skill = list.find((entry) => entry.key === action.data.key);
     if (!skill) return { ok: false as const, message: "Habilidade indisponível." };
     const result =
       skill.area > 0
         ? (() => {
-            const area = resolveAreaSkill(actor, [monster], skill, defaultCombatRules);
+            const area = resolveJrpgAreaSkill(actor, [monster], skill, defaultCombatRules);
             return { actor: area.actor, target: area.targets[0], event: area.events[0] };
           })()
-        : action.data.kind === "class"
-          ? resolveSkill(actor, monster, skill, defaultCombatRules)
-          : resolveRaceAbility(actor, monster, skill, defaultCombatRules);
+        : resolveJrpgSkill(actor, monster, skill, defaultCombatRules);
     if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
     actor = result.actor;
     monster = result.target;
@@ -223,10 +246,9 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
     advance(state);
   }
 
-  if (state.status === "active" && state.activeCharacterId === state.monster.id) {
-    const monsterMessage = resolveMonsterTurn(state);
-    if (monsterMessage) message += ` ${monsterMessage}`;
-    if (state.status === "active") advance(state);
+  if (state.status === "active") {
+    const automatic = settleAutomaticTurns(state);
+    if (automatic.length) message += ` ${automatic.join(" ")}`;
   }
 
   state.message = message;

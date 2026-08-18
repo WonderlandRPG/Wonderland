@@ -11,15 +11,18 @@ import {
   getEffectiveAttributes,
   guardCombatant,
   resolveBasicAttack,
-  resolveAreaSkill,
-  resolveRaceAbility,
-  resolveSkill,
   tickCooldowns,
 } from "@/lib/game/combat";
 import { resolvePeriodicItemDamage } from "@/lib/game/item-effects";
 import type { PvpBattleState, PvpRoomSnapshot } from "@/lib/game/arena-types";
 import type { Json } from "@/lib/db/types";
-import { appendBattleLog, getNextTurn } from "@/lib/game/turn-engine";
+import {
+  appendBattleLog,
+  getNextTurn,
+  isSilenced,
+  isTurnBlocked,
+} from "@/lib/game/turn-engine";
+import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 
 const matchSchema = z.uuid();
 const actionSchema = z.discriminatedUnion("kind", [
@@ -60,6 +63,27 @@ export async function getPvpMatchStateAction(matchId: string) {
   return room
     ? { ok: true as const, data: room }
     : { ok: false as const, message: "A sala PvP não está mais disponível." };
+}
+
+function advancePvpTurn(state: PvpBattleState) {
+  const next = getNextTurn(state);
+  state.round = next.round;
+  state.turn = next.turn;
+  state.turnOrder = next.turnOrder;
+  state.activeCharacterId = next.activeCharacterId;
+  state.turnEndsAt = new Date(Date.now() + 60_000).toISOString();
+}
+
+function skipBlockedTurns(state: PvpBattleState) {
+  const messages: string[] = [];
+  for (let index = 0; index < state.turnOrder.length; index += 1) {
+    const fighter = state.fighters[state.activeCharacterId];
+    if (!fighter || !isTurnBlocked(fighter)) break;
+    messages.push(`${fighter.name} está incapacitado e perdeu o turno.`);
+    state.fighters[fighter.id] = tickCooldowns(fighter);
+    advancePvpTurn(state);
+  }
+  return messages;
 }
 
 export async function performPvpAction(matchId: string, expectedVersion: number, input: unknown) {
@@ -108,6 +132,8 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     actor = guardCombatant(actor);
     message = `${actor.name} assumiu Defesa Total.`;
   } else if (actionData.kind === "race" || actionData.kind === "class") {
+    if (isSilenced(actor))
+      return { ok: false as const, message: `${actor.name} está silenciado e não pode usar habilidades.` };
     const list = actionData.kind === "race" ? character.raceAbilities : character.skills;
     const skill = list.find((entry) => entry.key === actionData.key);
     if (!skill)
@@ -115,12 +141,10 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     const result =
       skill.area > 0
         ? (() => {
-            const area = resolveAreaSkill(actor, [target], skill, defaultCombatRules);
+            const area = resolveJrpgAreaSkill(actor, [target], skill, defaultCombatRules);
             return { actor: area.actor, target: area.targets[0], event: area.events[0] };
           })()
-        : actionData.kind === "race"
-          ? resolveRaceAbility(actor, target, skill, defaultCombatRules)
-          : resolveSkill(actor, target, skill, defaultCombatRules);
+        : resolveJrpgSkill(actor, target, skill, defaultCombatRules);
     if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
     actor = result.actor;
     target = result.target;
@@ -152,13 +176,10 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
       state.winnerCharacterId = enemyId;
       message = `${message} ${target.name} venceu o duelo.`;
     } else {
-      const next = getNextTurn(state);
-      state.round = next.round;
-      state.turn = next.turn;
-      state.turnOrder = next.turnOrder;
-      state.activeCharacterId = next.activeCharacterId;
-      state.turnEndsAt = new Date(Date.now() + 60_000).toISOString();
+      advancePvpTurn(state);
       if (periodic.messages.length) message = `${message} ${periodic.messages.join(" ")}`;
+      const skipped = skipBlockedTurns(state);
+      if (skipped.length) message = `${message} ${skipped.join(" ")}`;
       message = `${message} Turno de ${state.fighters[state.activeCharacterId].name}.`;
     }
   }

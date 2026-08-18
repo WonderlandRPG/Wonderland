@@ -2,6 +2,23 @@ import { getEffectiveAttributes, type CombatantState } from "@/lib/game/combat";
 
 export type TurnActionKind = "basic" | "race" | "class" | "item" | "defend" | "wait";
 
+export type TurnActionUsage = {
+  basic: boolean;
+  class: boolean;
+  race: boolean;
+};
+
+export const createTurnActionUsage = (): TurnActionUsage => ({
+  basic: false,
+  class: false,
+  race: false,
+});
+
+export function hasUsedAllCoreActions(usage: TurnActionUsage | undefined) {
+  const current = usage ?? createTurnActionUsage();
+  return current.basic && current.class && current.race;
+}
+
 export interface TurnActor {
   id: string;
   initiative: number;
@@ -18,6 +35,7 @@ export interface SharedBattleState {
   message: string;
   log: string[];
   turnEndsAt?: string;
+  turnActions?: TurnActionUsage;
 }
 
 export function buildTurnOrder(actors: TurnActor[]) {
@@ -136,5 +154,6 @@ export function createBattleState(input: {
     message: opening,
     log: [opening],
     turnEndsAt: input.turnEndsAt,
+    turnActions: createTurnActionUsage(),
   };
 }

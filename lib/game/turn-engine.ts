@@ -1,4 +1,4 @@
-import type { CombatantState } from "@/lib/game/combat";
+import { getEffectiveAttributes, type CombatantState } from "@/lib/game/combat";
 
 export type TurnActionKind = "basic" | "race" | "class" | "item" | "defend" | "wait";
 
@@ -27,6 +27,17 @@ export function buildTurnOrder(actors: TurnActor[]) {
     .map((actor) => actor.id);
 }
 
+export function buildCombatantTurnOrder(fighters: Record<string, CombatantState>) {
+  return buildTurnOrder(
+    Object.values(fighters)
+      .filter((fighter) => fighter.hp > 0)
+      .map((fighter) => ({
+        id: fighter.id,
+        initiative: getEffectiveAttributes(fighter).INI,
+      })),
+  );
+}
+
 export function getLivingTurnOrder(
   turnOrder: string[],
   fighters: Record<string, CombatantState>,
@@ -50,9 +61,18 @@ export function getNextTurn(
   const currentIndex = Math.max(0, living.indexOf(state.activeCharacterId));
   const nextIndex = (currentIndex + 1) % living.length;
   const wrapped = nextIndex === 0;
+  if (wrapped) {
+    const refreshed = buildCombatantTurnOrder(state.fighters);
+    return {
+      round: state.round + 1,
+      turn: state.turn + 1,
+      turnOrder: refreshed,
+      activeCharacterId: refreshed[0] ?? state.activeCharacterId,
+    };
+  }
 
   return {
-    round: state.round + (wrapped ? 1 : 0),
+    round: state.round,
     turn: state.turn + 1,
     turnOrder: living,
     activeCharacterId: living[nextIndex],
@@ -100,12 +120,7 @@ export function createBattleState(input: {
   message?: string;
   turnEndsAt?: string;
 }): SharedBattleState {
-  const turnOrder = buildTurnOrder(
-    Object.values(input.fighters).map((fighter) => ({
-      id: fighter.id,
-      initiative: fighter.attributes.INI,
-    })),
-  );
+  const turnOrder = buildCombatantTurnOrder(input.fighters);
   const first = turnOrder[0] ?? Object.keys(input.fighters)[0] ?? "";
   const opening =
     input.message ??

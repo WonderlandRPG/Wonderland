@@ -24,6 +24,11 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/db/types";
 import { appendBattleLog, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
 import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
+import {
+  applyEventResourceGeneration,
+  applyResourceTrigger,
+} from "@/lib/game/combat-resources";
+import type { ArenaCharacter } from "@/lib/game/arena-types";
 
 const idSchema = z.uuid();
 const actionSchema = z.discriminatedUnion("kind", [
@@ -41,6 +46,13 @@ type Snapshot = {
   status: string;
   forced: boolean;
 };
+
+type ResourceEvent = {
+  kind: "damage" | "heal" | "shield" | "utility" | "error";
+  amount: number;
+};
+
+type PartyMetadata = Record<string, ArenaCharacter>;
 
 function snapshot(value: unknown): Snapshot | null {
   if (!value || Array.isArray(value) || typeof value !== "object") return null;
@@ -73,13 +85,19 @@ function advance(state: DungeonBattleState) {
   if (!living.length) return;
   const index = Math.max(0, living.indexOf(state.activeCharacterId));
   const nextIndex = (index + 1) % living.length;
-  if (nextIndex === 0) state.round += 1;
   state.turn += 1;
+  if (nextIndex === 0) {
+    state.round += 1;
+    const refreshed = buildDungeonTurnOrder(state.fighters, state.monster);
+    state.turnOrder = refreshed;
+    state.activeCharacterId = refreshed[0] ?? state.activeCharacterId;
+    return;
+  }
   state.turnOrder = living;
   state.activeCharacterId = living[nextIndex];
 }
 
-function resolveMonsterTurn(state: DungeonBattleState) {
+function resolveMonsterTurn(state: DungeonBattleState, partyMetadata: PartyMetadata) {
   const alive = state.partyOrder.filter((id) => state.fighters[id]?.hp > 0);
   if (!alive.length) {
     state.status = "defeat";
@@ -115,7 +133,10 @@ function resolveMonsterTurn(state: DungeonBattleState) {
     const amount = calculateDamage(power, "magic", getEffectiveAttributes(target), defaultCombatRules);
     const damaged = applyDamage(target, amount);
     const dealt = target.hp + target.shield - (damaged.hp + damaged.shield);
-    state.fighters[targetId] = damaged;
+    const meta = partyMetadata[targetId];
+    state.fighters[targetId] = meta && dealt > 0
+      ? applyResourceTrigger(damaged, meta, "DAMAGE_TAKEN")
+      : damaged;
     message = `${state.monster.name} usou ${ability} em ${target.name}, causando ${dealt} de dano mágico.${dealt === 0 ? " O golpe foi bloqueado." : ""}`;
   }
 
@@ -131,7 +152,7 @@ function resolveMonsterTurn(state: DungeonBattleState) {
   return message;
 }
 
-function settleAutomaticTurns(state: DungeonBattleState) {
+function settleAutomaticTurns(state: DungeonBattleState, partyMetadata: PartyMetadata) {
   const messages: string[] = [];
   for (let safety = 0; safety < state.turnOrder.length * 2 && state.status === "active"; safety += 1) {
     if (state.activeCharacterId === state.monster.id) {
@@ -139,7 +160,7 @@ function settleAutomaticTurns(state: DungeonBattleState) {
         messages.push(`${state.monster.name} está incapacitado e perdeu o turno.`);
         state.monster = tickCooldowns(state.monster);
       } else {
-        messages.push(resolveMonsterTurn(state));
+        messages.push(resolveMonsterTurn(state, partyMetadata));
       }
       if (state.status === "active") advance(state);
       continue;
@@ -183,11 +204,14 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   let actor = state.fighters[actorId];
   let monster = state.monster;
   let message = "";
+  let resourceEvent: ResourceEvent | null = null;
+  let areaAction = false;
 
   if (actionData.kind === "basic") {
     const result = resolveBasicAttack(actor, monster, defaultCombatRules);
     actor = result.actor;
     monster = result.target;
+    resourceEvent = result.event;
     message = result.event.message;
   } else if (actionData.kind === "defend") {
     if ((actor.cooldowns["defesa-total"] ?? 0) > 0)
@@ -208,17 +232,30 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
     const list = actionData.kind === "class" ? character.skills : character.raceAbilities;
     const skill = list.find((entry) => entry.key === skillKey);
     if (!skill) return { ok: false as const, message: "Habilidade indisponível." };
-    const result =
-      skill.area > 0
-        ? (() => {
-            const area = resolveJrpgAreaSkill(actor, [monster], skill, defaultCombatRules);
-            return { actor: area.actor, target: area.targets[0], event: area.events[0] };
-          })()
-        : resolveJrpgSkill(actor, monster, skill, defaultCombatRules);
+    areaAction = skill.area > 0;
+    const result = areaAction
+      ? (() => {
+          const area = resolveJrpgAreaSkill(actor, [monster], skill, defaultCombatRules);
+          return { actor: area.actor, target: area.targets[0], event: area.events[0] };
+        })()
+      : resolveJrpgSkill(actor, monster, skill, defaultCombatRules);
     if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
     actor = result.actor;
     monster = result.target;
+    resourceEvent = result.event;
     message = result.event.message;
+  }
+
+  if (resourceEvent) {
+    const generated = applyEventResourceGeneration({
+      actor,
+      target: monster,
+      actorCharacter: character,
+      event: resourceEvent,
+      area: areaAction,
+    });
+    actor = generated.actor;
+    monster = generated.target;
   }
 
   const periodicActor = resolvePeriodicItemDamage(actor, (amount, type) =>
@@ -228,9 +265,10 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   state.monster = monster;
   if (periodicActor.messages.length) message += ` ${periodicActor.messages.join(" ")}`;
 
-  const partySheets = (await Promise.all(state.partyOrder.map((id) => getCharacterSheet(id))))
+  const partyCharacters = (await Promise.all(state.partyOrder.map((id) => getCharacterSheet(id))))
     .filter(Boolean)
     .map((entry) => toArenaCharacter(entry!));
+  const partyMetadata = Object.fromEntries(partyCharacters.map((entry) => [entry.id, entry]));
 
   if (state.monster.hp <= 0) {
     if (state.encounterIndex === firstDungeon.encounters.length - 1) {
@@ -238,7 +276,7 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
       message = `${state.monster.name} foi derrotado. A Dungeon foi concluída!`;
     } else {
       state.encounterIndex += 1;
-      state.monster = createDungeonMonster(partySheets, state.encounterIndex);
+      state.monster = createDungeonMonster(partyCharacters, state.encounterIndex);
       state.turnOrder = buildDungeonTurnOrder(state.fighters, state.monster);
       state.activeCharacterId = state.turnOrder[0];
       state.round += 1;
@@ -250,7 +288,7 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   }
 
   if (state.status === "active") {
-    const automatic = settleAutomaticTurns(state);
+    const automatic = settleAutomaticTurns(state, partyMetadata);
     if (automatic.length) message += ` ${automatic.join(" ")}`;
   }
 

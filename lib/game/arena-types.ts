@@ -2,11 +2,7 @@ import type { ClassSkill } from "@/lib/game/classes";
 import type { CombatAttributes, CombatantState } from "@/lib/game/combat";
 import type { ItemSpecialEffect } from "@/lib/game/item-effects";
 import type { EquippedTitleData } from "@/components/characters/equipped-title";
-import type {
-  BattlePosition,
-  SharedBattleState,
-  TurnActions,
-} from "@/lib/game/turn-engine";
+import type { SharedBattleState } from "@/lib/game/turn-engine";
 
 export interface ArenaCharacter {
   id: string;
@@ -41,13 +37,8 @@ export interface ArenaCharacter {
   equipmentEffects: ItemSpecialEffect[];
 }
 
-export type ArenaPosition = BattlePosition;
-export type PvpTurnActions = TurnActions;
-
-export interface PvpBattleState
-  extends Omit<SharedBattleState, "fighters" | "positions" | "turnEndsAt"> {
+export interface PvpBattleState extends Omit<SharedBattleState, "fighters" | "turnEndsAt"> {
   fighters: Record<string, CombatantState>;
-  positions: Record<string, ArenaPosition>;
   turnEndsAt: string;
 }
 

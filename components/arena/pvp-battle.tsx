@@ -25,6 +25,7 @@ export function PvpBattle({
   const [room, setRoom] = useState(initialRoom as PvpRoomSnapshot);
   const [error, setError] = useState("");
   const [panel, setPanel] = useState<"root" | "class" | "race" | "item">("root");
+  const [selectedTargetId, setSelectedTargetId] = useState("");
   const [pending, startTransition] = useTransition();
   const [clock, setClock] = useState(() => Date.now());
   const [fx, setFx] = useState<Fx>(null);
@@ -45,6 +46,8 @@ export function PvpBattle({
   const seconds = Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
   const commandsBlocked = isTurnBlocked(own);
   const silenced = isSilenced(own);
+  const chosenTargetId = selectedTargetId || enemyId;
+  const chosenTarget = chosenTargetId === ownId ? own : enemy;
 
   const refresh = useCallback(async () => {
     const result = await getPvpMatchStateAction(matchId);
@@ -92,7 +95,7 @@ export function PvpBattle({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seconds, isMyTurn, room.version, finished]);
 
-  async function submit(action: Record<string, unknown>) {
+  function submit(action: Record<string, unknown>) {
     if (pending || !isMyTurn || finished) return;
     setError("");
     startTransition(async () => {
@@ -147,25 +150,35 @@ export function PvpBattle({
         <section className="arena-command-panel pvp-command-panel jrpg-command-panel">
           <header>
             <div><span className="eyebrow">Comandos</span><h2>{isMyTurn ? commandsBlocked ? "Turno incapacitado" : "Monte sua sequência" : "Aguardando o adversário"}</h2></div>
-            <small>{silenced ? "Silenciado: habilidades estão bloqueadas." : "Ataque, Classe e Raça podem ser usados uma vez no mesmo turno."}</small>
+            <small>{silenced ? "Silenciado: habilidades estão bloqueadas." : "Curas e buffs usam seu personagem; debuffs e ataques usam o oponente."}</small>
           </header>
+
+          {isMyTurn ? (
+            <label className="combat-target-select">
+              <span>Alvo da habilidade</span>
+              <select value={chosenTargetId} onChange={(event) => setSelectedTargetId(event.target.value)}>
+                <option value={ownId}>Você · {character.name}</option>
+                <option value={enemyId}>Oponente · {opponent.name}</option>
+              </select>
+            </label>
+          ) : null}
+
           {panel === "root" ? (
             <div className="pvp-actions-grid jrpg-actions">
               <Command used={usage.basic} disabled={!isMyTurn || pending || commandsBlocked || usage.basic} name="Atacar" detail={usage.basic ? "Já usado neste turno" : "Ataque básico"} onClick={() => submit({ kind: "basic" })} />
               <Command used={usage.class} disabled={!isMyTurn || pending || commandsBlocked || silenced || character.skills.length === 0 || usage.class} name="Habilidades" detail={usage.class ? "Classe já usada" : `${character.skills.length} de classe`} onClick={() => setPanel("class")} />
               <Command used={usage.race} disabled={!isMyTurn || pending || commandsBlocked || silenced || character.raceAbilities.length === 0 || usage.race} name="Raça" detail={usage.race ? "Racial já usada" : `${character.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
               <Command disabled={!isMyTurn || pending || commandsBlocked || character.items.length === 0} name="Item" detail={`${character.items.length} disponível(is) · encerra turno`} onClick={() => setPanel("item")} />
-              <Command disabled={!isMyTurn || pending || commandsBlocked || (own.cooldowns["defesa-total"] ?? 0) > 0} name="Defender" detail="Bloqueia o próximo dano · encerra turno" onClick={() => submit({ kind: "defend" })} />
               <Command disabled={!isMyTurn || pending || commandsBlocked} name="Encerrar turno" detail="Finaliza sua sequência" onClick={() => submit({ kind: "end" })} />
             </div>
           ) : (
             <div className="jrpg-submenu combat-skill-list">
               <button className="button button--ghost" type="button" onClick={() => setPanel("root")}>← Voltar</button>
               {panel === "class" ? character.skills.map((skill) => (
-                <CombatSkillCard key={skill.key} fighter={own} target={enemy} rules={defaultCombatRules} skill={skill} disabled={!isMyTurn || pending || commandsBlocked || silenced} used={usage.class} onClick={() => submit({ kind: "class", key: skill.key })} />
+                <CombatSkillCard key={skill.key} fighter={own} target={skill.target === "self" ? own : chosenTarget} rules={defaultCombatRules} skill={skill} disabled={!isMyTurn || pending || commandsBlocked || silenced} used={usage.class} onClick={() => submit({ kind: "class", key: skill.key, targetId: chosenTargetId })} />
               )) : null}
               {panel === "race" ? character.raceAbilities.map((skill) => (
-                <CombatSkillCard key={skill.key} fighter={own} target={enemy} rules={defaultCombatRules} skill={skill} disabled={!isMyTurn || pending || commandsBlocked || silenced} used={usage.race} onClick={() => submit({ kind: "race", key: skill.key })} />
+                <CombatSkillCard key={skill.key} fighter={own} target={skill.target === "self" ? own : chosenTarget} rules={defaultCombatRules} skill={skill} disabled={!isMyTurn || pending || commandsBlocked || silenced} used={usage.race} onClick={() => submit({ kind: "race", key: skill.key, targetId: chosenTargetId })} />
               )) : null}
               {panel === "item" ? character.items.map((item) => (
                 <Command key={item.id} disabled={!isMyTurn || pending || commandsBlocked} name={item.name} detail={`${item.description || "Usar item"} · encerra turno`} onClick={() => submit({ kind: "item", id: item.id })} />
@@ -174,7 +187,7 @@ export function PvpBattle({
           )}
         </section>
       ) : (
-        <section className="arena-result"><span>{state.winnerCharacterId === ownId ? "VITÓRIA" : "DERROTA"}</span><h2>{state.winnerCharacterId === ownId ? `${character.name} venceu!` : `${opponent.name} venceu.`}</h2></section>
+        <section className="arena-result"><span>{state.winnerCharacterId === ownId ? "VITÓRIA" : "DERROTA"}</span><h2>{state.winnerCharacterId === ownId ? `${character.name} venceu!` : state.winnerCharacterId ? `${opponent.name} venceu.` : "O duelo terminou em derrota por desistência."}</h2></section>
       )}
     </section>
   );

@@ -1,5 +1,10 @@
 import { buildAdaptiveMonsterAttributes } from "@/lib/game/arena";
-import { createCombatant, defaultCombatRules, type CombatantState } from "@/lib/game/combat";
+import {
+  createCombatant,
+  defaultCombatRules,
+  getEffectiveAttributes,
+  type CombatantState,
+} from "@/lib/game/combat";
 import { createPvpCombatant } from "@/lib/game/pvp-state";
 import { firstDungeon } from "@/lib/game/dungeons";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
@@ -56,8 +61,8 @@ export function buildDungeonTurnOrder(
   return buildTurnOrder([
     ...Object.values(fighters)
       .filter((fighter) => fighter.hp > 0)
-      .map((fighter) => ({ id: fighter.id, initiative: fighter.attributes.INI })),
-    { id: monster.id, initiative: monster.attributes.INI },
+      .map((fighter) => ({ id: fighter.id, initiative: getEffectiveAttributes(fighter).INI })),
+    { id: monster.id, initiative: getEffectiveAttributes(monster).INI },
   ]);
 }
 

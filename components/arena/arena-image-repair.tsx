@@ -15,7 +15,11 @@ const imageSelectors = [
 function promoteInlineArenaImages() {
   document.querySelectorAll<HTMLElement>(imageSelectors).forEach((element) => {
     const image = element.style.backgroundImage;
-    if (image && image !== "none" && element.style.getPropertyPriority("background-image") !== "important") {
+    if (
+      image &&
+      image !== "none" &&
+      element.style.getPropertyPriority("background-image") !== "important"
+    ) {
       element.style.setProperty("background-image", image, "important");
     }
   });
@@ -37,15 +41,40 @@ function promoteInlineArenaImages() {
 
 export function ArenaImageRepair() {
   useEffect(() => {
+    let frame = 0;
+    let disposed = false;
+
+    const observer = new MutationObserver(() => {
+      if (disposed || frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        if (disposed) return;
+        observer.disconnect();
+        promoteInlineArenaImages();
+        observer.observe(document.body, {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          attributeFilter: ["style", "class"],
+        });
+      });
+    });
+
+    // Do not observe our own first style/class repair. Older versions could create
+    // an unnecessary cascade of observer callbacks on slower browsers.
     promoteInlineArenaImages();
-    const observer = new MutationObserver(() => promoteInlineArenaImages());
     observer.observe(document.body, {
       subtree: true,
       childList: true,
       attributes: true,
       attributeFilter: ["style", "class"],
     });
-    return () => observer.disconnect();
+
+    return () => {
+      disposed = true;
+      if (frame) window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, []);
 
   return null;

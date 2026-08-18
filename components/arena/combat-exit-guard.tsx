@@ -11,11 +11,11 @@ export function CombatExitGuard({ kind, combatId }: { kind: CombatKind; combatId
   const router = useRouter();
   const onSurrenderCompleted = useCallback(() => {
     router.replace(kind === "dungeon" ? "/arena/dungeons" : "/arena");
-    router.refresh();
   }, [kind, router]);
 
   useEffect(() => {
     sent.current = false;
+
     const finish = () => {
       if (sent.current) return;
       sent.current = true;
@@ -32,10 +32,17 @@ export function CombatExitGuard({ kind, combatId }: { kind: CombatKind; combatId
         });
       }
     };
+
+    // Only mark a fight as abandoned when the browser is actually leaving this
+    // document. React/Next may unmount and remount client components during a
+    // route transition; running finish() from the effect cleanup was closing
+    // perfectly valid fights before the combat screen finished loading.
     window.addEventListener("pagehide", finish);
+    window.addEventListener("beforeunload", finish);
+
     return () => {
       window.removeEventListener("pagehide", finish);
-      finish();
+      window.removeEventListener("beforeunload", finish);
     };
   }, [combatId, kind]);
 

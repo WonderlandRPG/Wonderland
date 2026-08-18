@@ -26,6 +26,9 @@ type QueueResult = {
   opponentSecondary?: QueueCharacter | null;
 };
 
+type RpcReply = { data: unknown; error: { message: string } | null };
+type UntypedRpc = (fn: string, args: Record<string, unknown>) => Promise<RpcReply>;
+
 function validResult(value: unknown): value is QueueResult {
   return Boolean(
     value &&
@@ -45,7 +48,8 @@ export async function joinPvpQueueAction(characterId: string, format: "solo" | "
     return { ok: false as const, message: "Fila PvP inválida." };
   const client = await createServerSupabaseClient();
   if (!client) return { ok: false as const, message: "Arena indisponível." };
-  const { data, error } = await client.rpc("v2_join_pvp_queue_v2", {
+  const rpc = client.rpc.bind(client) as unknown as UntypedRpc;
+  const { data, error } = await rpc("v2_join_pvp_queue_v2", {
     p_character_id: parsed.data,
     p_format: parsedFormat.data,
   });
@@ -60,7 +64,8 @@ export async function pollPvpQueueAction(queueId: string) {
   if (!parsed.success) return { ok: false as const, message: "Fila inválida." };
   const client = await createServerSupabaseClient();
   if (!client) return { ok: false as const, message: "Arena indisponível." };
-  const { data, error } = await client.rpc("v2_poll_pvp_queue_v2", { p_queue_id: parsed.data });
+  const rpc = client.rpc.bind(client) as unknown as UntypedRpc;
+  const { data, error } = await rpc("v2_poll_pvp_queue_v2", { p_queue_id: parsed.data });
   if (error || !validResult(data))
     return { ok: false as const, message: error?.message ?? "Não foi possível consultar a fila." };
   return { ok: true as const, data };

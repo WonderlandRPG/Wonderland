@@ -1,0 +1,80 @@
+.arena-entry-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 12, 9, 0.86);
+  backdrop-filter: blur(8px);
+}
+
+.arena-entry-overlay > div,
+.arena-load-state {
+  width: min(520px, calc(100vw - 32px));
+  padding: 30px;
+  border: 1px solid rgba(215, 173, 69, 0.52);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(28, 45, 34, 0.98), rgba(10, 17, 13, 0.98));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+  color: #fff4c9;
+  text-align: center;
+}
+
+.arena-entry-overlay span,
+.arena-load-state__sigil {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 34px;
+}
+
+.arena-entry-overlay small,
+.arena-load-state small {
+  display: block;
+  margin-bottom: 7px;
+  letter-spacing: 0.18em;
+  color: #d7ad45;
+}
+
+.arena-entry-overlay strong,
+.arena-load-state h1 {
+  display: block;
+  margin: 0 0 8px;
+  font-size: clamp(24px, 4vw, 36px);
+}
+
+.arena-entry-overlay p,
+.arena-load-state p {
+  margin: 0;
+  opacity: 0.82;
+}
+
+.arena-load-state {
+  margin: 72px auto;
+}
+
+.arena-load-state__bar {
+  height: 8px;
+  margin-top: 22px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.arena-load-state__bar i {
+  display: block;
+  width: 36%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1f7a4c, #d7ad45);
+  animation: arena-entry-progress 1.15s ease-in-out infinite alternate;
+}
+
+@keyframes arena-entry-progress {
+  from { transform: translateX(-20%); }
+  to { transform: translateX(190%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arena-load-state__bar i { animation: none; width: 100%; }
+}

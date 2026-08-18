@@ -1,0 +1,188 @@
+.jrpg-formation-stage,
+.jrpg-duo-stage{
+  perspective:1200px;
+  isolation:isolate;
+  background-position:center 58%!important;
+}
+
+.jrpg-formation-stage::before,
+.jrpg-duo-stage::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.04) 0 40%,transparent 58%),
+    radial-gradient(ellipse at 50% 92%,rgba(12,19,13,.38) 0 12%,rgba(12,19,13,.14) 34%,transparent 62%),
+    linear-gradient(180deg,transparent 52%,rgba(8,12,9,.18) 75%,rgba(6,9,7,.48) 100%);
+}
+
+.jrpg-formation-stage::after,
+.jrpg-duo-stage::after{
+  content:"";
+  position:absolute;
+  left:5%;
+  right:5%;
+  bottom:4.5%;
+  height:25%;
+  z-index:-1;
+  pointer-events:none;
+  border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(255,224,150,.09),rgba(20,26,18,.10) 42%,transparent 72%);
+  transform:rotateX(69deg);
+  filter:blur(4px);
+}
+
+.jrpg-formation-stage .jrpg-fighter,
+.jrpg-duo-stage .jrpg-fighter{
+  position:relative;
+}
+
+.jrpg-formation-stage .jrpg-fighter::after,
+.jrpg-duo-stage .jrpg-fighter::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:92px;
+  z-index:-1;
+  width:68%;
+  height:34px;
+  border-radius:50%;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse,rgba(0,0,0,.56) 0,rgba(0,0,0,.31) 42%,transparent 72%);
+  filter:blur(7px);
+  opacity:.92;
+}
+
+.jrpg-formation-stage .jrpg-monster-card::after{
+  width:86%;
+  height:52px;
+  bottom:12px;
+  filter:blur(10px);
+}
+
+.jrpg-formation-stage .combat-identity-frame,
+.jrpg-duo-stage .combat-identity-frame{
+  filter:drop-shadow(0 16px 13px rgba(0,0,0,.34));
+}
+
+.jrpg-formation-stage .formation-front,
+.jrpg-duo-stage .formation-front{
+  z-index:4;
+}
+.jrpg-formation-stage .formation-back,
+.jrpg-duo-stage .formation-back{
+  z-index:2;
+  filter:saturate(.92) brightness(.94);
+}
+
+.jrpg-formation-stage.combat-stage-training{
+  background:
+    linear-gradient(180deg,rgba(244,217,139,.04),rgba(31,33,20,.17) 58%,rgba(12,14,9,.47)),
+    url('/images/kingdoms/lesedi-2.webp') center 62%/cover no-repeat!important;
+}
+.jrpg-formation-stage.combat-stage-pve{
+  background:
+    linear-gradient(180deg,rgba(23,55,30,.02),rgba(9,24,14,.11) 58%,rgba(4,13,7,.5)),
+    url('/images/kingdoms/aokigahara-3.webp') center 64%/cover no-repeat!important;
+}
+.jrpg-formation-stage.combat-stage-pvp,
+.jrpg-duo-stage.combat-stage-pvp{
+  background:
+    linear-gradient(180deg,rgba(46,62,92,.03),rgba(12,19,32,.13) 55%,rgba(7,10,18,.54)),
+    url('/images/kingdoms/namida-3.webp') center 62%/cover no-repeat!important;
+}
+.jrpg-formation-stage.combat-stage-dungeon{
+  background:
+    linear-gradient(180deg,rgba(55,31,34,.02),rgba(24,11,15,.15) 52%,rgba(10,6,8,.59)),
+    url('/images/kingdoms/darkya-3.webp') center 64%/cover no-repeat!important;
+}
+
+/* Duplas: inimigos à esquerda, equipe do jogador à direita, com profundidade de frente/retaguarda. */
+.jrpg-duo-stage{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr)!important;
+  align-items:end!important;
+  min-height:660px!important;
+  padding:70px 32px 34px!important;
+  overflow:hidden;
+}
+.jrpg-duo-stage>.duo-team--enemy{grid-column:1}
+.jrpg-duo-stage>.pvp-versus{grid-column:2;align-self:center!important}
+.jrpg-duo-stage>.duo-team--own{grid-column:3}
+.duo-team{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:end;
+  gap:10px;
+  min-width:0;
+}
+.duo-team .duo-fighter{
+  min-height:390px!important;
+  padding:48px 4px 10px!important;
+}
+.duo-team .combat-official-character-card{
+  width:min(165px,100%)!important;
+  max-width:165px!important;
+}
+.duo-team--enemy .formation-front{transform:translateX(22px) translateY(-4px) scale(1.02)}
+.duo-team--enemy .formation-back{transform:translateX(-14px) translateY(24px) scale(.9)}
+.duo-team--own .formation-front{transform:translateX(-22px) translateY(-4px) scale(1.02)}
+.duo-team--own .formation-back{transform:translateX(14px) translateY(24px) scale(.9)}
+
+.combat-hp-float{
+  position:absolute;
+  top:5px;
+  left:50%;
+  z-index:16;
+  width:min(190px,92%);
+  transform:translateX(-50%);
+  padding:5px 8px 7px;
+  border:1px solid rgba(235,209,145,.62);
+  border-radius:10px;
+  background:rgba(8,17,12,.88);
+  box-shadow:0 8px 18px rgba(0,0,0,.32);
+  color:#fff2c8;
+  backdrop-filter:blur(8px);
+}
+.combat-hp-float span{display:flex;justify-content:space-between;gap:8px;font-size:.58rem;font-weight:900}
+.combat-hp-float progress{width:100%;height:9px;margin-top:4px;accent-color:#65aa70}
+
+.pvp-format-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  width:min(760px,100%);
+  margin:18px auto;
+}
+.pvp-format-card{
+  display:grid;
+  gap:7px;
+  min-height:180px;
+  padding:20px;
+  text-align:left;
+  border:1px solid rgba(116,86,48,.42);
+  border-radius:18px;
+  background:linear-gradient(150deg,rgba(244,225,178,.98),rgba(213,183,119,.92));
+  color:#392819;
+  box-shadow:0 12px 28px rgba(41,30,17,.12),inset 0 1px rgba(255,255,255,.62);
+  cursor:pointer;
+}
+.pvp-format-card:hover,.pvp-format-card.is-selected{transform:translateY(-2px);border-color:#315f47;box-shadow:0 14px 30px rgba(49,95,71,.2)}
+.pvp-format-card>span{font-size:.66rem;font-weight:950;letter-spacing:.16em;color:#315f47}
+.pvp-format-card>strong{font-size:1.35rem}
+.pvp-format-card>small{line-height:1.45;color:#5d4932}
+.pvp-format-card>b{margin-top:auto;color:#234d38}
+.pvp-duo-partner{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:rgba(49,95,71,.1);border:1px solid rgba(49,95,71,.25)}
+
+@media(max-width:760px){
+  .pvp-format-grid{grid-template-columns:1fr}
+  .jrpg-duo-stage{grid-template-columns:1fr!important;grid-template-rows:auto 42px auto!important;min-height:980px!important;padding:62px 10px 24px!important}
+  .jrpg-duo-stage>.duo-team--enemy{grid-column:1!important;grid-row:1!important}
+  .jrpg-duo-stage>.pvp-versus{grid-column:1!important;grid-row:2!important}
+  .jrpg-duo-stage>.duo-team--own{grid-column:1!important;grid-row:3!important}
+  .duo-team .duo-fighter{min-height:300px!important}
+  .duo-team .combat-official-character-card{width:min(130px,100%)!important;max-width:130px!important}
+  .duo-team .formation-front,.duo-team .formation-back{transform:none!important}
+}

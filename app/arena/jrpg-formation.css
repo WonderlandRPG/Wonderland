@@ -1,0 +1,244 @@
+.jrpg-formation-stage{
+  min-height:650px!important;
+  grid-template-columns:minmax(0,1fr) 74px minmax(0,1fr)!important;
+  align-items:end!important;
+  padding:42px 42px 34px!important;
+  background:
+    linear-gradient(180deg,rgba(7,15,10,.08) 0%,rgba(10,21,14,.04) 52%,rgba(8,15,10,.62) 100%),
+    linear-gradient(90deg,rgba(21,53,34,.08),transparent 42%,transparent 58%,rgba(78,51,30,.08)),
+    url('/images/hero-background.png') center 48%/cover no-repeat,
+    #53694f!important;
+}
+
+.jrpg-formation-stage>.combat-enemy-side{grid-column:1;grid-row:1;justify-self:center}
+.jrpg-formation-stage>.pvp-versus{grid-column:2;grid-row:1;align-self:center!important}
+.jrpg-formation-stage>.combat-party-side{grid-column:3;grid-row:1;justify-self:stretch}
+
+.jrpg-formation-stage .jrpg-fighter{
+  --combat-card-scale:1;
+  transform-origin:center bottom;
+}
+
+.jrpg-formation-stage .combat-identity-frame{
+  --combat-card-scale:1;
+  animation:wonderlandBattleBreathing 3.2s ease-in-out infinite;
+  transform-origin:center bottom;
+  will-change:transform,filter;
+}
+
+.jrpg-formation-stage .combat-official-character-card{
+  width:min(220px,100%)!important;
+  max-width:220px!important;
+  filter:drop-shadow(0 18px 18px rgba(0,0,0,.36));
+}
+
+.jrpg-formation-stage .combat-party-side.formation-front{
+  transform:translateX(-42px);
+}
+.jrpg-formation-stage .combat-party-side.formation-back{
+  transform:translateX(34px) translateY(18px) scale(.94);
+}
+.jrpg-formation-stage .combat-enemy-side.formation-front{
+  transform:translateX(42px);
+}
+.jrpg-formation-stage .combat-enemy-side.formation-back{
+  transform:translateX(-34px) translateY(18px) scale(.94);
+}
+
+.combat-formation-badge{
+  position:absolute;
+  top:12px;
+  left:50%;
+  z-index:7;
+  transform:translateX(-50%);
+  padding:5px 10px;
+  border:1px solid rgba(240,216,155,.52);
+  border-radius:999px;
+  background:rgba(17,28,20,.82);
+  color:#f7ddb0;
+  box-shadow:0 8px 18px rgba(0,0,0,.2);
+  font-size:.52rem;
+  font-weight:950;
+  letter-spacing:.12em;
+  white-space:nowrap;
+  text-transform:uppercase;
+  backdrop-filter:blur(8px);
+}
+
+.jrpg-party-stage .combat-formation-badge{display:none}
+.jrpg-party-stage .formation-label-visible>.combat-formation-badge{display:block}
+
+.jrpg-formation-stage .jrpg-monster-card{
+  --combat-card-scale:1.42;
+  z-index:2;
+  min-width:300px;
+}
+.jrpg-formation-stage .jrpg-boss-card{
+  --combat-card-scale:1.73;
+  z-index:3;
+}
+.jrpg-formation-stage .jrpg-monster-card .combat-identity-frame{
+  --combat-card-scale:1.42;
+  min-height:360px;
+  margin-bottom:32px;
+}
+.jrpg-formation-stage .jrpg-boss-card .combat-identity-frame{
+  --combat-card-scale:1.73;
+  margin-bottom:72px;
+}
+
+.jrpg-formation-stage .jrpg-monster-card .monster-art{
+  position:relative;
+  width:250px!important;
+  height:320px!important;
+  padding:18px!important;
+  overflow:hidden;
+  border:2px solid rgba(235,205,132,.78)!important;
+  border-radius:24px!important;
+  background-color:rgba(20,35,26,.84)!important;
+  background-size:contain!important;
+  background-position:center bottom!important;
+  box-shadow:
+    inset 0 0 0 7px rgba(10,20,14,.56),
+    inset 0 0 38px rgba(226,194,115,.11),
+    0 20px 36px rgba(0,0,0,.38),
+    0 0 0 1px rgba(255,255,255,.05)!important;
+}
+.jrpg-formation-stage .jrpg-monster-card .monster-art::before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(240,216,155,.28);
+  border-radius:17px;
+  pointer-events:none;
+}
+.jrpg-formation-stage .jrpg-monster-card .monster-art::after{
+  content:"INIMIGO";
+  position:absolute;
+  left:50%;
+  bottom:10px;
+  transform:translateX(-50%);
+  padding:4px 9px;
+  border-radius:999px;
+  background:rgba(12,20,15,.82);
+  color:#f6deb0;
+  font-size:.5rem;
+  font-weight:950;
+  letter-spacing:.14em;
+}
+.jrpg-formation-stage .jrpg-boss-card .monster-art::after{content:"BOSS";color:#ffe6a0}
+
+.jrpg-formation-stage .jrpg-monster-card .combat-hud-panel{
+  width:76%;
+  max-width:360px;
+}
+.jrpg-formation-stage .jrpg-boss-card .combat-hud-panel{
+  width:82%;
+}
+
+.jrpg-party-stage{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  grid-auto-rows:minmax(210px,auto);
+  align-items:end;
+  gap:8px 16px!important;
+  width:100%;
+}
+.jrpg-party-stage>.formation-front{grid-column:1;transform:translateX(-18px)}
+.jrpg-party-stage>.formation-back{grid-column:2;transform:translateX(18px) scale(.92)}
+.jrpg-party-stage>.jrpg-fighter{
+  min-height:320px!important;
+  padding-inline:6px!important;
+}
+.jrpg-party-stage .combat-identity-frame{
+  min-height:210px!important;
+}
+.jrpg-party-stage .combat-official-character-card{
+  width:min(160px,100%)!important;
+  max-width:160px!important;
+}
+.jrpg-party-stage .combat-hud-panel{
+  width:96%;
+  padding:8px 9px!important;
+}
+
+.jrpg-formation-stage .jrpg-fighter.is-active .combat-identity-frame{
+  filter:drop-shadow(0 0 18px rgba(242,211,128,.42));
+}
+
+.jrpg-formation-stage .jrpg-fighter.fx-damage .combat-identity-frame{
+  animation:wonderlandBattleHit .46s ease-out both!important;
+}
+.jrpg-formation-stage .jrpg-fighter.fx-heal .combat-identity-frame{
+  animation:wonderlandBattleHeal .82s ease-out both!important;
+}
+.jrpg-formation-stage .jrpg-fighter.fx-shield .combat-identity-frame,
+.jrpg-formation-stage .jrpg-fighter.fx-guard .combat-identity-frame{
+  animation:wonderlandBattleShield .82s ease-out both!important;
+}
+.jrpg-formation-stage .jrpg-fighter.fx-magic .combat-identity-frame{
+  animation:wonderlandBattleMagic .72s ease-out both!important;
+}
+
+@keyframes wonderlandBattleBreathing{
+  0%,100%{transform:translateY(0) scale(var(--combat-card-scale));filter:brightness(1)}
+  50%{transform:translateY(-7px) scale(calc(var(--combat-card-scale) * 1.012));filter:brightness(1.025)}
+}
+@keyframes wonderlandBattleHit{
+  0%{transform:translateX(0) scale(var(--combat-card-scale));filter:brightness(1)}
+  20%{transform:translateX(-12px) scale(calc(var(--combat-card-scale) * .98));filter:brightness(1.7) saturate(.55)}
+  45%{transform:translateX(9px) scale(var(--combat-card-scale));filter:brightness(.8)}
+  70%{transform:translateX(-5px) scale(var(--combat-card-scale));filter:brightness(1.15)}
+  100%{transform:translateX(0) scale(var(--combat-card-scale));filter:brightness(1)}
+}
+@keyframes wonderlandBattleHeal{
+  0%,100%{transform:translateY(0) scale(var(--combat-card-scale));filter:brightness(1)}
+  35%{transform:translateY(-10px) scale(calc(var(--combat-card-scale) * 1.035));filter:brightness(1.45) drop-shadow(0 0 28px rgba(91,221,128,.75))}
+}
+@keyframes wonderlandBattleShield{
+  0%,100%{transform:translateY(0) scale(var(--combat-card-scale));filter:brightness(1)}
+  35%{transform:scale(calc(var(--combat-card-scale) * 1.04));filter:brightness(1.35) drop-shadow(0 0 32px rgba(107,211,239,.85))}
+}
+@keyframes wonderlandBattleMagic{
+  0%{transform:scale(var(--combat-card-scale));filter:brightness(1)}
+  35%{transform:translateY(-5px) rotate(-1deg) scale(calc(var(--combat-card-scale) * 1.025));filter:brightness(1.55) drop-shadow(0 0 30px rgba(180,137,255,.8))}
+  70%{transform:translateY(2px) rotate(1deg) scale(var(--combat-card-scale));filter:brightness(.88) drop-shadow(0 0 16px rgba(180,137,255,.5))}
+  100%{transform:scale(var(--combat-card-scale));filter:brightness(1)}
+}
+
+@media(max-width:900px){
+  .jrpg-formation-stage{min-height:600px!important;padding:30px 18px 28px!important;grid-template-columns:minmax(0,1fr) 52px minmax(0,1fr)!important}
+  .jrpg-formation-stage .combat-official-character-card{width:min(180px,100%)!important;max-width:180px!important}
+  .jrpg-formation-stage .jrpg-monster-card{--combat-card-scale:1.28;min-width:220px}
+  .jrpg-formation-stage .jrpg-monster-card .combat-identity-frame{--combat-card-scale:1.28}
+  .jrpg-formation-stage .jrpg-boss-card{--combat-card-scale:1.48}
+  .jrpg-formation-stage .jrpg-boss-card .combat-identity-frame{--combat-card-scale:1.48}
+  .jrpg-formation-stage .jrpg-monster-card .monster-art{width:210px!important;height:280px!important}
+  .jrpg-formation-stage .combat-party-side.formation-front{transform:translateX(-18px)}
+  .jrpg-formation-stage .combat-party-side.formation-back{transform:translateX(16px) translateY(14px) scale(.94)}
+}
+
+@media(max-width:680px){
+  .jrpg-formation-stage{
+    min-height:760px!important;
+    grid-template-columns:1fr!important;
+    grid-template-rows:auto 38px auto!important;
+    gap:8px!important;
+    padding:24px 10px!important;
+  }
+  .jrpg-formation-stage>.combat-enemy-side{grid-column:1!important;grid-row:1!important}
+  .jrpg-formation-stage>.pvp-versus{grid-column:1!important;grid-row:2!important;width:44px!important;height:44px!important}
+  .jrpg-formation-stage>.combat-party-side{grid-column:1!important;grid-row:3!important}
+  .jrpg-formation-stage .jrpg-monster-card{--combat-card-scale:1.05;min-width:0}
+  .jrpg-formation-stage .jrpg-monster-card .combat-identity-frame{--combat-card-scale:1.05;min-height:280px;margin-bottom:8px}
+  .jrpg-formation-stage .jrpg-boss-card{--combat-card-scale:1.18}
+  .jrpg-formation-stage .jrpg-boss-card .combat-identity-frame{--combat-card-scale:1.18;margin-bottom:18px}
+  .jrpg-formation-stage .combat-party-side.formation-front,
+  .jrpg-formation-stage .combat-party-side.formation-back,
+  .jrpg-formation-stage .combat-enemy-side.formation-front,
+  .jrpg-formation-stage .combat-enemy-side.formation-back{transform:none}
+  .jrpg-party-stage{grid-template-columns:1fr 1fr!important;grid-auto-rows:minmax(170px,auto)}
+  .jrpg-party-stage>.jrpg-fighter{min-height:250px!important}
+  .jrpg-party-stage .combat-official-character-card{width:min(130px,100%)!important;max-width:130px!important}
+  .combat-formation-badge{top:4px;font-size:.46rem;padding:4px 7px}
+}

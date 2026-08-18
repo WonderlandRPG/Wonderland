@@ -49,6 +49,8 @@ type RawMember = {
 };
 
 type RawRoster = { format: string; ownTeam: number; members: RawMember[] };
+type RpcReply = { data: unknown; error: { message: string } | null };
+type UntypedRpc = (fn: string, args: Record<string, unknown>) => Promise<RpcReply>;
 
 function isRawRoster(value: unknown): value is RawRoster {
   if (!value || Array.isArray(value) || typeof value !== "object") return false;
@@ -59,12 +61,12 @@ function isRawRoster(value: unknown): value is RawRoster {
 export async function getPvpTeamRoster(matchId: string) {
   const client = await createServerSupabaseClient();
   if (!client) return null;
-  const { data, error } = await client.rpc("v2_get_pvp_team_roster", { p_match_id: matchId });
+  const rpc = client.rpc.bind(client) as unknown as UntypedRpc;
+  const { data, error } = await rpc("v2_get_pvp_team_roster", { p_match_id: matchId });
   if (error || !isRawRoster(data)) return null;
 
   const rawMembers = data.members.filter(
-    (member): member is RawMember =>
-      Boolean(member && member.character && Array.isArray(member.equipment)),
+    (member): member is RawMember => Boolean(member && member.character && Array.isArray(member.equipment)),
   );
   if (rawMembers.length < 2) return null;
 
@@ -124,24 +126,14 @@ export async function getPvpTeamRoster(matchId: string) {
         inventory.reduce((total, entry) => total + (entry.attributes[attribute] ?? 0), 0),
       ]),
     );
-    const stats = buildCharacterStats(
-      allocated.data,
-      race.data,
-      characterRules,
-      defaultCombatRules,
-      equipmentBonuses,
-    );
+    const stats = buildCharacterStats(allocated.data, race.data, characterRules, defaultCombatRules, equipmentBonuses);
     const unlockedClassSkills = [
       ...getUnlockedClassSkills(characterClass.data, raw.level),
       ...getUnlockedPathSkills(characterClass.data, raw.class_path_key, raw.level),
     ].sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
     const unlockedRaceAbilities = getUnlockedRaceAbilities(race.data, raw.level);
     const rawClassSkills = unlockedClassSkills.filter((skill) => !/passiva/i.test(skill.type));
-    const skills = prepareClassCombatSkills(
-      classRow.name,
-      characterClass.data,
-      rawClassSkills,
-    ).map(prepareArenaSkill);
+    const skills = prepareClassCombatSkills(classRow.name, characterClass.data, rawClassSkills).map(prepareArenaSkill);
     const raceAbilities = prepareRaceCombatSkills(unlockedRaceAbilities).map(prepareArenaSkill);
     const equippedTitle = inventory.find((item) => item.equippedSlot === "title") ?? null;
 
@@ -172,7 +164,7 @@ export async function getPvpTeamRoster(matchId: string) {
         ...race.data.traits,
         ...race.data.mechanics,
       ],
-      equipmentEffects: inventory.flatMap((item) => item.specialEffects),
+      equipmentEffects: inventory.filter((item) => item.equippedSlot).flatMap((item) => item.specialEffects),
       items: inventory
         .filter((item) => /consum|poção|pocao/i.test(item.category))
         .map((item) => ({ id: item.id, name: item.name, description: item.description })),

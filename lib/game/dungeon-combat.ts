@@ -8,7 +8,7 @@ import {
 import { createPvpCombatant } from "@/lib/game/pvp-state";
 import { firstDungeon } from "@/lib/game/dungeons";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
-import { buildTurnOrder } from "@/lib/game/turn-engine";
+import { buildTurnOrder, createTurnActionUsage, type TurnActionUsage } from "@/lib/game/turn-engine";
 
 export type DungeonBattleState = {
   encounterIndex: number;
@@ -22,6 +22,7 @@ export type DungeonBattleState = {
   status: "active" | "victory" | "defeat";
   message: string;
   log: string[];
+  turnActions?: TurnActionUsage;
 };
 
 export function createDungeonMonster(party: ArenaCharacter[], encounterIndex: number) {
@@ -87,5 +88,6 @@ export function createInitialDungeonState(party: ArenaCharacter[]): DungeonBattl
     status: "active",
     message: `${firstDungeon.encounters[0].name} bloqueia a entrada das ruínas.`,
     log: ["A expedição entrou em combate. A iniciativa definiu a ordem dos turnos."],
+    turnActions: createTurnActionUsage(),
   };
 }

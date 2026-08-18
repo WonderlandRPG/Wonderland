@@ -1,11 +1,18 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { CombatSurrenderButton } from "@/components/arena/combat-surrender-button";
 
 type CombatKind = "arena" | "pvp" | "dungeon";
 
 export function CombatExitGuard({ kind, combatId }: { kind: CombatKind; combatId: string }) {
   const sent = useRef(false);
+  const router = useRouter();
+  const onSurrenderCompleted = useCallback(() => {
+    router.replace(kind === "dungeon" ? "/arena/dungeons" : "/arena");
+    router.refresh();
+  }, [kind, router]);
 
   useEffect(() => {
     sent.current = false;
@@ -32,5 +39,11 @@ export function CombatExitGuard({ kind, combatId }: { kind: CombatKind; combatId
     };
   }, [combatId, kind]);
 
-  return null;
+  return (
+    <CombatSurrenderButton
+      kind={kind}
+      combatId={combatId}
+      onCompleted={onSurrenderCompleted}
+    />
+  );
 }

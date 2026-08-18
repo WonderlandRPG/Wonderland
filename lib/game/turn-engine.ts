@@ -65,6 +65,20 @@ export function livingFighterIds(fighters: Record<string, CombatantState>) {
     .map((fighter) => fighter.id);
 }
 
+export function isTurnBlocked(combatant: CombatantState) {
+  return Object.entries(combatant.statuses).some(([key, status]) => {
+    const text = `${key} ${status.name}`.toLowerCase();
+    return /stun|atordo|fear|medo|incapacit/.test(text);
+  });
+}
+
+export function isSilenced(combatant: CombatantState) {
+  return Object.entries(combatant.statuses).some(([key, status]) => {
+    const text = `${key} ${status.name}`.toLowerCase();
+    return /silence|silêncio|silencio/.test(text);
+  });
+}
+
 export function resolveWinner(
   fighters: Record<string, CombatantState>,
   teams?: Record<string, string>,
@@ -85,7 +99,7 @@ export function createBattleState(input: {
   fighters: Record<string, CombatantState>;
   message?: string;
   turnEndsAt?: string;
-}) : SharedBattleState {
+}): SharedBattleState {
   const turnOrder = buildTurnOrder(
     Object.values(input.fighters).map((fighter) => ({
       id: fighter.id,
@@ -93,7 +107,9 @@ export function createBattleState(input: {
     })),
   );
   const first = turnOrder[0] ?? Object.keys(input.fighters)[0] ?? "";
-  const opening = input.message ?? (first ? `${input.fighters[first].name} possui a iniciativa.` : "A batalha começou.");
+  const opening =
+    input.message ??
+    (first ? `${input.fighters[first].name} possui a iniciativa.` : "A batalha começou.");
   return {
     round: 1,
     turn: 1,

@@ -162,6 +162,7 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   const parsed = idSchema.safeParse(runId);
   const action = actionSchema.safeParse(input);
   if (!parsed.success || !action.success) return { ok: false as const, message: "Ação inválida." };
+  const actionData = action.data;
   const client = await createServerSupabaseClient();
   if (!client) return { ok: false as const, message: "Banco indisponível." };
   const { data } = await client.rpc("v2_get_dungeon_run", { p_run_id: parsed.data });
@@ -183,18 +184,19 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   let monster = state.monster;
   let message = "";
 
-  if (action.data.kind === "basic") {
+  if (actionData.kind === "basic") {
     const result = resolveBasicAttack(actor, monster, defaultCombatRules);
     actor = result.actor;
     monster = result.target;
     message = result.event.message;
-  } else if (action.data.kind === "defend") {
+  } else if (actionData.kind === "defend") {
     if ((actor.cooldowns["defesa-total"] ?? 0) > 0)
       return { ok: false as const, message: "Defesa Total ainda está em recarga." };
     actor = guardCombatant(actor);
     message = `${actor.name} assumiu Defesa Total.`;
-  } else if (action.data.kind === "item") {
-    const item = character.items.find((entry) => entry.id === action.data.id);
+  } else if (actionData.kind === "item") {
+    const itemId = actionData.id;
+    const item = character.items.find((entry) => entry.id === itemId);
     if (!item) return { ok: false as const, message: "Item indisponível." };
     const healed = Math.min(Math.max(25, Math.round(actor.maxHp * 0.25)), actor.maxHp - actor.hp);
     actor = { ...actor, hp: actor.hp + healed };
@@ -202,8 +204,9 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   } else {
     if (isSilenced(actor))
       return { ok: false as const, message: `${actor.name} está silenciado e não pode usar habilidades.` };
-    const list = action.data.kind === "class" ? character.skills : character.raceAbilities;
-    const skill = list.find((entry) => entry.key === action.data.key);
+    const skillKey = actionData.key;
+    const list = actionData.kind === "class" ? character.skills : character.raceAbilities;
+    const skill = list.find((entry) => entry.key === skillKey);
     if (!skill) return { ok: false as const, message: "Habilidade indisponível." };
     const result =
       skill.area > 0

@@ -6,6 +6,7 @@ import "./arena-images.css";
 import "./jrpg.css";
 import "./combat-polish.css";
 import "./jrpg-formation.css";
+import "./arena-depth.css";
 
 export default function ArenaLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

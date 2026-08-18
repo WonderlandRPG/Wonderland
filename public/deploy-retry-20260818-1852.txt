@@ -1,0 +1,1 @@
+Redeploy trigger for combat entry hotfix PR #82.

@@ -29,6 +29,7 @@ export interface ArenaCharacter {
   } | null;
   usesMana: boolean;
   basicAttackRange: number;
+  basicAttackDamageType?: "physical" | "magic";
   attributes: CombatAttributes;
   skills: ClassSkill[];
   raceAbilities: ClassSkill[];

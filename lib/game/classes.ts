@@ -36,7 +36,7 @@ export function createEmptyClassSkill(level = 1): ClassSkill {
     area: 0,
     duration: 0,
     scaling: [],
-    reachText: "1 casa",
+    reachText: "Alvo selecionado",
     conditions: [],
     systemRule: "Executa as operações na ordem cadastrada.",
     playerDescription: "Descreva o efeito para o jogador.",
@@ -158,6 +158,78 @@ export function getUnlockedPathSkills(
     .sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
 }
 
+function appendInitiativeModifier(
+  modifiers: ClassSkill["operations"][number]["modifiers"],
+  value: number,
+) {
+  const existing = modifiers.find((entry) => entry.attribute === "INI");
+  return existing
+    ? modifiers.map((entry) =>
+        entry.attribute === "INI" ? { ...entry, value: entry.value + value } : entry,
+      )
+    : [...modifiers, { attribute: "INI" as const, value }];
+}
+
 export function prepareArenaSkill(skill: ClassSkill): ClassSkill {
-  return skill;
+  let convertedSpatial = false;
+  const operations = skill.operations.map((operation) => {
+    const distancePower = Math.max(5, operation.distance * 5);
+    if (operation.operation === "MOVE" || operation.operation === "TELEPORT") {
+      convertedSpatial = true;
+      return {
+        ...operation,
+        operation: "BUFF" as const,
+        target: "self" as const,
+        status: operation.status || "impulso",
+        duration: Math.max(1, operation.duration || 1),
+        distance: 0,
+        modifiers: appendInitiativeModifier(operation.modifiers, distancePower),
+      };
+    }
+    if (operation.operation === "PUSH") {
+      convertedSpatial = true;
+      return {
+        ...operation,
+        operation: "DEBUFF" as const,
+        target: "enemy" as const,
+        status: operation.status || "desestabilizado",
+        duration: Math.max(1, operation.duration || 1),
+        distance: 0,
+        modifiers: appendInitiativeModifier(operation.modifiers, -distancePower),
+      };
+    }
+    if (operation.operation === "ROOT") {
+      convertedSpatial = true;
+      return {
+        ...operation,
+        operation: "DEBUFF" as const,
+        target: "enemy" as const,
+        status: operation.status || "enraizado",
+        duration: Math.max(1, operation.duration || 1),
+        distance: 0,
+        modifiers: appendInitiativeModifier(operation.modifiers, -Math.max(10, distancePower)),
+      };
+    }
+    return operation;
+  });
+
+  const reachText =
+    skill.target === "self"
+      ? "Próprio usuário"
+      : skill.target === "area" || skill.area > 0
+        ? "Todos os alvos válidos"
+        : "Alvo selecionado";
+
+  return {
+    ...skill,
+    range: 0,
+    reachText,
+    operations,
+    playerDescription: convertedSpatial
+      ? `${skill.playerDescription} No combate por turnos, deslocamento e empurrão são convertidos em prioridade de iniciativa.`
+      : skill.playerDescription,
+    systemRule: convertedSpatial
+      ? `${skill.systemRule} Conversão JRPG: efeitos espaciais alteram INI em vez de casas.`
+      : skill.systemRule,
+  };
 }

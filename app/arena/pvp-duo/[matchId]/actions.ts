@@ -33,10 +33,11 @@ import type { ArenaCharacter } from "@/lib/game/arena-types";
 import type { Json } from "@/lib/db/types";
 
 const idSchema = z.uuid();
+const targetSchema = z.uuid().optional();
 const actionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("basic") }),
-  z.object({ kind: z.literal("race"), key: z.string().min(1).max(160) }),
-  z.object({ kind: z.literal("class"), key: z.string().min(1).max(160) }),
+  z.object({ kind: z.literal("race"), key: z.string().min(1).max(160), targetId: targetSchema }),
+  z.object({ kind: z.literal("class"), key: z.string().min(1).max(160), targetId: targetSchema }),
   z.object({ kind: z.literal("item"), id: z.uuid() }),
   z.object({ kind: z.literal("end") }),
 ]);
@@ -134,6 +135,42 @@ function skipBlocked(state: PvpDuoBattleState) {
   return messages;
 }
 
+function chosenTarget(
+  state: PvpDuoBattleState,
+  actorId: string,
+  skill: ArenaCharacter["skills"][number],
+  requestedId?: string,
+) {
+  const ownTeam = state.teamOne.includes(actorId) ? state.teamOne : state.teamTwo;
+  const enemyTeam = opposingTeam(state, actorId);
+  const livingOwn = livingTeamMembers(state, ownTeam);
+  const livingEnemies = livingTeamMembers(state, enemyTeam);
+
+  if (skill.target === "self") return actorId;
+  if (skill.target === "ally") {
+    const targetId = requestedId ?? actorId;
+    return livingOwn.includes(targetId) ? targetId : null;
+  }
+  if (skill.target === "enemy") {
+    const targetId = requestedId ?? chooseDuoTarget(state, actorId);
+    return targetId && livingEnemies.includes(targetId) ? targetId : null;
+  }
+  return null;
+}
+
+function areaTargetIds(
+  state: PvpDuoBattleState,
+  actorId: string,
+  skill: ArenaCharacter["skills"][number],
+) {
+  const operationTarget = skill.operations[0]?.target;
+  const allied = operationTarget === "ally" || operationTarget === "self" || operationTarget === "source";
+  const team = allied
+    ? (state.teamOne.includes(actorId) ? state.teamOne : state.teamTwo)
+    : opposingTeam(state, actorId);
+  return livingTeamMembers(state, team);
+}
+
 export async function performPvpDuoAction(matchId: string, expectedVersion: number, input: unknown) {
   await requireCurrentAccount(`/arena/pvp-duo/${matchId}`);
   const parsedId = idSchema.safeParse(matchId);
@@ -151,18 +188,17 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
     return { ok: true as const, data: room, synchronized: true as const };
 
   const state = structuredClone(room.state) as PvpDuoBattleState;
-  if (state.status !== "active") return { ok: false as const, message: "Esta batalha já terminou.", data: room };
+  if (state.status !== "active")
+    return { ok: false as const, message: "Esta batalha já terminou.", data: room };
   const actorId = state.activeCharacterId;
   if (!room.ownCharacterIds.includes(actorId))
     return { ok: false as const, message: "Aguarde o turno da equipe adversária.", data: room };
-  const targetId = chooseDuoTarget(state, actorId);
-  if (!targetId) return { ok: false as const, message: "Não há alvo adversário disponível." };
 
   const meta = metadataMap(roster.members);
   const character = meta[actorId];
   if (!character) return { ok: false as const, message: "Personagem ativo não encontrado." };
+
   let actor = state.fighters[actorId];
-  let target = state.fighters[targetId];
   const action = parsedAction.data;
   const usage = state.turnActions ?? createTurnActionUsage();
   const nextUsage = { ...usage };
@@ -170,36 +206,53 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
   let message = "";
   let resourceEvent: ResourceEvent | null = null;
   let areaAction = false;
+  let affectedTargetId: string | null = null;
+  let target = state.fighters[chooseDuoTarget(state, actorId) ?? ""];
 
   if (action.kind === "basic") {
     if (usage.basic) return { ok: false as const, message: "O Ataque Básico já foi usado neste turno." };
+    const targetId = chooseDuoTarget(state, actorId);
+    if (!targetId) return { ok: false as const, message: "Não há alvo adversário disponível." };
+    target = state.fighters[targetId];
     const result = resolveBasicAttack(actor, target, defaultCombatRules);
     actor = result.actor;
     target = result.target;
+    affectedTargetId = targetId;
     resourceEvent = result.event;
     message = result.event.message;
     nextUsage.basic = true;
   } else if (action.kind === "class" || action.kind === "race") {
-    if (usage[action.kind]) return { ok: false as const, message: "Esta categoria já foi usada neste turno." };
+    if (usage[action.kind])
+      return { ok: false as const, message: "Esta categoria já foi usada neste turno." };
     if (isSilenced(actor)) return { ok: false as const, message: `${actor.name} está silenciado.` };
     const list = action.kind === "class" ? character.skills : character.raceAbilities;
     const skill = list.find((entry) => entry.key === action.key);
     if (!skill) return { ok: false as const, message: "Habilidade indisponível." };
+
     areaAction = skill.area > 0;
     if (areaAction) {
-      const enemyIds = livingTeamMembers(state, opposingTeam(state, actorId));
-      const targets = enemyIds.map((id) => state.fighters[id]);
+      const ids = areaTargetIds(state, actorId, skill);
+      const targets = ids.map((id) => state.fighters[id]).filter(Boolean);
       const area = resolveJrpgAreaSkill(actor, targets, skill, defaultCombatRules);
+      if (area.events[0]?.kind === "error")
+        return { ok: false as const, message: area.events[0].message };
       actor = area.actor;
       area.targets.forEach((changed) => { state.fighters[changed.id] = changed; });
       resourceEvent = area.events[0] ?? null;
       message = area.events.map((event) => event.message).filter(Boolean).join(" ");
-      target = state.fighters[targetId];
+      affectedTargetId = area.targets[0]?.id ?? null;
+      target = affectedTargetId ? state.fighters[affectedTargetId] : actor;
     } else {
+      const targetId = chosenTarget(state, actorId, skill, action.targetId);
+      if (!targetId)
+        return { ok: false as const, message: "O alvo escolhido não é válido para esta habilidade." };
+      target = state.fighters[targetId];
       const result = resolveJrpgSkill(actor, target, skill, defaultCombatRules);
-      if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
+      if (result.event.kind === "error")
+        return { ok: false as const, message: result.event.message };
       actor = result.actor;
       target = result.target;
+      affectedTargetId = targetId;
       resourceEvent = result.event;
       message = result.event.message;
     }
@@ -214,12 +267,12 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
     message = `${actor.name} encerrou sua sequência.`;
   }
 
-  if (resourceEvent && !areaAction) {
+  if (resourceEvent && affectedTargetId && !areaAction) {
     const generated = applyEventResourceGeneration({
       actor,
       target,
       actorCharacter: character,
-      targetCharacter: meta[targetId],
+      targetCharacter: meta[affectedTargetId],
       event: resourceEvent,
       area: false,
     });
@@ -228,7 +281,7 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
   }
 
   state.fighters[actorId] = actor;
-  state.fighters[targetId] = target;
+  if (affectedTargetId) state.fighters[affectedTargetId] = target;
   state.turnActions = nextUsage;
   endsTurn = endsTurn || hasUsedAllCoreActions(nextUsage);
 
@@ -245,15 +298,16 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
     if (periodic.messages.length) message = `${message} ${periodic.messages.join(" ")}`;
     if (state.fighters[actorId].hp <= 0 && livingTeamMembers(state, state.teamOne).length === 0) {
       state.status = "finished";
-      state.winnerCharacterId = livingTeamMembers(state, state.teamTwo)[0] ?? targetId;
+      state.winnerCharacterId = livingTeamMembers(state, state.teamTwo)[0] ?? affectedTargetId;
     } else if (state.fighters[actorId].hp <= 0 && livingTeamMembers(state, state.teamTwo).length === 0) {
       state.status = "finished";
-      state.winnerCharacterId = livingTeamMembers(state, state.teamOne)[0] ?? targetId;
+      state.winnerCharacterId = livingTeamMembers(state, state.teamOne)[0] ?? affectedTargetId;
     } else {
       advanceTurn(state);
       const skipped = skipBlocked(state);
       if (skipped.length) message = `${message} ${skipped.join(" ")}`;
-      if (state.status === "active") message = `${message} Turno de ${state.fighters[state.activeCharacterId].name}.`;
+      if (state.status === "active")
+        message = `${message} Turno de ${state.fighters[state.activeCharacterId].name}.`;
     }
   } else {
     message = `${message} Ações restantes: ${remainingActions(nextUsage)}.`;

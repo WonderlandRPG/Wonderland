@@ -22,7 +22,14 @@ import {
 import { resolvePeriodicItemDamage } from "@/lib/game/item-effects";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/db/types";
-import { appendBattleLog, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
+import {
+  appendBattleLog,
+  createTurnActionUsage,
+  hasUsedAllCoreActions,
+  isSilenced,
+  isTurnBlocked,
+  type TurnActionUsage,
+} from "@/lib/game/turn-engine";
 import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import {
   applyEventResourceGeneration,
@@ -37,6 +44,7 @@ const actionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("class"), key: z.string() }),
   z.object({ kind: z.literal("race"), key: z.string() }),
   z.object({ kind: z.literal("item"), id: z.uuid() }),
+  z.object({ kind: z.literal("end") }),
 ]);
 
 type Snapshot = {
@@ -86,6 +94,7 @@ function advance(state: DungeonBattleState) {
   const index = Math.max(0, living.indexOf(state.activeCharacterId));
   const nextIndex = (index + 1) % living.length;
   state.turn += 1;
+  state.turnActions = createTurnActionUsage();
   if (nextIndex === 0) {
     state.round += 1;
     const refreshed = buildDungeonTurnOrder(state.fighters, state.monster);
@@ -178,6 +187,14 @@ function settleAutomaticTurns(state: DungeonBattleState, partyMetadata: PartyMet
   return messages.filter(Boolean);
 }
 
+function remainingActions(usage: TurnActionUsage) {
+  return [
+    !usage.basic ? "Ataque" : null,
+    !usage.class ? "Classe" : null,
+    !usage.race ? "Raça" : null,
+  ].filter(Boolean).join(" + ");
+}
+
 export async function performDungeonAction(runId: string, expectedVersion: number, input: unknown) {
   const account = await requireAdministrativeAccount();
   const parsed = idSchema.safeParse(runId);
@@ -206,31 +223,38 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
   let message = "";
   let resourceEvent: ResourceEvent | null = null;
   let areaAction = false;
+  const usage = state.turnActions ?? createTurnActionUsage();
+  const nextUsage = { ...usage };
+  let endsTurn = actionData.kind === "defend" || actionData.kind === "item" || actionData.kind === "end";
 
   if (actionData.kind === "basic") {
+    if (usage.basic) return { ok: false as const, message: "O Ataque Básico já foi usado neste turno." };
     const result = resolveBasicAttack(actor, monster, defaultCombatRules);
     actor = result.actor;
     monster = result.target;
     resourceEvent = result.event;
     message = result.event.message;
+    nextUsage.basic = true;
   } else if (actionData.kind === "defend") {
     if ((actor.cooldowns["defesa-total"] ?? 0) > 0)
       return { ok: false as const, message: "Defesa Total ainda está em recarga." };
     actor = guardCombatant(actor);
     message = `${actor.name} assumiu Defesa Total.`;
   } else if (actionData.kind === "item") {
-    const itemId = actionData.id;
-    const item = character.items.find((entry) => entry.id === itemId);
+    const item = character.items.find((entry) => entry.id === actionData.id);
     if (!item) return { ok: false as const, message: "Item indisponível." };
     const healed = Math.min(Math.max(25, Math.round(actor.maxHp * 0.25)), actor.maxHp - actor.hp);
     actor = { ...actor, hp: actor.hp + healed };
     message = `${actor.name} usou ${item.name} e recuperou ${healed} de HP.`;
+  } else if (actionData.kind === "end") {
+    message = `${actor.name} encerrou sua sequência.`;
   } else {
+    if (usage[actionData.kind])
+      return { ok: false as const, message: `${actionData.kind === "class" ? "A habilidade de classe" : "A habilidade racial"} já foi usada neste turno.` };
     if (isSilenced(actor))
       return { ok: false as const, message: `${actor.name} está silenciado e não pode usar habilidades.` };
-    const skillKey = actionData.key;
     const list = actionData.kind === "class" ? character.skills : character.raceAbilities;
-    const skill = list.find((entry) => entry.key === skillKey);
+    const skill = list.find((entry) => entry.key === actionData.key);
     if (!skill) return { ok: false as const, message: "Habilidade indisponível." };
     areaAction = skill.area > 0;
     const result = areaAction
@@ -244,6 +268,7 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
     monster = result.target;
     resourceEvent = result.event;
     message = result.event.message;
+    nextUsage[actionData.kind] = true;
   }
 
   if (resourceEvent) {
@@ -258,12 +283,10 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
     monster = generated.target;
   }
 
-  const periodicActor = resolvePeriodicItemDamage(actor, (amount, type) =>
-    calculateDamage(amount, type, getEffectiveAttributes(actor), defaultCombatRules),
-  );
-  state.fighters[actorId] = tickCooldowns(periodicActor.combatant);
+  state.fighters[actorId] = actor;
   state.monster = monster;
-  if (periodicActor.messages.length) message += ` ${periodicActor.messages.join(" ")}`;
+  state.turnActions = nextUsage;
+  endsTurn = endsTurn || hasUsedAllCoreActions(nextUsage);
 
   const partyCharacters = (await Promise.all(state.partyOrder.map((id) => getCharacterSheet(id))))
     .filter(Boolean)
@@ -279,15 +302,23 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
       state.monster = createDungeonMonster(partyCharacters, state.encounterIndex);
       state.turnOrder = buildDungeonTurnOrder(state.fighters, state.monster);
       state.activeCharacterId = state.turnOrder[0];
+      state.turnActions = createTurnActionUsage();
       state.round += 1;
       state.turn += 1;
       message += ` O grupo avançou e encontrou ${state.monster.name}.`;
     }
-  } else {
+  } else if (endsTurn) {
+    const periodicActor = resolvePeriodicItemDamage(actor, (amount, type) =>
+      calculateDamage(amount, type, getEffectiveAttributes(actor), defaultCombatRules),
+    );
+    state.fighters[actorId] = tickCooldowns(periodicActor.combatant);
+    if (periodicActor.messages.length) message += ` ${periodicActor.messages.join(" ")}`;
     advance(state);
+  } else {
+    message = `${message} Ações restantes: ${remainingActions(nextUsage)}.`;
   }
 
-  if (state.status === "active") {
+  if (state.status === "active" && endsTurn) {
     const automatic = settleAutomaticTurns(state, partyMetadata);
     if (automatic.length) message += ` ${automatic.join(" ")}`;
   }

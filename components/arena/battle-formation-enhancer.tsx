@@ -69,7 +69,10 @@ function classifyFighter(fighter: HTMLElement) {
   if (monsterArt) {
     fighter.classList.add("jrpg-monster-card");
     const normalizedSubtitle = normalize(subtitle);
-    const finalBoss = normalizedSubtitle.includes("boss") && !normalizedSubtitle.includes("mini") && !normalizedSubtitle.includes("sub");
+    const finalBoss =
+      normalizedSubtitle.includes("boss") &&
+      !normalizedSubtitle.includes("mini") &&
+      !normalizedSubtitle.includes("sub");
     if (finalBoss) fighter.classList.add("jrpg-boss-card");
     return;
   }
@@ -79,8 +82,20 @@ function classifyFighter(fighter: HTMLElement) {
   ensureBadge(fighter, formation === "back" ? "RETAGUARDA" : "LINHA DE FRENTE");
 }
 
+function classifyMode(stage: HTMLElement) {
+  stage.classList.remove("combat-stage-training", "combat-stage-pve", "combat-stage-pvp", "combat-stage-dungeon");
+  const battle = stage.closest<HTMLElement>(".jrpg-battle");
+  const header = normalize(battle?.querySelector<HTMLElement>(".arena-game-header .eyebrow")?.textContent ?? "");
+
+  if (header.includes("dungeon")) stage.classList.add("combat-stage-dungeon");
+  else if (header.includes("pvp")) stage.classList.add("combat-stage-pvp");
+  else if (header.includes("pve")) stage.classList.add("combat-stage-pve");
+  else stage.classList.add("combat-stage-training");
+}
+
 function enhanceStage(stage: HTMLElement) {
   stage.classList.add("jrpg-formation-stage");
+  classifyMode(stage);
 
   const party = stage.querySelector<HTMLElement>(":scope > .jrpg-party-stage");
   const directFighters = Array.from(stage.querySelectorAll<HTMLElement>(":scope > .jrpg-fighter"));

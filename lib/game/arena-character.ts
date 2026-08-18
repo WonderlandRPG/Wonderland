@@ -4,13 +4,21 @@ import type { CharacterSheet } from "@/lib/content/characters";
 import { prepareArenaSkill } from "@/lib/game/classes";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import { getClassBasicAttackRange } from "@/lib/game/class-range";
+import {
+  getClassBasicAttackDamageType,
+  prepareClassCombatSkills,
+  prepareRaceCombatSkills,
+} from "@/lib/game/class-combat-profile";
 
 export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
   const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
-  const skills = character.unlockedClassSkills
-    .filter((skill) => !/passiva/i.test(skill.type))
-    .map(prepareArenaSkill);
-  const raceAbilities = character.unlockedRaceAbilities.map(prepareArenaSkill);
+  const rawClassSkills = character.unlockedClassSkills.filter((skill) => !/passiva/i.test(skill.type));
+  const skills = prepareClassCombatSkills(
+    character.characterClass.name,
+    character.characterClass.payload,
+    rawClassSkills,
+  ).map(prepareArenaSkill);
+  const raceAbilities = prepareRaceCombatSkills(character.unlockedRaceAbilities).map(prepareArenaSkill);
   const usesMana = [...skills, ...raceAbilities].some((skill) => skill.resource === "mana");
 
   return {
@@ -34,6 +42,7 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
     raceResource: character.race.payload.resource,
     usesMana,
     basicAttackRange: getClassBasicAttackRange(character.characterClass.name),
+    basicAttackDamageType: getClassBasicAttackDamageType(character.characterClass.payload),
     attributes: character.stats.attributes,
     skills,
     raceAbilities,

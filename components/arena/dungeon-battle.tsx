@@ -1,12 +1,16 @@
 "use client";
+
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { getDungeonRunAction, performDungeonAction } from "@/app/arena/dungeons/[runId]/actions";
 import { firstDungeon } from "@/lib/game/dungeons";
-import { tacticalGrid } from "@/lib/game/arena";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import type { DungeonBattleState } from "@/lib/game/dungeon-combat";
+import type { CombatantState } from "@/lib/game/combat";
+import { isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
+
 type Room = { runId: string; version: number; state: DungeonBattleState };
+
 export function DungeonBattle({
   runId,
   initialRoom,
@@ -18,21 +22,24 @@ export function DungeonBattle({
   characters: ArenaCharacter[];
   ownCharacterId: string;
 }) {
-  const [room, setRoom] = useState(initialRoom),
-    [error, setError] = useState("");
+  const [room, setRoom] = useState(initialRoom);
+  const [error, setError] = useState("");
+  const [panel, setPanel] = useState<"root" | "class" | "race" | "item">("root");
   const [pending, startTransition] = useTransition();
-  const state = room.state,
-    monsterMeta = firstDungeon.encounters[state.encounterIndex],
-    own = state.fighters[ownCharacterId],
-    active = state.activeCharacterId === ownCharacterId && state.status === "active",
-    character = characters.find((c) => c.id === ownCharacterId);
-  const refresh = useCallback(
-    () =>
-      void getDungeonRunAction(runId).then((r) => {
-        if (r.ok) setRoom((c) => (r.data.version > c.version ? r.data : c));
-      }),
-    [runId],
-  );
+  const state = room.state;
+  const monsterMeta = firstDungeon.encounters[state.encounterIndex];
+  const own = state.fighters[ownCharacterId];
+  const character = characters.find((entry) => entry.id === ownCharacterId);
+  const active = state.activeCharacterId === ownCharacterId && state.status === "active";
+  const blocked = own ? isTurnBlocked(own) : false;
+  const silenced = own ? isSilenced(own) : false;
+
+  const refresh = useCallback(() => {
+    void getDungeonRunAction(runId).then((result) => {
+      if (result.ok) setRoom((current) => (result.data.version > current.version ? result.data : current));
+    });
+  }, [runId]);
+
   useEffect(() => {
     const client = createBrowserSupabaseClient();
     const channel = client
@@ -49,27 +56,32 @@ export function DungeonBattle({
       if (client && channel) void client.removeChannel(channel);
     };
   }, [refresh, runId]);
+
   function act(input: Record<string, string>) {
+    if (!active || pending || blocked) return;
     setError("");
     startTransition(async () => {
-      const r = await performDungeonAction(runId, room.version, input);
-      if (r.ok) setRoom(r.data);
-      else setError(r.message);
+      const result = await performDungeonAction(runId, room.version, input);
+      if (result.ok) {
+        setRoom(result.data);
+        setPanel("root");
+      } else setError(result.message);
     });
   }
+
   return (
-    <section className="arena-console pvp-realtime dungeon-battle">
+    <section className="arena-console pvp-realtime dungeon-battle jrpg-battle">
       <header className="arena-toolbar arena-game-header">
         <div>
-          <span className="eyebrow">
-            Dungeon cooperativa · encontro {state.encounterIndex + 1}/4
-          </span>
+          <span className="eyebrow">Dungeon · encontro {state.encounterIndex + 1}/{firstDungeon.encounters.length}</span>
           <h1>{monsterMeta.name}</h1>
           <p>
             {state.status === "active"
               ? active
-                ? "Seu turno: escolha uma ação."
-                : `Turno de ${state.fighters[state.activeCharacterId]?.name ?? "outro aventureiro"}.`
+                ? blocked ? "Seu personagem está incapacitado." : "Seu turno: escolha uma ação."
+                : state.activeCharacterId === state.monster.id
+                  ? `${state.monster.name} está agindo.`
+                  : `Turno de ${state.fighters[state.activeCharacterId]?.name ?? "outro aventureiro"}.`
               : state.status === "victory"
                 ? "Ruínas de Verdantia concluídas!"
                 : "O grupo foi derrotado."}
@@ -81,293 +93,127 @@ export function DungeonBattle({
           <strong>{pending ? "SINCRONIZANDO…" : "AO VIVO"}</strong>
         </div>
       </header>
+
       <nav className="dungeon-encounters" aria-label="Progresso da Dungeon">
         {firstDungeon.encounters.map((encounter, index) => (
-          <div
-            className={
-              index === state.encounterIndex
-                ? "is-current"
-                : index < state.encounterIndex
-                  ? "is-cleared"
-                  : ""
-            }
-            key={encounter.key}
-          >
+          <div className={index === state.encounterIndex ? "is-current" : index < state.encounterIndex ? "is-cleared" : ""} key={encounter.key}>
             <span>{index < state.encounterIndex ? "✓" : index + 1}</span>
             <small>{encounter.role}</small>
             <strong>{encounter.name}</strong>
           </div>
         ))}
       </nav>
-      <div className="pvp-fighters">
-        <Fighter
-          name={own?.name ?? "Aventureiro"}
-          image={character?.imageUrl ?? ""}
-          hp={own?.hp ?? 0}
-          max={own?.maxHp ?? 1}
-          combatant={own}
-          label="VOCÊ"
-        />
-        <span className="pvp-versus">
-          VS<small>cooperativo</small>
-        </span>
-        <Fighter
-          name={state.monster.name}
-          image={monsterMeta.imageUrl}
-          hp={state.monster.hp}
-          max={state.monster.maxHp}
-          combatant={state.monster}
-          label={monsterMeta.role.toUpperCase()}
-        />
+
+      <div className="jrpg-turn-order" aria-label="Ordem dos turnos">
+        {state.turnOrder.map((id, index) => {
+          const fighter = id === state.monster.id ? state.monster : state.fighters[id];
+          if (!fighter || fighter.hp <= 0) return null;
+          return (
+            <span className={state.activeCharacterId === id ? "is-active" : ""} key={id}>
+              {index + 1}. {fighter.name}
+            </span>
+          );
+        })}
       </div>
-      <DungeonTacticalMap
-        state={state}
-        characters={characters}
-        monsterImage={monsterMeta.imageUrl}
-      />
-      <section className="dungeon-party-panel">
-        <header>
-          <span className="eyebrow">Grupo da expedição</span>
-          <strong>
-            {state.partyOrder.filter((id) => state.fighters[id].hp > 0).length}/
-            {state.partyOrder.length} aventureiros de pé
-          </strong>
-        </header>
-        <div>
-          {state.partyOrder.map((id) => {
-            const member = state.fighters[id];
-            const meta = characters.find((entry) => entry.id === id);
-            return (
-              <article
-                className={`${state.activeCharacterId === id ? "is-active" : ""} ${member.hp <= 0 ? "is-down" : ""}`}
-                key={id}
-              >
-                <div style={{ backgroundImage: `url(${meta?.imageUrl ?? ""})` }} />
-                <span>
-                  <strong>{member.name}</strong>
-                  <small>
-                    {state.activeCharacterId === id
-                      ? "Turno atual"
-                      : member.hp <= 0
-                        ? "Caído"
-                        : "Em combate"}
-                  </small>
-                </span>
-                <progress className="is-hp" max={member.maxHp} value={member.hp} />
-                <b>
-                  {member.hp}/{member.maxHp}
-                </b>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-      <p className="arena-message" role="status">
-        <span>Combate</span>
-        {state.message}
-      </p>
+
+      <div className="pvp-fighters jrpg-stage dungeon-jrpg-stage">
+        <PartyStage state={state} characters={characters} ownCharacterId={ownCharacterId} />
+        <span className="pvp-versus">VS<small>{monsterMeta.role}</small></span>
+        <CombatantCard fighter={state.monster} name={state.monster.name} subtitle={monsterMeta.role} imageUrl={monsterMeta.imageUrl} active={state.activeCharacterId === state.monster.id} />
+      </div>
+
+      <p className="arena-message" role="status"><span>Combate</span>{state.message}</p>
       {error ? <p className="arena-result__error">{error}</p> : null}
-      {state.status === "active" && character ? (
-        <section className="arena-command-panel">
+
+      {state.status === "active" && character && own ? (
+        <section className="arena-command-panel jrpg-command-panel">
           <header>
-            <div>
-              <span className="eyebrow">Comandos do turno</span>
-              <h2>Escolha sua ação</h2>
-            </div>
+            <div><span className="eyebrow">Comandos</span><h2>{active ? blocked ? "Turno incapacitado" : "Escolha uma ação" : "Aguardando seu turno"}</h2></div>
+            <small>{silenced ? "Silenciado: habilidades bloqueadas." : "Uma ação por turno."}</small>
           </header>
-          <div className="arena-actions">
-            <button
-              data-action="basic"
-              disabled={!active || pending}
-              onClick={() => act({ kind: "basic" })}
-            >
-              <strong>Ataque básico</strong>
-              <small>Atacar o monstro atual</small>
-            </button>
-            <button
-              data-action="defend"
-              disabled={!active || pending}
-              onClick={() => act({ kind: "defend" })}
-            >
-              <strong>Defesa total</strong>
-              <small>Bloqueia o próximo dano</small>
-            </button>
-            {character.skills.map((s) => (
-              <button
-                disabled={!active || pending || (own.cooldowns[s.key] ?? 0) > 0}
-                data-action="class"
-                key={s.key}
-                onClick={() => act({ kind: "class", key: s.key })}
-              >
-                <strong>{s.name}</strong>
-                <small>
-                  {(own.cooldowns[s.key] ?? 0) > 0 ? `CDR ${own.cooldowns[s.key]}` : s.effect}
-                </small>
-              </button>
-            ))}
-            {character.raceAbilities.map((s) => (
-              <button
-                disabled={!active || pending || (own.cooldowns[s.key] ?? 0) > 0}
-                data-action="race"
-                key={s.key}
-                onClick={() => act({ kind: "race", key: s.key })}
-              >
-                <strong>{s.name}</strong>
-                <small>
-                  {(own.cooldowns[s.key] ?? 0) > 0 ? `CDR ${own.cooldowns[s.key]}` : s.effect}
-                </small>
-              </button>
-            ))}
-          </div>
+          {panel === "root" ? (
+            <div className="pvp-actions-grid jrpg-actions">
+              <Command disabled={!active || pending || blocked} name="Atacar" detail="Ataque básico" onClick={() => act({ kind: "basic" })} />
+              <Command disabled={!active || pending || blocked || silenced || character.skills.length === 0} name="Habilidades" detail={`${character.skills.length} de classe`} onClick={() => setPanel("class")} />
+              <Command disabled={!active || pending || blocked || silenced || character.raceAbilities.length === 0} name="Raça" detail={`${character.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
+              <Command disabled={!active || pending || blocked || character.items.length === 0} name="Item" detail={`${character.items.length} disponível(is)`} onClick={() => setPanel("item")} />
+              <Command disabled={!active || pending || blocked || (own.cooldowns["defesa-total"] ?? 0) > 0} name="Defender" detail="Bloqueia o próximo dano" onClick={() => act({ kind: "defend" })} />
+            </div>
+          ) : (
+            <div className="jrpg-submenu">
+              <button className="button button--ghost" type="button" onClick={() => setPanel("root")}>← Voltar</button>
+              {panel === "class" ? character.skills.map((skill) => <SkillCommand key={skill.key} fighter={own} skill={skill} disabled={silenced || blocked} onClick={() => act({ kind: "class", key: skill.key })} />) : null}
+              {panel === "race" ? character.raceAbilities.map((skill) => <SkillCommand key={skill.key} fighter={own} skill={skill} disabled={silenced || blocked} onClick={() => act({ kind: "race", key: skill.key })} />) : null}
+              {panel === "item" ? character.items.map((item) => <Command key={item.id} disabled={!active || pending || blocked} name={item.name} detail={item.description || "Usar item"} onClick={() => act({ kind: "item", id: item.id })} />) : null}
+            </div>
+          )}
         </section>
       ) : null}
+
+      {state.status !== "active" ? (
+        <section className="arena-result">
+          <span>{state.status === "victory" ? "DUNGEON CONCLUÍDA" : "EXPEDIÇÃO FRACASSOU"}</span>
+          <h2>{state.status === "victory" ? "O grupo venceu todos os encontros." : "Todos os aventureiros caíram."}</h2>
+        </section>
+      ) : null}
+
       <details className="dungeon-combat-log" open>
-        <summary>
-          Registro do combate <span>{state.log.length} eventos</span>
-        </summary>
-        <ol>
-          {[...state.log].reverse().map((entry, index) => (
-            <li key={`${room.version}-${index}`}>{entry}</li>
-          ))}
-        </ol>
+        <summary>Registro do combate <span>{state.log.length} eventos</span></summary>
+        <ol>{[...state.log].reverse().map((entry, index) => <li key={`${room.version}-${index}`}>{entry}</li>)}</ol>
       </details>
     </section>
   );
 }
 
-function DungeonTacticalMap({
-  state,
-  characters,
-  monsterImage,
-}: {
-  state: DungeonBattleState;
-  characters: ArenaCharacter[];
-  monsterImage: string;
-}) {
-  const partyPositions = state.partyOrder.map((id, index) => ({ id, x: 2, y: 4 + index * 2 }));
-  const monsterPosition = { x: tacticalGrid.width - 4, y: Math.floor(tacticalGrid.height / 2) };
+function PartyStage({ state, characters, ownCharacterId }: { state: DungeonBattleState; characters: ArenaCharacter[]; ownCharacterId: string }) {
   return (
-    <section className="dungeon-tactical-panel">
-      <header>
-        <div>
-          <span className="eyebrow">Campo da expedição</span>
-          <h2>Mapa tático</h2>
-        </div>
-        <small>Formação do grupo · turno de {state.fighters[state.activeCharacterId]?.name}</small>
-      </header>
-      <div
-        className="arena-tactical-map dungeon-tactical-map"
-        style={{ gridTemplateColumns: `repeat(${tacticalGrid.width}, 1fr)` }}
-      >
-        {Array.from({ length: tacticalGrid.width * tacticalGrid.height }, (_, index) => {
-          const x = index % tacticalGrid.width,
-            y = Math.floor(index / tacticalGrid.width);
-          const party = partyPositions.find((position) => position.x === x && position.y === y);
-          const fighter = party ? state.fighters[party.id] : null;
-          const meta = party ? characters.find((entry) => entry.id === party.id) : null;
-          const monster = monsterPosition.x === x && monsterPosition.y === y;
-          const combatant = monster ? state.monster : fighter;
-          const image = monster ? monsterImage : meta?.imageUrl;
-          return (
-            <div
-              className={`${combatant ? "is-occupied" : ""} ${party?.id === state.activeCharacterId ? "is-active" : ""} ${monster ? "is-enemy" : ""}`}
-              key={`${x}-${y}`}
-            >
-              {combatant ? (
-                <div className="arena-map-piece">
-                  <div
-                    className={image ? "is-image" : ""}
-                    style={image ? { backgroundImage: `url(${image})` } : undefined}
-                  >
-                    {image ? "" : combatant.name.slice(0, 2)}
-                  </div>
-                  <progress max={combatant.maxHp} value={combatant.hp} />
-                  <small>{combatant.name}</small>
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
-      </div>
-    </section>
+    <div className="jrpg-party-stage">
+      {state.partyOrder.map((id) => {
+        const fighter = state.fighters[id];
+        const meta = characters.find((entry) => entry.id === id);
+        if (!fighter) return null;
+        return (
+          <CombatantCard
+            key={id}
+            fighter={fighter}
+            name={fighter.name}
+            subtitle={`${meta?.raceName ?? ""} · ${meta?.className ?? ""}${id === ownCharacterId ? " · VOCÊ" : ""}`}
+            imageUrl={meta?.imageUrl ?? ""}
+            active={state.activeCharacterId === id}
+            compact
+          />
+        );
+      })}
+    </div>
   );
 }
-function Fighter({
-  name,
-  image,
-  hp,
-  max,
-  combatant,
-  label,
-}: {
-  name: string;
-  image: string;
-  hp: number;
-  max: number;
-  combatant?: DungeonBattleState["monster"];
-  label: string;
-}) {
+
+function CombatantCard({ fighter, name, subtitle, imageUrl, active, compact = false }: { fighter: CombatantState; name: string; subtitle: string; imageUrl: string; active: boolean; compact?: boolean }) {
+  const statuses = Object.values(fighter.statuses);
   return (
-    <article className="arena-fighter">
-      <div
-        className="arena-fighter__portrait is-image"
-        style={{
-          backgroundImage: `url(${image})`,
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-        }}
-      >
-        <span>{label}</span>
+    <article className={`pvp-fighter jrpg-fighter ${compact ? "is-compact" : ""} ${active ? "is-active" : ""} ${fighter.hp <= 0 ? "is-down" : ""}`}>
+      <div className="jrpg-fighter__portrait" style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}>{!imageUrl ? name.slice(0, 2).toUpperCase() : null}</div>
+      <h3>{name}</h3><p>{subtitle}</p>
+      <progress max={fighter.maxHp} value={fighter.hp} />
+      <strong>{fighter.hp.toLocaleString("pt-BR")} / {fighter.maxHp.toLocaleString("pt-BR")} HP</strong>
+      <div className="jrpg-resources">
+        {fighter.maxMana > 0 ? <em>Mana: {fighter.mana}/{fighter.maxMana}</em> : null}
+        {fighter.maxClassResource > 0 ? <em>{fighter.classResourceName}: {fighter.classResource}/{fighter.maxClassResource}</em> : null}
+        {fighter.maxRaceResource > 0 ? <em>{fighter.raceResourceName}: {fighter.raceResource}/{fighter.maxRaceResource}</em> : null}
+        {fighter.shield > 0 ? <em>Escudo: {fighter.shield}</em> : null}
       </div>
-      <div className="arena-fighter__status">
-        <span className="eyebrow">{label}</span>
-        <h2>{name}</h2>
-        <p>
-          HP{" "}
-          <strong>
-            {hp}/{max}
-          </strong>
-        </p>
-        <progress className="is-hp" max={max} value={hp} />
-        {combatant?.shield ? (
-          <p>
-            Escudo <strong>{combatant.shield}</strong>
-          </p>
-        ) : null}
-        {combatant?.maxMana ? (
-          <>
-            <p>
-              Mana{" "}
-              <strong>
-                {combatant.mana}/{combatant.maxMana}
-              </strong>
-            </p>
-            <progress className="is-mana" max={combatant.maxMana} value={combatant.mana} />
-          </>
-        ) : null}
-        {combatant?.maxClassResource ? (
-          <>
-            <p>
-              {combatant.classResourceName}{" "}
-              <strong>
-                {combatant.classResource}/{combatant.maxClassResource}
-              </strong>
-            </p>
-            <progress
-              className="is-class-resource"
-              max={combatant.maxClassResource}
-              value={combatant.classResource}
-            />
-          </>
-        ) : null}
-        {Object.values(combatant?.statuses ?? {}).length ? (
-          <small className="dungeon-statuses">
-            {Object.values(combatant?.statuses ?? {})
-              .map((status) => `${status.name} (${status.duration})`)
-              .join(" · ")}
-          </small>
-        ) : null}
-      </div>
+      {statuses.length ? <div className="jrpg-statuses">{statuses.map((status) => <span key={`${status.name}-${status.duration}`}>{status.name} · {status.duration}T</span>)}</div> : null}
     </article>
   );
+}
+
+function SkillCommand({ fighter, skill, disabled, onClick }: { fighter: CombatantState; skill: ArenaCharacter["skills"][number]; disabled: boolean; onClick(): void }) {
+  const cooldown = fighter.cooldowns[skill.key] ?? 0;
+  const available = skill.resource === "mana" ? fighter.mana : skill.resource === "life" ? fighter.hp : skill.resource === "special" ? (skill.resourceKey === "race" ? fighter.raceResource : fighter.classResource) : Number.POSITIVE_INFINITY;
+  const label = skill.resource === "none" ? "Sem custo" : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "life" ? "HP" : skill.resourceKey === "race" ? fighter.raceResourceName : fighter.classResourceName}`;
+  return <Command disabled={disabled || cooldown > 0 || available < skill.cost} name={skill.name} detail={`${label}${cooldown ? ` · recarga ${cooldown}` : ""}`} onClick={onClick} />;
+}
+
+function Command({ name, detail, disabled, onClick }: { name: string; detail: string; disabled: boolean; onClick(): void }) {
+  return <button className="arena-action-card jrpg-action" disabled={disabled} onClick={onClick} type="button"><strong>{name}</strong><small>{detail}</small></button>;
 }

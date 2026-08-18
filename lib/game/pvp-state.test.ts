@@ -29,7 +29,7 @@ function fighter(id: string, initiative: number): ArenaCharacter {
 }
 
 describe("estado compartilhado do PvP", () => {
-  it("cria uma única rodada com os dois combatentes e iniciativa determinística", () => {
+  it("cria uma única batalha com ordem de turnos por iniciativa", () => {
     const state = createInitialPvpState(
       fighter("jogador-a", 20),
       fighter("jogador-b", 40),
@@ -37,8 +37,8 @@ describe("estado compartilhado do PvP", () => {
     );
     expect(state.activeCharacterId).toBe("jogador-b");
     expect(Object.keys(state.fighters)).toEqual(["jogador-a", "jogador-b"]);
-    expect(state.positions["jogador-a"]).toEqual({ x: 1, y: 7 });
-    expect(state.positions["jogador-b"]).toEqual({ x: 18, y: 7 });
+    expect(state.turnOrder).toEqual(["jogador-b", "jogador-a"]);
+    expect(state.round).toBe(1);
     expect(state.status).toBe("active");
     expect(state.turn).toBe(1);
   });

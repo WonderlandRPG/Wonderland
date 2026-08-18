@@ -2,6 +2,7 @@ import type { ClassSkill } from "@/lib/game/classes";
 import type { CombatAttributes, CombatantState } from "@/lib/game/combat";
 import type { ItemSpecialEffect } from "@/lib/game/item-effects";
 import type { EquippedTitleData } from "@/components/characters/equipped-title";
+import type { SharedBattleState } from "@/lib/game/turn-engine";
 
 export interface ArenaCharacter {
   id: string;
@@ -36,26 +37,8 @@ export interface ArenaCharacter {
   equipmentEffects: ItemSpecialEffect[];
 }
 
-export type ArenaPosition = { x: number; y: number };
-export type PvpTurnActions = {
-  move: boolean;
-  basic: boolean;
-  race: boolean;
-  class: boolean;
-  item: boolean;
-  defend: boolean;
-};
-
-export interface PvpBattleState {
-  turn: number;
-  activeCharacterId: string;
+export interface PvpBattleState extends Omit<SharedBattleState, "fighters" | "turnEndsAt"> {
   fighters: Record<string, CombatantState>;
-  positions: Record<string, ArenaPosition>;
-  actions: PvpTurnActions;
-  status: "active" | "finished" | "abandoned";
-  winnerCharacterId: string | null;
-  message: string;
-  log: string[];
   turnEndsAt: string;
 }
 

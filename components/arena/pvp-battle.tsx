@@ -5,6 +5,7 @@ import { getPvpMatchStateAction, performPvpAction } from "@/app/arena/pvp-match-
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import type { ArenaCharacter, PvpRoomSnapshot } from "@/lib/game/arena-types";
 import type { CombatantState } from "@/lib/game/combat";
+import { isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
 
 export function PvpBattle({
   matchId,
@@ -30,6 +31,8 @@ export function PvpBattle({
   const isMyTurn = state.status === "active" && state.activeCharacterId === ownId;
   const finished = state.status !== "active";
   const seconds = Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
+  const commandsBlocked = isTurnBlocked(own);
+  const silenced = isSilenced(own);
 
   const refresh = useCallback(async () => {
     const result = await getPvpMatchStateAction(matchId);
@@ -119,31 +122,31 @@ export function PvpBattle({
           <header>
             <div>
               <span className="eyebrow">Comandos</span>
-              <h2>{isMyTurn ? "Escolha uma ação" : "Aguardando o adversário"}</h2>
+              <h2>{isMyTurn ? commandsBlocked ? "Turno incapacitado" : "Escolha uma ação" : "Aguardando o adversário"}</h2>
             </div>
-            <small>Cada comando encerra o seu turno.</small>
+            <small>{silenced ? "Silenciado: habilidades estão bloqueadas." : "Cada comando encerra o seu turno."}</small>
           </header>
 
           {panel === "root" ? (
             <div className="pvp-actions-grid jrpg-actions">
-              <Command disabled={!isMyTurn || pending} name="Atacar" detail="Ataque básico" onClick={() => submit({ kind: "basic" })} />
-              <Command disabled={!isMyTurn || pending || character.skills.length === 0} name="Habilidades" detail={`${character.skills.length} de classe`} onClick={() => setPanel("class")} />
-              <Command disabled={!isMyTurn || pending || character.raceAbilities.length === 0} name="Raça" detail={`${character.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
-              <Command disabled={!isMyTurn || pending || character.items.length === 0} name="Item" detail={`${character.items.length} disponível(is)`} onClick={() => setPanel("item")} />
-              <Command disabled={!isMyTurn || pending || (own.cooldowns["defesa-total"] ?? 0) > 0} name="Defender" detail="Bloqueia o próximo dano" onClick={() => submit({ kind: "defend" })} />
-              <Command disabled={!isMyTurn || pending} name="Aguardar" detail="Passa o turno" onClick={() => submit({ kind: "end" })} />
+              <Command disabled={!isMyTurn || pending || commandsBlocked} name="Atacar" detail="Ataque básico" onClick={() => submit({ kind: "basic" })} />
+              <Command disabled={!isMyTurn || pending || commandsBlocked || silenced || character.skills.length === 0} name="Habilidades" detail={`${character.skills.length} de classe`} onClick={() => setPanel("class")} />
+              <Command disabled={!isMyTurn || pending || commandsBlocked || silenced || character.raceAbilities.length === 0} name="Raça" detail={`${character.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
+              <Command disabled={!isMyTurn || pending || commandsBlocked || character.items.length === 0} name="Item" detail={`${character.items.length} disponível(is)`} onClick={() => setPanel("item")} />
+              <Command disabled={!isMyTurn || pending || commandsBlocked || (own.cooldowns["defesa-total"] ?? 0) > 0} name="Defender" detail="Bloqueia o próximo dano" onClick={() => submit({ kind: "defend" })} />
+              <Command disabled={!isMyTurn || pending || commandsBlocked} name="Aguardar" detail="Passa o turno" onClick={() => submit({ kind: "end" })} />
             </div>
           ) : (
             <div className="jrpg-submenu">
               <button className="button button--ghost" type="button" onClick={() => setPanel("root")}>← Voltar</button>
               {panel === "class" ? character.skills.map((skill) => (
-                <SkillButton key={skill.key} fighter={own} skill={skill} disabled={!isMyTurn || pending} onClick={() => submit({ kind: "class", key: skill.key })} />
+                <SkillButton key={skill.key} fighter={own} skill={skill} disabled={!isMyTurn || pending || commandsBlocked || silenced} onClick={() => submit({ kind: "class", key: skill.key })} />
               )) : null}
               {panel === "race" ? character.raceAbilities.map((skill) => (
-                <SkillButton key={skill.key} fighter={own} skill={skill} disabled={!isMyTurn || pending} onClick={() => submit({ kind: "race", key: skill.key })} />
+                <SkillButton key={skill.key} fighter={own} skill={skill} disabled={!isMyTurn || pending || commandsBlocked || silenced} onClick={() => submit({ kind: "race", key: skill.key })} />
               )) : null}
               {panel === "item" ? character.items.map((item) => (
-                <Command key={item.id} disabled={!isMyTurn || pending} name={item.name} detail={item.description || "Usar item"} onClick={() => submit({ kind: "item", id: item.id })} />
+                <Command key={item.id} disabled={!isMyTurn || pending || commandsBlocked} name={item.name} detail={item.description || "Usar item"} onClick={() => submit({ kind: "item", id: item.id })} />
               )) : null}
             </div>
           )}
@@ -159,9 +162,7 @@ export function PvpBattle({
 }
 
 function Fighter({ fighter, character, active, label }: { fighter: CombatantState; character: ArenaCharacter; active: boolean; label: string }) {
-  const resource = fighter.maxClassResource > 0
-    ? `${fighter.classResourceName}: ${fighter.classResource}/${fighter.maxClassResource}`
-    : fighter.maxMana > 0 ? `Mana: ${fighter.mana}/${fighter.maxMana}` : null;
+  const statuses = Object.values(fighter.statuses);
   return (
     <article className={`pvp-fighter jrpg-fighter ${active ? "is-active" : ""}`}>
       <small>{label}</small>
@@ -172,7 +173,17 @@ function Fighter({ fighter, character, active, label }: { fighter: CombatantStat
       <p>{character.raceName} · {character.className}</p>
       <progress max={fighter.maxHp} value={fighter.hp} />
       <strong>{fighter.hp.toLocaleString("pt-BR")} / {fighter.maxHp.toLocaleString("pt-BR")} HP</strong>
-      {resource ? <em>{resource}</em> : null}
+      <div className="jrpg-resources">
+        {fighter.maxMana > 0 ? <em>Mana: {fighter.mana}/{fighter.maxMana}</em> : null}
+        {fighter.maxClassResource > 0 ? <em>{fighter.classResourceName}: {fighter.classResource}/{fighter.maxClassResource}</em> : null}
+        {fighter.maxRaceResource > 0 ? <em>{fighter.raceResourceName}: {fighter.raceResource}/{fighter.maxRaceResource}</em> : null}
+        {fighter.shield > 0 ? <em>Escudo: {fighter.shield}</em> : null}
+      </div>
+      {statuses.length ? (
+        <div className="jrpg-statuses">
+          {statuses.map((status) => <span key={`${status.name}-${status.duration}`}>{status.name} · {status.duration}T</span>)}
+        </div>
+      ) : null}
     </article>
   );
 }

@@ -23,6 +23,7 @@ import {
   isTurnBlocked,
 } from "@/lib/game/turn-engine";
 import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
+import { applyEventResourceGeneration } from "@/lib/game/combat-resources";
 
 const matchSchema = z.uuid();
 const actionSchema = z.discriminatedUnion("kind", [
@@ -33,6 +34,11 @@ const actionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("item"), id: z.uuid() }),
   z.object({ kind: z.literal("end") }),
 ]);
+
+type ResourceEvent = {
+  kind: "damage" | "heal" | "shield" | "utility" | "error";
+  amount: number;
+};
 
 function parseRoom(data: unknown): PvpRoomSnapshot | null {
   if (!data || Array.isArray(data) || typeof data !== "object") return null;
@@ -113,18 +119,22 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     return { ok: false as const, message: "Não foi possível carregar os combatentes." };
 
   const character = toArenaCharacter(sheet);
+  const opponentCharacter = toArenaCharacter(opponentSheet);
   let actor = state.fighters[ownId];
   let target = state.fighters[enemyId];
   if (!actor || !target)
     return { ok: false as const, message: "Estado da batalha inválido." };
 
   let message = "";
+  let resourceEvent: ResourceEvent | null = null;
+  let areaAction = false;
   const actionData = action.data;
 
   if (actionData.kind === "basic") {
     const result = resolveBasicAttack(actor, target, defaultCombatRules);
     actor = result.actor;
     target = result.target;
+    resourceEvent = result.event;
     message = result.event.message;
   } else if (actionData.kind === "defend") {
     if ((actor.cooldowns["defesa-total"] ?? 0) > 0)
@@ -138,16 +148,17 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     const skill = list.find((entry) => entry.key === actionData.key);
     if (!skill)
       return { ok: false as const, message: "Habilidade indisponível para este personagem." };
-    const result =
-      skill.area > 0
-        ? (() => {
-            const area = resolveJrpgAreaSkill(actor, [target], skill, defaultCombatRules);
-            return { actor: area.actor, target: area.targets[0], event: area.events[0] };
-          })()
-        : resolveJrpgSkill(actor, target, skill, defaultCombatRules);
+    areaAction = skill.area > 0;
+    const result = areaAction
+      ? (() => {
+          const area = resolveJrpgAreaSkill(actor, [target], skill, defaultCombatRules);
+          return { actor: area.actor, target: area.targets[0], event: area.events[0] };
+        })()
+      : resolveJrpgSkill(actor, target, skill, defaultCombatRules);
     if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
     actor = result.actor;
     target = result.target;
+    resourceEvent = result.event;
     message = result.event.message;
   } else if (actionData.kind === "item") {
     const item = character.items.find((entry) => entry.id === actionData.id);
@@ -157,6 +168,19 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     message = `${actor.name} usou ${item.name} e recuperou ${healed} de HP.`;
   } else {
     message = `${actor.name} aguardou e observou o adversário.`;
+  }
+
+  if (resourceEvent) {
+    const generated = applyEventResourceGeneration({
+      actor,
+      target,
+      actorCharacter: character,
+      targetCharacter: opponentCharacter,
+      event: resourceEvent,
+      area: areaAction,
+    });
+    actor = generated.actor;
+    target = generated.target;
   }
 
   state.fighters[ownId] = actor;

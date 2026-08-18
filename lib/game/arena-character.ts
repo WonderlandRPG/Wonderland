@@ -32,7 +32,7 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
     skills: character.unlockedClassSkills
       .filter((skill) => !/passiva/i.test(skill.type))
       .map(prepareArenaSkill),
-    raceAbilities: character.unlockedRaceAbilities,
+    raceAbilities: character.unlockedRaceAbilities.map(prepareArenaSkill),
     combatLore: [
       {
         name: character.characterClass.payload.passive.name,

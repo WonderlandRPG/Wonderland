@@ -18,9 +18,12 @@ import type { PvpBattleState, PvpRoomSnapshot } from "@/lib/game/arena-types";
 import type { Json } from "@/lib/db/types";
 import {
   appendBattleLog,
+  createTurnActionUsage,
   getNextTurn,
+  hasUsedAllCoreActions,
   isSilenced,
   isTurnBlocked,
+  type TurnActionUsage,
 } from "@/lib/game/turn-engine";
 import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import { applyEventResourceGeneration } from "@/lib/game/combat-resources";
@@ -78,6 +81,7 @@ function advancePvpTurn(state: PvpBattleState) {
   state.turnOrder = next.turnOrder;
   state.activeCharacterId = next.activeCharacterId;
   state.turnEndsAt = new Date(Date.now() + 60_000).toISOString();
+  state.turnActions = createTurnActionUsage();
 }
 
 function skipBlockedTurns(state: PvpBattleState) {
@@ -90,6 +94,14 @@ function skipBlockedTurns(state: PvpBattleState) {
     advancePvpTurn(state);
   }
   return messages;
+}
+
+function remainingActions(usage: TurnActionUsage) {
+  return [
+    !usage.basic ? "Ataque" : null,
+    !usage.class ? "Classe" : null,
+    !usage.race ? "Raça" : null,
+  ].filter(Boolean).join(" + ");
 }
 
 export async function performPvpAction(matchId: string, expectedVersion: number, input: unknown) {
@@ -129,19 +141,26 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
   let resourceEvent: ResourceEvent | null = null;
   let areaAction = false;
   const actionData = action.data;
+  const usage = state.turnActions ?? createTurnActionUsage();
+  let nextUsage = { ...usage };
+  let endsTurn = actionData.kind === "end" || actionData.kind === "defend" || actionData.kind === "item";
 
   if (actionData.kind === "basic") {
+    if (usage.basic) return { ok: false as const, message: "O Ataque Básico já foi usado neste turno.", data: room };
     const result = resolveBasicAttack(actor, target, defaultCombatRules);
     actor = result.actor;
     target = result.target;
     resourceEvent = result.event;
     message = result.event.message;
+    nextUsage.basic = true;
   } else if (actionData.kind === "defend") {
     if ((actor.cooldowns["defesa-total"] ?? 0) > 0)
       return { ok: false as const, message: "Defesa Total ainda está em recarga." };
     actor = guardCombatant(actor);
     message = `${actor.name} assumiu Defesa Total.`;
   } else if (actionData.kind === "race" || actionData.kind === "class") {
+    if (usage[actionData.kind])
+      return { ok: false as const, message: `${actionData.kind === "race" ? "A habilidade racial" : "A habilidade de classe"} já foi usada neste turno.`, data: room };
     if (isSilenced(actor))
       return { ok: false as const, message: `${actor.name} está silenciado e não pode usar habilidades.` };
     const list = actionData.kind === "race" ? character.raceAbilities : character.skills;
@@ -160,6 +179,7 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     target = result.target;
     resourceEvent = result.event;
     message = result.event.message;
+    nextUsage[actionData.kind] = true;
   } else if (actionData.kind === "item") {
     const item = character.items.find((entry) => entry.id === actionData.id);
     if (!item) return { ok: false as const, message: "Item indisponível." };
@@ -167,7 +187,7 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     actor = { ...actor, hp: actor.hp + healed };
     message = `${actor.name} usou ${item.name} e recuperou ${healed} de HP.`;
   } else {
-    message = `${actor.name} aguardou e observou o adversário.`;
+    message = `${actor.name} encerrou a sequência do turno.`;
   }
 
   if (resourceEvent) {
@@ -185,12 +205,14 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
 
   state.fighters[ownId] = actor;
   state.fighters[enemyId] = target;
+  state.turnActions = nextUsage;
+  endsTurn = endsTurn || hasUsedAllCoreActions(nextUsage);
 
   if (target.hp <= 0 || actor.hp <= 0) {
     state.status = "finished";
     state.winnerCharacterId = target.hp <= 0 ? ownId : enemyId;
     message = `${state.fighters[state.winnerCharacterId].name} venceu o duelo.`;
-  } else {
+  } else if (endsTurn) {
     const periodic = resolvePeriodicItemDamage(actor, (amount, type) =>
       calculateDamage(amount, type, getEffectiveAttributes(actor), defaultCombatRules),
     );
@@ -206,6 +228,8 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
       if (skipped.length) message = `${message} ${skipped.join(" ")}`;
       message = `${message} Turno de ${state.fighters[state.activeCharacterId].name}.`;
     }
+  } else {
+    message = `${message} Ações restantes: ${remainingActions(nextUsage)}.`;
   }
 
   state.message = message;

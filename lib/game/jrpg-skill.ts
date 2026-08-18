@@ -18,9 +18,7 @@ function operationTarget(
   target: CombatantState,
   targetKind: ClassSkill["operations"][number]["target"],
 ) {
-  return targetKind === "self" || targetKind === "source" || targetKind === "ally"
-    ? actor
-    : target;
+  return targetKind === "self" || targetKind === "source" ? actor : target;
 }
 
 function replaceCombatant(
@@ -74,7 +72,7 @@ function applySecondaryOperation(
     const next = { ...receiver, hp: receiver.hp + healed };
     return {
       ...replaceCombatant(actor, target, next),
-      message: `${skill.name} recuperou ${healed} de HP.`,
+      message: `${skill.name} recuperou ${healed} de HP de ${receiver.name}.`,
       amount: healed,
       kind: "heal" as const,
     };
@@ -85,7 +83,7 @@ function applySecondaryOperation(
     const next = { ...receiver, shield: receiver.shield + amount };
     return {
       ...replaceCombatant(actor, target, next),
-      message: `${skill.name} concedeu ${amount} de escudo.`,
+      message: `${skill.name} concedeu ${amount} de escudo a ${receiver.name}.`,
       amount,
       kind: "shield" as const,
     };
@@ -93,12 +91,16 @@ function applySecondaryOperation(
 
   if (operation.operation === "REMOVE_STATUS") {
     const statuses = { ...receiver.statuses };
-    const key = operation.status || Object.entries(statuses).find(([, value]) => !value.beneficial)?.[0];
+    const key = operation.status && operation.status !== "negative"
+      ? operation.status
+      : Object.entries(statuses).find(([, value]) => !value.beneficial)?.[0];
     if (key) delete statuses[key];
     const next = { ...receiver, statuses };
     return {
       ...replaceCombatant(actor, target, next),
-      message: key ? `${skill.name} removeu um efeito.` : `${skill.name} não encontrou efeito para remover.`,
+      message: key
+        ? `${skill.name} removeu um efeito negativo de ${receiver.name}.`
+        : `${skill.name} não encontrou efeito para remover em ${receiver.name}.`,
       amount: 0,
       kind: "utility" as const,
     };
@@ -132,6 +134,7 @@ function applySecondaryOperation(
   const key = statusKey(operation, skill);
   const beneficial =
     operation.target === "self" ||
+    operation.target === "source" ||
     operation.target === "ally" ||
     operation.operation === "BUFF" ||
     operation.operation === "REACTION" ||
@@ -154,9 +157,21 @@ function applySecondaryOperation(
   };
   return {
     ...replaceCombatant(actor, target, next),
-    message: `${skill.name} aplicou ${operation.status || operation.operation.toLowerCase()} por ${duration} turno(s).`,
+    message: `${skill.name} aplicou ${operation.status || operation.operation.toLowerCase()} em ${receiver.name} por ${duration} turno(s).`,
     amount: 0,
     kind: "utility" as const,
+  };
+}
+
+function primarySkillForChosenTarget(skill: ClassSkill): ClassSkill {
+  if (skill.target !== "ally") return skill;
+  const [first, ...rest] = skill.operations;
+  if (!first) return skill;
+  if (!["HEAL", "SHIELD", "REMOVE_STATUS"].includes(first.operation)) return skill;
+  return {
+    ...skill,
+    target: "enemy",
+    operations: [{ ...first, target: "enemy" }, ...rest],
   };
 }
 
@@ -166,7 +181,7 @@ export function resolveJrpgSkill(
   skill: ClassSkill,
   rules: CombatRules = defaultCombatRules,
 ): CombatResolution {
-  const first = resolveSkill(actor, target, skill, rules);
+  const first = resolveSkill(actor, target, primarySkillForChosenTarget(skill), rules);
   if (first.event.kind === "error" || skill.operations.length <= 1) return first;
 
   let nextActor = first.actor;
@@ -197,13 +212,20 @@ export function resolveJrpgSkill(
   };
 }
 
+export function jrpgAreaTargetLimit(skill: ClassSkill) {
+  return skill.area > 0 ? Math.max(2, Math.min(4, skill.area)) : 1;
+}
+
 export function resolveJrpgAreaSkill(
   actor: CombatantState,
   targets: CombatantState[],
   skill: ClassSkill,
   rules: CombatRules = defaultCombatRules,
 ) {
-  const [primary, ...extras] = targets;
+  const limitedTargets = targets
+    .filter((target) => target.hp > 0)
+    .slice(0, jrpgAreaTargetLimit(skill));
+  const [primary, ...extras] = limitedTargets;
   if (!primary) return { actor, targets: [], events: [] as CombatEvent[] };
   const first = resolveJrpgSkill(actor, primary, skill, rules);
   if (first.event.kind === "error" || skill.area <= 0)
@@ -220,7 +242,12 @@ export function resolveJrpgAreaSkill(
       cooldowns: {},
       itemEffects: [],
     };
-    const result = resolveJrpgSkill(proxyActor, target, { ...skill, resource: "none", cost: 0, cooldown: 0 }, rules);
+    const result = resolveJrpgSkill(
+      proxyActor,
+      target,
+      { ...skill, resource: "none", cost: 0, cooldown: 0 },
+      rules,
+    );
     resolvedTargets.push(result.target);
     events.push(result.event);
   }

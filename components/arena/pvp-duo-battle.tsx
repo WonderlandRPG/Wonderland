@@ -37,12 +37,16 @@ export function PvpDuoBattle({
 }) {
   const [room, setRoom] = useState(initialRoom);
   const [panel, setPanel] = useState<"root" | "class" | "race" | "item">("root");
+  const [selectedTargetId, setSelectedTargetId] = useState("");
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
   const [clock, setClock] = useState(() => Date.now());
   const [fx, setFx] = useState<Fx>(null);
   const state = room.state;
-  const meta = useMemo(() => Object.fromEntries(members.map((member) => [member.character.id, member.character])), [members]);
+  const meta = useMemo(
+    () => Object.fromEntries(members.map((member) => [member.character.id, member.character])),
+    [members],
+  );
   const ownIds = room.ownCharacterIds.filter(Boolean);
   const enemyIds = room.opponentCharacterIds.filter(Boolean);
   const activeId = state.activeCharacterId;
@@ -52,13 +56,25 @@ export function PvpDuoBattle({
   const usage = state.turnActions ?? createTurnActionUsage();
   const seconds = Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
   const finished = state.status !== "active";
+  const livingTargets = [...ownIds, ...enemyIds].filter((id) => (state.fighters[id]?.hp ?? 0) > 0);
+  const chosenTargetId =
+    selectedTargetId && livingTargets.includes(selectedTargetId)
+      ? selectedTargetId
+      : (enemyIds.find((id) => (state.fighters[id]?.hp ?? 0) > 0) ?? activeId);
+  const chosenTarget = state.fighters[chosenTargetId] ?? activeFighter;
   const previousHp = useRef<Record<string, { hp: number; shield: number }>>(
-    Object.fromEntries(Object.values(state.fighters).map((fighter) => [fighter.id, { hp: fighter.hp, shield: fighter.shield }])),
+    Object.fromEntries(
+      Object.values(state.fighters).map((fighter) => [
+        fighter.id,
+        { hp: fighter.hp, shield: fighter.shield },
+      ]),
+    ),
   );
 
   const refresh = useCallback(async () => {
     const result = await getPvpDuoMatchStateAction(matchId);
-    if (result.ok) setRoom((current) => (result.data.version > current.version ? result.data : current));
+    if (result.ok)
+      setRoom((current) => (result.data.version > current.version ? result.data : current));
     else setError(result.message);
   }, [matchId]);
 
@@ -66,7 +82,11 @@ export function PvpDuoBattle({
     const client = createBrowserSupabaseClient();
     const channel = client
       ?.channel(`pvp-duo:${matchId}`)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "v2_pvp_matches", filter: `id=eq.${matchId}` }, () => void refresh())
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "v2_pvp_matches", filter: `id=eq.${matchId}` },
+        () => void refresh(),
+      )
       .subscribe();
     const fallback = window.setInterval(() => void refresh(), 2500);
     return () => {
@@ -85,11 +105,25 @@ export function PvpDuoBattle({
     for (const fighter of Object.values(state.fighters)) {
       const before = old[fighter.id];
       if (!before) continue;
-      if (fighter.hp < before.hp) { setFx({ id: fighter.id, kind: "damage", token: Date.now() }); break; }
-      if (fighter.hp > before.hp) { setFx({ id: fighter.id, kind: "heal", token: Date.now() }); break; }
-      if (fighter.shield > before.shield) { setFx({ id: fighter.id, kind: "shield", token: Date.now() }); break; }
+      if (fighter.hp < before.hp) {
+        setFx({ id: fighter.id, kind: "damage", token: Date.now() });
+        break;
+      }
+      if (fighter.hp > before.hp) {
+        setFx({ id: fighter.id, kind: "heal", token: Date.now() });
+        break;
+      }
+      if (fighter.shield > before.shield) {
+        setFx({ id: fighter.id, kind: "shield", token: Date.now() });
+        break;
+      }
     }
-    previousHp.current = Object.fromEntries(Object.values(state.fighters).map((fighter) => [fighter.id, { hp: fighter.hp, shield: fighter.shield }]));
+    previousHp.current = Object.fromEntries(
+      Object.values(state.fighters).map((fighter) => [
+        fighter.id,
+        { hp: fighter.hp, shield: fighter.shield },
+      ]),
+    );
   }, [room.version, state.fighters]);
 
   useEffect(() => {
@@ -121,16 +155,29 @@ export function PvpDuoBattle({
         <div>
           <span className="eyebrow">PvP · Duplas 2 × 2</span>
           <h1>Confronto de equipes</h1>
-          <p>Cada personagem possui seu próprio turno pela INI. O jogador controla os dois membros da sua dupla.</p>
+          <p>
+            Cada personagem possui seu próprio turno pela INI. Buffs, curas e debuffs permitem
+            escolher o alvo antes da execução.
+          </p>
         </div>
-        <strong className={`arena-turn-timer ${seconds <= 10 ? "is-ending" : ""}`}><small>Tempo</small>{String(seconds).padStart(2, "0")}s</strong>
-        <strong className="arena-turn-counter"><small>Rodada</small>{String(state.round).padStart(2, "0")}</strong>
+        <strong className={`arena-turn-timer ${seconds <= 10 ? "is-ending" : ""}`}>
+          <small>Tempo</small>
+          {String(seconds).padStart(2, "0")}s
+        </strong>
+        <strong className="arena-turn-counter">
+          <small>Rodada</small>
+          {String(state.round).padStart(2, "0")}
+        </strong>
       </header>
 
       <div className="jrpg-turn-order">
-        {state.turnOrder.filter((id) => (state.fighters[id]?.hp ?? 0) > 0).map((id, index) => (
-          <span className={activeId === id ? "is-active" : ""} key={id}>{index + 1}. {state.fighters[id]?.name}</span>
-        ))}
+        {state.turnOrder
+          .filter((id) => (state.fighters[id]?.hp ?? 0) > 0)
+          .map((id, index) => (
+            <span className={activeId === id ? "is-active" : ""} key={id}>
+              {index + 1}. {state.fighters[id]?.name}
+            </span>
+          ))}
       </div>
 
       {isMyTurn ? (
@@ -143,23 +190,71 @@ export function PvpDuoBattle({
 
       <div className="jrpg-stage jrpg-duo-stage combat-stage-pvp">
         <div className="duo-team duo-team--enemy">
-          {enemyIds.map((id) => <DuoFighter key={id} fighter={state.fighters[id]} character={meta[id]} active={activeId === id} fx={fx?.id === id ? fx : null} />)}
+          {enemyIds.map((id) => (
+            <DuoFighter
+              key={id}
+              fighter={state.fighters[id]}
+              character={meta[id]}
+              active={activeId === id}
+              fx={fx?.id === id ? fx : null}
+            />
+          ))}
         </div>
-        <span className="pvp-versus">VS<small>2x2</small></span>
+        <span className="pvp-versus">
+          VS<small>2x2</small>
+        </span>
         <div className="duo-team duo-team--own">
-          {ownIds.map((id) => <DuoFighter key={id} fighter={state.fighters[id]} character={meta[id]} active={activeId === id} fx={fx?.id === id ? fx : null} />)}
+          {ownIds.map((id) => (
+            <DuoFighter
+              key={id}
+              fighter={state.fighters[id]}
+              character={meta[id]}
+              active={activeId === id}
+              fx={fx?.id === id ? fx : null}
+            />
+          ))}
         </div>
       </div>
 
-      <p className="arena-message" role="status"><span>Combate</span>{state.message}</p>
+      <p className="arena-message" role="status">
+        <span>Combate</span>
+        {state.message}
+      </p>
       {error ? <p className="arena-result__error">{error}</p> : null}
 
       {!finished && activeCharacter && activeFighter ? (
         <section className="arena-command-panel jrpg-command-panel">
           <header>
-            <div><span className="eyebrow">Comandos · {activeCharacter.name}</span><h2>{isMyTurn ? activeBlocked ? "Turno incapacitado" : "Monte sua sequência" : `Turno de ${state.fighters[activeId]?.name}`}</h2></div>
-            <small>{silenced ? "Silenciado: habilidades bloqueadas." : "Ataque, Classe e Raça podem ser usados uma vez."}</small>
+            <div>
+              <span className="eyebrow">Comandos · {activeCharacter.name}</span>
+              <h2>
+                {isMyTurn
+                  ? activeBlocked
+                    ? "Turno incapacitado"
+                    : "Monte sua sequência"
+                  : `Turno de ${state.fighters[activeId]?.name}`}
+              </h2>
+            </div>
+            <small>
+              {silenced
+                ? "Silenciado: habilidades bloqueadas."
+                : "Selecione o alvo antes de usar cura, buff ou debuff."}
+            </small>
           </header>
+
+          {isMyTurn ? (
+            <label className="combat-target-select">
+              <span>Alvo da habilidade</span>
+              <select value={chosenTargetId} onChange={(event) => setSelectedTargetId(event.target.value)}>
+                {livingTargets.map((id) => (
+                  <option key={id} value={id}>
+                    {ownIds.includes(id) ? "Aliado" : "Inimigo"} · {state.fighters[id]?.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+
           {panel === "root" ? (
             <div className="pvp-actions-grid jrpg-actions">
               <Command used={usage.basic} disabled={!isMyTurn || pending || activeBlocked || usage.basic} name="Atacar" detail={usage.basic ? "Já usado" : "Ataque básico"} onClick={() => submit({ kind: "basic" })} />
@@ -170,16 +265,53 @@ export function PvpDuoBattle({
             </div>
           ) : (
             <div className="jrpg-submenu combat-skill-list">
-              <button className="button button--ghost" type="button" onClick={() => setPanel("root")}>← Voltar</button>
-              {panel === "class" ? activeCharacter.skills.map((skill) => <CombatSkillCard key={skill.key} fighter={activeFighter} target={state.fighters[enemyIds.find((id) => (state.fighters[id]?.hp ?? 0) > 0)!]} rules={defaultCombatRules} skill={skill} disabled={!isMyTurn || pending || activeBlocked || silenced} used={usage.class} onClick={() => submit({ kind: "class", key: skill.key })} />) : null}
-              {panel === "race" ? activeCharacter.raceAbilities.map((skill) => <CombatSkillCard key={skill.key} fighter={activeFighter} target={state.fighters[enemyIds.find((id) => (state.fighters[id]?.hp ?? 0) > 0)!]} rules={defaultCombatRules} skill={skill} disabled={!isMyTurn || pending || activeBlocked || silenced} used={usage.race} onClick={() => submit({ kind: "race", key: skill.key })} />) : null}
-              {panel === "item" ? activeCharacter.items.map((item) => <Command key={item.id} disabled={!isMyTurn || pending || activeBlocked} name={item.name} detail={`${item.description || "Usar item"} · encerra turno`} onClick={() => submit({ kind: "item", id: item.id })} />) : null}
+              <button className="button button--ghost" type="button" onClick={() => setPanel("root")}>
+                ← Voltar
+              </button>
+              {panel === "class" ? activeCharacter.skills.map((skill) => (
+                <CombatSkillCard
+                  key={skill.key}
+                  fighter={activeFighter}
+                  target={skill.target === "self" ? activeFighter : chosenTarget}
+                  rules={defaultCombatRules}
+                  skill={skill}
+                  disabled={!isMyTurn || pending || activeBlocked || silenced}
+                  used={usage.class}
+                  onClick={() => submit({ kind: "class", key: skill.key, targetId: chosenTargetId })}
+                />
+              )) : null}
+              {panel === "race" ? activeCharacter.raceAbilities.map((skill) => (
+                <CombatSkillCard
+                  key={skill.key}
+                  fighter={activeFighter}
+                  target={skill.target === "self" ? activeFighter : chosenTarget}
+                  rules={defaultCombatRules}
+                  skill={skill}
+                  disabled={!isMyTurn || pending || activeBlocked || silenced}
+                  used={usage.race}
+                  onClick={() => submit({ kind: "race", key: skill.key, targetId: chosenTargetId })}
+                />
+              )) : null}
+              {panel === "item" ? activeCharacter.items.map((item) => (
+                <Command key={item.id} disabled={!isMyTurn || pending || activeBlocked} name={item.name} detail={`${item.description || "Usar item"} · encerra turno`} onClick={() => submit({ kind: "item", id: item.id })} />
+              )) : null}
             </div>
           )}
         </section>
       ) : null}
 
-      {finished ? <section className="arena-result"><span>{winnerTeam === ownTeam ? "VITÓRIA" : "DERROTA"}</span><h2>{winnerTeam === ownTeam ? "Sua dupla venceu o confronto." : "A dupla adversária venceu."}</h2></section> : null}
+      {finished ? (
+        <section className="arena-result">
+          <span>{winnerTeam === ownTeam ? "VITÓRIA" : "DERROTA"}</span>
+          <h2>
+            {winnerTeam === ownTeam
+              ? "Sua dupla venceu o confronto."
+              : state.winnerCharacterId
+                ? "A dupla adversária venceu."
+                : "A partida terminou em derrota por desistência."}
+          </h2>
+        </section>
+      ) : null}
     </section>
   );
 }

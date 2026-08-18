@@ -94,42 +94,13 @@ export function parseClassPayload(payload: unknown) {
     success: true as const,
     data: {
       ...parsed.data,
-      paths: parsed.data.paths.map((path) => {
-        const baseSkills = path.skills.length > 0 ? path.skills : [createEmptyClassSkill(50)];
-        const levels = [50, 60, 70, 80, 90, 100];
-        const labels = ["Fundamento", "Técnica", "Domínio", "Ruptura", "Apogeu", "Legado"];
-        return {
-          ...path,
-          unlockLevel: 50,
-          quest:
-            path.quest.title !== "Missão de escolha"
-              ? path.quest
-              : {
-                  title: `A Escolha de ${path.name}`,
-                  briefing: `Ao alcançar o nível 50, procure o mentor de ${path.name}. ${path.description}`,
-                  objectives: [
-                    `Converse com o mentor de ${path.name} no Salão dos Caminhos.`,
-                    `Complete três confrontos de treino demonstrando a doutrina ${path.passive.name}.`,
-                    `Retorne ao mentor e confirme que ${path.name} será seu caminho permanente.`,
-                  ],
-                  completionText: `O caminho ${path.name} e sua primeira habilidade foram desbloqueados.`,
-                },
-          skills: levels.map((level, index) => {
-            const source = baseSkills[Math.min(index, baseSkills.length - 1)];
-            return {
-              ...source,
-              key:
-                index < baseSkills.length
-                  ? source.key
-                  : `${path.key}-${labels[index].toLowerCase()}`,
-              name: index < baseSkills.length ? source.name : `${labels[index]} de ${path.name}`,
-              level,
-              cost: Math.max(source.cost, 20 + index * 6),
-              cooldown: Math.max(source.cooldown, 2 + Math.floor(index / 2)),
-            };
-          }),
-        };
-      }),
+      paths: parsed.data.paths.map((path) => ({
+        ...path,
+        unlockLevel: Math.max(50, path.unlockLevel),
+        skills: [...path.skills].sort(
+          (left, right) => left.level - right.level || left.name.localeCompare(right.name),
+        ),
+      })),
     },
   };
 }
@@ -148,25 +119,16 @@ export function getClassPath(payload: ClassPayload, pathKey: string | null | und
   return payload.paths.find((path) => path.key === pathKey) ?? null;
 }
 
-export function getUnlockedPathSkills(
-  payload: ClassPayload,
-  pathKey: string | null | undefined,
-  level: number,
-) {
+export function getUnlockedPathSkills(payload: ClassPayload, pathKey: string | null | undefined, level: number) {
   return (getClassPath(payload, pathKey)?.skills ?? [])
     .filter((skill) => skill.level <= level)
     .sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
 }
 
-function appendInitiativeModifier(
-  modifiers: ClassSkill["operations"][number]["modifiers"],
-  value: number,
-) {
+function appendInitiativeModifier(modifiers: ClassSkill["operations"][number]["modifiers"], value: number) {
   const existing = modifiers.find((entry) => entry.attribute === "INI");
   return existing
-    ? modifiers.map((entry) =>
-        entry.attribute === "INI" ? { ...entry, value: entry.value + value } : entry,
-      )
+    ? modifiers.map((entry) => entry.attribute === "INI" ? { ...entry, value: entry.value + value } : entry)
     : [...modifiers, { attribute: "INI" as const, value }];
 }
 
@@ -213,12 +175,15 @@ export function prepareArenaSkill(skill: ClassSkill): ClassSkill {
     return operation;
   });
 
+  const targetCap = Math.max(2, Math.min(4, skill.area || 2));
   const reachText =
     skill.target === "self"
       ? "Próprio usuário"
       : skill.target === "area" || skill.area > 0
-        ? "Todos os alvos válidos"
-        : "Alvo selecionado";
+        ? `Até ${targetCap} alvos válidos`
+        : skill.target === "ally"
+          ? "Aliado selecionado"
+          : "Inimigo selecionado";
 
   return {
     ...skill,

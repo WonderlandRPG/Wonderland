@@ -9,7 +9,6 @@ import {
   defaultCombatRules,
   calculateDamage,
   getEffectiveAttributes,
-  guardCombatant,
   resolveBasicAttack,
   tickCooldowns,
 } from "@/lib/game/combat";
@@ -29,11 +28,11 @@ import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import { applyEventResourceGeneration } from "@/lib/game/combat-resources";
 
 const matchSchema = z.uuid();
+const targetSchema = z.uuid().optional();
 const actionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("basic") }),
-  z.object({ kind: z.literal("defend") }),
-  z.object({ kind: z.literal("race"), key: z.string().min(1).max(160) }),
-  z.object({ kind: z.literal("class"), key: z.string().min(1).max(160) }),
+  z.object({ kind: z.literal("race"), key: z.string().min(1).max(160), targetId: targetSchema }),
+  z.object({ kind: z.literal("class"), key: z.string().min(1).max(160), targetId: targetSchema }),
   z.object({ kind: z.literal("item"), id: z.uuid() }),
   z.object({ kind: z.literal("end") }),
 ]);
@@ -97,11 +96,9 @@ function skipBlockedTurns(state: PvpBattleState) {
 }
 
 function remainingActions(usage: TurnActionUsage) {
-  return [
-    !usage.basic ? "Ataque" : null,
-    !usage.class ? "Classe" : null,
-    !usage.race ? "Raça" : null,
-  ].filter(Boolean).join(" + ");
+  return [!usage.basic ? "Ataque" : null, !usage.class ? "Classe" : null, !usage.race ? "Raça" : null]
+    .filter(Boolean)
+    .join(" + ");
 }
 
 export async function performPvpAction(matchId: string, expectedVersion: number, input: unknown) {
@@ -133,31 +130,27 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
   const character = toArenaCharacter(sheet);
   const opponentCharacter = toArenaCharacter(opponentSheet);
   let actor = state.fighters[ownId];
-  let target = state.fighters[enemyId];
-  if (!actor || !target)
+  let enemy = state.fighters[enemyId];
+  if (!actor || !enemy)
     return { ok: false as const, message: "Estado da batalha inválido." };
 
   let message = "";
   let resourceEvent: ResourceEvent | null = null;
   let areaAction = false;
+  let affectedOwn = false;
   const actionData = action.data;
   const usage = state.turnActions ?? createTurnActionUsage();
-  let nextUsage = { ...usage };
-  let endsTurn = actionData.kind === "end" || actionData.kind === "defend" || actionData.kind === "item";
+  const nextUsage = { ...usage };
+  let endsTurn = actionData.kind === "end" || actionData.kind === "item";
 
   if (actionData.kind === "basic") {
     if (usage.basic) return { ok: false as const, message: "O Ataque Básico já foi usado neste turno.", data: room };
-    const result = resolveBasicAttack(actor, target, defaultCombatRules);
+    const result = resolveBasicAttack(actor, enemy, defaultCombatRules);
     actor = result.actor;
-    target = result.target;
+    enemy = result.target;
     resourceEvent = result.event;
     message = result.event.message;
     nextUsage.basic = true;
-  } else if (actionData.kind === "defend") {
-    if ((actor.cooldowns["defesa-total"] ?? 0) > 0)
-      return { ok: false as const, message: "Defesa Total ainda está em recarga." };
-    actor = guardCombatant(actor);
-    message = `${actor.name} assumiu Defesa Total.`;
   } else if (actionData.kind === "race" || actionData.kind === "class") {
     if (usage[actionData.kind])
       return { ok: false as const, message: `${actionData.kind === "race" ? "A habilidade racial" : "A habilidade de classe"} já foi usada neste turno.`, data: room };
@@ -165,20 +158,35 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
       return { ok: false as const, message: `${actor.name} está silenciado e não pode usar habilidades.` };
     const list = actionData.kind === "race" ? character.raceAbilities : character.skills;
     const skill = list.find((entry) => entry.key === actionData.key);
-    if (!skill)
-      return { ok: false as const, message: "Habilidade indisponível para este personagem." };
+    if (!skill) return { ok: false as const, message: "Habilidade indisponível para este personagem." };
+
+    const wantsAlly = skill.target === "self" || skill.target === "ally";
+    const targetId = actionData.targetId ?? (wantsAlly ? ownId : enemyId);
+    if ((wantsAlly && targetId !== ownId) || (!wantsAlly && targetId !== enemyId))
+      return { ok: false as const, message: "O alvo escolhido não é válido para esta habilidade." };
+
     areaAction = skill.area > 0;
-    const result = areaAction
-      ? (() => {
-          const area = resolveJrpgAreaSkill(actor, [target], skill, defaultCombatRules);
-          return { actor: area.actor, target: area.targets[0], event: area.events[0] };
-        })()
-      : resolveJrpgSkill(actor, target, skill, defaultCombatRules);
-    if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
-    actor = result.actor;
-    target = result.target;
-    resourceEvent = result.event;
-    message = result.event.message;
+    if (wantsAlly) {
+      const result = resolveJrpgSkill(actor, actor, skill, defaultCombatRules);
+      if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
+      actor = result.target.id === ownId ? result.target : result.actor;
+      resourceEvent = result.event;
+      message = result.event.message;
+      affectedOwn = true;
+    } else {
+      const result = areaAction
+        ? (() => {
+            const area = resolveJrpgAreaSkill(actor, [enemy], skill, defaultCombatRules);
+            return { actor: area.actor, target: area.targets[0], event: area.events[0] };
+          })()
+        : resolveJrpgSkill(actor, enemy, skill, defaultCombatRules);
+      if (!result.event || result.event.kind === "error")
+        return { ok: false as const, message: result.event?.message ?? "A habilidade não encontrou um alvo." };
+      actor = result.actor;
+      enemy = result.target;
+      resourceEvent = result.event;
+      message = result.event.message;
+    }
     nextUsage[actionData.kind] = true;
   } else if (actionData.kind === "item") {
     const item = character.items.find((entry) => entry.id === actionData.id);
@@ -193,24 +201,24 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
   if (resourceEvent) {
     const generated = applyEventResourceGeneration({
       actor,
-      target,
+      target: affectedOwn ? actor : enemy,
       actorCharacter: character,
-      targetCharacter: opponentCharacter,
+      targetCharacter: affectedOwn ? character : opponentCharacter,
       event: resourceEvent,
       area: areaAction,
     });
     actor = generated.actor;
-    target = generated.target;
+    if (!affectedOwn) enemy = generated.target;
   }
 
   state.fighters[ownId] = actor;
-  state.fighters[enemyId] = target;
+  state.fighters[enemyId] = enemy;
   state.turnActions = nextUsage;
   endsTurn = endsTurn || hasUsedAllCoreActions(nextUsage);
 
-  if (target.hp <= 0 || actor.hp <= 0) {
+  if (enemy.hp <= 0 || actor.hp <= 0) {
     state.status = "finished";
-    state.winnerCharacterId = target.hp <= 0 ? ownId : enemyId;
+    state.winnerCharacterId = enemy.hp <= 0 ? ownId : enemyId;
     message = `${state.fighters[state.winnerCharacterId].name} venceu o duelo.`;
   } else if (endsTurn) {
     const periodic = resolvePeriodicItemDamage(actor, (amount, type) =>
@@ -220,7 +228,7 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     if (state.fighters[ownId].hp <= 0) {
       state.status = "finished";
       state.winnerCharacterId = enemyId;
-      message = `${message} ${target.name} venceu o duelo.`;
+      message = `${message} ${enemy.name} venceu o duelo.`;
     } else {
       advancePvpTurn(state);
       if (periodic.messages.length) message = `${message} ${periodic.messages.join(" ")}`;

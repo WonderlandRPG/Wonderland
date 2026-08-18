@@ -7,6 +7,7 @@ import { firstDungeon } from "@/lib/game/dungeons";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import type { DungeonBattleState } from "@/lib/game/dungeon-combat";
 import type { CombatantState } from "@/lib/game/combat";
+import { isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
 
 type Room = { runId: string; version: number; state: DungeonBattleState };
 
@@ -30,6 +31,8 @@ export function DungeonBattle({
   const own = state.fighters[ownCharacterId];
   const character = characters.find((entry) => entry.id === ownCharacterId);
   const active = state.activeCharacterId === ownCharacterId && state.status === "active";
+  const blocked = own ? isTurnBlocked(own) : false;
+  const silenced = own ? isSilenced(own) : false;
 
   const refresh = useCallback(() => {
     void getDungeonRunAction(runId).then((result) => {
@@ -55,7 +58,7 @@ export function DungeonBattle({
   }, [refresh, runId]);
 
   function act(input: Record<string, string>) {
-    if (!active || pending) return;
+    if (!active || pending || blocked) return;
     setError("");
     startTransition(async () => {
       const result = await performDungeonAction(runId, room.version, input);
@@ -75,7 +78,7 @@ export function DungeonBattle({
           <p>
             {state.status === "active"
               ? active
-                ? "Seu turno: escolha uma ação."
+                ? blocked ? "Seu personagem está incapacitado." : "Seu turno: escolha uma ação."
                 : state.activeCharacterId === state.monster.id
                   ? `${state.monster.name} está agindo.`
                   : `Turno de ${state.fighters[state.activeCharacterId]?.name ?? "outro aventureiro"}.`
@@ -125,23 +128,23 @@ export function DungeonBattle({
       {state.status === "active" && character && own ? (
         <section className="arena-command-panel jrpg-command-panel">
           <header>
-            <div><span className="eyebrow">Comandos</span><h2>{active ? "Escolha uma ação" : "Aguardando seu turno"}</h2></div>
-            <small>Uma ação por turno.</small>
+            <div><span className="eyebrow">Comandos</span><h2>{active ? blocked ? "Turno incapacitado" : "Escolha uma ação" : "Aguardando seu turno"}</h2></div>
+            <small>{silenced ? "Silenciado: habilidades bloqueadas." : "Uma ação por turno."}</small>
           </header>
           {panel === "root" ? (
             <div className="pvp-actions-grid jrpg-actions">
-              <Command disabled={!active || pending} name="Atacar" detail="Ataque básico" onClick={() => act({ kind: "basic" })} />
-              <Command disabled={!active || pending || character.skills.length === 0} name="Habilidades" detail={`${character.skills.length} de classe`} onClick={() => setPanel("class")} />
-              <Command disabled={!active || pending || character.raceAbilities.length === 0} name="Raça" detail={`${character.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
-              <Command disabled={!active || pending || character.items.length === 0} name="Item" detail={`${character.items.length} disponível(is)`} onClick={() => setPanel("item")} />
-              <Command disabled={!active || pending || (own.cooldowns["defesa-total"] ?? 0) > 0} name="Defender" detail="Bloqueia o próximo dano" onClick={() => act({ kind: "defend" })} />
+              <Command disabled={!active || pending || blocked} name="Atacar" detail="Ataque básico" onClick={() => act({ kind: "basic" })} />
+              <Command disabled={!active || pending || blocked || silenced || character.skills.length === 0} name="Habilidades" detail={`${character.skills.length} de classe`} onClick={() => setPanel("class")} />
+              <Command disabled={!active || pending || blocked || silenced || character.raceAbilities.length === 0} name="Raça" detail={`${character.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
+              <Command disabled={!active || pending || blocked || character.items.length === 0} name="Item" detail={`${character.items.length} disponível(is)`} onClick={() => setPanel("item")} />
+              <Command disabled={!active || pending || blocked || (own.cooldowns["defesa-total"] ?? 0) > 0} name="Defender" detail="Bloqueia o próximo dano" onClick={() => act({ kind: "defend" })} />
             </div>
           ) : (
             <div className="jrpg-submenu">
               <button className="button button--ghost" type="button" onClick={() => setPanel("root")}>← Voltar</button>
-              {panel === "class" ? character.skills.map((skill) => <SkillCommand key={skill.key} fighter={own} skill={skill} onClick={() => act({ kind: "class", key: skill.key })} />) : null}
-              {panel === "race" ? character.raceAbilities.map((skill) => <SkillCommand key={skill.key} fighter={own} skill={skill} onClick={() => act({ kind: "race", key: skill.key })} />) : null}
-              {panel === "item" ? character.items.map((item) => <Command key={item.id} disabled={!active || pending} name={item.name} detail={item.description || "Usar item"} onClick={() => act({ kind: "item", id: item.id })} />) : null}
+              {panel === "class" ? character.skills.map((skill) => <SkillCommand key={skill.key} fighter={own} skill={skill} disabled={silenced || blocked} onClick={() => act({ kind: "class", key: skill.key })} />) : null}
+              {panel === "race" ? character.raceAbilities.map((skill) => <SkillCommand key={skill.key} fighter={own} skill={skill} disabled={silenced || blocked} onClick={() => act({ kind: "race", key: skill.key })} />) : null}
+              {panel === "item" ? character.items.map((item) => <Command key={item.id} disabled={!active || pending || blocked} name={item.name} detail={item.description || "Usar item"} onClick={() => act({ kind: "item", id: item.id })} />) : null}
             </div>
           )}
         </section>
@@ -168,6 +171,7 @@ function PartyStage({ state, characters, ownCharacterId }: { state: DungeonBattl
       {state.partyOrder.map((id) => {
         const fighter = state.fighters[id];
         const meta = characters.find((entry) => entry.id === id);
+        if (!fighter) return null;
         return (
           <CombatantCard
             key={id}
@@ -185,22 +189,29 @@ function PartyStage({ state, characters, ownCharacterId }: { state: DungeonBattl
 }
 
 function CombatantCard({ fighter, name, subtitle, imageUrl, active, compact = false }: { fighter: CombatantState; name: string; subtitle: string; imageUrl: string; active: boolean; compact?: boolean }) {
+  const statuses = Object.values(fighter.statuses);
   return (
     <article className={`pvp-fighter jrpg-fighter ${compact ? "is-compact" : ""} ${active ? "is-active" : ""} ${fighter.hp <= 0 ? "is-down" : ""}`}>
       <div className="jrpg-fighter__portrait" style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}>{!imageUrl ? name.slice(0, 2).toUpperCase() : null}</div>
       <h3>{name}</h3><p>{subtitle}</p>
       <progress max={fighter.maxHp} value={fighter.hp} />
       <strong>{fighter.hp.toLocaleString("pt-BR")} / {fighter.maxHp.toLocaleString("pt-BR")} HP</strong>
-      {fighter.shield > 0 ? <em>Escudo: {fighter.shield}</em> : null}
+      <div className="jrpg-resources">
+        {fighter.maxMana > 0 ? <em>Mana: {fighter.mana}/{fighter.maxMana}</em> : null}
+        {fighter.maxClassResource > 0 ? <em>{fighter.classResourceName}: {fighter.classResource}/{fighter.maxClassResource}</em> : null}
+        {fighter.maxRaceResource > 0 ? <em>{fighter.raceResourceName}: {fighter.raceResource}/{fighter.maxRaceResource}</em> : null}
+        {fighter.shield > 0 ? <em>Escudo: {fighter.shield}</em> : null}
+      </div>
+      {statuses.length ? <div className="jrpg-statuses">{statuses.map((status) => <span key={`${status.name}-${status.duration}`}>{status.name} · {status.duration}T</span>)}</div> : null}
     </article>
   );
 }
 
-function SkillCommand({ fighter, skill, onClick }: { fighter: CombatantState; skill: ArenaCharacter["skills"][number]; onClick(): void }) {
+function SkillCommand({ fighter, skill, disabled, onClick }: { fighter: CombatantState; skill: ArenaCharacter["skills"][number]; disabled: boolean; onClick(): void }) {
   const cooldown = fighter.cooldowns[skill.key] ?? 0;
   const available = skill.resource === "mana" ? fighter.mana : skill.resource === "life" ? fighter.hp : skill.resource === "special" ? (skill.resourceKey === "race" ? fighter.raceResource : fighter.classResource) : Number.POSITIVE_INFINITY;
   const label = skill.resource === "none" ? "Sem custo" : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "life" ? "HP" : skill.resourceKey === "race" ? fighter.raceResourceName : fighter.classResourceName}`;
-  return <Command disabled={cooldown > 0 || available < skill.cost} name={skill.name} detail={`${label}${cooldown ? ` · recarga ${cooldown}` : ""}`} onClick={onClick} />;
+  return <Command disabled={disabled || cooldown > 0 || available < skill.cost} name={skill.name} detail={`${label}${cooldown ? ` · recarga ${cooldown}` : ""}`} onClick={onClick} />;
 }
 
 function Command({ name, detail, disabled, onClick }: { name: string; detail: string; disabled: boolean; onClick(): void }) {

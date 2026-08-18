@@ -10,6 +10,7 @@ import {
   guardCombatant,
   resolveBasicAttack,
   tickCooldowns,
+  type CombatEvent,
   type CombatRules,
   type CombatantState,
 } from "@/lib/game/combat";
@@ -27,6 +28,10 @@ import {
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import { buildTurnOrder, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
 import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
+import {
+  applyEventResourceGeneration,
+  applyResourceTrigger,
+} from "@/lib/game/combat-resources";
 
 export function TrainingArena({
   characters,
@@ -152,19 +157,26 @@ function JrpgBattle({
     }
   }
 
-  function applyPlayerResult(result: {
-    actor: CombatantState;
-    target: CombatantState;
-    event: { kind: string; message: string };
-  }) {
+  function applyPlayerResult(
+    result: { actor: CombatantState; target: CombatantState; event: CombatEvent },
+    areaAction = false,
+  ) {
     if (result.event.kind === "error") return setMessage(result.event.message);
-    if (result.target.hp <= 0) {
-      setPlayer(result.actor);
-      setEnemy(result.target);
+    const generated = applyEventResourceGeneration({
+      actor: result.actor,
+      target: result.target,
+      actorCharacter: character,
+      targetCharacter: opponent,
+      event: result.event,
+      area: areaAction,
+    });
+    if (generated.target.hp <= 0) {
+      setPlayer(generated.actor);
+      setEnemy(generated.target);
       setMessage(`${result.event.message} Vitória!`);
       return;
     }
-    finishAction(player.id, result.actor, result.target, result.event.message);
+    finishAction(player.id, generated.actor, generated.target, result.event.message);
   }
 
   function useSkill(kind: "class" | "race", key: string) {
@@ -176,14 +188,14 @@ function JrpgBattle({
     const list = kind === "class" ? character.skills : character.raceAbilities;
     const skill = list.find((entry) => entry.key === key);
     if (!skill) return;
-    const result =
-      skill.area > 0
-        ? (() => {
-            const area = resolveJrpgAreaSkill(player, [enemy], skill, rules);
-            return { actor: area.actor, target: area.targets[0], event: area.events[0] };
-          })()
-        : resolveJrpgSkill(player, enemy, skill, rules);
-    applyPlayerResult(result);
+    const areaAction = skill.area > 0;
+    const result = areaAction
+      ? (() => {
+          const area = resolveJrpgAreaSkill(player, [enemy], skill, rules);
+          return { actor: area.actor, target: area.targets[0], event: area.events[0] };
+        })()
+      : resolveJrpgSkill(player, enemy, skill, rules);
+    applyPlayerResult(result, areaAction);
   }
 
   function useItem(id: string) {
@@ -207,12 +219,7 @@ function JrpgBattle({
     const active = activeId === player.id ? player : enemy;
     if (!isTurnBlocked(active)) return;
     const timer = window.setTimeout(() => {
-      finishAction(
-        active.id,
-        player,
-        enemy,
-        `${active.name} está incapacitado e perdeu o turno.`,
-      );
+      finishAction(active.id, player, enemy, `${active.name} está incapacitado e perdeu o turno.`);
     }, 350);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -222,7 +229,7 @@ function JrpgBattle({
     if (finished || playerTurn || isTurnBlocked(enemy)) return;
     const timer = window.setTimeout(() => {
       let actingEnemy = enemy;
-      let result;
+      let result: { actor: CombatantState; target: CombatantState; event: CombatEvent };
       if (
         mode === "pve" &&
         actingEnemy.hp < actingEnemy.maxHp * 0.3 &&
@@ -232,18 +239,22 @@ function JrpgBattle({
         result = {
           actor: actingEnemy,
           target: player,
-          event: { kind: "utility", message: `${actingEnemy.name} assumiu Defesa Total.` },
+          event: { kind: "utility", amount: 0, message: `${actingEnemy.name} assumiu Defesa Total.` },
         };
       } else {
         result = resolveBasicAttack(actingEnemy, player, rules);
       }
-      if (result.target.hp <= 0) {
+      const targetPlayer =
+        result.event.kind === "damage" && result.event.amount > 0
+          ? applyResourceTrigger(result.target, character, "DAMAGE_TAKEN")
+          : result.target;
+      if (targetPlayer.hp <= 0) {
         setEnemy(result.actor);
-        setPlayer(result.target);
+        setPlayer(targetPlayer);
         setMessage(`${result.event.message} Você foi derrotado.`);
         return;
       }
-      finishAction(enemy.id, result.target, result.actor, result.event.message);
+      finishAction(enemy.id, targetPlayer, result.actor, result.event.message);
     }, 450);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -262,17 +273,13 @@ function JrpgBattle({
     <section className="arena-console jrpg-battle">
       <header className="arena-toolbar arena-game-header">
         <div>
-          <span className="eyebrow">
-            {mode === "training" ? "Treino" : "PvE"} · combate por turnos
-          </span>
+          <span className="eyebrow">{mode === "training" ? "Treino" : "PvE"} · combate por turnos</span>
           <h1>{character.name} contra {initial.enemyName}</h1>
           <p>Uma ação por turno. INI define a ordem e é recalculada a cada nova rodada.</p>
         </div>
         {mode === "training" && options.length > 1 ? (
           <select value={character.id} onChange={(event) => onChange(event.target.value)}>
-            {options.map((entry) => (
-              <option key={entry.id} value={entry.id}>{entry.name}</option>
-            ))}
+            {options.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}
           </select>
         ) : null}
         <strong className="arena-turn-counter"><small>Rodada</small>{String(round).padStart(2, "0")}</strong>
@@ -287,21 +294,9 @@ function JrpgBattle({
       </div>
 
       <div className="pvp-fighters jrpg-stage">
-        <CombatantCard
-          fighter={player}
-          name={character.name}
-          subtitle={`${character.raceName} · ${character.className}`}
-          imageUrl={character.imageUrl}
-          active={playerTurn && !finished}
-        />
+        <CombatantCard fighter={player} name={character.name} subtitle={`${character.raceName} · ${character.className}`} imageUrl={character.imageUrl} active={playerTurn && !finished} />
         <span className="pvp-versus">VS<small>turnos</small></span>
-        <CombatantCard
-          fighter={enemy}
-          name={enemy.name}
-          subtitle={mode === "training" ? "Boneco de Treino" : "Criatura hostil"}
-          imageUrl={initial.enemyImage}
-          active={!playerTurn && !finished}
-        />
+        <CombatantCard fighter={enemy} name={enemy.name} subtitle={mode === "training" ? "Boneco de Treino" : "Criatura hostil"} imageUrl={initial.enemyImage} active={!playerTurn && !finished} />
       </div>
 
       <p className="arena-message" role="status"><span>Combate</span>{message}</p>
@@ -310,13 +305,13 @@ function JrpgBattle({
         <section className="arena-command-panel jrpg-command-panel">
           <header>
             <div><span className="eyebrow">Comandos</span><h2>{playerTurn ? "Escolha uma ação" : `Turno de ${enemy.name}`}</h2></div>
-            <small>Cada comando encerra o turno.</small>
+            <small>{isSilenced(player) ? "Silenciado: habilidades bloqueadas." : "Cada comando encerra o turno."}</small>
           </header>
           {panel === "root" ? (
             <div className="pvp-actions-grid jrpg-actions">
               <Command disabled={!playerTurn || isTurnBlocked(player)} name="Atacar" detail="Ataque básico" onClick={() => applyPlayerResult(resolveBasicAttack(player, enemy, rules))} />
-              <Command disabled={!playerTurn || isTurnBlocked(player) || character.skills.length === 0} name="Habilidades" detail={`${character.skills.length} de classe`} onClick={() => setPanel("class")} />
-              <Command disabled={!playerTurn || isTurnBlocked(player) || character.raceAbilities.length === 0} name="Raça" detail={`${character.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
+              <Command disabled={!playerTurn || isTurnBlocked(player) || isSilenced(player) || character.skills.length === 0} name="Habilidades" detail={`${character.skills.length} de classe`} onClick={() => setPanel("class")} />
+              <Command disabled={!playerTurn || isTurnBlocked(player) || isSilenced(player) || character.raceAbilities.length === 0} name="Raça" detail={`${character.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
               <Command disabled={!playerTurn || isTurnBlocked(player) || character.items.length === 0} name="Item" detail={`${character.items.length} disponível(is)`} onClick={() => setPanel("item")} />
               <Command disabled={!playerTurn || isTurnBlocked(player) || (player.cooldowns["defesa-total"] ?? 0) > 0} name="Defender" detail="Bloqueia o próximo dano" onClick={() => finishAction(player.id, guardCombatant(player), enemy, `${player.name} assumiu Defesa Total.`)} />
               <Command disabled={!playerTurn || isTurnBlocked(player)} name="Aguardar" detail="Passa o turno" onClick={() => finishAction(player.id, player, enemy, `${player.name} aguardou.`)} />
@@ -338,9 +333,7 @@ function JrpgBattle({
             <>
               <p>Recompensa prevista: +{rankReward.xp.toLocaleString("pt-BR")} XP · +{rankReward.wg.toLocaleString("pt-BR")} WG</p>
               {!reward ? (
-                <button className="button button--primary" disabled={claiming} onClick={claimReward} type="button">
-                  {claiming ? "Registrando…" : "Receber recompensa"}
-                </button>
+                <button className="button button--primary" disabled={claiming} onClick={claimReward} type="button">{claiming ? "Registrando…" : "Receber recompensa"}</button>
               ) : (
                 <strong>+{reward.xp.toLocaleString("pt-BR")} XP · +{reward.wg.toLocaleString("pt-BR")} WG recebidos</strong>
               )}
@@ -404,13 +397,7 @@ function createBattle(
       usesMana: false,
       rules,
     });
-    return {
-      player,
-      enemy,
-      enemyName: enemy.name,
-      enemyImage: "",
-      message: "Treino iniciado. Teste sua rotação sem recompensas.",
-    };
+    return { player, enemy, enemyName: enemy.name, enemyImage: "", message: "Treino iniciado. Teste sua rotação sem recompensas." };
   }
 
   const monster = arenaMonsters[Math.abs(monsterIndex) % arenaMonsters.length];
@@ -424,13 +411,7 @@ function createBattle(
     usesMana: character.baseMana > 0,
     rules: rules ?? defaultCombatRules,
   });
-  return {
-    player,
-    enemy,
-    enemyName: monster.name,
-    enemyImage: monster.imageUrl,
-    message: `${monster.name} surgiu. A iniciativa decidirá o primeiro turno.`,
-  };
+  return { player, enemy, enemyName: monster.name, enemyImage: monster.imageUrl, message: `${monster.name} surgiu. A iniciativa decidirá o primeiro turno.` };
 }
 
 function CombatantCard({ fighter, name, subtitle, imageUrl, active }: {
@@ -440,23 +421,20 @@ function CombatantCard({ fighter, name, subtitle, imageUrl, active }: {
   imageUrl: string;
   active: boolean;
 }) {
-  const resource = fighter.maxClassResource > 0
-    ? `${fighter.classResourceName}: ${fighter.classResource}/${fighter.maxClassResource}`
-    : fighter.maxMana > 0
-      ? `Mana: ${fighter.mana}/${fighter.maxMana}`
-      : null;
+  const statuses = Object.values(fighter.statuses);
   return (
     <article className={`pvp-fighter jrpg-fighter ${active ? "is-active" : ""}`}>
-      <div className="jrpg-fighter__portrait" style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}>
-        {!imageUrl ? name.slice(0, 2).toUpperCase() : null}
-      </div>
+      <div className="jrpg-fighter__portrait" style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}>{!imageUrl ? name.slice(0, 2).toUpperCase() : null}</div>
       <h3>{name}</h3><p>{subtitle}</p>
       <progress max={fighter.maxHp} value={fighter.hp} />
       <strong>{fighter.hp.toLocaleString("pt-BR")} / {fighter.maxHp.toLocaleString("pt-BR")} HP</strong>
-      {resource ? <em>{resource}</em> : null}
-      {Object.values(fighter.statuses).length ? (
-        <small>{Object.values(fighter.statuses).map((status) => `${status.name} (${status.duration})`).join(" · ")}</small>
-      ) : null}
+      <div className="jrpg-resources">
+        {fighter.maxMana > 0 ? <em>Mana: {fighter.mana}/{fighter.maxMana}</em> : null}
+        {fighter.maxClassResource > 0 ? <em>{fighter.classResourceName}: {fighter.classResource}/{fighter.maxClassResource}</em> : null}
+        {fighter.maxRaceResource > 0 ? <em>{fighter.raceResourceName}: {fighter.raceResource}/{fighter.maxRaceResource}</em> : null}
+        {fighter.shield > 0 ? <em>Escudo: {fighter.shield}</em> : null}
+      </div>
+      {statuses.length ? <div className="jrpg-statuses">{statuses.map((status) => <span key={`${status.name}-${status.duration}`}>{status.name} · {status.duration}T</span>)}</div> : null}
     </article>
   );
 }
@@ -477,14 +455,7 @@ function SkillCommand({ fighter, skill, onClick }: {
   const label = skill.resource === "none"
     ? "Sem custo"
     : `${skill.cost} ${skill.resource === "mana" ? "Mana" : skill.resource === "life" ? "HP" : skill.resourceKey === "race" ? fighter.raceResourceName : fighter.classResourceName}`;
-  return (
-    <Command
-      disabled={cooldown > 0 || available < skill.cost || isSilenced(fighter)}
-      name={skill.name}
-      detail={`${label}${cooldown ? ` · recarga ${cooldown}` : ""}`}
-      onClick={onClick}
-    />
-  );
+  return <Command disabled={cooldown > 0 || available < skill.cost || isSilenced(fighter)} name={skill.name} detail={`${label}${cooldown ? ` · recarga ${cooldown}` : ""}`} onClick={onClick} />;
 }
 
 function Command({ name, detail, disabled, onClick }: {
@@ -493,9 +464,5 @@ function Command({ name, detail, disabled, onClick }: {
   disabled: boolean;
   onClick(): void;
 }) {
-  return (
-    <button className="arena-action-card jrpg-action" disabled={disabled} onClick={onClick} type="button">
-      <strong>{name}</strong><small>{detail}</small>
-    </button>
-  );
+  return <button className="arena-action-card jrpg-action" disabled={disabled} onClick={onClick} type="button"><strong>{name}</strong><small>{detail}</small></button>;
 }

@@ -9,6 +9,12 @@ export const dynamic = "force-dynamic";
 
 const tools = [
   {
+    href: "/admin/estudio",
+    index: "✦",
+    title: "Studio de Criação",
+    text: "Crie habilidades com formulário simples ou Assistente de IA.",
+  },
+  {
     href: "/admin/jogadores",
     index: "01",
     title: "Jogadores",
@@ -114,12 +120,12 @@ export default async function AdminPage({
       </section>
 
       <section className="admin-publish-launchers" aria-label="Publicar conteúdo">
-        <Link href="/admin/eventos#novo-evento">
-          <span>Agenda dos jogadores</span>
-          <h3>Publicar novo evento</h3>
-          <p>Defina data, horário, descrição e visibilidade no calendário.</p>
+        <Link href="/admin/estudio">
+          <span>Criação assistida</span>
+          <h3>Studio de Criação</h3>
+          <p>Crie habilidades pelo modo simples ou descrevendo o que deseja para a IA.</p>
           <b>
-            Criar evento <i>＋</i>
+            Abrir Studio <i>✦</i>
           </b>
         </Link>
         <Link href="/admin/atualizacoes#nova-atualizacao">

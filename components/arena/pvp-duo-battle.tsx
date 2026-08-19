@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { CombatSkillCard } from "@/components/arena/combat-skill-card";
+import { CombatStatusDock } from "@/components/arena/combat-status-dock";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { defaultCombatRules, type CombatantState } from "@/lib/game/combat";
 import { createTurnActionUsage, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
@@ -325,7 +326,11 @@ function DuoFighter({ fighter, character, active, fx }: { fighter?: CombatantSta
         <CharacterPortraitCard name={character.name} imageUrl={character.imageUrl || null} rank={character.adventureRank} level={character.level} title={character.equippedTitle} variant="compact" className="combat-official-character-card" />
         {fx ? <span key={fx.token} className={`combat-fx combat-fx--${fx.kind}`}>{fx.kind === "heal" ? "+" : fx.kind === "shield" ? "✦" : "✹"}</span> : null}
       </div>
-      <div className="combat-hud-panel"><h3>{character.name}</h3><p>{character.raceName} · {character.className}</p></div>
+      <div className="combat-hud-panel">
+        <h3>{character.name}</h3>
+        <p>{character.raceName} · {character.className}</p>
+        <CombatStatusDock fighter={fighter} />
+      </div>
     </article>
   );
 }

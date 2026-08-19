@@ -1,5 +1,6 @@
 import { AdminCreationStudio } from "@/components/admin/admin-creation-studio";
 import { AdminContentStudio } from "@/components/admin/admin-content-studio";
+import { AdminOperationsStudio } from "@/components/admin/admin-operations-studio";
 import { SimpleSkillLibrary } from "@/components/admin/simple-skill-library";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { parseClassPayload } from "@/lib/game/classes";
@@ -8,6 +9,7 @@ import { parseItemSpecialEffects } from "@/lib/game/item-effects";
 import { attributesSchema } from "@/lib/game/schemas";
 import { simpleDraftFromClassSkill } from "@/lib/admin/simple-skill-reader";
 import type { SimpleClassDraft, SimpleItemDraft, SimpleRaceDraft, SimpleTitleDraft } from "@/lib/admin/simple-content-builder";
+import type { SimpleMissionDraft } from "@/lib/admin/simple-operations-builder";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Studio de Criação" };
@@ -15,14 +17,19 @@ export const metadata = { title: "Studio de Criação" };
 function objectValue(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
 }
+function stringifySetting(value: unknown) {
+  return typeof value === "string" ? JSON.stringify(value) : JSON.stringify(value, null, 2);
+}
 
 export default async function AdminCreationStudioPage() {
   const client = await createServerSupabaseClient();
-  const [classResult, raceResult, itemResult] = client ? await Promise.all([
+  const [classResult, raceResult, itemResult, missionResult, settingResult] = client ? await Promise.all([
     client.from("v2_content").select("id,name,status,payload").eq("content_type", "class").neq("status", "archived").order("name"),
     client.from("v2_content").select("id,name,status,payload").eq("content_type", "race").neq("status", "archived").order("name"),
     client.from("v2_shop_items").select("*").order("name"),
-  ]) : [{ data: [] }, { data: [] }, { data: [] }];
+    client.from("v2_missions").select("id,name,description,objective,kingdom,rank,min_level,is_rank_trial,promotion_rank,active").order("name"),
+    client.from("v2_game_settings").select("key,category,label,description,value,status,revision").order("category").order("label"),
+  ]) : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }, { data: [] }];
 
   const classes = (classResult.data ?? []).map((item) => {
     const parsed = parseClassPayload(item.payload);
@@ -65,12 +72,35 @@ export default async function AdminCreationStudioPage() {
     }
   }
 
+  const missions: SimpleMissionDraft[] = (missionResult.data ?? []).map((row) => ({
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    objective: row.objective,
+    kingdom: row.kingdom as SimpleMissionDraft["kingdom"],
+    rank: row.rank as SimpleMissionDraft["rank"],
+    minLevel: row.min_level,
+    isRankTrial: Boolean(row.is_rank_trial),
+    promotionRank: (row.promotion_rank || null) as SimpleMissionDraft["promotionRank"],
+    active: Boolean(row.active),
+  }));
+  const settings = (settingResult.data ?? []).map((row) => ({
+    key: row.key,
+    category: row.category,
+    label: row.label,
+    description: row.description,
+    valueText: stringifySetting(row.value),
+    status: row.status,
+    revision: row.revision,
+  }));
+
   const classDrafts = classes.flatMap((entry) => entry.draft ? [entry.draft] : []);
   const aiConfigured = Boolean(process.env.OPENAI_API_KEY);
   return (
     <div className="admin-content">
       <AdminCreationStudio aiConfigured={aiConfigured} classes={classes.map(({ id, name, status }) => ({ id, name, status }))} />
       <AdminContentStudio aiConfigured={aiConfigured} existing={{ classes:classDrafts, races, items, titles }} />
+      <AdminOperationsStudio aiConfigured={aiConfigured} missions={missions} settings={settings} />
       <SimpleSkillLibrary classes={classes.map(({draft: _draft, ...entry}) => entry)} />
     </div>
   );

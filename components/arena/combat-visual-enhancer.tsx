@@ -7,6 +7,12 @@ function buildLegacyStatusDock(fighter: HTMLElement) {
   const hud = fighter.querySelector<HTMLElement>(".combat-hud-panel");
   if (!hud) return;
 
+  const nativeDock = hud.querySelector<HTMLElement>(":scope > .combat-status-dock:not(.combat-status-dock--enhanced)");
+  if (nativeDock) {
+    hud.querySelector<HTMLElement>(":scope > .combat-status-dock--enhanced")?.remove();
+    return;
+  }
+
   const statusSource = fighter.querySelector<HTMLElement>(".jrpg-statuses");
   const statusTexts = statusSource
     ? Array.from(statusSource.querySelectorAll<HTMLElement>(":scope > span")).map((span) => span.textContent?.trim() ?? "").filter(Boolean)

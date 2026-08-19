@@ -1,1 +1,2 @@
 Redeploy trigger for combat entry hotfix PR #82.
+Retry requested again on 2026-08-19.

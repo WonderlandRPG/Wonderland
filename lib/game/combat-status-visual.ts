@@ -1,4 +1,20 @@
 export type CombatStatusVisualKind = "buff" | "debuff";
+export type CombatStatusIconKey =
+  | "for"
+  | "def"
+  | "res"
+  | "ini"
+  | "int"
+  | "arc"
+  | "bleed"
+  | "poison"
+  | "burn"
+  | "silence"
+  | "stun"
+  | "regen"
+  | "shield"
+  | "buff"
+  | "debuff";
 
 export type CombatStatusLike = {
   name: string;
@@ -9,12 +25,12 @@ export type CombatStatusLike = {
 };
 
 const STAT_VISUALS = {
-  FOR: { icon: "💪", label: "Força" },
-  DEF: { icon: "🛡️", label: "Defesa" },
-  RES: { icon: "❤️", label: "Resistência" },
-  INI: { icon: "⚡", label: "Iniciativa" },
-  INT: { icon: "🔮", label: "Inteligência" },
-  ARC: { icon: "✨", label: "Arcano" },
+  FOR: { iconKey: "for" as const, label: "Força" },
+  DEF: { iconKey: "def" as const, label: "Defesa" },
+  RES: { iconKey: "res" as const, label: "Resistência" },
+  INI: { iconKey: "ini" as const, label: "Iniciativa" },
+  INT: { iconKey: "int" as const, label: "Inteligência" },
+  ARC: { iconKey: "arc" as const, label: "Arcano" },
 } as const;
 
 const negativeKeywords = [
@@ -62,24 +78,24 @@ export function getCombatStatusVisual(status: CombatStatusLike) {
   const kind: CombatStatusVisualKind = beneficial ? "buff" : "debuff";
 
   if (status.periodicDamage && status.periodicDamage > 0) {
-    if (text.includes("sangr")) return { kind: "debuff" as const, icon: "🩸", label: "Sangramento" };
-    if (text.includes("queim")) return { kind: "debuff" as const, icon: "🔥", label: "Queimadura" };
-    if (text.includes("veneno")) return { kind: "debuff" as const, icon: "☠️", label: "Veneno" };
-    return { kind: "debuff" as const, icon: "💥", label: "Dano contínuo" };
+    if (text.includes("sangr")) return { kind: "debuff" as const, iconKey: "bleed" as const, label: "Sangramento" };
+    if (text.includes("queim")) return { kind: "debuff" as const, iconKey: "burn" as const, label: "Queimadura" };
+    if (text.includes("veneno")) return { kind: "debuff" as const, iconKey: "poison" as const, label: "Veneno" };
+    return { kind: "debuff" as const, iconKey: "debuff" as const, label: "Dano contínuo" };
   }
 
   if (modifier) {
     const [attribute] = modifier;
-    const visual = STAT_VISUALS[attribute] ?? { icon: beneficial ? "⬆️" : "⬇️", label: status.name };
-    return { kind, icon: visual.icon, label: visual.label };
+    const visual = STAT_VISUALS[attribute];
+    return { kind, iconKey: visual.iconKey, label: visual.label };
   }
 
-  if (text.includes("silenc")) return { kind: "debuff" as const, icon: "🤐", label: "Silêncio" };
-  if (text.includes("atordo") || text.includes("paralis")) return { kind: "debuff" as const, icon: "💫", label: "Incapacitado" };
-  if (text.includes("cura") || text.includes("regen")) return { kind: "buff" as const, icon: "✚", label: "Regeneração" };
-  if (text.includes("escudo") || text.includes("barreira")) return { kind: "buff" as const, icon: "🛡️", label: "Proteção" };
+  if (text.includes("silenc")) return { kind: "debuff" as const, iconKey: "silence" as const, label: "Silêncio" };
+  if (text.includes("atordo") || text.includes("paralis")) return { kind: "debuff" as const, iconKey: "stun" as const, label: "Incapacitado" };
+  if (text.includes("cura") || text.includes("regen")) return { kind: "buff" as const, iconKey: "regen" as const, label: "Regeneração" };
+  if (text.includes("escudo") || text.includes("barreira")) return { kind: "buff" as const, iconKey: "shield" as const, label: "Proteção" };
 
-  return { kind, icon: beneficial ? "⬆️" : "⬇️", label: status.name };
+  return { kind, iconKey: (beneficial ? "buff" : "debuff") as CombatStatusIconKey, label: status.name };
 }
 
 export function describeCombatStatus(status: CombatStatusLike) {
@@ -96,14 +112,19 @@ export function visualFromStatusText(value: string) {
   const kind: CombatStatusVisualKind = negativeKeywords.some((keyword) => lower.includes(normalized(keyword)))
     ? "debuff"
     : "buff";
-  const entries = Object.entries(STAT_VISUALS) as Array<[keyof typeof STAT_VISUALS, (typeof STAT_VISUALS)[keyof typeof STAT_VISUALS]]>;
-  const stat = entries.find(([key, visual]) => lower.includes(key.toLowerCase()) || lower.includes(normalized(visual.label)));
-  if (stat) return { kind, icon: stat[1].icon, label: stat[1].label };
-  if (lower.includes("sangr")) return { kind: "debuff" as const, icon: "🩸", label: "Sangramento" };
-  if (lower.includes("veneno")) return { kind: "debuff" as const, icon: "☠️", label: "Veneno" };
-  if (lower.includes("queim")) return { kind: "debuff" as const, icon: "🔥", label: "Queimadura" };
-  if (lower.includes("silenc")) return { kind: "debuff" as const, icon: "🤐", label: "Silêncio" };
-  if (lower.includes("atordo") || lower.includes("paralis")) return { kind: "debuff" as const, icon: "💫", label: "Incapacitado" };
-  if (lower.includes("escudo") || lower.includes("barreira")) return { kind: "buff" as const, icon: "🛡️", label: "Proteção" };
-  return { kind, icon: kind === "buff" ? "⬆️" : "⬇️", label: kind === "buff" ? "Buff" : "Debuff" };
+  const entries = Object.entries(STAT_VISUALS) as Array<[
+    keyof typeof STAT_VISUALS,
+    (typeof STAT_VISUALS)[keyof typeof STAT_VISUALS],
+  ]>;
+  const stat = entries.find(
+    ([key, visual]) => lower.includes(key.toLowerCase()) || lower.includes(normalized(visual.label)),
+  );
+  if (stat) return { kind, iconKey: stat[1].iconKey, label: stat[1].label };
+  if (lower.includes("sangr")) return { kind: "debuff" as const, iconKey: "bleed" as const, label: "Sangramento" };
+  if (lower.includes("veneno")) return { kind: "debuff" as const, iconKey: "poison" as const, label: "Veneno" };
+  if (lower.includes("queim")) return { kind: "debuff" as const, iconKey: "burn" as const, label: "Queimadura" };
+  if (lower.includes("silenc")) return { kind: "debuff" as const, iconKey: "silence" as const, label: "Silêncio" };
+  if (lower.includes("atordo") || lower.includes("paralis")) return { kind: "debuff" as const, iconKey: "stun" as const, label: "Incapacitado" };
+  if (lower.includes("escudo") || lower.includes("barreira")) return { kind: "buff" as const, iconKey: "shield" as const, label: "Proteção" };
+  return { kind, iconKey: (kind === "buff" ? "buff" : "debuff") as CombatStatusIconKey, label: kind === "buff" ? "Buff" : "Debuff" };
 }

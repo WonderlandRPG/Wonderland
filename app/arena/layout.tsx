@@ -11,6 +11,7 @@ import "./jrpg-formation.css";
 import "./arena-depth.css";
 import "./entry-hotfix.css";
 import "./combat-immersion.css";
+import "./combat-clarity.css";
 
 export default function ArenaLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

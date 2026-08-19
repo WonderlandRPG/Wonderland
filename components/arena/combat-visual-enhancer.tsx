@@ -1,13 +1,42 @@
 "use client";
 
 import { useEffect } from "react";
-import { visualFromStatusText } from "@/lib/game/combat-status-visual";
+import { visualFromStatusText, type CombatStatusIconKey } from "@/lib/game/combat-status-visual";
+
+function appendLegacyIcon(
+  dock: HTMLElement,
+  options: {
+    kind: "buff" | "debuff" | "shield";
+    iconKey: CombatStatusIconKey;
+    title: string;
+    marker: string;
+    duration: string;
+  },
+) {
+  const icon = document.createElement("span");
+  icon.className = `combat-status-icon combat-status-icon--${options.kind}`;
+  icon.title = options.title;
+
+  const glyph = document.createElement("span");
+  glyph.className = `combat-status-glyph combat-status-glyph--${options.iconKey}`;
+  glyph.setAttribute("aria-hidden", "true");
+
+  const marker = document.createElement("i");
+  marker.textContent = options.marker;
+  const duration = document.createElement("small");
+  duration.textContent = options.duration;
+
+  icon.append(glyph, marker, duration);
+  dock.append(icon);
+}
 
 function buildLegacyStatusDock(fighter: HTMLElement) {
   const hud = fighter.querySelector<HTMLElement>(".combat-hud-panel");
   if (!hud) return;
 
-  const nativeDock = hud.querySelector<HTMLElement>(":scope > .combat-status-dock:not(.combat-status-dock--enhanced)");
+  const nativeDock = hud.querySelector<HTMLElement>(
+    ":scope > .combat-status-dock:not(.combat-status-dock--enhanced)",
+  );
   if (nativeDock) {
     hud.querySelector<HTMLElement>(":scope > .combat-status-dock--enhanced")?.remove();
     return;
@@ -15,7 +44,9 @@ function buildLegacyStatusDock(fighter: HTMLElement) {
 
   const statusSource = fighter.querySelector<HTMLElement>(".jrpg-statuses");
   const statusTexts = statusSource
-    ? Array.from(statusSource.querySelectorAll<HTMLElement>(":scope > span")).map((span) => span.textContent?.trim() ?? "").filter(Boolean)
+    ? Array.from(statusSource.querySelectorAll<HTMLElement>(":scope > span"))
+        .map((span) => span.textContent?.trim() ?? "")
+        .filter(Boolean)
     : [];
   const shieldMeter = fighter.querySelector<HTMLElement>(".combat-meter--shield");
   const shieldText = shieldMeter?.querySelector<HTMLElement>("strong")?.textContent?.trim() ?? "";
@@ -44,21 +75,25 @@ function buildLegacyStatusDock(fighter: HTMLElement) {
   let hasBuff = false;
   let hasDebuff = false;
   if (shieldMeter) {
-    const icon = document.createElement("span");
-    icon.className = "combat-status-icon combat-status-icon--shield";
-    icon.title = `Escudo ativo · ${shieldText || "proteção temporária"}`;
-    icon.innerHTML = `<b>🛡️</b><i>+</i><small>${shieldText.split("/")[0]?.trim() || "ON"}</small>`;
-    dock.append(icon);
+    appendLegacyIcon(dock, {
+      kind: "shield",
+      iconKey: "shield",
+      title: `Escudo ativo · ${shieldText || "proteção temporária"}`,
+      marker: "+",
+      duration: shieldText.split("/")[0]?.trim() || "ON",
+    });
   }
 
   for (const text of statusTexts) {
     const visual = visualFromStatusText(text);
     const duration = text.match(/(\d+)\s*T/i)?.[1];
-    const icon = document.createElement("span");
-    icon.className = `combat-status-icon combat-status-icon--${visual.kind}`;
-    icon.title = text;
-    icon.innerHTML = `<b>${visual.icon}</b><i>${visual.kind === "buff" ? "↑" : "↓"}</i><small>${duration ? `${duration}T` : "ON"}</small>`;
-    dock.append(icon);
+    appendLegacyIcon(dock, {
+      kind: visual.kind,
+      iconKey: visual.iconKey,
+      title: text,
+      marker: visual.kind === "buff" ? "↑" : "↓",
+      duration: duration ? `${duration}T` : "ON",
+    });
     hasBuff ||= visual.kind === "buff";
     hasDebuff ||= visual.kind === "debuff";
   }

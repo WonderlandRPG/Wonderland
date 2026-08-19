@@ -25,7 +25,7 @@ function specialEffects(input: { id?:string; name:string; effectKind:string; eff
 }
 async function history(actorId:string, action:string, targetType:string, targetId:string|null, details:Record<string,unknown>) {
   const client = await createServerSupabaseClient();
-  if (client) await client.from("v2_admin_history").insert({ actor_id:actorId, action, target_type:targetType, target_id:targetId, details });
+  if (client) await client.from("v2_admin_history").insert({ actor_id:actorId, action, target_type:targetType, target_id:targetId, details: details as unknown as Json });
 }
 
 export async function saveSimpleClassAction(input: unknown) {

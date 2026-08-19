@@ -1,3 +1,4 @@
+import { CombatStatusGlyph } from "@/components/arena/combat-status-glyph";
 import type { CombatantState } from "@/lib/game/combat";
 import { describeCombatStatus, getCombatStatusVisual } from "@/lib/game/combat-status-visual";
 
@@ -12,7 +13,7 @@ export function CombatStatusDock({ fighter }: { fighter: CombatantState }) {
           className="combat-status-icon combat-status-icon--shield"
           title={`Escudo ativo · ${fighter.shield.toLocaleString("pt-BR")} pontos`}
         >
-          <b>🛡️</b>
+          <CombatStatusGlyph icon="shield" />
           <i>+</i>
           <small>{fighter.shield.toLocaleString("pt-BR")}</small>
         </span>
@@ -25,7 +26,7 @@ export function CombatStatusDock({ fighter }: { fighter: CombatantState }) {
             key={`${status.name}-${status.duration}`}
             title={describeCombatStatus(status)}
           >
-            <b>{visual.icon}</b>
+            <CombatStatusGlyph icon={visual.iconKey} />
             <i>{visual.kind === "buff" ? "↑" : "↓"}</i>
             <small>{status.duration > 0 ? `${status.duration}T` : "∞"}</small>
           </span>

@@ -50,6 +50,7 @@ type DuoRoom = {
   opponentCharacterId: string;
   ownCharacterIds: string[];
   opponentCharacterIds: string[];
+  controllableCharacterIds: string[];
   state: PvpDuoBattleState;
 };
 
@@ -67,6 +68,7 @@ function parseRoom(value: unknown): DuoRoom | null {
     typeof row.version !== "number" ||
     !Array.isArray(row.ownCharacterIds) ||
     !Array.isArray(row.opponentCharacterIds) ||
+    !Array.isArray(row.controllableCharacterIds) ||
     !row.state || typeof row.state !== "object"
   ) return null;
   return row as unknown as DuoRoom;
@@ -191,8 +193,8 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
   if (state.status !== "active")
     return { ok: false as const, message: "Esta batalha já terminou.", data: room };
   const actorId = state.activeCharacterId;
-  if (!room.ownCharacterIds.includes(actorId))
-    return { ok: false as const, message: "Aguarde o turno da equipe adversária.", data: room };
+  if (!room.controllableCharacterIds.includes(actorId))
+    return { ok: false as const, message: "Aguarde o turno do outro combatente.", data: room };
 
   const meta = metadataMap(roster.members);
   const character = meta[actorId];

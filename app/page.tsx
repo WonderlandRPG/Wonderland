@@ -15,7 +15,7 @@ export default async function Home() {
 
       <section className="home-hero">
         <div className="home-hero__copy">
-          <span className="home-hero__eyebrow">Temporada inaugural</span>
+          <span className="home-hero__eyebrow">{headline.seasonLabel}</span>
           <h1>
             {headline.firstLine}
             <em>{headline.secondLine}</em>

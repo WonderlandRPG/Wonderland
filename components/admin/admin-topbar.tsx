@@ -17,15 +17,22 @@ function getRouteHeading(pathname: string) {
     return { path: "Wonderland / Raças / Pré-visualização", title: "Prévia da raça" };
   }
   const routes = [
+    ["/admin/estudio", "Criação assistida", "Studio de Criação"],
+    ["/admin/portal", "Comunidade", "Tela principal"],
     ["/admin/atualizacoes", "Comunidade / Publicações", "Atualizações"],
     ["/admin/eventos", "Comunidade / Publicações", "Eventos"],
     ["/admin/personagens", "Comunidade / Jogadores", "Personagens"],
     ["/admin/jogadores", "Comunidade", "Jogadores"],
+    ["/admin/missoes", "Jogo", "Missões"],
+    ["/admin/titulos", "Jogo", "Títulos"],
+    ["/admin/temas", "Aparência", "Temas"],
+    ["/admin/reinos", "Mundo", "Controle de Reinos"],
+    ["/admin/console", "Comando", "Console de recompensas"],
     ["/admin/balanceamento", "Jogo", "Balanceamento"],
     ["/admin/presenca", "Jogo", "Recompensas de presença"],
     ["/admin/historico", "Auditoria", "Histórico administrativo"],
     ["/admin/itens", "Economia", "Catálogo de itens"],
-    ["/admin/importar", "Conteúdo do jogo", "Chat de conteúdo"],
+    ["/admin/importar", "Conteúdo do jogo", "Importador técnico"],
     ["/admin/racas", "Conteúdo do jogo", "Raças"],
     ["/admin/classes", "Conteúdo do jogo", "Classes"],
   ] as const;

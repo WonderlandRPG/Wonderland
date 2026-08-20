@@ -9,23 +9,24 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function savePortalHeadlineAction(formData: FormData) {
   const account = await requireAdministrativeAccount();
+  const seasonLabel = String(formData.get("seasonLabel") ?? "").trim();
   const firstLine = String(formData.get("firstLine") ?? "").trim();
   const secondLine = String(formData.get("secondLine") ?? "").trim();
 
-  if (!firstLine || !secondLine || firstLine.length > 80 || secondLine.length > 80) {
+  if (!seasonLabel || !firstLine || !secondLine || seasonLabel.length > 60 || firstLine.length > 80 || secondLine.length > 80) {
     redirect("/admin/portal?status=invalido");
   }
 
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/portal?status=erro");
 
-  const value = { firstLine, secondLine };
+  const value = { seasonLabel, firstLine, secondLine };
   const now = new Date().toISOString();
   const { error } = await client.from("v2_game_settings").upsert({
     key: "portal.launch_headline",
     category: "appearance",
     label: "Chamada principal do portal",
-    description: "Texto de destaque exibido na tela principal de Wonderland.",
+    description: "Texto de destaque exibido na tela principal de Wonderland, incluindo o rótulo da temporada.",
     value,
     status: "published",
     updated_by: account.id,
@@ -51,6 +52,7 @@ export async function savePortalHeadlineAction(formData: FormData) {
 export async function restorePortalHeadlineAction(formData: FormData) {
   void formData;
   const resetData = new FormData();
+  resetData.set("seasonLabel", defaultPortalHeadline.seasonLabel);
   resetData.set("firstLine", defaultPortalHeadline.firstLine);
   resetData.set("secondLine", defaultPortalHeadline.secondLine);
   await savePortalHeadlineAction(resetData);

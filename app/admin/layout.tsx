@@ -1,4 +1,5 @@
 import "./admin.css";
+import "./admin-shell-fix.css";
 
 import { AdminSidebar } from "@/components/admin/admin-sidebar";
 import { AdminTopbar } from "@/components/admin/admin-topbar";

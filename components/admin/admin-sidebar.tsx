@@ -9,7 +9,13 @@ import type { CurrentAccount } from "@/lib/auth/roles";
 import { roleLabels } from "@/lib/auth/roles";
 
 const navigation = [
-  { group: "Comando", items: [{ label: "Visão geral", glyph: "01", href: "/admin" }] },
+  {
+    group: "Comando",
+    items: [
+      { label: "Visão geral", glyph: "01", href: "/admin" },
+      { label: "Studio de Criação", glyph: "✦", href: "/admin/estudio" },
+    ],
+  },
   {
     group: "Comunidade",
     items: [
@@ -27,7 +33,6 @@ const navigation = [
     items: [
       { label: "Raças", glyph: "04", href: "/admin/racas" },
       { label: "Classes", glyph: "CL", href: "/admin/classes" },
-      { label: "Chat de conteúdo", glyph: "AI", href: "/admin/importar" },
       { label: "Itens", glyph: "05", href: "/admin/itens" },
       { label: "Missões", glyph: "✥", href: "/admin/missoes" },
       { label: "Controle de Reinos", glyph: "♛", href: "/admin/reinos" },
@@ -35,6 +40,7 @@ const navigation = [
       { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
       { label: "Presença", glyph: "07", href: "/admin/presenca" },
       { label: "Temas", glyph: "◐", href: "/admin/temas" },
+      { label: "Importador técnico", glyph: "AI", href: "/admin/importar" },
     ],
   },
   { group: "Auditoria", items: [{ label: "Histórico", glyph: "08", href: "/admin/historico" }] },
@@ -55,35 +61,17 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
           <div className="admin-sidebar__nav-group" key={section.group}>
             <span className="admin-sidebar__nav-label">{section.group}</span>
             {section.items.map((item) => {
-              const active = item.href
-                ? item.href === "/admin"
-                  ? pathname === item.href
-                  : pathname.startsWith(item.href)
-                : false;
-
-              if (!item.href) {
-                return (
-                  <button
-                    className="admin-sidebar__nav-item"
-                    key={item.label}
-                    type="button"
-                    disabled
-                    title="Será ativado nas próximas etapas"
-                  >
-                    <span>{item.glyph}</span>
-                    {item.label}
-                  </button>
-                );
-              }
+              const active = item.href === "/admin" ? pathname === item.href : pathname.startsWith(item.href.split("#")[0]);
 
               return (
                 <Link
+                  aria-current={active ? "page" : undefined}
                   className={`admin-sidebar__nav-item ${active ? "is-active" : ""}`}
                   href={item.href}
                   key={item.label}
                 >
                   <span>{item.glyph}</span>
-                  {item.label}
+                  <b>{item.label}</b>
                 </Link>
               );
             })}

@@ -5,8 +5,8 @@ export const metadata = { title: "Tela principal | Painel ADM" };
 export const dynamic = "force-dynamic";
 
 const messages: Record<string, string> = {
-  salvo: "✓ Texto da tela principal atualizado.",
-  invalido: "! Preencha as duas linhas usando no máximo 80 caracteres em cada uma.",
+  salvo: "✓ Textos da tela principal atualizados.",
+  invalido: "! Preencha o texto da temporada e as duas linhas da chamada respeitando os limites de caracteres.",
   erro: "! Não foi possível salvar a alteração.",
 };
 
@@ -23,7 +23,7 @@ export default async function AdminPortalPage({
         <div>
           <span className="eyebrow">Portal de entrada</span>
           <h2>Tela principal</h2>
-          <p>Altere a chamada de lançamento exibida sobre o cenário inicial.</p>
+          <p>Altere o texto da temporada e a chamada principal exibidos sobre o cenário inicial.</p>
         </div>
       </header>
 

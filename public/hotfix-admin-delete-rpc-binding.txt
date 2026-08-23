@@ -1,0 +1,1 @@
+Hotfix marker: preserve Supabase rpc binding for admin character deletion.

@@ -69,9 +69,9 @@ export async function deleteCharacterAdminAction(formData: FormData) {
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/personagens?status=erro");
 
-  // O RPC já está versionado em migration e aplicado no Supabase; este cast local
-  // mantém o build compatível até a próxima regeneração completa de lib/db/types.ts.
-  const deleteRpc = client.rpc as unknown as (
+  // O método rpc depende do contexto interno do cliente Supabase. Ao estreitar o tipo,
+  // mantenha-o explicitamente vinculado ao cliente para não perder `this.rest`.
+  const deleteRpc = client.rpc.bind(client) as unknown as (
     fn: "v2_admin_delete_character",
     args: { p_character_id: string },
   ) => Promise<{ error: { message: string } | null }>;

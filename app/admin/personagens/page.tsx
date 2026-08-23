@@ -6,6 +6,7 @@ import { adventureRanks } from "@/lib/game/ranks";
 import { RankBadge } from "@/components/characters/rank-badge";
 import { parseClassPayload } from "@/lib/game/classes";
 import { ItemImageField } from "@/components/admin/item-image-field";
+import { DeleteCharacterButton } from "@/components/admin/delete-character-button";
 
 export const metadata = { title: "Personagens | Painel ADM" };
 export const dynamic = "force-dynamic";
@@ -59,7 +60,9 @@ export default async function AdminCharactersPage({
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
           {query.status === "salvo"
             ? "✓ Personagem atualizado."
-            : `! ${query.mensagem ?? "Não foi possível salvar."}`}
+            : query.status === "excluido"
+              ? "✓ Personagem excluído permanentemente."
+              : `! ${query.mensagem ?? "Não foi possível salvar."}`}
         </div>
       ) : null}
       <section className="admin-character-grid">
@@ -137,6 +140,7 @@ export default async function AdminCharactersPage({
                 />
                 <button className="button button--primary admin-save-character">Salvar personagem</button>
               </form>
+              <DeleteCharacterButton characterId={character.id} characterName={character.name} />
             </article>
           );
         })}

@@ -69,7 +69,14 @@ export async function deleteCharacterAdminAction(formData: FormData) {
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/personagens?status=erro");
 
-  const { error } = await client.rpc("v2_admin_delete_character", {
+  // O RPC já está versionado em migration e aplicado no Supabase; este cast local
+  // mantém o build compatível até a próxima regeneração completa de lib/db/types.ts.
+  const deleteRpc = client.rpc as unknown as (
+    fn: "v2_admin_delete_character",
+    args: { p_character_id: string },
+  ) => Promise<{ error: { message: string } | null }>;
+
+  const { error } = await deleteRpc("v2_admin_delete_character", {
     p_character_id: parsed.data.characterId,
   });
   if (error) {

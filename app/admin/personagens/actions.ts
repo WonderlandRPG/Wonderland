@@ -22,6 +22,8 @@ const schema = z.object({
   classPathKey: z.string().trim(),
 });
 
+const deleteSchema = z.object({ characterId: z.uuid() });
+
 export async function updateCharacterAdminAction(formData: FormData) {
   await requireAdministrativeAccount();
   const parsed = schema.safeParse({
@@ -55,4 +57,35 @@ export async function updateCharacterAdminAction(formData: FormData) {
   revalidatePath(`/personagens/${parsed.data.characterId}`);
   revalidatePath("/ranking");
   redirect("/admin/personagens?status=salvo");
+}
+
+export async function deleteCharacterAdminAction(formData: FormData) {
+  await requireAdministrativeAccount();
+  const parsed = deleteSchema.safeParse({ characterId: formData.get("characterId") });
+  if (!parsed.success) {
+    redirect(`/admin/personagens?status=erro&mensagem=${encodeURIComponent("Personagem inválido para exclusão.")}`);
+  }
+
+  const client = await createServerSupabaseClient();
+  if (!client) redirect("/admin/personagens?status=erro");
+
+  // O RPC já está versionado em migration e aplicado no Supabase; este cast local
+  // mantém o build compatível até a próxima regeneração completa de lib/db/types.ts.
+  const deleteRpc = client.rpc as unknown as (
+    fn: "v2_admin_delete_character",
+    args: { p_character_id: string },
+  ) => Promise<{ error: { message: string } | null }>;
+
+  const { error } = await deleteRpc("v2_admin_delete_character", {
+    p_character_id: parsed.data.characterId,
+  });
+  if (error) {
+    redirect(`/admin/personagens?status=erro&mensagem=${encodeURIComponent(error.message)}`);
+  }
+
+  revalidatePath("/admin/personagens");
+  revalidatePath("/personagens");
+  revalidatePath("/ranking");
+  revalidatePath("/arena");
+  redirect("/admin/personagens?status=excluido");
 }

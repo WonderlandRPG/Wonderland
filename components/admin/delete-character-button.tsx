@@ -20,9 +20,20 @@ export function DeleteCharacterButton({ characterId, characterName }: { characte
         }
         setBusy(true);
       }}
+      style={{ padding: "0 16px 16px" }}
     >
       <input name="characterId" type="hidden" value={characterId} />
-      <button className="button admin-delete-character" disabled={busy} type="submit">
+      <button
+        className="button admin-delete-character"
+        disabled={busy}
+        type="submit"
+        style={{
+          width: "100%",
+          background: "linear-gradient(180deg,#a84a43,#7b302d)",
+          borderColor: "#672622",
+          color: "#fff1df",
+        }}
+      >
         {busy ? "Excluindo…" : "Excluir personagem"}
       </button>
     </form>

@@ -1,0 +1,121 @@
+/* Wonderland — direção visual medieval/mágica definitiva.
+ * Carregada por último para unificar as páginas sem interferir nas regras do jogo.
+ */
+
+:root{
+  --ink:#2c2118;
+  --ink-soft:#66523d;
+  --forest:#163f31;
+  --forest-2:#2d6750;
+  --gold:#bd8b32;
+  --gold-soft:#e0c27d;
+  --parchment:#efe0b8;
+  --parchment-2:#ddc28d;
+  --paper:#fff3d2;
+  --wood:#553522;
+  --wood-dark:#24170f;
+  --line:#9b7748;
+  --shadow:0 22px 60px rgba(24,16,10,.28);
+  --shadow-soft:0 10px 28px rgba(24,16,10,.18);
+}
+
+html{background:#101b16}
+body{
+  color:var(--ink);
+  background-color:#17251e!important;
+  background-image:
+    linear-gradient(180deg,rgba(9,20,15,.42),rgba(22,34,27,.68)),
+    url('/backgrounds/lore.svg')!important;
+}
+body:after{
+  content:'';
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% -15%,rgba(220,188,113,.16),transparent 42%),linear-gradient(90deg,rgba(5,13,9,.3),transparent 20%,transparent 80%,rgba(5,13,9,.3));
+}
+
+/* Navegação: uma barra de salão real, não um painel de aplicativo. */
+.player-nav{
+  border:1px solid #94713b!important;
+  border-radius:8px 8px 16px 16px!important;
+  background:linear-gradient(180deg,rgba(31,67,51,.98),rgba(17,43,32,.98))!important;
+  box-shadow:0 3px 0 #0d241a,0 14px 34px rgba(4,12,8,.35),inset 0 1px rgba(255,240,191,.12)!important;
+}
+.player-nav:before,.player-nav:after{content:'◆';color:#d6b467;font-size:.55rem;opacity:.82}
+.brand-mark__crest{border:1px solid #d7b665!important;background:radial-gradient(circle,#f7e8b8 0 48%,#a97b2e 50% 57%,#234b38 59%)!important;box-shadow:0 0 0 3px rgba(218,187,108,.16),0 0 18px rgba(225,190,104,.2)!important}
+.player-nav__links>a,.player-nav__world-menu>button{border-radius:3px!important;color:#f5e5b8!important}
+.player-nav__links>a:hover,.player-nav__world-menu>button:hover,.player-nav__world-menu.is-open>button{background:linear-gradient(180deg,rgba(231,198,120,.18),rgba(231,198,120,.06))!important;color:#fff7dc!important}
+.player-nav__character>a{border-color:#af8848!important;border-radius:4px 4px 9px 9px!important;background:linear-gradient(180deg,#f2dfaa,#d8ba78)!important;box-shadow:inset 0 0 0 1px rgba(255,249,220,.45)!important}
+#player-world-navigation{border:2px solid #8b6638!important;border-radius:5px 5px 14px 14px!important;background:linear-gradient(135deg,#f6e7bd,#dbc18b)!important;box-shadow:0 20px 50px rgba(5,12,8,.45),inset 0 0 0 3px rgba(91,57,28,.08)!important}
+#player-world-navigation a,#player-world-navigation form button{border-radius:4px!important;background:rgba(255,244,211,.55)!important}
+
+/* Cabeçalhos e superfícies compartilhadas. */
+.world-page__intro{
+  position:relative;
+  overflow:hidden;
+  border:1px solid #a57e45!important;
+  border-radius:5px 5px 22px 22px!important;
+  background:linear-gradient(110deg,rgba(248,233,193,.98),rgba(218,192,139,.96))!important;
+  box-shadow:0 5px 0 rgba(75,47,25,.22),var(--shadow)!important;
+}
+.world-page__intro:after{content:'✦';position:absolute;right:34px;top:50%;transform:translateY(-50%);color:rgba(80,63,34,.1);font-size:8rem;line-height:1}
+.world-page__intro small{color:#326249!important}
+.world-page__intro h1{color:#332317;text-shadow:0 1px #fff0c7}
+.world-page__footer{color:#e1cfa6!important;border-color:rgba(224,194,125,.32)!important;text-align:center;letter-spacing:.12em;text-transform:uppercase}
+
+:where(.panel,.card,.account-card,.character-card,.shop-item,.classic-item-card,.inventory-inspector,.inventory-browser,.ranking-board,.presence-pass,.public-character-summary,.public-character-equipment){border-color:#987345!important;box-shadow:var(--shadow-soft)!important}
+
+button:not(.player-nav__world-backdrop),.button,input[type='submit']{
+  border-color:#8a632f!important;
+  border-radius:4px 4px 9px 9px!important;
+  background:linear-gradient(180deg,#2e654c,#173f2f)!important;
+  color:#fff0c4!important;
+  box-shadow:0 3px 0 #0e2b20,0 8px 18px rgba(18,39,29,.2)!important;
+}
+.button--primary,.button--gold{background:linear-gradient(180deg,#c9953e,#8f6121)!important;box-shadow:0 3px 0 #604017,0 8px 18px rgba(93,62,22,.22)!important}
+input,select,textarea{border-color:#9e7a4a!important;border-radius:4px 4px 9px 9px!important;background:#fff3d2!important;color:#302218!important;box-shadow:inset 0 1px 4px rgba(72,45,22,.11)}
+
+/* Entrada: composição épica com brasão e luz arcana discreta. */
+.home-landing{width:min(1320px,calc(100% - 24px))!important}
+.home-hero{
+  min-height:650px!important;
+  border:1px solid #a78042!important;
+  border-radius:6px 6px 28px 28px!important;
+  background:
+    linear-gradient(90deg,rgba(12,32,24,.96) 0%,rgba(18,47,35,.92) 48%,rgba(20,47,37,.48) 72%,rgba(10,24,18,.7) 100%),
+    url('/images/kingdoms/wonderland-map.webp') center/cover!important;
+  box-shadow:0 5px 0 #0b2118,0 30px 70px rgba(3,11,7,.45)!important;
+  color:#f6e7be;
+}
+.home-hero:before{content:'';position:absolute;inset:14px;border:1px solid rgba(220,184,103,.3);border-radius:2px 2px 20px 20px;pointer-events:none}
+.home-hero:after{right:2%!important;bottom:4%!important;width:420px!important;height:420px!important;background:radial-gradient(circle,rgba(94,195,145,.2),transparent 66%)!important}
+.home-hero__eyebrow{color:#e3c47c!important}
+.home-hero__copy h1{color:#fff1c7;text-shadow:0 3px 18px rgba(0,0,0,.5)}
+.home-hero__copy h1 em{color:#e0b85d!important}
+.home-hero__lead{color:#e5d7b7!important;font-size:1.12rem!important}
+.home-hero__tale{border:1px solid #ba914d;border-radius:50% 50% 12px 12px!important;background:radial-gradient(circle at 50% 30%,rgba(68,129,96,.98),rgba(15,48,35,.98) 66%)!important;box-shadow:0 0 0 6px rgba(205,166,82,.09),0 20px 45px rgba(0,0,0,.35)!important}
+.home-path{position:relative;border-color:#92703f!important;border-radius:5px 5px 16px 16px!important;background:linear-gradient(145deg,rgba(248,232,191,.98),rgba(213,183,124,.98))!important;box-shadow:0 4px 0 rgba(70,43,21,.22),var(--shadow-soft)!important}
+.home-path:before{content:'✦';position:absolute;right:16px;top:13px;color:#9e783d}
+
+/* Áreas de jogo recebem molduras, não cartões tecnológicos arredondados. */
+:where(.mission-board-hero,.presence-hero,.guild-registry-cover,.duelist-banner,.royal-chronicle__edition,.royal-chronicle__archive,.ranking-board,.guild-decrees__intro,.guild-trials-scroll,.public-character-hero,.public-character-summary,.public-character-equipment,.character-create-section,.maintenance-shell){border-radius:5px 5px 18px 18px!important}
+.admin-sidebar{background:linear-gradient(180deg,#173b2c,#0d261c)!important;border-right:1px solid #a17c45!important}
+.admin-topbar,.admin-content>header,.admin-content>.admin-page-header{border-radius:4px 4px 14px 14px!important}
+
+@media(max-width:900px){
+  body{background-attachment:scroll!important}
+  .player-nav:before,.player-nav:after{display:none}
+  .home-hero{min-height:560px!important;background-position:62% center!important}
+}
+@media(max-width:640px){
+  body:after{display:none}
+  .home-hero{min-height:0!important;padding:38px 22px!important;background:linear-gradient(135deg,rgba(12,37,27,.97),rgba(26,66,48,.94))!important}
+  .home-hero:before{inset:8px}
+  .world-page__intro:after{right:8px;font-size:5rem}
+  .world-page__intro h1{position:relative;z-index:1}
+  .player-nav{border-radius:5px 5px 12px 12px!important}
+}
+
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}

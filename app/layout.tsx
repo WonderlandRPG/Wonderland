@@ -13,6 +13,7 @@ import { PlayerPresence } from "@/components/player-presence";
 import "./wonderland-base.css";
 import "./wonderland-repair.css";
 import "./rank-visuals.css";
+import "./wonderland-medieval.css";
 
 export const metadata: Metadata = {
   title: {

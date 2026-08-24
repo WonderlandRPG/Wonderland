@@ -58,24 +58,42 @@ export default async function PresencePage({
       : { count: 0 };
   const completedRewards = Math.min(claimedCount ?? 0, rewards.length);
   const cycleDay = completedRewards < rewards.length ? completedRewards + 1 : rewards.length;
+  const progress = rewards.length ? Math.round((completedRewards / rewards.length) * 100) : 0;
+  const currentReward = rewards[cycleDay - 1];
+  const currentItem = currentReward?.item_id ? items.get(currentReward.item_id) : null;
+  const currentRewardName = currentReward
+    ? currentReward.reward_type === "item" || currentReward.reward_type === "title"
+      ? currentItem?.name ?? (currentReward.reward_type === "title" ? "Título exclusivo" : "Item especial")
+      : `${currentReward.amount.toLocaleString("pt-BR")} ${currentReward.reward_type.toUpperCase()}`
+    : "Ciclo concluído";
 
   return (
     <main className="presence-page">
       <PlayerNav />
       <div className="page-container presence-shell">
-        <header className="presence-hero">
-          <div>
-            <span className="eyebrow">Jornada diária</span>
-            <h1>Passe de Presença</h1>
+        <header className="presence-hero presence-hero--enhanced">
+          <div className="presence-hero__copy">
+            <span className="presence-kicker">✦ Recompensas diárias ✦</span>
+            <h1>Seu retorno<br /><em>merece uma recompensa</em></h1>
             <p>
-              Entre em Wonderland, marque sua presença e avance pelo ciclo de recompensas de{" "}
-              {character.name}.
+              Marque a presença de <strong>{character.name}</strong>, fortaleça sua jornada e avance
+              até o tesouro final deste ciclo.
             </p>
+            <div className="presence-hero__next">
+              <span>Próxima recompensa</span>
+              <strong>{currentRewardName}</strong>
+              <small>{claimedToday ? "Volte amanhã para continuar a jornada" : campaignOpen ? "Disponível para resgate agora" : "A campanha está fora do período"}</small>
+            </div>
           </div>
-          <aside>
-            <small>Progresso preservado</small>
-            <strong>{completedRewards} / {rewards.length} dias</strong>
-            <span>Faltar um dia não apaga nem reinicia suas recompensas.</span>
+          <aside className="presence-progress-card">
+            <div className="presence-progress-card__seal"><span>{completedRewards}</span><small>DIAS</small></div>
+            <small>Progresso da jornada</small>
+            <strong>{progress}% concluído</strong>
+            <div className="presence-progress-bar" aria-label={`${progress}% do ciclo concluído`}>
+              <i style={{ width: `${progress}%` }} />
+            </div>
+            <span><b>{completedRewards}</b> de {rewards.length} recompensas resgatadas</span>
+            <span className="presence-preserved">✓ Seu progresso nunca é reiniciado por faltar um dia.</span>
             {config ? <span>{config.starts_on.split("-").reverse().join("/")} a {config.ends_on.split("-").reverse().join("/")}</span> : null}
           </aside>
         </header>
@@ -91,11 +109,12 @@ export default async function PresencePage({
           </div>
         ) : null}
 
-        <section className="presence-pass">
+        <section className="presence-pass presence-pass--enhanced">
           <header>
             <div>
-              <span className="eyebrow">Ciclo atual</span>
-              <h2>Recompensas da jornada</h2>
+              <span className="presence-kicker">Ciclo atual</span>
+              <h2>Trilha de recompensas</h2>
+              <p>Avance um espaço por dia e alcance o prêmio especial no final.</p>
             </div>
             <form action={claimPresenceRewardAction}>
               <button className="button button--primary" disabled={claimedToday || !rewards.length || !campaignOpen || completedRewards >= rewards.length}>
@@ -114,10 +133,10 @@ export default async function PresencePage({
                     : "future";
               const item = reward.item_id ? items.get(reward.item_id) : null;
               return (
-                <article data-state={state} key={reward.day_number}>
+                <article className={position === rewards.length ? "is-grand-prize" : ""} data-state={state} key={reward.day_number}>
                   <header>
-                    <span>Dia {reward.day_number}</span>
-                    <b>{state === "claimed" ? "✓" : state === "available" ? "Agora" : ""}</b>
+                    <span><i>{reward.day_number}</i> Dia {reward.day_number}</span>
+                    <b>{state === "claimed" ? "✓ Resgatado" : state === "available" ? "Disponível" : "Bloqueado"}</b>
                   </header>
                   <div className="presence-reward-icon" data-type={reward.reward_type}>
                     {reward.reward_type === "item" || reward.reward_type === "title" ? (
@@ -138,6 +157,7 @@ export default async function PresencePage({
                         ? "Experiência do personagem"
                         : "Moeda de Wonderland"}
                   </small>
+                  {position === rewards.length ? <em className="presence-grand-label">✦ TESOURO FINAL ✦</em> : null}
                 </article>
               );
             })}

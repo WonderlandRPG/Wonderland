@@ -90,6 +90,8 @@ export async function saveTitleAdminAction(formData: FormData) {
     details: { name: data.name, attributes, style: payload.title_style },
   });
   revalidatePath("/admin/titulos");
+  revalidatePath("/admin/console");
+  revalidatePath("/admin/eventos");
   revalidatePath("/presenca");
   revalidatePath("/personagens/[id]", "page");
   revalidatePath("/arena");
@@ -105,6 +107,8 @@ export async function deleteTitleAdminAction(formData: FormData) {
   const { error } = await client.rpc("v2_admin_delete_title", { p_title_id: id.data });
   if (error) redirect(`/admin/titulos?status=${encodeURIComponent(error.message)}`);
   revalidatePath("/admin/titulos");
+  revalidatePath("/admin/console");
+  revalidatePath("/admin/eventos");
   revalidatePath("/personagens", "layout");
   revalidatePath("/arena");
   redirect("/admin/titulos?status=excluido");

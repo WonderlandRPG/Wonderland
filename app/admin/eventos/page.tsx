@@ -3,6 +3,7 @@ import { EventRewardFields, type EventRewardDraft } from "@/components/admin/eve
 import { deleteEventAction, saveEventAction } from "./actions";
 
 export const metadata = { title: "Eventos | Painel ADM" };
+export const dynamic = "force-dynamic";
 export default async function AdminEventsPage({
   searchParams,
 }: {

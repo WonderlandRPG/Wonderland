@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import type { Json } from "@/lib/db/types";
 import { createEmptyClassPayload, createClassSlug, parseClassPayload } from "@/lib/game/classes";

@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { EventRewardFields, type EventRewardDraft } from "@/components/admin/event-reward-fields";
 import { deleteEventAction, saveEventAction } from "./actions";
 
 export const metadata = { title: "Eventos | Painel ADM" };
@@ -8,9 +9,18 @@ export default async function AdminEventsPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const client = await createServerSupabaseClient();
-  const [{ data }, query] = await Promise.all([
+  const [{ data }, { data: rewards }, { data: rewardItems }, query] = await Promise.all([
     client
       ? client.from("v2_events").select("*").order("starts_at")
+      : Promise.resolve({ data: [] }),
+    client
+      ? client
+          .from("v2_event_rewards")
+          .select("id,event_id,reward_type,amount,item_id")
+          .order("sort_order")
+      : Promise.resolve({ data: [] }),
+    client
+      ? client.from("v2_shop_items").select("id,name,slot").order("name")
       : Promise.resolve({ data: [] }),
     searchParams,
   ]);
@@ -22,7 +32,9 @@ export default async function AdminEventsPage({
           <h2>Calendário de eventos</h2>
           <p>Adicione eventos e edite o que os jogadores veem.</p>
         </div>
-        <a className="button button--primary" href="#novo-evento">＋ Publicar evento</a>
+        <a className="button button--primary" href="#novo-evento">
+          ＋ Publicar evento
+        </a>
       </header>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
@@ -34,30 +46,51 @@ export default async function AdminEventsPage({
         </div>
       ) : null}
       <section className="admin-composer" id="novo-evento">
-        <header><span>01</span><div><small>NOVA PUBLICAÇÃO</small><h2>Novo evento</h2><p>Preencha os dados abaixo. Você pode publicar agora ou deixar oculto.</p></div></header>
-        <EventForm />
+        <header>
+          <span>01</span>
+          <div>
+            <small>NOVA PUBLICAÇÃO</small>
+            <h2>Novo evento</h2>
+            <p>Preencha os dados abaixo. Você pode publicar agora ou deixar oculto.</p>
+          </div>
+        </header>
+        <EventForm items={rewardItems ?? []} />
       </section>
       <section className="admin-publication-section">
-        <header><div><small>CALENDÁRIO</small><h2>Eventos cadastrados</h2></div><span>{data?.length ?? 0} publicações</span></header>
+        <header>
+          <div>
+            <small>CALENDÁRIO</small>
+            <h2>Eventos cadastrados</h2>
+          </div>
+          <span>{data?.length ?? 0} publicações</span>
+        </header>
         <div className="admin-editor-list">
-        {(data ?? []).map((event) => (
-          <details className="admin-editor-card" key={event.id}>
-            <summary>
-              <span>
-                <small>
-                  {event.event_type} · {new Date(event.starts_at).toLocaleDateString("pt-BR")}
-                </small>
-                <strong>{event.title}</strong>
-              </span>
-              <b>{event.active ? "Publicado" : "Oculto"}</b>
-            </summary>
-            <EventForm event={event} />
-            <form action={deleteEventAction} className="admin-delete-form">
-              <input name="id" type="hidden" value={event.id} />
-              <button className="button button--danger">Apagar evento</button>
-            </form>
-          </details>
-        ))}
+          {(data ?? []).map((event) => (
+            <details className="admin-editor-card" key={event.id}>
+              <summary>
+                <span>
+                  <small>
+                    {event.event_type} · {new Date(event.starts_at).toLocaleDateString("pt-BR")}
+                  </small>
+                  <strong>{event.title}</strong>
+                </span>
+                <b>{event.active ? "Publicado" : "Oculto"}</b>
+              </summary>
+              <EventForm
+                event={event}
+                items={rewardItems ?? []}
+                rewards={
+                  (rewards ?? []).filter(
+                    (reward) => reward.event_id === event.id,
+                  ) as EventRewardDraft[]
+                }
+              />
+              <form action={deleteEventAction} className="admin-delete-form">
+                <input name="id" type="hidden" value={event.id} />
+                <button className="button button--danger">Apagar evento</button>
+              </form>
+            </details>
+          ))}
         </div>
       </section>
     </div>
@@ -65,6 +98,8 @@ export default async function AdminEventsPage({
 }
 function EventForm({
   event,
+  rewards = [],
+  items,
 }: {
   event?: {
     id: string;
@@ -75,6 +110,8 @@ function EventForm({
     registration_label: string;
     active: boolean;
   };
+  rewards?: EventRewardDraft[];
+  items: Array<{ id: string; name: string; slot: string }>;
 }) {
   const localDate = event ? new Date(event.starts_at).toISOString().slice(0, 16) : "";
   return (
@@ -108,6 +145,7 @@ function EventForm({
         <input name="active" type="checkbox" defaultChecked={event?.active ?? true} /> Visível aos
         jogadores
       </label>
+      <EventRewardFields initialRewards={rewards} items={items} />
       <button className="button button--primary">
         {event ? "Salvar alterações" : "Adicionar evento"}
       </button>

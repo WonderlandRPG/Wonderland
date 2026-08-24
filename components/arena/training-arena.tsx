@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/purity, react-hooks/rules-of-hooks -- useSkill/useItem are combat commands, not React hooks. */
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { claimArenaVictoryAction } from "@/app/arena/actions";
@@ -152,7 +153,7 @@ function JrpgBattle({ character, options, rules, mode, monsterIndex, sessionId, 
     const targetCharacter = targetIsPlayer ? character : opponent;
     const generated = applyEventResourceGeneration({ actor: result.actor, target: result.target, actorCharacter: character, targetCharacter, event: result.event, area: areaAction });
     let nextPlayer = targetIsPlayer ? generated.target : generated.actor;
-    let nextEnemy = targetIsPlayer ? enemy : generated.target;
+    const nextEnemy = targetIsPlayer ? enemy : generated.target;
     if (targetIsPlayer && generated.actor.id === player.id) nextPlayer = generated.actor.id === generated.target.id ? generated.target : generated.actor;
     playFx(targetIsPlayer ? "player" : "enemy", result.event);
     const nextUsage = { ...usedActions, [slot]: true };

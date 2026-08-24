@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/immutability -- the turn timeout invokes the stable component command below. */
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";

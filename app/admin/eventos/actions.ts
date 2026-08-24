@@ -16,6 +16,18 @@ const schema = z.object({
   registrationLabel: z.string().trim().min(2).max(80),
 });
 
+const rewardSchema = z
+  .object({
+    rewardType: z.enum(["gold", "xp", "item", "title"]),
+    amount: z.coerce.number().int().min(1).max(999999999),
+    itemId: z.union([z.literal(""), z.uuid()]),
+  })
+  .superRefine((reward, context) => {
+    if (["item", "title"].includes(reward.rewardType) && !reward.itemId) {
+      context.addIssue({ code: "custom", message: "Selecione o item da recompensa." });
+    }
+  });
+
 export async function saveEventAction(formData: FormData) {
   const account = await requireAdministrativeAccount();
   const parsed = schema.safeParse({
@@ -27,6 +39,17 @@ export async function saveEventAction(formData: FormData) {
     registrationLabel: formData.get("registrationLabel"),
   });
   if (!parsed.success) redirect("/admin/eventos?status=erro");
+  const rewardTypes = formData.getAll("rewardType");
+  const rewardAmounts = formData.getAll("rewardAmount");
+  const rewardItemIds = formData.getAll("rewardItemId");
+  const parsedRewards = z.array(rewardSchema).safeParse(
+    rewardTypes.map((rewardType, index) => ({
+      rewardType,
+      amount: rewardAmounts[index],
+      itemId: rewardItemIds[index] ?? "",
+    })),
+  );
+  if (!parsedRewards.success) redirect("/admin/eventos?status=erro");
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/eventos?status=erro");
   const payload = {
@@ -39,15 +62,33 @@ export async function saveEventAction(formData: FormData) {
     updated_at: new Date().toISOString(),
   };
   const result = parsed.data.id
-    ? await client.from("v2_events").update(payload).eq("id", parsed.data.id)
-    : await client.from("v2_events").insert(payload);
+    ? await client.from("v2_events").update(payload).eq("id", parsed.data.id).select("id").single()
+    : await client.from("v2_events").insert(payload).select("id").single();
   if (result.error) redirect("/admin/eventos?status=erro");
+  const eventId = result.data.id;
+  const { error: clearRewardsError } = await client
+    .from("v2_event_rewards")
+    .delete()
+    .eq("event_id", eventId);
+  if (clearRewardsError) redirect("/admin/eventos?status=erro");
+  if (parsedRewards.data.length) {
+    const { error: rewardsError } = await client.from("v2_event_rewards").insert(
+      parsedRewards.data.map((reward, index) => ({
+        event_id: eventId,
+        reward_type: reward.rewardType,
+        amount: reward.amount,
+        item_id: reward.itemId || null,
+        sort_order: index,
+      })),
+    );
+    if (rewardsError) redirect("/admin/eventos?status=erro");
+  }
   await client.from("v2_admin_history").insert({
     actor_id: account.id,
     action: parsed.data.id ? "event.updated" : "event.created",
     target_type: "event",
-    target_id: parsed.data.id || null,
-    details: { title: parsed.data.title },
+    target_id: eventId,
+    details: { title: parsed.data.title, rewards: parsedRewards.data.length },
   });
   revalidatePath("/eventos");
   revalidatePath("/admin/eventos");

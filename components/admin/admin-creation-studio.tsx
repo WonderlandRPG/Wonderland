@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect -- AI action results intentionally hydrate the draft editor. */
 
 import Link from "next/link";
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";

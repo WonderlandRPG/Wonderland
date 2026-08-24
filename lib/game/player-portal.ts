@@ -37,7 +37,7 @@ export async function getShopItems() {
   const { data } = await client
     .from("v2_shop_items")
     .select(
-      "id, slug, name, description, category, price, image_url, slot, rarity, attributes, special_effects, two_handed, sort_order",
+      "id, slug, name, description, category, price, image_url, slot, rarity, attributes, special_effects, two_handed, sort_order, build_key, build_name, recommended_classes",
     )
     .eq("active", true)
     .order("category")

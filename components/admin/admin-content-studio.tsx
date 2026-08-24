@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect -- AI action results intentionally hydrate the selected editor. */
 
 import { useActionState, useEffect, useState, useTransition } from "react";
 import {

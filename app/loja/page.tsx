@@ -32,9 +32,20 @@ export default async function ShopPage({
     searchParams,
   ]);
   const client = await createServerSupabaseClient();
-  const { data: kingdomState } = client ? await client.from("v2_kingdom_states").select("market_stars,penalty_until,shop_markup_percent").eq("kingdom", character.kingdom).maybeSingle() : { data: null };
-  const penaltyActive = Boolean(kingdomState?.penalty_until && new Date(kingdomState.penalty_until) > new Date());
-  const shopMultiplier = 1 - (kingdomState?.market_stars ?? 0) * 0.03 + (penaltyActive ? (kingdomState?.shop_markup_percent ?? 0) * 0.01 : 0);
+  const { data: kingdomState } = client
+    ? await client
+        .from("v2_kingdom_states")
+        .select("market_stars,penalty_until,shop_markup_percent")
+        .eq("kingdom", character.kingdom)
+        .maybeSingle()
+    : { data: null };
+  const penaltyActive = Boolean(
+    kingdomState?.penalty_until && new Date(kingdomState.penalty_until) > new Date(),
+  );
+  const shopMultiplier =
+    1 -
+    (kingdomState?.market_stars ?? 0) * 0.03 +
+    (penaltyActive ? (kingdomState?.shop_markup_percent ?? 0) * 0.01 : 0);
   const items: ShopCatalogItem[] = rows.map((item) => {
     const parsed = attributesSchema.partial().safeParse(item.attributes);
     return {
@@ -51,6 +62,8 @@ export default async function ShopPage({
       attributes: parsed.success ? (parsed.data as Record<string, number>) : {},
       effects: parseItemSpecialEffects(item.special_effects),
       twoHanded: item.two_handed,
+      buildName: item.build_name,
+      recommendedClasses: item.recommended_classes ?? [],
     };
   });
   return (
@@ -96,7 +109,21 @@ export default async function ShopPage({
             </div>
           </div>
         ) : null}
-        {shopMultiplier !== 1 ? <div className={`shop-purchase-notice ${shopMultiplier < 1 ? "is-success" : "is-error"}`}><span>{shopMultiplier < 1 ? "↓" : "↑"}</span><div><strong>{shopMultiplier < 1 ? `Mercado Próspero: ${Math.round((1-shopMultiplier)*100)}% de desconto` : `Consequência de guerra: ${Math.round((shopMultiplier-1)*100)}% de aumento`}</strong><small>O preço exibido já é o valor final exclusivo para os moradores deste reino.</small></div></div> : null}
+        {shopMultiplier !== 1 ? (
+          <div className={`shop-purchase-notice ${shopMultiplier < 1 ? "is-success" : "is-error"}`}>
+            <span>{shopMultiplier < 1 ? "↓" : "↑"}</span>
+            <div>
+              <strong>
+                {shopMultiplier < 1
+                  ? `Mercado Próspero: ${Math.round((1 - shopMultiplier) * 100)}% de desconto`
+                  : `Consequência de guerra: ${Math.round((shopMultiplier - 1) * 100)}% de aumento`}
+              </strong>
+              <small>
+                O preço exibido já é o valor final exclusivo para os moradores deste reino.
+              </small>
+            </div>
+          </div>
+        ) : null}
         <ShopCatalog gold={character.gold} items={items} />
       </div>
     </main>

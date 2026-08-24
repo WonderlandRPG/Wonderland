@@ -365,6 +365,9 @@ export interface Database {
           sort_order: number;
           special_effects: Json;
           title_style: Json;
+          build_key: string | null;
+          build_name: string | null;
+          recommended_classes: string[];
           active: boolean;
           created_at: string;
           updated_at: string;
@@ -384,6 +387,9 @@ export interface Database {
           sort_order?: number;
           special_effects?: Json;
           title_style?: Json;
+          build_key?: string | null;
+          build_name?: string | null;
+          recommended_classes?: string[];
           active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -457,6 +463,34 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["v2_events"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_event_rewards: {
+        Row: {
+          id: string;
+          event_id: string;
+          reward_type: "gold" | "xp" | "item" | "title";
+          amount: number;
+          item_id: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          event_id: string;
+          reward_type: "gold" | "xp" | "item" | "title";
+          amount: number;
+          item_id?: string | null;
+          sort_order?: number;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_event_rewards"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_event_registrations: {
+        Row: { event_id: string; character_id: string; registered_at: string };
+        Insert: { event_id: string; character_id: string; registered_at?: string };
+        Update: Partial<Database["public"]["Tables"]["v2_event_registrations"]["Insert"]>;
         Relationships: [];
       };
       v2_updates: {
@@ -699,6 +733,7 @@ export interface Database {
       };
       v2_set_player_role: { Args: { p_user_id: string; p_role: string }; Returns: undefined };
       v2_claim_daily_reward: { Args: Record<PropertyKey, never>; Returns: Json };
+      v2_register_for_event: { Args: { p_event_id: string }; Returns: Json };
       v2_start_arena_session: { Args: { p_character_id: string; p_mode: string }; Returns: string };
       v2_get_pve_daily_status: { Args: { p_character_id: string }; Returns: Json };
       v2_claim_arena_victory: { Args: { p_session_id: string }; Returns: Json };
@@ -712,8 +747,14 @@ export interface Database {
       };
       v2_get_current_kingdom: { Args: { p_character_id: string }; Returns: Json };
       v2_buy_kingdom_star: { Args: { p_character_id: string; p_area: string }; Returns: Json };
-      v2_declare_kingdom_war: { Args: { p_character_id: string; p_defender: string }; Returns: string };
-      v2_respond_kingdom_war: { Args: { p_character_id: string; p_war_id: string; p_response: string }; Returns: Json };
+      v2_declare_kingdom_war: {
+        Args: { p_character_id: string; p_defender: string };
+        Returns: string;
+      };
+      v2_respond_kingdom_war: {
+        Args: { p_character_id: string; p_war_id: string; p_response: string };
+        Returns: Json;
+      };
       v2_admin_set_kingdom_stars: {
         Args: { p_kingdom: string; p_area: string; p_stars: number };
         Returns: undefined;

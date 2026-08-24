@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect -- selected records intentionally reset their controlled editors. */
 
 import { useActionState, useEffect, useMemo, useState, useTransition } from "react";
 import {
@@ -121,7 +122,7 @@ function BalanceStudio({ settings }: { settings: BalanceSetting[] }) {
       <label className={styles.studioField}><span>Configuração</span><select value={selected.key} onChange={(e) => setSelectedKey(e.target.value)}>{settings.map((setting) => <option key={setting.key} value={setting.key}>{setting.category} · {setting.label}</option>)}</select></label>
       <div className={styles.balanceDescription}><small>{selected.key} · revisão {revision} · {selected.status}</small><strong>{selected.label}</strong><p>{selected.description}</p></div>
       <Field label="Novo valor"><textarea rows={7} value={valueText} onChange={(e) => setValueText(e.target.value)} /></Field>
-      <div className={styles.balanceHelp}><strong>Formato aceito</strong><span>Número: <code>100</code></span><span>Booleano: <code>true</code></span><span>Texto: <code>"valor"</code></span><span>Objeto: <code>{'{"FOR":20,"DEF":20}'}</code></span></div>
+      <div className={styles.balanceHelp}><strong>Formato aceito</strong><span>Número: <code>100</code></span><span>Booleano: <code>true</code></span><span>Texto: <code>&quot;valor&quot;</code></span><span>Objeto: <code>{'{"FOR":20,"DEF":20}'}</code></span></div>
       <button className={styles.operationDanger} disabled={saving} onClick={save} type="button">{saving ? "Aplicando…" : "Confirmar alteração global"}</button>
       {message ? <p className={styles.operationMessage}>{message}</p> : null}
     </article>

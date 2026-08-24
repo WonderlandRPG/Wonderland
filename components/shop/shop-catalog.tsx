@@ -20,6 +20,8 @@ export type ShopCatalogItem = {
   attributes: Record<string, number>;
   effects: Array<{ key: string; name: string; description: string }>;
   twoHanded: boolean;
+  buildName: string | null;
+  recommendedClasses: string[];
 };
 
 const rarityTabs = [
@@ -41,6 +43,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
   const [search, setSearch] = useState("");
   const [rarity, setRarity] = useState("");
   const [slot, setSlot] = useState("");
+  const [recommendedClass, setRecommendedClass] = useState("");
   const [order, setOrder] = useState("featured");
   const [page, setPage] = useState(1);
   const [cart, setCart] = useState<string[]>([]);
@@ -49,6 +52,13 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
     () =>
       [...new Map(items.map((item) => [item.slot, item.slotLabel])).entries()].sort((a, b) =>
         a[1].localeCompare(b[1], "pt-BR"),
+      ),
+    [items],
+  );
+  const recommendedClasses = useMemo(
+    () =>
+      [...new Set(items.flatMap((item) => item.recommendedClasses))].sort((a, b) =>
+        a.localeCompare(b, "pt-BR"),
       ),
     [items],
   );
@@ -62,7 +72,8 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                 normalize(search),
               )) &&
             (!rarity || item.rarity === rarity) &&
-            (!slot || item.slot === slot),
+            (!slot || item.slot === slot) &&
+            (!recommendedClass || item.recommendedClasses.includes(recommendedClass)),
         )
         .sort((a, b) =>
           order === "price-asc"
@@ -73,7 +84,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                 ? a.name.localeCompare(b.name, "pt-BR")
                 : 0,
         ),
-    [items, order, rarity, search, slot],
+    [items, order, rarity, recommendedClass, search, slot],
   );
   const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, pageCount);
@@ -89,6 +100,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
     setSearch("");
     setRarity("");
     setSlot("");
+    setRecommendedClass("");
     setOrder("featured");
     setPage(1);
   };
@@ -126,6 +138,23 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
             />
           </label>
           <label>
+            <span>Classe</span>
+            <select
+              value={recommendedClass}
+              onChange={(event) => {
+                setRecommendedClass(event.target.value);
+                setPage(1);
+              }}
+            >
+              <option value="">Todas</option>
+              {recommendedClasses.map((className) => (
+                <option key={className} value={className}>
+                  {className}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
             <span>Espaço</span>
             <select
               value={slot}
@@ -157,7 +186,7 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
               <option value="name">Nome A–Z</option>
             </select>
           </label>
-          {search || rarity || slot || order !== "featured" ? (
+          {search || rarity || slot || recommendedClass || order !== "featured" ? (
             <button className="shop-controls__clear" onClick={clear} type="button">
               Limpar
             </button>
@@ -193,6 +222,9 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                     <div className="classic-item-card__body">
                       <span>{item.rarityLabel}</span>
                       <h2>{item.name}</h2>
+                      {item.buildName ? (
+                        <small className="classic-item-card__build">Build: {item.buildName}</small>
+                      ) : null}
                       <div className="classic-item-card__stats">
                         {Object.entries(item.attributes)
                           .slice(0, 3)
@@ -202,9 +234,15 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
                             </b>
                           ))}
                       </div>
+                      {item.recommendedClasses.length ? (
+                        <p className="classic-item-card__classes">
+                          Ideal para: {item.recommendedClasses.join(", ")}
+                        </p>
+                      ) : null}
                       {item.effects.slice(0, 2).map((effect) => (
                         <article className="classic-item-card__effect" key={effect.key}>
-                          <b>✦ {effect.name}</b><p>{effect.description}</p>
+                          <b>✦ {effect.name}</b>
+                          <p>{effect.description}</p>
                         </article>
                       ))}
                     </div>
@@ -262,17 +300,29 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
         </section>
         <aside className="shop-cart shop-cart--sidebar">
           <header>
-            <div><span className="eyebrow">Seu carrinho</span><h2>{cart.length} item(ns)</h2></div>
+            <div>
+              <span className="eyebrow">Seu carrinho</span>
+              <h2>{cart.length} item(ns)</h2>
+            </div>
             <strong>{cartTotal.toLocaleString("pt-BR")} WG</strong>
           </header>
-          <small className="shop-cart__balance">Saldo disponível: {gold.toLocaleString("pt-BR")} WG</small>
+          <small className="shop-cart__balance">
+            Saldo disponível: {gold.toLocaleString("pt-BR")} WG
+          </small>
           {cartItems.length ? (
             <>
               <div>
                 {cartItems.map((item, index) => (
-                  <button key={`${item.id}-${index}`} onClick={() => removeFromCart(index)} type="button">
+                  <button
+                    key={`${item.id}-${index}`}
+                    onClick={() => removeFromCart(index)}
+                    type="button"
+                  >
                     <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
-                    <span>{item.name}<small>{item.price.toLocaleString("pt-BR")} WG</small></span>
+                    <span>
+                      {item.name}
+                      <small>{item.price.toLocaleString("pt-BR")} WG</small>
+                    </span>
                     <b>×</b>
                   </button>
                 ))}

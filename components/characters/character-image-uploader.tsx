@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect -- object URL previews are synchronized with the selected file. */
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

@@ -101,7 +101,7 @@ export default async function AdminCreationStudioPage() {
       <AdminCreationStudio aiConfigured={aiConfigured} classes={classes.map(({ id, name, status }) => ({ id, name, status }))} />
       <AdminContentStudio aiConfigured={aiConfigured} existing={{ classes:classDrafts, races, items, titles }} />
       <AdminOperationsStudio aiConfigured={aiConfigured} missions={missions} settings={settings} />
-      <SimpleSkillLibrary classes={classes.map(({draft: _draft, ...entry}) => entry)} />
+      <SimpleSkillLibrary classes={classes.map(({ id, name, status, skills }) => ({ id, name, status, skills }))} />
     </div>
   );
 }

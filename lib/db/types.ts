@@ -446,6 +446,7 @@ export interface Database {
           event_type: string;
           description: string;
           starts_at: string;
+          ends_at: string;
           registration_label: string;
           active: boolean;
           created_at: string;
@@ -457,6 +458,7 @@ export interface Database {
           event_type?: string;
           description?: string;
           starts_at: string;
+          ends_at: string;
           registration_label?: string;
           active?: boolean;
           created_at?: string;
@@ -488,8 +490,8 @@ export interface Database {
         Relationships: [];
       };
       v2_event_registrations: {
-        Row: { event_id: string; character_id: string; registered_at: string };
-        Insert: { event_id: string; character_id: string; registered_at?: string };
+        Row: { event_id: string; character_id: string; user_id: string; rewards_snapshot: Json; registered_at: string };
+        Insert: { event_id: string; character_id: string; user_id: string; rewards_snapshot?: Json; registered_at?: string };
         Update: Partial<Database["public"]["Tables"]["v2_event_registrations"]["Insert"]>;
         Relationships: [];
       };

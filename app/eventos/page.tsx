@@ -45,6 +45,15 @@ export default async function EventsPage({
     month: "short",
     timeZone: "America/Sao_Paulo",
   });
+  const dateTime = new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "America/Sao_Paulo",
+  });
+  const now = Date.now();
   return (
     <PortalShell
       eyebrow="Mural dos Reinos"
@@ -74,7 +83,12 @@ export default async function EventsPage({
         </header>
         <div className="realm-notice-board__wood" aria-hidden="true" />
         <div className="realm-notice-board__papers">
-          {events.map((event, index) => (
+          {events.map((event, index) => {
+            const startsAt = new Date(event.starts_at).getTime();
+            const endsAt = new Date(event.ends_at).getTime();
+            const registrationOpen = now >= startsAt && now <= endsAt;
+            const registrationEnded = now > endsAt;
+            return (
             <article
               className="realm-notice"
               key={event.id}
@@ -89,6 +103,11 @@ export default async function EventsPage({
               <small>{event.event_type}</small>
               <h2>{event.title}</h2>
               <p>{event.description}</p>
+              <div className="realm-notice__period">
+                <span><small>INÍCIO</small><strong>{dateTime.format(new Date(event.starts_at)).replace(".", "")}</strong></span>
+                <i aria-hidden="true">→</i>
+                <span><small>ENCERRAMENTO</small><strong>{dateTime.format(new Date(event.ends_at)).replace(".", "")}</strong></span>
+              </div>
               {(rewards ?? []).some((reward) => reward.event_id === event.id) ? (
                 <ul className="realm-notice__rewards">
                   {(rewards ?? [])
@@ -111,6 +130,10 @@ export default async function EventsPage({
               <footer>
                 {registered.has(event.id) ? (
                   <span>✓ Inscrito</span>
+                ) : !registrationOpen ? (
+                  <span className="realm-notice__closed">
+                    {registrationEnded ? "Inscrições encerradas" : "Inscrições ainda não iniciadas"}
+                  </span>
                 ) : (
                   <form action={registerForEventAction}>
                     <input name="eventId" type="hidden" value={event.id} />
@@ -122,7 +145,8 @@ export default async function EventsPage({
                 <b>AVISO DA GUILDA</b>
               </footer>
             </article>
-          ))}
+            );
+          })}
           {!events.length ? (
             <p className="realm-notice-board__empty">Nenhum aviso foi fixado no mural.</p>
           ) : null}

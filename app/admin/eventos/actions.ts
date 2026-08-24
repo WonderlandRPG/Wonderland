@@ -13,6 +13,7 @@ const schema = z.object({
   eventType: z.string().trim().min(2).max(50),
   description: z.string().trim().max(500),
   startsAt: z.string().min(10),
+  endsAt: z.string().min(10),
   registrationLabel: z.string().trim().min(2).max(80),
 });
 
@@ -36,9 +37,15 @@ export async function saveEventAction(formData: FormData) {
     eventType: formData.get("eventType"),
     description: formData.get("description"),
     startsAt: formData.get("startsAt"),
+    endsAt: formData.get("endsAt"),
     registrationLabel: formData.get("registrationLabel"),
   });
   if (!parsed.success) redirect("/admin/eventos?status=erro");
+  const startsAt = new Date(`${parsed.data.startsAt}:00-03:00`);
+  const endsAt = new Date(`${parsed.data.endsAt}:00-03:00`);
+  if (!Number.isFinite(startsAt.getTime()) || !Number.isFinite(endsAt.getTime()) || endsAt <= startsAt) {
+    redirect("/admin/eventos?status=periodo-invalido");
+  }
   const rewardTypes = formData.getAll("rewardType");
   const rewardAmounts = formData.getAll("rewardAmount");
   const rewardItemIds = formData.getAll("rewardItemId");
@@ -56,7 +63,8 @@ export async function saveEventAction(formData: FormData) {
     title: parsed.data.title,
     event_type: parsed.data.eventType,
     description: parsed.data.description,
-    starts_at: new Date(parsed.data.startsAt).toISOString(),
+    starts_at: startsAt.toISOString(),
+    ends_at: endsAt.toISOString(),
     registration_label: parsed.data.registrationLabel,
     active: formData.get("active") === "on",
     updated_at: new Date().toISOString(),
@@ -88,7 +96,12 @@ export async function saveEventAction(formData: FormData) {
     action: parsed.data.id ? "event.updated" : "event.created",
     target_type: "event",
     target_id: eventId,
-    details: { title: parsed.data.title, rewards: parsedRewards.data.length },
+    details: {
+      title: parsed.data.title,
+      rewards: parsedRewards.data.length,
+      starts_at: startsAt.toISOString(),
+      ends_at: endsAt.toISOString(),
+    },
   });
   revalidatePath("/eventos");
   revalidatePath("/admin/eventos");

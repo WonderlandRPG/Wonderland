@@ -41,6 +41,8 @@ export default async function AdminEventsPage({
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
           {query.status === "salvo"
             ? "✓ Evento salvo."
+            : query.status === "periodo-invalido"
+              ? "! O encerramento precisa acontecer depois do início."
             : query.status === "apagado"
               ? "✓ Evento apagado."
               : "! Revise os dados."}
@@ -108,13 +110,27 @@ function EventForm({
     event_type: string;
     description: string;
     starts_at: string;
+    ends_at: string;
     registration_label: string;
     active: boolean;
   };
   rewards?: EventRewardDraft[];
   items: Array<{ id: string; name: string; slot: string }>;
 }) {
-  const localDate = event ? new Date(event.starts_at).toISOString().slice(0, 16) : "";
+  const localInput = (value?: string) =>
+    value
+      ? new Intl.DateTimeFormat("sv-SE", {
+          timeZone: "America/Sao_Paulo",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+        })
+          .format(new Date(value))
+          .replace(" ", "T")
+      : "";
   return (
     <form action={saveEventAction} className="admin-form">
       <input name="id" type="hidden" value={event?.id ?? ""} />
@@ -127,8 +143,12 @@ function EventForm({
         <input name="eventType" defaultValue={event?.event_type ?? "Comunidade"} required />
       </label>
       <label>
-        <span>Data e hora</span>
-        <input name="startsAt" type="datetime-local" defaultValue={localDate} required />
+        <span>Início das inscrições</span>
+        <input name="startsAt" type="datetime-local" defaultValue={localInput(event?.starts_at)} required />
+      </label>
+      <label>
+        <span>Encerramento das inscrições</span>
+        <input name="endsAt" type="datetime-local" defaultValue={localInput(event?.ends_at)} required />
       </label>
       <label>
         <span>Texto da inscrição</span>

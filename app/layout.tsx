@@ -15,6 +15,7 @@ import "./wonderland-repair.css";
 import "./rank-visuals.css";
 import "./wonderland-medieval.css";
 import "./presence-experience.css";
+import "./event-period.css";
 
 export const metadata: Metadata = {
   title: {

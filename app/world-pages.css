@@ -7,3 +7,72 @@
 .lore-page .world-map__legend{position:absolute!important;left:24px!important;bottom:22px!important;z-index:8!important;display:flex!important;gap:8px;flex-wrap:wrap}.lore-page .world-map__legend span{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;background:rgba(247,226,181,.93);border:1px solid #8c693e;font-size:.68rem}.lore-page .world-map__legend i{width:8px;height:8px;border-radius:50%;background:#315f47}
 .lore-page .world-map__compass{position:absolute!important;right:26px!important;bottom:24px!important;z-index:8!important;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:rgba(247,226,181,.94);border:2px solid #6e4e32;color:#4a3525;box-shadow:0 7px 16px rgba(30,22,15,.18)}.lore-page .world-map__compass b{position:absolute;top:6px}.lore-page .world-map__compass small{position:absolute;bottom:5px}.lore-page .world-map__compass span:first-of-type{position:absolute;left:6px}.lore-page .world-map__compass span:last-of-type{position:absolute;right:6px}
 @media(max-width:760px){.lore-page .world-lore-hero{grid-template-columns:1fr;padding:21px}.lore-page .world-lore-hero>.button{grid-column:1;grid-row:auto;width:100%}.history-reconstruction{margin-top:22px;padding:30px 20px}.lore-page .world-map__legend{left:16px!important;right:16px!important;bottom:14px!important}.lore-page .world-map__compass{display:none!important}.lore-page .world-map__title{top:15px!important;left:15px!important}}
+
+/* Marcadores cartográficos — brasões esmaltados integrados à pintura. */
+.lore-page .world-map__pin{
+  width:42px!important;
+  height:50px!important;
+  z-index:6!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:visible!important;
+  border:0!important;
+  border-radius:0!important;
+  background:
+    radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--realm) 78%,#fff) 0 18%,transparent 19%),
+    linear-gradient(145deg,color-mix(in srgb,var(--realm) 62%,#173a2c),#13291f 72%)!important;
+  clip-path:polygon(50% 0,88% 13%,95% 53%,78% 79%,50% 100%,22% 79%,5% 53%,12% 13%)!important;
+  color:#fff4c8!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 3px 1px rgba(6,13,10,.78)) drop-shadow(0 0 5px rgba(238,202,116,.42))!important;
+  isolation:isolate;
+}
+.lore-page .world-map__pin::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  z-index:-1;
+  clip-path:inherit;
+  background:linear-gradient(145deg,rgba(255,241,190,.42),rgba(255,255,255,.03) 35%,rgba(3,16,11,.4))!important;
+  box-shadow:inset 0 0 0 1px rgba(255,229,157,.78)!important;
+}
+.lore-page .world-map__pin::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  z-index:-2;
+  width:58px;
+  height:58px;
+  border:1px solid color-mix(in srgb,var(--realm) 72%,#f3d58e);
+  border-radius:50%;
+  opacity:.25;
+  transform:translate(-50%,-50%) scale(.68);
+  transition:opacity .2s ease,transform .2s ease;
+}
+.lore-page .world-map__pin b{
+  display:grid!important;
+  place-items:center!important;
+  width:25px!important;
+  height:25px!important;
+  color:#fff4c8!important;
+  font-size:1rem!important;
+  line-height:1!important;
+  text-shadow:0 1px 2px #07140e,0 0 7px var(--realm)!important;
+}
+.lore-page .world-map__pin i{display:none!important}
+.lore-page .world-map__territory:hover .world-map__pin::after,
+.lore-page .world-map__territory:focus-visible .world-map__pin::after{
+  opacity:.72;
+  transform:translate(-50%,-50%) scale(1);
+}
+.lore-page .world-map__territory:hover .world-map__pin,
+.lore-page .world-map__territory:focus-visible .world-map__pin{
+  transform:translate(-50%,-50%) scale(1.08)!important;
+  filter:drop-shadow(0 4px 2px rgba(6,13,10,.82)) drop-shadow(0 0 10px var(--realm))!important;
+}
+@media(max-width:760px){
+  .lore-page .world-map__pin{width:34px!important;height:41px!important}
+  .lore-page .world-map__pin b{width:21px!important;height:21px!important;font-size:.82rem!important}
+  .lore-page .world-map__pin::after{width:46px;height:46px}
+}

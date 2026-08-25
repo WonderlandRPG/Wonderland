@@ -1,0 +1,56 @@
+/* Contraste semântico final — WCAG AA para superfícies do tema Wonderland. */
+:root{--contrast-ink:#2b2119;--contrast-muted:#5e4937;--contrast-light:#fff0c8;--contrast-light-muted:#dfd0ab;--contrast-gold-dark:#765018;--contrast-gold-light:#f1ca69}
+
+/* Pergaminhos e superfícies claras sempre recebem tinta escura. */
+:where(.home-path,.world-lore-hero,.mission-board-hero,.realm-notice,.mission-parchment,
+.guild-registry-cover,.guild-registry-folio,.public-character-hero,.public-character-summary,
+.public-character-stats,.public-character-equipment,.royal-chronicle__edition,
+.royal-chronicle__archive,.royal-chronicle__volume,.guild-decree,.market-empty,
+.inventory-empty,.presence-progress-card,.presence-pass--enhanced,.ranking-podium__place,
+.ranking-table>a,[class*="grimoire_sheet"],[class*="grimoire_index"]){color:var(--contrast-ink)!important}
+:where(.home-path,.world-lore-hero,.mission-board-hero,.realm-notice,.mission-parchment,
+.guild-registry-cover,.guild-registry-folio,.public-character-hero,.public-character-summary,
+.public-character-stats,.public-character-equipment,.royal-chronicle__edition,
+.royal-chronicle__archive,.royal-chronicle__volume,.guild-decree,.market-empty,
+.inventory-empty,.presence-progress-card,.presence-pass--enhanced,.ranking-podium__place,
+.ranking-table>a,[class*="grimoire_sheet"],[class*="grimoire_index"]) :where(h1,h2,h3,h4,strong,b,p,span,small,em,dt,dd){color:inherit}
+:where(.home-path,.world-lore-hero,.mission-board-hero,.realm-notice,.mission-parchment,
+.guild-registry-cover,.public-character-hero,.royal-chronicle__edition,.guild-decree,
+[class*="grimoire_sheet"],[class*="grimoire_index"]) .eyebrow{color:var(--contrast-gold-dark)!important}
+:where(.home-path,.world-lore-hero,.mission-board-hero,.realm-notice,.mission-parchment,
+.guild-registry-cover,.public-character-hero,.royal-chronicle__edition,.guild-decree,
+[class*="grimoire_sheet"],[class*="grimoire_index"]) p{color:var(--contrast-muted)!important}
+
+/* Madeira, verde profundo e painéis de combate sempre recebem texto claro. */
+:where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
+.arena-mode-locked,.arena-game-header,.combat-hud-panel,.arena-message,.shop-cart,
+.market-hero,.ranking-board__header,.ranking-season-banner,.duelist-banner,
+.champions-hall__switcher,.guild-board,.realm-notice-board__wood,.inventory-command__loadout,
+.inventory-inspector,.presence-hero--enhanced,.auth-visual){color:var(--contrast-light)!important}
+:where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
+.arena-mode-locked,.arena-game-header,.combat-hud-panel,.arena-message,.shop-cart,
+.market-hero,.ranking-board__header,.ranking-season-banner,.duelist-banner,
+.champions-hall__switcher,.guild-board,.realm-notice-board__wood,.inventory-command__loadout,
+.inventory-inspector,.presence-hero--enhanced,.auth-visual) :where(h1,h2,h3,h4,strong,b){color:var(--contrast-light)!important}
+:where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
+.arena-mode-locked,.arena-game-header,.combat-hud-panel,.arena-message,.shop-cart,
+.market-hero,.ranking-board__header,.ranking-season-banner,.duelist-banner,
+.champions-hall__switcher,.guild-board,.realm-notice-board__wood,.inventory-command__loadout,
+.inventory-inspector,.presence-hero--enhanced,.auth-visual) :where(p,small,span,em){color:var(--contrast-light-muted)!important}
+:where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
+.arena-game-header,.market-hero,.ranking-board__header,.duelist-banner,
+.presence-hero--enhanced,.auth-visual) .eyebrow{color:var(--contrast-gold-light)!important}
+
+/* Controles preservam o contraste do próprio fundo, sem herdar do painel pai. */
+.button,.player-nav__character>a,.player-nav__links>a,.player-nav__world-menu>button,
+.ranking-filters button,.champions-hall__switcher button,.shop-cart button,
+.inventory-command button,.arena-command-panel button{color:#fff0ca!important}
+.button--ghost,.player-nav__character>a,.ranking-filters button:not(.is-active),
+.champions-hall__switcher button:not(.is-active),.shop-cart>div>button{color:#302319!important}
+input,select,textarea,option{color:#2b2119!important;background-color:#fff3d2!important}
+::placeholder{color:#76624e!important;opacity:1}
+
+/* Ícones dos reinos usam tinta escura quando o fundo é luminoso. */
+.realm-gallery article>span,.realm-gallery article>i,.realm-card__sigil{color:#21372d!important;text-shadow:0 1px rgba(255,255,255,.35)}
+
+@media(forced-colors:active){*{text-shadow:none!important;box-shadow:none!important}}

@@ -27,7 +27,7 @@ function getRouteHeading(pathname: string) {
     ["/admin/titulos", "Jogo", "Títulos"],
     ["/admin/temas", "Aparência", "Temas"],
     ["/admin/reinos", "Mundo", "Controle de Reinos"],
-    ["/admin/console", "Comando", "Console de recompensas"],
+    ["/admin/console", "Comando", "Salão de recompensas"],
     ["/admin/balanceamento", "Jogo", "Balanceamento"],
     ["/admin/presenca", "Jogo", "Recompensas de presença"],
     ["/admin/historico", "Auditoria", "Histórico administrativo"],

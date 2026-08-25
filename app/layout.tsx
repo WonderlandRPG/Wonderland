@@ -18,6 +18,7 @@ import "./presence-experience.css";
 import "./event-period.css";
 import "./ranking-experience.css";
 import "./site-experience.css";
+import "./contrast-guard.css";
 
 export const metadata: Metadata = {
   title: {

@@ -16,7 +16,7 @@ export function PortalHeadlineEditor({ initial }: { initial: { seasonLabel: stri
     </form>
     <aside className="admin-portal-preview">
       <div className="admin-portal-preview__sky" aria-hidden="true"><i/><i/><i/></div>
-      <div className="admin-portal-preview__content"><span className="eyebrow">{seasonLabel || "Temporada inaugural"}</span><small>WONDERLAND RPG // CRIE SUA LENDA</small><strong>{firstLine || "Primeira linha"}</strong><b>{secondLine || "Segunda linha"}</b><em>A alteração aparece imediatamente na entrada do site.</em></div>
+      <div className="admin-portal-preview__content"><span className="eyebrow">{seasonLabel || "Temporada inaugural"}</span><small>WONDERLAND RPG · CRIE SUA LENDA</small><strong>{firstLine || "Primeira linha"}</strong><b>{secondLine || "Segunda linha"}</b><em>A alteração aparece imediatamente na entrada do site.</em></div>
     </aside>
   </section>;
 }

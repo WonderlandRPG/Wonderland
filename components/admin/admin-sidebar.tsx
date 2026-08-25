@@ -25,7 +25,7 @@ const navigation = [
       { label: "Publicar atualização", glyph: "＋", href: "/admin/atualizacoes#nova-atualizacao" },
       { label: "Jogadores", glyph: "02", href: "/admin/jogadores" },
       { label: "Personagens", glyph: "03", href: "/admin/personagens" },
-      { label: "Console de recompensas", glyph: ">_", href: "/admin/console" },
+      { label: "Salão de recompensas", glyph: "✦", href: "/admin/console" },
     ],
   },
   {

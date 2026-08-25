@@ -133,6 +133,7 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
   let enemy = state.fighters[enemyId];
   if (!actor || !enemy)
     return { ok: false as const, message: "Estado da batalha inválido." };
+  actor = { ...actor, basicAttackDamageType: character.basicAttackDamageType };
 
   let message = "";
   let resourceEvent: ResourceEvent | null = null;

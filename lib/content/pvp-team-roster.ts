@@ -154,7 +154,7 @@ export async function getPvpTeamRoster(matchId: string) {
       raceResource: race.data.resource,
       usesMana: [...skills, ...raceAbilities].some((skill) => skill.resource === "mana"),
       basicAttackRange: getClassBasicAttackRange(classRow.name),
-      basicAttackDamageType: getClassBasicAttackDamageType(characterClass.data),
+      basicAttackDamageType: getClassBasicAttackDamageType(classRow.name, characterClass.data),
       attributes: stats.attributes,
       skills,
       raceAbilities,

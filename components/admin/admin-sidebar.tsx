@@ -53,7 +53,7 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
     <aside className="admin-sidebar">
       <div className="admin-sidebar__brand">
         <BrandMark inverse />
-        <span className="admin-sidebar__edition">Command OS / v2</span>
+        <span className="admin-sidebar__edition">Livro de Comando · v2</span>
       </div>
 
       <nav className="admin-sidebar__nav" aria-label="Seções administrativas">

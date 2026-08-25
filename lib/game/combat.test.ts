@@ -187,6 +187,35 @@ describe("motor de combate", () => {
     expect(result.targets.every((target, index) => target.hp < targets[index].hp)).toBe(true);
   });
 
+  it("usa a afinidade da classe no ataque básico, não o maior atributo atual", () => {
+    const physicalKnight = createCombatant({
+      id: "cavaleiro",
+      name: "Cavaleiro",
+      attributes: { ...attributes, FOR: 40, INT: 180 },
+      baseHp: 300,
+      baseMana: 0,
+      basicAttackDamageType: "physical",
+    });
+    const magicalMage = createCombatant({
+      id: "mago",
+      name: "Mago",
+      attributes: { ...attributes, FOR: 180, INT: 40 },
+      baseHp: 300,
+      baseMana: 0,
+      basicAttackDamageType: "magic",
+    });
+    const target = createCombatant({
+      id: "alvo-afinidade",
+      name: "Alvo",
+      attributes,
+      baseHp: 300,
+      baseMana: 0,
+    });
+
+    expect(resolveBasicAttack(physicalKnight, target).event.damageType).toBe("physical");
+    expect(resolveBasicAttack(magicalMage, target).event.damageType).toBe("magic");
+  });
+
   it("resolve ataque básico, habilidade, Mana e recarga", () => {
     const actor = createCombatant({
       id: "a",

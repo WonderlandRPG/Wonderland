@@ -3,7 +3,33 @@ import type { AttributeKey } from "@/lib/game/schemas";
 
 export type BasicAttackDamageType = "physical" | "magic";
 
-export function getClassBasicAttackDamageType(payload: ClassPayload): BasicAttackDamageType {
+const basicAttackDamageTypeByClass: Record<string, BasicAttackDamageType> = {
+  barbaro: "physical",
+  guerreiro: "physical",
+  paladino: "physical",
+  cavaleiro: "physical",
+  arqueiro: "physical",
+  assassino: "physical",
+  ladino: "physical",
+  monge: "physical",
+  ninja: "physical",
+  mago: "magic",
+  feiticeiro: "magic",
+  bruxo: "magic",
+  clerigo: "magic",
+  druida: "magic",
+  bardo: "magic",
+  alquimista: "magic",
+  necromante: "magic",
+};
+
+export function getClassBasicAttackDamageType(
+  className: string,
+  payload: ClassPayload,
+): BasicAttackDamageType {
+  const classDamageType = basicAttackDamageTypeByClass[normalizeName(className)];
+  if (classDamageType) return classDamageType;
+
   const primary = new Set(payload.primaryAttributes);
   if (primary.has("FOR") && !primary.has("INT")) return "physical";
   if (primary.has("INT") && !primary.has("FOR")) return "magic";

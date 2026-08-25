@@ -6,6 +6,10 @@ import { registerForEventAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
+function getServerTimestamp() {
+  return Date.now();
+}
+
 export default async function EventsPage({
   searchParams,
 }: {
@@ -53,7 +57,7 @@ export default async function EventsPage({
     minute: "2-digit",
     timeZone: "America/Sao_Paulo",
   });
-  const now = Date.now();
+  const now = getServerTimestamp();
   return (
     <PortalShell
       eyebrow="Mural dos Reinos"

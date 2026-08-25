@@ -5,6 +5,10 @@ body{background-color:#c9c8b5;background-image:radial-gradient(circle at 12% 8%,
 .eyebrow{letter-spacing:.12em;font-weight:900}
 .button{transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
 .button:hover{transform:translateY(-2px);filter:saturate(1.06)}
+.player-nav .brand-mark__crest{width:56px!important;height:56px!important;flex-basis:56px!important;padding:3px!important;border:2px solid #ddb85d!important;background:radial-gradient(circle,#fff2bd,#cda44d)!important;box-shadow:inset 0 0 0 3px #315f47,0 4px 12px rgba(23,16,10,.3)!important}
+.player-nav .brand-mark__crest{overflow:hidden!important}
+.player-nav .brand-mark__crest img{width:48px!important;height:48px!important;object-fit:contain!important;transform:scale(1.28)}
+.player-nav .brand-mark__copy strong{font-size:1.22rem!important}.player-nav .brand-mark__copy small{color:#dec99a!important}
 
 /* Entrada */
 .home-landing{width:min(1280px,calc(100% - 28px));padding:20px 0 76px}

@@ -221,7 +221,7 @@ export function InventoryWorkbench({
                   type="button"
                 >
                   <div>
-                    <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
+                    <ItemArtwork imageUrl={item.imageUrl} name={item.name} rarity={item.rarity} slot={item.slot} />
                     {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
                   </div>
                   <small>{item.rarityLabel} · {item.slotLabel}</small>
@@ -270,7 +270,7 @@ export function InventoryWorkbench({
                 )}
               </header>
               <div className="inventory-inspector__glyph">
-                <ItemArtwork name={selected.name} rarity={selected.rarity} slot={selected.slot} />
+                <ItemArtwork imageUrl={selected.imageUrl} name={selected.name} rarity={selected.rarity} slot={selected.slot} />
               </div>
               <p>{selected.description}</p>
               <dl>

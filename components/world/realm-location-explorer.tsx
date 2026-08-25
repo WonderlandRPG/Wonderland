@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent as ReactKeyboardEvent,
+  type ReactNode,
+} from "react";
 
 import {
   findRealmLocationsInText,
@@ -18,13 +25,19 @@ function openLocation(key: string) {
   window.dispatchEvent(new CustomEvent(locationEvent, { detail: { key } }));
 }
 
+function openLocationFromKeyboard(event: ReactKeyboardEvent, key: string) {
+  if (event.key !== "Enter" && event.key !== " ") return;
+  event.preventDefault();
+  openLocation(key);
+}
+
 function artworkStyle(location: RealmLocation) {
   const { columns, rows, column, row } = location.grid;
   const x = columns === 1 ? 50 : (column / (columns - 1)) * 100;
   const y = rows === 1 ? 50 : (row / (rows - 1)) * 100;
   return {
     "--location-image": `url("${location.image}")`,
-    "--location-size": `${columns * 101.5}% ${rows * 101.5}%`,
+    "--location-size": `${columns * 100}% ${rows * 100}%`,
     "--location-position": `${x}% ${y}%`,
   } as CSSProperties;
 }
@@ -53,16 +66,18 @@ export function RealmLocationText({
     if (index < cursor) return;
     if (index > cursor) content.push(text.slice(cursor, index));
     content.push(
-      <button
+      <span
         className={`${styles.mention} ${variant === "title" ? styles.mentionTitle : ""}`}
         key={`${location.key}-${index}`}
         onClick={() => openLocation(location.key)}
+        onKeyDown={(event) => openLocationFromKeyboard(event, location.key)}
+        role="button"
+        tabIndex={0}
         title={`Conhecer ${location.name}`}
-        type="button"
       >
         {location.name}
         <span aria-hidden="true">↗</span>
-      </button>,
+      </span>,
     );
     cursor = index + location.name.length;
   });

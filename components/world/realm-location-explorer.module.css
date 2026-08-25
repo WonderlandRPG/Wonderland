@@ -1,14 +1,7 @@
 .mention {
   display: inline;
-  margin: 0;
-  padding: 0;
-  border: 0;
   border-bottom: 1px dashed currentColor;
-  background: none;
   color: inherit;
-  font: inherit;
-  line-height: inherit;
-  text-align: inherit;
   cursor: pointer;
 }
 
@@ -16,6 +9,8 @@
 .mention:focus-visible {
   color: #176646;
   border-bottom-style: solid;
+  outline: 2px solid rgba(23, 102, 70, 0.35);
+  outline-offset: 2px;
 }
 
 .mention > span {
@@ -70,8 +65,7 @@
 }
 
 .card {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
+  display: block;
   min-width: 0;
   padding: 0;
   overflow: hidden;
@@ -103,7 +97,8 @@
 }
 
 .artwork {
-  min-height: 150px;
+  width: 100%;
+  aspect-ratio: 5 / 3;
 }
 
 .cardCopy {
@@ -152,8 +147,8 @@
 .modal {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
-  width: min(980px, 100%);
+  grid-template-columns: minmax(0, 5fr) minmax(340px, 3fr);
+  width: min(1120px, 100%);
   max-height: min(760px, calc(100vh - 40px));
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--realm) 68%, #f4e1b7);
@@ -165,7 +160,8 @@
 }
 
 .modalArtwork {
-  min-height: 510px;
+  aspect-ratio: 5 / 3;
+  min-height: 0;
   background-color: #17211d;
 }
 
@@ -181,8 +177,9 @@
 
 .modalCopy h2 {
   margin: 0;
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  line-height: 0.98;
+  font-size: clamp(1.8rem, 3.2vw, 3rem);
+  line-height: 1;
+  overflow-wrap: anywhere;
 }
 
 .modalCopy p {
@@ -251,7 +248,7 @@
   }
 
   .modalArtwork {
-    min-height: min(54vw, 360px);
+    min-height: 0;
   }
 }
 
@@ -265,11 +262,11 @@
   }
 
   .card {
-    grid-template-columns: 112px minmax(0, 1fr);
+    display: block;
   }
 
   .artwork {
-    min-height: 138px;
+    min-height: 0;
   }
 
   .cardCopy {

@@ -15,6 +15,7 @@ function atlasLocations(
   columns: number,
   rows: number,
   locations: readonly LocationCopy[],
+  startIndex = 0,
 ): RealmLocation[] {
   return locations.map(([key, name, description], index) => ({
     key,
@@ -25,8 +26,8 @@ function atlasLocations(
     grid: {
       columns,
       rows,
-      column: index % columns,
-      row: Math.floor(index / columns),
+      column: (index + startIndex) % columns,
+      row: Math.floor((index + startIndex) / columns),
     },
   }));
 }
@@ -38,10 +39,10 @@ export const realmLocations: readonly RealmLocation[] = [
     realmKey: "aokigahara",
     description:
       "Um bosque antigo onde raízes arqueadas formam corredores naturais. Quando o vento atravessa seus veios de Mana, a madeira produz um coro grave que os moradores usam para prever mudanças na floresta.",
-    image: "/images/locations/aokigahara-bosque-raizes-cantantes.webp",
-    grid: { columns: 1, rows: 1, column: 0, row: 0 },
+    image: "/images/locations/aokigahara-locations-v2.webp",
+    grid: { columns: 2, rows: 5, column: 0, row: 0 },
   },
-  ...atlasLocations("aokigahara", "/images/locations/aokigahara-locations-atlas.webp", 3, 3, [
+  ...atlasLocations("aokigahara", "/images/locations/aokigahara-locations-v2.webp", 2, 5, [
     [
       "jardins-ervas-lunares",
       "Jardins de Ervas Lunares",
@@ -87,8 +88,8 @@ export const realmLocations: readonly RealmLocation[] = [
       "Círculo dos Sacerdotes Verdes",
       "Clareira cerimonial de pedra e raízes onde os sacerdotes interpretam a vontade da floresta e protegem os ritos da Árvore Imponente.",
     ],
-  ]),
-  ...atlasLocations("darkya", "/images/locations/darkya-locations-atlas.webp", 2, 5, [
+  ], 1),
+  ...atlasLocations("darkya", "/images/locations/darkya-locations-v2.webp", 2, 5, [
     [
       "aqueduto-garoa-cinzenta",
       "Aqueduto da Garoa Cinzenta",
@@ -140,7 +141,7 @@ export const realmLocations: readonly RealmLocation[] = [
       "Entrada monumental da capital, construída com camadas de ferro marcado pelo tempo. Suas luzes âmbar permanecem acesas durante toda a noite chuvosa.",
     ],
   ]),
-  ...atlasLocations("oymyakon", "/images/locations/oymyakon-locations-atlas.webp", 2, 5, [
+  ...atlasLocations("oymyakon", "/images/locations/oymyakon-locations-v2.webp", 2, 5, [
     [
       "mina-diamante-boreal",
       "Mina do Diamante Boreal",
@@ -192,7 +193,7 @@ export const realmLocations: readonly RealmLocation[] = [
       "Antiga galeria de mineração abandonada após um desabamento. Trilhos congelados e lampiões ocasionais indicam que o lugar não está completamente vazio.",
     ],
   ]),
-  ...atlasLocations("lesedi", "/images/locations/lesedi-locations-atlas.webp", 2, 5, [
+  ...atlasLocations("lesedi", "/images/locations/lesedi-locations-v2.webp", 2, 5, [
     [
       "oasis-frutas-vidro",
       "Oásis das Frutas de Vidro",
@@ -244,7 +245,7 @@ export const realmLocations: readonly RealmLocation[] = [
       "Poço profundo cercado por plantas medicinais raras. A comunidade controla cuidadosamente a água que mantém esse jardim vivo.",
     ],
   ]),
-  ...atlasLocations("namida", "/images/locations/namida-locations-atlas.webp", 2, 5, [
+  ...atlasLocations("namida", "/images/locations/namida-locations-v2.webp", 2, 5, [
     [
       "jardim-corais-luminosos",
       "Jardim dos Corais Luminosos",
@@ -296,7 +297,7 @@ export const realmLocations: readonly RealmLocation[] = [
       "Fortificação natural marcada por estátuas antigas. Portões bioluminescentes controlam o acesso às águas internas do reino.",
     ],
   ]),
-  ...atlasLocations("skypiece", "/images/locations/skypiece-locations-atlas.webp", 2, 5, [
+  ...atlasLocations("skypiece", "/images/locations/skypiece-locations-v2.webp", 2, 5, [
     [
       "ponte-arco-iris",
       "Ponte do Arco-Íris",

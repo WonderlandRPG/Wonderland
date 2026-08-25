@@ -42,6 +42,7 @@ export interface DerivedStats {
 export interface CombatantState {
   id: string;
   name: string;
+  basicAttackDamageType?: "physical" | "magic";
   attributes: CombatAttributes;
   maxHp: number;
   hp: number;

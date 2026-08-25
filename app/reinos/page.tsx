@@ -2,6 +2,10 @@ import { PlayerNav } from "@/components/player-nav";
 import Image from "next/image";
 import Link from "next/link";
 import { WorldMap } from "@/components/world/world-map";
+import {
+  RealmLocationAtlas,
+  RealmLocationModalHost,
+} from "@/components/world/realm-location-explorer";
 import { realmLore } from "@/lib/game/world-lore";
 export const metadata = { title: "Reinos de Wonderland" };
 export default function RealmsPage() {
@@ -94,6 +98,7 @@ export default function RealmsPage() {
                   </section>
                 ) : null}
               </div>
+              <RealmLocationAtlas realmKey={realm.key} />
               {realm.resources || realm.materials ? (
                 <footer>
                   {realm.resources ? (
@@ -122,6 +127,7 @@ export default function RealmsPage() {
           ))}
         </section>
       </div>
+      <RealmLocationModalHost />
     </main>
   );
 }

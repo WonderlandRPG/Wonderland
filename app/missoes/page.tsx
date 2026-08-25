@@ -1,5 +1,9 @@
 import Link from "next/link";
 import { PlayerNav } from "@/components/player-nav";
+import {
+  RealmLocationModalHost,
+  RealmLocationText,
+} from "@/components/world/realm-location-explorer";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { kingdomMissionNames, parseMissionBoard } from "@/lib/game/missions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -104,8 +108,12 @@ export default async function MissionBoardPage({
           >
             <span className="mission-paper-pin" />
             <small>CONTRATO ASSINADO · MISSÃO EM ANDAMENTO</small>
-            <h2>{board.activeAssignment.name}</h2>
-            <p>{board.activeAssignment.objective}</p>
+            <h2>
+              <RealmLocationText text={board.activeAssignment.name} variant="title" />
+            </h2>
+            <p>
+              <RealmLocationText text={board.activeAssignment.objective} />
+            </p>
             <footer>
               <span>
                 Aceita em {new Date(board.activeAssignment.acceptedAt).toLocaleString("pt-BR")}
@@ -152,11 +160,17 @@ export default async function MissionBoardPage({
                       PROVA DE ASCENSÃO · RANK {mission.promotionRank}
                     </div>
                   ) : null}
-                  <h2>{mission.name}</h2>
-                  <p>{mission.description}</p>
+                  <h2>
+                    <RealmLocationText text={mission.name} variant="title" />
+                  </h2>
+                  <p>
+                    <RealmLocationText text={mission.description} />
+                  </p>
                   <blockquote>
                     <small>DIREÇÃO DA CENA</small>
-                    <span>{mission.objective}</span>
+                    <span>
+                      <RealmLocationText text={mission.objective} />
+                    </span>
                   </blockquote>
                   <dl>
                     <div>
@@ -196,6 +210,7 @@ export default async function MissionBoardPage({
           <span>04 · Contratos retornam após 7 dias</span>
         </footer>
       </div>
+      <RealmLocationModalHost />
     </main>
   );
 }

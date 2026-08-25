@@ -15,6 +15,12 @@ export async function registerForEventAction(formData: FormData) {
   if (!client) redirect("/eventos?inscricao=erro");
   const { data, error } = await client.rpc("v2_register_for_event", { p_event_id: eventId.data });
   if (error) {
+    console.error("[event-registration] rpc failed", {
+      code: error.code,
+      details: error.details,
+      message: error.message,
+      eventId: eventId.data,
+    });
     const status = error.message.toLocaleLowerCase("pt-BR").includes("já inscrito")
       ? "existente"
       : "erro";

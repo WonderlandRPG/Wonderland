@@ -46,18 +46,25 @@ export async function createAuthenticatedServerSupabaseClient() {
   const cookieClient = await createServerSupabaseClient();
   if (!cookieClient) return null;
 
-  const [{ data: claimsData, error: claimsError }, { data: sessionData, error: sessionError }] =
-    await Promise.all([cookieClient.auth.getClaims(), cookieClient.auth.getSession()]);
-  const subject = typeof claimsData?.claims?.sub === "string" ? claimsData.claims.sub : "";
-  const session = sessionData.session;
+  // As chamadas precisam ser sequenciais: ambas podem atualizar a sessão em
+  // cookie e executá-las em paralelo deixa o segundo leitor com estado obsoleto.
+  const { data: userData, error: userError } = await cookieClient.auth.getUser();
+  if (userError || !userData.user?.id) {
+    console.error("[supabase-authenticated-client] user validation failed", {
+      code: userError?.code,
+      status: userError?.status,
+    });
+    return null;
+  }
 
-  if (
-    claimsError ||
-    sessionError ||
-    !subject ||
-    !session?.access_token ||
-    session.user.id !== subject
-  ) {
+  const { data: sessionData, error: sessionError } = await cookieClient.auth.getSession();
+  const accessToken = sessionData.session?.access_token;
+  if (sessionError || !accessToken) {
+    console.error("[supabase-authenticated-client] session token unavailable", {
+      code: sessionError?.code,
+      status: sessionError?.status,
+      userId: userData.user.id,
+    });
     return null;
   }
 
@@ -69,7 +76,7 @@ export async function createAuthenticatedServerSupabaseClient() {
       persistSession: false,
     },
     global: {
-      headers: { Authorization: `Bearer ${session.access_token}` },
+      headers: { Authorization: `Bearer ${accessToken}` },
     },
   });
 }

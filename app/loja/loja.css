@@ -37,7 +37,7 @@
 .market-page .classic-item-card__select{display:grid!important;grid-template-columns:108px minmax(0,1fr)!important;gap:10px!important;padding:12px!important;min-width:0!important}
 .market-page .classic-item-card__art{display:grid!important;grid-template-rows:1fr auto!important;gap:5px!important;align-items:center!important;justify-items:center!important;min-height:145px!important;padding:8px!important;border-radius:11px!important;background:#e3d1a8!important;overflow:hidden!important}
 .market-page .classic-item-card__art svg{width:86px!important;height:86px!important}
-.market-page .classic-item-card__art .is-image{display:block!important;width:86px!important;height:86px!important;background:center/contain no-repeat!important}
+.market-page .classic-item-card__art .is-image{display:block!important;width:86px!important;height:86px!important;background-position:center!important;background-size:contain!important;background-repeat:no-repeat!important}
 .market-page .classic-item-card__art small{font-size:.58rem!important;text-transform:uppercase!important;text-align:center!important}
 .market-page .classic-item-card__body{min-width:0!important}
 .market-page .classic-item-card__body>span{font-size:.58rem!important;text-transform:uppercase!important;color:#7b6549!important}

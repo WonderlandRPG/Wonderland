@@ -1,7 +1,284 @@
 /* Wonderland · Missões — mural e gerenciamento. */
-.mission-page .mission-board-shell,.mission-page .mission-management{padding-bottom:72px}.mission-page .mission-board-hero,.mission-page .mission-management>header{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center;padding:26px;border:1px solid #8f704a;border-radius:20px;background:linear-gradient(145deg,#e7ce9d,#cfad78);box-shadow:0 15px 34px rgba(47,32,18,.14)}.mission-page .mission-board-hero h1,.mission-page .mission-management>header h1{margin:4px 0 8px;font-size:clamp(3rem,6vw,5rem)}.mission-page .mission-board-hero p,.mission-page .mission-management>header p{max-width:760px;margin:0}
-.mission-page .mission-board-progress,.mission-page .mission-active-contract,.mission-page .mission-lockout,.mission-page .mission-notice{margin-top:13px;padding:14px 16px;border:1px solid #a68960;border-radius:13px;background:#f1dfb7}.mission-page .mission-notice.is-success{border-color:#789078;background:#dce6d5}.mission-page .mission-notice.is-warning,.mission-page .mission-lockout{border-color:#a36a57;background:#efd1bf}
-.mission-page .guild-board{margin-top:18px;padding:24px;border:10px solid #65452d;border-radius:15px;background:linear-gradient(90deg,#875d39,#9b7047,#805635);box-shadow:0 20px 40px rgba(47,31,17,.2)}.mission-page .guild-board__grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.mission-page .mission-parchment{position:relative;display:grid;align-content:start;gap:8px;min-height:290px;padding:23px 20px 18px;border:1px solid #b4915e;border-radius:4px;background:#f7e6b9;color:#3d2d21;box-shadow:4px 8px 15px rgba(47,31,17,.18)}.mission-page .mission-paper-pin{position:absolute;top:8px;left:50%;width:12px;height:12px;border-radius:50%;background:#783f34;transform:translateX(-50%);box-shadow:0 2px 3px rgba(0,0,0,.25)}.mission-page .mission-parchment__head{display:flex;justify-content:space-between;gap:8px;align-items:start;margin-top:5px}.mission-page .mission-parchment h2{margin:3px 0;font-size:1.45rem}.mission-page .mission-parchment p{margin:0;font-size:.86rem;line-height:1.45}.mission-page .mission-parchment dl{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:4px 0}.mission-page .mission-parchment dl>div{padding:7px;border-radius:7px;background:#e8d4a8}.mission-page .mission-parchment dt{font-size:.55rem;text-transform:uppercase}.mission-page .mission-parchment dd{margin:2px 0 0;font-weight:800}.mission-page .mission-parchment form{margin-top:auto}.mission-page .mission-parchment .button{width:100%}.mission-page .mission-trial-ribbon{display:inline-flex;width:max-content;padding:5px 8px;border-radius:7px;background:#6a3f45;color:#f7dfac;font-size:.62rem;font-weight:800}.mission-page .mission-board-rules{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.mission-page .mission-board-rules>div,.mission-page .mission-board-rules>article{flex:1 1 230px;padding:12px;border:1px solid #a98b60;border-radius:12px;background:#f1ddb2}
-.mission-page .mission-ledger{margin-top:16px;overflow:hidden;border:1px solid #94754f;border-radius:17px;background:#ecd8ad;box-shadow:0 12px 28px rgba(46,31,18,.11)}.mission-page .mission-ledger>header,.mission-page .mission-ledger>article{display:grid;grid-template-columns:minmax(170px,1.25fr) minmax(110px,.7fr) minmax(200px,1.45fr) minmax(120px,.8fr) minmax(190px,1fr);gap:10px;align-items:center;min-width:850px}.mission-page .mission-ledger>header{padding:10px 14px;background:#6a4a31;color:#f8e5b9;font-size:.61rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}.mission-page .mission-ledger>article{padding:13px 14px;border-top:1px solid rgba(99,73,43,.16);background:#fff0ca}.mission-page .mission-ledger>article:nth-of-type(even){background:#f6e5bc}.mission-page .mission-ledger article>div{display:grid;gap:2px}.mission-page .mission-ledger article small{font-size:.65rem;color:#765e44}.mission-page .mission-ledger article form{display:grid;grid-template-columns:1fr 1fr;gap:5px}.mission-page .mission-ledger article form button{min-height:34px;padding:5px 8px;box-shadow:none;font-size:.7rem}.mission-page .mission-ledger .is-complete{background:#315f47;border-color:#244a37}.mission-page .mission-ledger .is-failed{background:#7b443b;border-color:#61342d}.mission-page .mission-ledger__empty{padding:45px 20px;text-align:center}.mission-page .mission-ledger__empty>span{display:grid;place-items:center;width:60px;height:60px;margin:auto;border-radius:50%;background:#315f47;color:#fff0c9;font-size:1.6rem}.mission-page .mission-ledger__empty h2{margin:10px 0 5px}
-@media(max-width:980px){.mission-page .guild-board__grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mission-page .mission-ledger{overflow-x:auto}}
-@media(max-width:620px){.mission-page .mission-board-hero,.mission-page .mission-management>header{grid-template-columns:1fr;padding:20px}.mission-page .mission-management>header .button{width:100%}.mission-page .guild-board{padding:17px 10px;border-width:8px}.mission-page .guild-board__grid{grid-template-columns:1fr}.mission-page .mission-parchment{min-height:0}.mission-page .mission-parchment dl{grid-template-columns:1fr}.mission-page .mission-ledger>header{display:none}.mission-page .mission-ledger>article{min-width:0;grid-template-columns:1fr;padding:16px}.mission-page .mission-ledger article form{grid-template-columns:1fr 1fr}}
+.mission-page .mission-board-shell,
+.mission-page .mission-management {
+  padding-bottom: 72px;
+}
+.mission-page .mission-board-hero,
+.mission-page .mission-management > header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  padding: 26px;
+  border: 1px solid #8f704a;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #e7ce9d, #cfad78);
+  box-shadow: 0 15px 34px rgba(47, 32, 18, 0.14);
+}
+.mission-page .mission-board-hero h1,
+.mission-page .mission-management > header h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(3rem, 6vw, 5rem);
+}
+.mission-page .mission-board-hero p,
+.mission-page .mission-management > header p {
+  max-width: 760px;
+  margin: 0;
+}
+.mission-page .mission-board-progress,
+.mission-page .mission-active-contract,
+.mission-page .mission-lockout,
+.mission-page .mission-notice {
+  margin-top: 13px;
+  padding: 14px 16px;
+  border: 1px solid #a68960;
+  border-radius: 13px;
+  background: #f1dfb7;
+}
+.mission-page .mission-notice.is-success {
+  border-color: #789078;
+  background: #dce6d5;
+}
+.mission-page .mission-notice.is-warning,
+.mission-page .mission-lockout {
+  border-color: #a36a57;
+  background: #efd1bf;
+}
+.mission-page .guild-board {
+  margin-top: 18px;
+  padding: 24px;
+  border: 10px solid #65452d;
+  border-radius: 15px;
+  background: linear-gradient(90deg, #875d39, #9b7047, #805635);
+  box-shadow: 0 20px 40px rgba(47, 31, 17, 0.2);
+}
+.mission-page .guild-board__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.mission-page .mission-parchment {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 290px;
+  padding: 23px 20px 18px;
+  border: 1px solid #b4915e;
+  border-radius: 4px;
+  background: #f7e6b9;
+  color: #3d2d21;
+  box-shadow: 4px 8px 15px rgba(47, 31, 17, 0.18);
+}
+.mission-page .mission-paper-pin {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #783f34;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25);
+}
+.mission-page .mission-parchment__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: start;
+  margin-top: 5px;
+}
+.mission-page .mission-parchment h2 {
+  margin: 3px 0;
+  font-size: 1.45rem;
+}
+.mission-page .mission-parchment p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+.mission-page .mission-parchment blockquote {
+  display: grid;
+  gap: 5px;
+}
+.mission-page .mission-parchment blockquote small {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.mission-page .mission-parchment blockquote span {
+  display: block;
+  line-height: 1.42;
+}
+.mission-page .mission-parchment dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin: 4px 0;
+}
+.mission-page .mission-parchment dl > div {
+  padding: 7px;
+  border-radius: 7px;
+  background: #e8d4a8;
+}
+.mission-page .mission-parchment dt {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+}
+.mission-page .mission-parchment dd {
+  margin: 2px 0 0;
+  font-weight: 800;
+}
+.mission-page .mission-parchment form {
+  margin-top: auto;
+}
+.mission-page .mission-parchment .button {
+  width: 100%;
+}
+.mission-page .mission-trial-ribbon {
+  display: inline-flex;
+  width: max-content;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: #6a3f45;
+  color: #f7dfac;
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+.mission-page .mission-board-rules {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.mission-page .mission-board-rules > div,
+.mission-page .mission-board-rules > article {
+  flex: 1 1 230px;
+  padding: 12px;
+  border: 1px solid #a98b60;
+  border-radius: 12px;
+  background: #f1ddb2;
+}
+.mission-page .mission-ledger {
+  margin-top: 16px;
+  overflow: hidden;
+  border: 1px solid #94754f;
+  border-radius: 17px;
+  background: #ecd8ad;
+  box-shadow: 0 12px 28px rgba(46, 31, 18, 0.11);
+}
+.mission-page .mission-ledger > header,
+.mission-page .mission-ledger > article {
+  display: grid;
+  grid-template-columns:
+    minmax(170px, 1.25fr) minmax(110px, 0.7fr) minmax(200px, 1.45fr) minmax(120px, 0.8fr)
+    minmax(190px, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 850px;
+}
+.mission-page .mission-ledger > header {
+  padding: 10px 14px;
+  background: #6a4a31;
+  color: #f8e5b9;
+  font-size: 0.61rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.mission-page .mission-ledger > article {
+  padding: 13px 14px;
+  border-top: 1px solid rgba(99, 73, 43, 0.16);
+  background: #fff0ca;
+}
+.mission-page .mission-ledger > article:nth-of-type(even) {
+  background: #f6e5bc;
+}
+.mission-page .mission-ledger article > div {
+  display: grid;
+  gap: 2px;
+}
+.mission-page .mission-ledger article small {
+  font-size: 0.65rem;
+  color: #765e44;
+}
+.mission-page .mission-ledger article form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+.mission-page .mission-ledger article form button {
+  min-height: 34px;
+  padding: 5px 8px;
+  box-shadow: none;
+  font-size: 0.7rem;
+}
+.mission-page .mission-ledger .is-complete {
+  background: #315f47;
+  border-color: #244a37;
+}
+.mission-page .mission-ledger .is-failed {
+  background: #7b443b;
+  border-color: #61342d;
+}
+.mission-page .mission-ledger__empty {
+  padding: 45px 20px;
+  text-align: center;
+}
+.mission-page .mission-ledger__empty > span {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin: auto;
+  border-radius: 50%;
+  background: #315f47;
+  color: #fff0c9;
+  font-size: 1.6rem;
+}
+.mission-page .mission-ledger__empty h2 {
+  margin: 10px 0 5px;
+}
+@media (max-width: 980px) {
+  .mission-page .guild-board__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .mission-page .mission-ledger {
+    overflow-x: auto;
+  }
+}
+@media (max-width: 620px) {
+  .mission-page .mission-board-hero,
+  .mission-page .mission-management > header {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+  .mission-page .mission-management > header .button {
+    width: 100%;
+  }
+  .mission-page .guild-board {
+    padding: 17px 10px;
+    border-width: 8px;
+  }
+  .mission-page .guild-board__grid {
+    grid-template-columns: 1fr;
+  }
+  .mission-page .mission-parchment {
+    min-height: 0;
+  }
+  .mission-page .mission-parchment dl {
+    grid-template-columns: 1fr;
+  }
+  .mission-page .mission-ledger > header {
+    display: none;
+  }
+  .mission-page .mission-ledger > article {
+    min-width: 0;
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+  .mission-page .mission-ledger article form {
+    grid-template-columns: 1fr 1fr;
+  }
+}

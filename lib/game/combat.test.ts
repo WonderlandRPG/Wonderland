@@ -10,6 +10,7 @@ import {
   getEffectiveAttributes,
   getConvertedResourceBonus,
   guardCombatant,
+  isBeneficialStatusOperation,
   resolveBasicAttack,
   resolveAreaSkill,
   resolveSkill,
@@ -24,6 +25,21 @@ import {
 const attributes = { FOR: 100, DEF: 100, RES: 100, INI: 60, INT: 80, ARC: 70 };
 
 describe("motor de combate", () => {
+  it("classifica modificadores negativos como prejudiciais mesmo com alvo incorreto", () => {
+    const bard = officialClasses.find((entry) => entry.slug === "bardo")!;
+    const defenseBreak = bard.payload.progression.find(
+      (skill) => skill.key === "refrao-dissonante",
+    )!.operations[0];
+    expect(isBeneficialStatusOperation(defenseBreak)).toBe(false);
+    expect(
+      isBeneficialStatusOperation({
+        ...defenseBreak,
+        operation: "BUFF",
+        target: "self",
+      }),
+    ).toBe(false);
+  });
+
   it("aplica efeitos estruturados diferentes de itens no início da batalha", () => {
     const combatant = createCombatant({
       id: "item-test",

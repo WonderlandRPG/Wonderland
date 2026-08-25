@@ -201,6 +201,7 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
   if (!character) return { ok: false as const, message: "Personagem ativo não encontrado." };
 
   let actor = state.fighters[actorId];
+  actor = { ...actor, basicAttackDamageType: character.basicAttackDamageType };
   const action = parsedAction.data;
   const usage = state.turnActions ?? createTurnActionUsage();
   const nextUsage = { ...usage };

@@ -13,6 +13,7 @@ import "./entry-hotfix.css";
 import "./combat-immersion.css";
 import "./combat-clarity.css";
 import "./pvp-party.css";
+import "./arena-rework.css";
 
 export default function ArenaLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

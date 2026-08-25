@@ -11,24 +11,20 @@ type LocationCopy = readonly [key: string, name: string, description: string];
 
 function atlasLocations(
   realmKey: string,
-  image: string,
-  columns: number,
-  rows: number,
+  _image: string,
+  _columns: number,
+  _rows: number,
   locations: readonly LocationCopy[],
-  startIndex = 0,
+  _startIndex = 0,
 ): RealmLocation[] {
-  return locations.map(([key, name, description], index) => ({
+  void _startIndex;
+  return locations.map(([key, name, description]) => ({
     key,
     name,
     realmKey,
     description,
-    image,
-    grid: {
-      columns,
-      rows,
-      column: (index + startIndex) % columns,
-      row: Math.floor((index + startIndex) / columns),
-    },
+    image: `/images/locations/hq/${realmKey}/${key}.webp`,
+    grid: { columns: 1, rows: 1, column: 0, row: 0 },
   }));
 }
 
@@ -39,8 +35,8 @@ export const realmLocations: readonly RealmLocation[] = [
     realmKey: "aokigahara",
     description:
       "Um bosque antigo onde raízes arqueadas formam corredores naturais. Quando o vento atravessa seus veios de Mana, a madeira produz um coro grave que os moradores usam para prever mudanças na floresta.",
-    image: "/images/locations/aokigahara-locations-v2.webp",
-    grid: { columns: 2, rows: 5, column: 0, row: 0 },
+    image: "/images/locations/hq/aokigahara/bosque-raizes-cantantes.webp",
+    grid: { columns: 1, rows: 1, column: 0, row: 0 },
   },
   ...atlasLocations("aokigahara", "/images/locations/aokigahara-locations-v2.webp", 2, 5, [
     [

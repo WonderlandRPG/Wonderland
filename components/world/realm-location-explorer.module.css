@@ -66,12 +66,15 @@
 
 .card {
   display: block;
+  box-sizing: border-box;
   min-width: 0;
   padding: 0;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--realm) 35%, #9d8057);
   border-radius: 14px;
-  background: #fff0ca;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.34), transparent 48%),
+    #f7e4b7;
   color: #3d3024;
   text-align: left;
   cursor: pointer;
@@ -87,6 +90,11 @@
   box-shadow: 0 11px 22px rgba(48, 34, 20, 0.16);
 }
 
+.card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--realm) 72%, #ffffff);
+  outline-offset: 2px;
+}
+
 .artwork,
 .modalArtwork {
   display: block;
@@ -98,7 +106,7 @@
 
 .artwork {
   width: 100%;
-  aspect-ratio: 5 / 3;
+  aspect-ratio: 3 / 2;
 }
 
 .cardCopy {
@@ -117,7 +125,7 @@
 .cardCopy > span {
   display: -webkit-box;
   overflow: hidden;
-  color: #655541;
+  color: #4b3b2c;
   font-size: 0.75rem;
   line-height: 1.4;
   -webkit-box-orient: vertical;
@@ -125,7 +133,7 @@
 }
 
 .cardCopy small {
-  color: #315f47;
+  color: #176646;
   font-size: 0.64rem;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -160,7 +168,7 @@
 }
 
 .modalArtwork {
-  aspect-ratio: 5 / 3;
+  aspect-ratio: 3 / 2;
   min-height: 0;
   background-color: #17211d;
 }

@@ -1,4 +1,4 @@
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -20,9 +20,13 @@ describe("realm location atlas", () => {
   });
 
   it("maps every location to a valid artwork crop", () => {
+    expect(new Set(realmLocations.map((location) => location.image)).size).toBe(60);
     for (const location of realmLocations) {
-      expect(existsSync(join(process.cwd(), "public", location.image.slice(1)))).toBe(true);
+      const artworkPath = join(process.cwd(), "public", location.image.slice(1));
+      expect(existsSync(artworkPath)).toBe(true);
+      expect(statSync(artworkPath).size).toBeGreaterThan(30_000);
       expect(location.description.length).toBeGreaterThan(60);
+      expect(location.grid).toEqual({ columns: 1, rows: 1, column: 0, row: 0 });
       expect(location.grid.column).toBeGreaterThanOrEqual(0);
       expect(location.grid.column).toBeLessThan(location.grid.columns);
       expect(location.grid.row).toBeGreaterThanOrEqual(0);

@@ -32,13 +32,10 @@ function openLocationFromKeyboard(event: ReactKeyboardEvent, key: string) {
 }
 
 function artworkStyle(location: RealmLocation) {
-  const { columns, rows, column, row } = location.grid;
-  const x = columns === 1 ? 50 : (column / (columns - 1)) * 100;
-  const y = rows === 1 ? 50 : (row / (rows - 1)) * 100;
   return {
     "--location-image": `url("${location.image}")`,
-    "--location-size": `${columns * 100}% ${rows * 100}%`,
-    "--location-position": `${x}% ${y}%`,
+    "--location-size": "cover",
+    "--location-position": "center",
   } as CSSProperties;
 }
 
@@ -98,11 +95,13 @@ export function RealmLocationAtlas({ realmKey }: { realmKey: string }) {
       </header>
       <div className={styles.grid}>
         {locations.map((location) => (
-          <button
+          <article
             className={styles.card}
             key={location.key}
             onClick={() => openLocation(location.key)}
-            type="button"
+            onKeyDown={(event) => openLocationFromKeyboard(event, location.key)}
+            role="button"
+            tabIndex={0}
           >
             <span aria-hidden="true" className={styles.artwork} style={artworkStyle(location)} />
             <span className={styles.cardCopy}>
@@ -110,7 +109,7 @@ export function RealmLocationAtlas({ realmKey }: { realmKey: string }) {
               <span>{location.description}</span>
               <small>Ver local ↗</small>
             </span>
-          </button>
+          </article>
         ))}
       </div>
     </section>

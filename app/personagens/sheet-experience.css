@@ -57,6 +57,10 @@
 .inventory-hud .inventory-slot-column>button>span small{color:#cab88f!important}
 .inventory-hud .inventory-slot-column>button>span strong{color:#fff0c9!important}
 .inventory-hud .inventory-slot-column>button>span em{color:#e7bd65!important}
+.inventory-hud .inventory-slot-column>button{grid-template-columns:50px minmax(0,1fr)!important}
+.inventory-hud .inventory-slot-column>button>.inventory-slot-art{display:grid!important;place-items:center!important;width:46px!important;height:46px!important;overflow:hidden!important;border:1px solid rgba(232,202,132,.48)!important;border-radius:10px!important;background:radial-gradient(circle,#f6e6b9,#caa96c)!important}
+.inventory-hud .inventory-slot-column>button>.inventory-slot-art>span{width:100%!important;height:100%!important;border:0!important;border-radius:0!important;background:transparent!important}
+.inventory-hud .inventory-slot-column>button>.inventory-slot-art [role="img"]{background-size:contain!important;mix-blend-mode:multiply!important;filter:drop-shadow(0 3px 3px rgba(27,20,13,.2))!important}
 .inventory-hud .inventory-character-card__caption{background:rgba(17,42,31,.9)!important;border-color:#aa8549!important;color:#fff0c9!important}
 .inventory-hud .inventory-character-card__caption small{color:#cfbd96!important}
 

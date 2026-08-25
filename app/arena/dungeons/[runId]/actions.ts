@@ -180,6 +180,7 @@ export async function performDungeonAction(runId: string, expectedVersion: numbe
 
   const character = partyMetadata[actorId];
   let actor = state.fighters[actorId];
+  actor = { ...actor, basicAttackDamageType: character.basicAttackDamageType };
   let monster = state.monster;
   let message = "";
   let resourceEvent: ResourceEvent | null = null;

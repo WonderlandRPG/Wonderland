@@ -788,6 +788,8 @@ export interface Database {
           defeats: number;
           win_rate: number;
           title_name: string | null;
+          title_style: Json | null;
+          title_rarity: string | null;
         }>;
       };
       v2_my_pvp_history: {
@@ -820,6 +822,8 @@ export interface Database {
           kingdom: string;
           adventure_rank: string;
           title_name: string | null;
+          title_style: Json | null;
+          title_rarity: string | null;
         }>;
       };
       v2_equip_inventory_item: {

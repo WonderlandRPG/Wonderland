@@ -4,18 +4,28 @@ import Link from "next/link";
 import { useState } from "react";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { RankBadge } from "@/components/characters/rank-badge";
+import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
 import { kingdomName } from "@/lib/game/kingdoms";
 import type { RankingEntry } from "@/lib/game/player-portal";
 
 const rankOrder = ["Todos", "E", "D", "C", "B", "A", "S", "EX"] as const;
 const adventureRankOrder = ["E", "D", "C", "B", "A", "S", "EX"] as const;
 
-function titleData(title?: string | null) {
-  return title ? { name: title, rarity: "title", titleStyle: null } : null;
+function titleData(entry: Pick<RankingEntry, "title_name" | "title_style" | "title_rarity">): EquippedTitleData | null {
+  if (!entry.title_name) return null;
+  const style = entry.title_style;
+  const titleStyle = style && typeof style === "object" && !Array.isArray(style)
+    ? {
+        primary: String(style.primary ?? "#fff1b5"),
+        secondary: String(style.secondary ?? "#1f7a4c"),
+        glow: String(style.glow ?? "#d7ad45"),
+      }
+    : null;
+  return { name: entry.title_name, rarity: entry.title_rarity ?? "title", titleStyle };
 }
 
-function PlayerTitle({ title }: { title?: string | null }) {
-  return title ? <em className="ranking-equipped-title">✦ {title}</em> : null;
+function PlayerTitle({ entry }: { entry: RankingEntry }) {
+  return <EquippedTitle title={titleData(entry)} />;
 }
 
 export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
@@ -81,16 +91,16 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
                 level={entry.level}
                 name={entry.name}
                 rank={entry.adventure_rank}
-                title={titleData(entry.title_name)}
+                title={titleData(entry)}
                 variant="standard"
               />
             </span>
             <div>
               <small>{position === 1 ? "Líder da temporada" : `${position}º colocado`}</small>
               <h3>{entry.name}</h3>
-              <PlayerTitle title={entry.title_name} />
+              <PlayerTitle entry={entry} />
               <p>{entry.race_name} · {entry.class_name}</p>
-              <strong>Nível {entry.level}</strong>
+              <strong className="ranking-podium__score">Nível {entry.level} <small>{entry.xp.toLocaleString("pt-BR")} XP</small></strong>
             </div>
           </Link>
         ))}
@@ -114,8 +124,8 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
             <Link href={`/jogadores/${entry.id}`} key={entry.id} role="row">
               <strong className="ranking-position">#{entry.rank}</strong>
               <span className="ranking-player-cell">
-                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry.title_name)} variant="compact" />
-                <span><b>{entry.name}</b><PlayerTitle title={entry.title_name} /><small>{entry.race_name} · {entry.class_name}</small></span>
+                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} variant="compact" />
+                <span><b>{entry.name}</b><PlayerTitle entry={entry} /><small>{entry.race_name} · {entry.class_name}</small></span>
               </span>
               <span className="ranking-kingdom">{kingdomName(entry.kingdom)}</span>
               <span className="ranking-level"><b>Nível {entry.level}</b><small>{entry.xp.toLocaleString("pt-BR")} XP</small></span>

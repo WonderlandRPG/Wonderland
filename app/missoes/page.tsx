@@ -155,7 +155,7 @@ export default async function MissionBoardPage({
                   <h2>{mission.name}</h2>
                   <p>{mission.description}</p>
                   <blockquote>
-                    <small>OBJETIVO</small>
+                    <small>DIREÇÃO DA CENA</small>
                     <span>{mission.objective}</span>
                   </blockquote>
                   <dl>

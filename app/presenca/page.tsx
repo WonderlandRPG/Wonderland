@@ -105,6 +105,8 @@ export default async function PresencePage({
           >
             {query.status === "resgatado"
               ? "✓ Recompensa enviada para o personagem."
+              : query.status === "ja_marcada"
+                ? "✓ A presença deste personagem já foi marcada hoje. Volte amanhã para avançar novamente."
               : "! Não foi possível resgatar. Verifique se a presença de hoje já foi marcada."}
           </div>
         ) : null}

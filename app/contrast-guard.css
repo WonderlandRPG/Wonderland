@@ -37,6 +37,16 @@
 .market-hero,.ranking-board__header,.ranking-season-banner,.duelist-banner,
 .champions-hall__switcher,.guild-board,.realm-notice-board__wood,.inventory-command__loadout,
 .inventory-inspector,.presence-hero--enhanced,.auth-visual) :where(p,small,span,em){color:var(--contrast-light-muted)!important}
+
+/* O pergaminho fica dentro da moldura escura do mural, mas continua sendo uma
+   superfície clara. Esta regra precisa vencer a herança visual da .guild-board. */
+.guild-board .mission-parchment,
+.guild-board .mission-parchment :where(h1,h2,h3,h4,strong,b,p,span,small,em,dt,dd,blockquote){
+  color:var(--contrast-ink)!important;
+}
+.guild-board .mission-parchment p{color:var(--contrast-muted)!important}
+.guild-board .mission-parchment .mission-trial-ribbon{color:#f7dfac!important}
+.guild-board .mission-parchment button{color:#fff0ca!important}
 :where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
 .arena-game-header,.market-hero,.ranking-board__header,.duelist-banner,
 .presence-hero--enhanced,.auth-visual) .eyebrow{color:var(--contrast-gold-light)!important}

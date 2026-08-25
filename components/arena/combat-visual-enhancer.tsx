@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { visualFromStatusText, type CombatStatusIconKey } from "@/lib/game/combat-status-visual";
+import {
+  COMBAT_STATUS_ICON_PATHS,
+  visualFromStatusText,
+  type CombatStatusIconKey,
+} from "@/lib/game/combat-status-visual";
 
 function appendLegacyIcon(
   dock: HTMLElement,
@@ -11,6 +15,7 @@ function appendLegacyIcon(
     title: string;
     marker: string;
     duration: string;
+    label: string;
   },
 ) {
   const icon = document.createElement("span");
@@ -20,13 +25,28 @@ function appendLegacyIcon(
   const glyph = document.createElement("span");
   glyph.className = `combat-status-glyph combat-status-glyph--${options.iconKey}`;
   glyph.setAttribute("aria-hidden", "true");
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("focusable", "false");
+  COMBAT_STATUS_ICON_PATHS[options.iconKey].forEach((data) => {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", data);
+    svg.append(path);
+  });
+  glyph.append(svg);
 
-  const marker = document.createElement("i");
+  const marker = document.createElement("span");
+  marker.className = "combat-status-marker";
   marker.textContent = options.marker;
+  const label = document.createElement("span");
+  label.className = "combat-status-name";
+  label.textContent = options.label;
   const duration = document.createElement("small");
+  duration.className = "combat-status-duration";
   duration.textContent = options.duration;
 
-  icon.append(glyph, marker, duration);
+  icon.setAttribute("aria-label", options.title);
+  icon.append(glyph, marker, label, duration);
   dock.append(icon);
 }
 
@@ -81,6 +101,7 @@ function buildLegacyStatusDock(fighter: HTMLElement) {
       title: `Escudo ativo · ${shieldText || "proteção temporária"}`,
       marker: "+",
       duration: shieldText.split("/")[0]?.trim() || "ON",
+      label: "Escudo",
     });
   }
 
@@ -93,6 +114,7 @@ function buildLegacyStatusDock(fighter: HTMLElement) {
       title: text,
       marker: visual.kind === "buff" ? "↑" : "↓",
       duration: duration ? `${duration}T` : "ON",
+      label: visual.label,
     });
     hasBuff ||= visual.kind === "buff";
     hasDebuff ||= visual.kind === "debuff";

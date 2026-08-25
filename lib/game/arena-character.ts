@@ -42,7 +42,10 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
     raceResource: character.race.payload.resource,
     usesMana,
     basicAttackRange: getClassBasicAttackRange(character.characterClass.name),
-    basicAttackDamageType: getClassBasicAttackDamageType(character.characterClass.payload),
+    basicAttackDamageType: getClassBasicAttackDamageType(
+      character.characterClass.name,
+      character.characterClass.payload,
+    ),
     attributes: character.stats.attributes,
     skills,
     raceAbilities,

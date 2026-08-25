@@ -4,6 +4,7 @@ import {
   calculateDamage,
   calculateScaledPower,
   getEffectiveAttributes,
+  isBeneficialStatusOperation,
   resolveSkill,
   type CombatAttributes,
   type CombatEvent,
@@ -21,14 +22,8 @@ function operationTarget(
   return targetKind === "self" || targetKind === "source" ? actor : target;
 }
 
-function replaceCombatant(
-  actor: CombatantState,
-  target: CombatantState,
-  receiver: CombatantState,
-) {
-  return receiver.id === actor.id
-    ? { actor: receiver, target }
-    : { actor, target: receiver };
+function replaceCombatant(actor: CombatantState, target: CombatantState, receiver: CombatantState) {
+  return receiver.id === actor.id ? { actor: receiver, target } : { actor, target: receiver };
 }
 
 function statusKey(operation: ClassSkill["operations"][number], skill: ClassSkill) {
@@ -50,7 +45,10 @@ function applySecondaryOperation(
   const actorAttributes = getEffectiveAttributes(actor);
   const power =
     operation.base +
-    calculateScaledPower(actorAttributes, operation.scaling.length ? operation.scaling : skill.scaling);
+    calculateScaledPower(
+      actorAttributes,
+      operation.scaling.length ? operation.scaling : skill.scaling,
+    );
   const receiver = operationTarget(actor, target, operation.target);
 
   if (operation.operation === "DAMAGE") {
@@ -91,9 +89,10 @@ function applySecondaryOperation(
 
   if (operation.operation === "REMOVE_STATUS") {
     const statuses = { ...receiver.statuses };
-    const key = operation.status && operation.status !== "negative"
-      ? operation.status
-      : Object.entries(statuses).find(([, value]) => !value.beneficial)?.[0];
+    const key =
+      operation.status && operation.status !== "negative"
+        ? operation.status
+        : Object.entries(statuses).find(([, value]) => !value.beneficial)?.[0];
     if (key) delete statuses[key];
     const next = { ...receiver, statuses };
     return {
@@ -113,11 +112,17 @@ function applySecondaryOperation(
     const next = useRace
       ? {
           ...receiver,
-          raceResource: Math.max(0, Math.min(receiver.maxRaceResource, receiver.raceResource + sign * delta)),
+          raceResource: Math.max(
+            0,
+            Math.min(receiver.maxRaceResource, receiver.raceResource + sign * delta),
+          ),
         }
       : {
           ...receiver,
-          classResource: Math.max(0, Math.min(receiver.maxClassResource, receiver.classResource + sign * delta)),
+          classResource: Math.max(
+            0,
+            Math.min(receiver.maxClassResource, receiver.classResource + sign * delta),
+          ),
         };
     return {
       ...replaceCombatant(actor, target, next),
@@ -132,13 +137,7 @@ function applySecondaryOperation(
   ) as Partial<CombatAttributes>;
   const duration = Math.max(1, operation.duration || skill.duration || 1);
   const key = statusKey(operation, skill);
-  const beneficial =
-    operation.target === "self" ||
-    operation.target === "source" ||
-    operation.target === "ally" ||
-    operation.operation === "BUFF" ||
-    operation.operation === "REACTION" ||
-    operation.operation === "SUMMON";
+  const beneficial = isBeneficialStatusOperation(operation);
   const next = {
     ...receiver,
     statuses: {
@@ -197,7 +196,8 @@ export function resolveJrpgSkill(
     nextTarget = result.target;
     messages.push(result.message);
     total += result.amount;
-    if (result.kind === "damage" || result.kind === "heal" || result.kind === "shield") kind = result.kind;
+    if (result.kind === "damage" || result.kind === "heal" || result.kind === "shield")
+      kind = result.kind;
   }
 
   return {

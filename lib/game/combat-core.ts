@@ -72,6 +72,16 @@ export interface ActiveCombatStatus {
   periodicDamageType?: DamageType;
 }
 
+const harmfulStatusOperations = new Set(["DEBUFF", "STUN", "ROOT", "SILENCE", "FEAR", "TAUNT"]);
+
+export function isBeneficialStatusOperation(operation: ClassSkill["operations"][number]) {
+  if (operation.modifiers.some((modifier) => modifier.value < 0)) return false;
+  if (harmfulStatusOperations.has(operation.operation)) return false;
+  if (operation.modifiers.some((modifier) => modifier.value > 0)) return true;
+  if (["BUFF", "REACTION", "SUMMON"].includes(operation.operation)) return true;
+  return ["self", "source", "ally"].includes(operation.target);
+}
+
 export function getConvertedResourceBonus(intelligence: number, maximum: number) {
   if (maximum <= 0 || intelligence <= 0) return 0;
   const ratio = Math.min(0.3, intelligence / 400);
@@ -461,7 +471,7 @@ export function resolveSkill(
               (statusTarget.statuses[status]?.stacks ?? 0) + (primaryOperation?.stacks || 1),
             ),
             modifiers,
-            beneficial: primaryOperation.target === "self",
+            beneficial: isBeneficialStatusOperation(primaryOperation),
           },
         },
       }

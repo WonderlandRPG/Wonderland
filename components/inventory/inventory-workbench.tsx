@@ -22,6 +22,8 @@ type InventoryItem = {
   slotLabel: string;
   quantity: number;
   equippedSlot: string | null;
+  equippedSlots: string[];
+  imageUrl: string | null;
   attributes: Record<string, number>;
   effects: Array<{ key: string; name: string; description: string }>;
   titleStyle: { primary: string; secondary: string; glow: string } | null;
@@ -57,7 +59,7 @@ export function InventoryWorkbench({
             .filter(
               (item) =>
                 item.compatibleSlots.includes(activeSlot.key) ||
-                item.equippedSlot === activeSlot.key,
+                item.equippedSlots.includes(activeSlot.key),
             )
             .sort((left, right) => {
               const leftEquipped = left.id === activeSlot.itemId ? 1 : 0;
@@ -361,12 +363,13 @@ export function InventoryWorkbench({
                 <div className="equipment-modal__list">
                   {compatibleItems.length ? (
                     compatibleItems.map((item) => {
-                      const equippedHere = item.id === activeSlot.itemId;
-                      const equippedElsewhere = Boolean(item.equippedSlot && !equippedHere);
+                      const equippedHere = item.equippedSlots.includes(activeSlot.key);
+                      const equippedElsewhere = item.equippedSlots.length > 0 && !equippedHere;
+                      const availableCopies = item.quantity - item.equippedSlots.length;
                       return (
                         <article className={equippedHere ? "is-equipped" : ""} data-rarity={item.rarity} key={item.id}>
                           <div className="equipment-modal__glyph">
-                            <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
+                            <ItemArtwork imageUrl={item.imageUrl} name={item.name} rarity={item.rarity} slot={item.slot} />
                             {item.quantity > 1 ? <b>×{item.quantity}</b> : null}
                           </div>
                           <div className="equipment-modal__item-copy">
@@ -388,6 +391,7 @@ export function InventoryWorkbench({
                                 <span>✓ Equipado</span>
                                 <form action={unequipItemAction.bind(null, character.id)}>
                                   <input name="inventoryId" type="hidden" value={item.id} />
+                                  <input name="slot" type="hidden" value={activeSlot.key} />
                                   <button className="button button--dark">Desequipar</button>
                                 </form>
                               </>
@@ -395,8 +399,8 @@ export function InventoryWorkbench({
                               <form action={equipItemAction.bind(null, character.id)}>
                                 <input name="inventoryId" type="hidden" value={item.id} />
                                 <input name="slot" type="hidden" value={activeSlot.key} />
-                                {equippedElsewhere ? <small>Em {slots.find((slot) => slot.key === item.equippedSlot)?.label}</small> : null}
-                                <button className="button button--primary">{equippedElsewhere ? "Mover para cá" : "Equipar"}</button>
+                                {equippedElsewhere ? <small>{availableCopies > 0 ? `${availableCopies} cópia disponível` : `Em ${item.equippedSlots.map((key) => slots.find((slot) => slot.key === key)?.label).join(" e ")}`}</small> : null}
+                                <button className="button button--primary">{availableCopies > 0 ? "Equipar outra cópia" : equippedElsewhere ? "Mover para cá" : "Equipar"}</button>
                               </form>
                             )}
                           </div>

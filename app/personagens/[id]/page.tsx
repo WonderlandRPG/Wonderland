@@ -324,7 +324,7 @@ export default async function CharacterSheetPage({
                 level: character.level,
               }}
               slots={equipmentSlots.map((slot) => {
-                const item = equippedItems.get(slot.key);
+                const item = character.inventory.find((entry) => entry.equippedSlots.includes(slot.key));
                 return {
                   key: slot.key,
                   label: slot.label,
@@ -344,6 +344,8 @@ export default async function CharacterSheetPage({
                 slotLabel: itemSlotLabel(entry.slot),
                 quantity: entry.quantity,
                 equippedSlot: entry.equippedSlot,
+                equippedSlots: entry.equippedSlots,
+                imageUrl: entry.imageUrl,
                 attributes: entry.attributes as Record<string, number>,
                 effects: entry.specialEffects,
                 titleStyle: entry.titleStyle,

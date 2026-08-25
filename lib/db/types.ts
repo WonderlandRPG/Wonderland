@@ -172,6 +172,7 @@ export interface Database {
           item_id: string;
           quantity: number;
           equipped_slot: string | null;
+          equipped_slots: string[];
           created_at: string;
           updated_at: string;
         };
@@ -181,6 +182,7 @@ export interface Database {
           item_id: string;
           quantity?: number;
           equipped_slot?: string | null;
+          equipped_slots?: string[];
           created_at?: string;
           updated_at?: string;
         };
@@ -832,6 +834,10 @@ export interface Database {
       };
       v2_unequip_inventory_item: {
         Args: { p_inventory_id: string };
+        Returns: Database["public"]["Tables"]["v2_character_inventory"]["Row"];
+      };
+      v2_unequip_inventory_slot: {
+        Args: { p_inventory_id: string; p_slot: string };
         Returns: Database["public"]["Tables"]["v2_character_inventory"]["Row"];
       };
       v2_sell_inventory_item: { Args: { p_inventory_id: string }; Returns: Json };

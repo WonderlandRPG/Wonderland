@@ -28,6 +28,7 @@ type InventoryRow = Pick<
   Database["public"]["Tables"]["v2_character_inventory"]["Row"],
   "id" | "character_id" | "item_id" | "quantity" | "equipped_slot"
 >;
+type InventoryRowWithSlots = InventoryRow & { equipped_slots?: string[] | null };
 
 export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes"> {
   allocatedAttributes: AllocatedAttributes;
@@ -50,6 +51,8 @@ export interface CharacterSheet extends CharacterRecord {
     slot: string;
     quantity: number;
     equippedSlot: string | null;
+    equippedSlots: string[];
+    imageUrl: string | null;
     attributes: Partial<AllocatedAttributes>;
     specialEffects: ItemSpecialEffect[];
     titleStyle: { primary: string; secondary: string; glow: string } | null;
@@ -67,7 +70,7 @@ function parseCharacter(row: CharacterRow): CharacterRecord | null {
 
 async function loadSheets(
   rows: CharacterRow[],
-  providedInventoryRows?: InventoryRow[],
+  providedInventoryRows?: InventoryRowWithSlots[],
 ): Promise<CharacterSheet[]> {
   const client = await createServerSupabaseClient();
   if (!client || rows.length === 0) return [];
@@ -83,7 +86,7 @@ async function loadSheets(
     : ((
         await client
           .from("v2_character_inventory")
-          .select("id,character_id,item_id,quantity,equipped_slot")
+          .select("id,character_id,item_id,quantity,equipped_slot,equipped_slots")
           .in("character_id", characterIds)
       ).data ?? []);
   const itemIds = [...new Set((inventoryRows ?? []).map((entry) => entry.item_id))];
@@ -91,7 +94,7 @@ async function loadSheets(
     ? await client
         .from("v2_shop_items")
         .select(
-          "id,name,description,category,price,rarity,slot,attributes,special_effects,title_style,two_handed",
+          "id,name,description,category,price,rarity,slot,attributes,special_effects,title_style,two_handed,image_url",
         )
         .in("id", itemIds)
     : { data: [] };
@@ -122,6 +125,12 @@ async function loadSheets(
             slot: item.slot,
             quantity: entry.quantity,
             equippedSlot: entry.equipped_slot,
+            equippedSlots: entry.equipped_slots?.length
+              ? entry.equipped_slots
+              : entry.equipped_slot
+                ? [entry.equipped_slot]
+                : [],
+            imageUrl: item.image_url,
             attributes: parsed.success ? parsed.data : {},
             specialEffects: parseItemSpecialEffects(item.special_effects),
             titleStyle:
@@ -142,8 +151,8 @@ async function loadSheets(
       attributeKeys.map((attribute) => [
         attribute,
         inventory
-          .filter((entry) => entry.equippedSlot)
-          .reduce((total, entry) => total + (entry.attributes[attribute] ?? 0), 0),
+          .filter((entry) => entry.equippedSlots.length)
+          .reduce((total, entry) => total + (entry.attributes[attribute] ?? 0) * entry.equippedSlots.length, 0),
       ]),
     );
     return [

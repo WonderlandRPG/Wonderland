@@ -32,8 +32,13 @@ export async function unequipItemAction(characterId: string, formData: FormData)
   await requireCurrentAccount(`/personagens/${characterId}`);
   const inventoryId = z.uuid().safeParse(formData.get("inventoryId"));
   if (!inventoryId.success) return;
+  const slot = z.string().min(1).safeParse(formData.get("slot"));
   const client = await createServerSupabaseClient();
-  if (client) await client.rpc("v2_unequip_inventory_item", { p_inventory_id: inventoryId.data });
+  if (client && slot.success)
+    await client.rpc("v2_unequip_inventory_slot", {
+      p_inventory_id: inventoryId.data,
+      p_slot: slot.data,
+    });
   revalidatePath(`/personagens/${characterId}`);
   revalidatePath("/arena");
 }

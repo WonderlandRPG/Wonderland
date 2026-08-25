@@ -136,7 +136,13 @@ export function InventoryWorkbench({
         onClick={() => selectSlot(slot)}
         type="button"
       >
-        <ItemGlyph slot={slot.key} />
+        <span className="inventory-slot-art" aria-hidden="true">
+          {item?.imageUrl ? (
+            <ItemArtwork imageUrl={item.imageUrl} name={item.name} rarity={item.rarity} slot={item.slot} />
+          ) : (
+            <ItemGlyph slot={slot.key} />
+          )}
+        </span>
         <span>
           <small>{slot.label}</small>
           <strong>{item?.name ?? "Espaço livre"}</strong>

@@ -1,0 +1,77 @@
+/* Acabamento global 2026 · páginas públicas e área do jogador */
+:root{--wx-ink:#302319;--wx-green:#27543e;--wx-green-deep:#173b2b;--wx-gold:#c89a43;--wx-paper:#f6e6b9;--wx-paper-soft:#fff1cd;--wx-line:#9d7a4d;--wx-shadow:0 18px 42px rgba(45,31,18,.14)}
+body{background-color:#c9c8b5;background-image:radial-gradient(circle at 12% 8%,rgba(255,244,205,.5),transparent 27%),linear-gradient(180deg,rgba(245,235,200,.16),rgba(49,95,71,.08))}
+.page-container{width:min(1240px,calc(100% - 28px))}
+.eyebrow{letter-spacing:.12em;font-weight:900}
+.button{transition:transform .16s ease,box-shadow .16s ease,filter .16s ease}
+.button:hover{transform:translateY(-2px);filter:saturate(1.06)}
+
+/* Entrada */
+.home-landing{width:min(1280px,calc(100% - 28px));padding:20px 0 76px}
+.home-hero{min-height:680px;border-color:#87663e;background:linear-gradient(90deg,rgba(248,235,197,.97) 0%,rgba(237,218,171,.9) 48%,rgba(26,62,44,.22) 100%),url('/images/hero-background.png') center/cover;box-shadow:0 26px 65px rgba(39,29,19,.2)}
+.home-hero__copy{max-width:760px}.home-hero h1{letter-spacing:-.04em;text-shadow:0 2px rgba(255,248,222,.5)}
+.home-hero__lead{font-size:1.12rem;line-height:1.65;color:#564536}
+.home-hero__tale{border:1px solid rgba(235,204,128,.45);background:linear-gradient(160deg,rgba(34,80,56,.96),rgba(20,55,39,.96));box-shadow:0 20px 44px rgba(28,47,35,.3),inset 0 1px rgba(255,244,203,.2)}
+.home-path{position:relative;overflow:hidden;min-height:145px;border-color:#927148;box-shadow:0 12px 28px rgba(49,34,20,.12);transition:transform .18s ease,box-shadow .18s ease}
+.home-path:hover{transform:translateY(-4px);box-shadow:0 18px 34px rgba(49,34,20,.17)}
+.home-path::after{content:"";position:absolute;right:-32px;bottom:-42px;width:110px;height:110px;border:1px solid rgba(49,95,71,.16);transform:rotate(45deg)}
+
+/* Cabeçalhos de mundo */
+.world-lore-hero,.market-hero,.mission-board-hero,.public-character-hero,.guild-registry-cover{position:relative;overflow:hidden;border-color:#8e6c43!important;box-shadow:var(--wx-shadow)!important}
+.world-lore-hero::after,.market-hero::after,.mission-board-hero::after,.guild-registry-cover::after{content:"✦";position:absolute;right:28px;top:18px;color:rgba(195,148,61,.24);font-size:7rem;line-height:1;pointer-events:none}
+.world-lore-hero h1,.market-hero h1,.mission-board-hero h1,.guild-registry-cover h1{text-wrap:balance;letter-spacing:-.035em}
+
+/* Arena */
+.arena-mode-select{overflow:hidden;border:1px solid #8d6a40!important;border-radius:24px!important;background:linear-gradient(150deg,#f4e2b4,#dbc18b)!important;box-shadow:var(--wx-shadow)!important}
+.arena-mode-select>header{padding:clamp(22px,4vw,40px)!important;background:linear-gradient(135deg,#244d39,#163729)!important;color:#fff0c9!important}
+.arena-mode-select>header p{color:#d9c9a5!important}.arena-history-link{color:#f2cc73!important}
+.arena-mode-grid{gap:14px!important;padding:20px!important}
+.arena-mode-card{position:relative;isolation:isolate;min-height:235px!important;overflow:hidden!important;border:1px solid #9f7c4d!important;border-radius:18px!important;background:linear-gradient(145deg,#fff0c8,#dfc590)!important;box-shadow:0 10px 22px rgba(54,38,22,.11)!important;transition:transform .18s ease,box-shadow .18s ease!important}
+.arena-mode-card:hover{transform:translateY(-4px)!important;box-shadow:0 18px 34px rgba(54,38,22,.18)!important}
+.arena-mode-card::after{content:"";position:absolute;z-index:-1;right:-50px;bottom:-60px;width:165px;height:165px;border-radius:50%;background:rgba(49,95,71,.08)}
+.arena-mode-card__sigil{box-shadow:0 8px 18px rgba(43,31,20,.17)!important}
+
+/* Missões */
+.mission-board-shell{padding-bottom:80px}.mission-board-hero{background:linear-gradient(135deg,#f5e2b3,#dfc48d)!important}
+.guild-board{border-color:#654228!important;border-radius:20px!important;background:linear-gradient(135deg,#774b2d,#9b673b)!important;box-shadow:0 22px 48px rgba(48,31,17,.24)!important}
+.guild-board__grid{gap:18px!important}.mission-parchment{border:1px solid #b68c4c!important;background:linear-gradient(145deg,#fff0c7,#ecd39c)!important;box-shadow:0 12px 22px rgba(52,34,17,.2)!important;transition:transform .18s ease!important}
+.mission-parchment:hover{transform:rotate(0deg) translateY(-3px)!important}.mission-board-rules{border-radius:18px!important;box-shadow:var(--wx-shadow)!important}
+
+/* Eventos */
+.realm-notice-board{border-radius:22px!important;box-shadow:0 22px 50px rgba(49,31,17,.24)!important}
+.realm-notice-board__wood{background:linear-gradient(145deg,#6f472d,#9d693d)!important}
+.realm-notice-board__papers{gap:20px!important;padding:22px!important}
+.realm-notice{border:1px solid #bb965b!important;border-radius:3px 3px 14px 3px!important;background:linear-gradient(145deg,#fff0c5,#efd6a0)!important;box-shadow:0 12px 23px rgba(47,30,16,.22)!important;transition:transform .18s ease!important}
+.realm-notice:hover{transform:rotate(0deg) translateY(-3px)!important}
+.realm-notice__period{display:inline-flex!important;padding:5px 8px!important;border-radius:999px!important;background:#e2c992!important}
+.realm-notice__rewards{border-radius:10px!important;background:rgba(49,95,71,.1)!important}
+
+/* Perfil e ficha pública */
+.guild-registry-cover{background:linear-gradient(135deg,#f4e1b2,#dcbf84)!important}
+.guild-registry-book{overflow:hidden;border:1px solid #8e6b41!important;border-radius:22px!important;box-shadow:0 22px 50px rgba(48,34,20,.18)!important}
+.guild-registry-folio{background:linear-gradient(145deg,#f8e9c0,#e3ca96)!important}
+.guild-registry-facts>div{border:1px solid rgba(121,87,49,.24)!important;background:rgba(255,242,208,.62)!important}
+.public-character-hero{background:linear-gradient(145deg,#f5e2b3,#dec28b)!important}
+.public-character-summary,.public-character-stats,.public-character-equipment{border:1px solid #9d7a4c!important;border-radius:18px!important;background:linear-gradient(145deg,#f6e5b8,#e5cc98)!important;box-shadow:0 14px 30px rgba(48,34,20,.11)!important}
+.public-character-stats article{background:rgba(255,242,207,.74)!important;border:1px solid rgba(121,87,49,.25)!important}
+
+/* Crônicas */
+.royal-chronicle{width:min(1160px,calc(100% - 28px))!important}.royal-chronicle__edition{border-color:#89663e!important;box-shadow:0 25px 58px rgba(46,32,19,.2)!important}
+.royal-chronicle__masthead{background:linear-gradient(145deg,#f3deb0,#d9bb80)!important}
+.royal-chronicle__headline{text-wrap:balance}.royal-chronicle__story{font-size:1.02rem;line-height:1.72}
+.royal-chronicle__volume{border:1px solid #a38151!important;background:linear-gradient(145deg,#f8e8bd,#e4ca94)!important;box-shadow:0 9px 20px rgba(49,34,20,.1)!important}
+
+/* Reinos e mapa */
+.realm-gallery{gap:16px!important}.realm-gallery>article,.realm-dossiers__body{overflow:hidden;border:1px solid #967247!important;border-radius:18px!important;background:linear-gradient(145deg,#f6e5b8,#e0c58e)!important;box-shadow:0 14px 30px rgba(48,34,20,.12)!important}
+.realm-gallery>article{transition:transform .18s ease,box-shadow .18s ease!important}.realm-gallery>article:hover{transform:translateY(-4px)!important;box-shadow:0 20px 38px rgba(48,34,20,.18)!important}
+.world-map-shell{box-shadow:0 24px 55px rgba(37,28,18,.24)!important}
+
+/* Decretos de Rank */
+.guild-decrees{width:min(1160px,calc(100% - 28px))!important}.guild-decrees__intro,.guild-trials-scroll{border-color:#8c6940!important;box-shadow:var(--wx-shadow)!important}
+.guild-decree{border:1px solid #9e7a4d!important;background:linear-gradient(145deg,#f8e8bd,#e3c891)!important;box-shadow:0 10px 24px rgba(49,34,20,.11)!important}
+
+/* Autenticação e estados vazios */
+.auth-shell__card{border-color:#8c6a42!important;background:linear-gradient(145deg,#f8e9c0,#dfc38b)!important;box-shadow:0 25px 60px rgba(42,29,18,.22)!important}
+.market-empty,.inventory-empty,.realm-notice-board__empty,.guild-board__empty,.royal-chronicle__empty{border-color:#9c794c!important;background:rgba(255,240,199,.66)!important}
+
+@media(max-width:760px){.page-container,.home-landing,.royal-chronicle,.guild-decrees{width:min(100% - 16px,1240px)!important}.home-hero{min-height:auto;padding:28px 20px}.home-hero__aside{min-height:260px}.home-paths{grid-template-columns:1fr}.world-lore-hero::after,.market-hero::after,.mission-board-hero::after,.guild-registry-cover::after{right:8px;top:8px;font-size:4rem}.arena-mode-grid,.realm-notice-board__papers{grid-template-columns:1fr!important;padding:12px!important}.guild-registry-book{border-radius:16px!important}}

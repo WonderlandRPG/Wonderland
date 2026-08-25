@@ -10,15 +10,19 @@ export default async function AdminConsolePage({
   searchParams: Promise<{ status?: string; afetados?: string }>;
 }) {
   const client = await createServerSupabaseClient();
-  const [{ data: characters }, { data: items }, query] = await Promise.all([
+  const [{ data: characters }, { data: equipment }, { data: titles }, query] = await Promise.all([
     client
       ? client.from("v2_characters").select("name").order("name")
       : Promise.resolve({ data: [] }),
     client
-      ? client.from("v2_shop_items").select("name,slot").order("name")
+      ? client.from("v2_shop_items").select("name,slot").eq("active", true).neq("slot", "title").order("name")
+      : Promise.resolve({ data: [] }),
+    client
+      ? client.from("v2_shop_items").select("name,slot").eq("slot", "title").order("name")
       : Promise.resolve({ data: [] }),
     searchParams,
   ]);
+  const items = [...(equipment ?? []), ...(titles ?? [])];
   return (
     <div className="admin-content">
       {query.status ? (
@@ -32,7 +36,7 @@ export default async function AdminConsolePage({
       ) : null}
       <RewardConsole
         characters={(characters ?? []).map((x) => x.name)}
-        rewards={(items ?? []).map(
+        rewards={items.map(
           (x) => `${x.slot === "title" ? "titulo" : "item"}:${x.name} quantidade: 1`,
         )}
       />

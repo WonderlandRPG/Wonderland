@@ -25,7 +25,7 @@ export default async function PresenceAdminPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const client = await createServerSupabaseClient();
-  const [rewardResult, itemResult, configResult, query] = await Promise.all([
+  const [rewardResult, equipmentResult, titleResult, configResult, query] = await Promise.all([
     client
       ? client.from("v2_presence_rewards").select("*").order("day_number")
       : Promise.resolve({ data: [] }),
@@ -33,7 +33,16 @@ export default async function PresenceAdminPage({
       ? client
           .from("v2_shop_items")
           .select("id,name,rarity,slot")
+          .eq("active", true)
+          .neq("slot", "title")
           .order("rarity")
+          .order("name")
+      : Promise.resolve({ data: [] }),
+    client
+      ? client
+          .from("v2_shop_items")
+          .select("id,name,rarity,slot")
+          .eq("slot", "title")
           .order("name")
       : Promise.resolve({ data: [] }),
     client
@@ -58,7 +67,7 @@ export default async function PresenceAdminPage({
         </div>
       ) : null}
       <PresenceRewardEditor
-        items={itemResult.data ?? []}
+        items={[...(equipmentResult.data ?? []), ...(titleResult.data ?? [])]}
         rewards={rewards}
         config={
           configResult.data ?? defaultConfig

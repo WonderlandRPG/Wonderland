@@ -10,7 +10,7 @@ export default async function AdminEventsPage({
   searchParams: Promise<{ status?: string }>;
 }) {
   const client = await createServerSupabaseClient();
-  const [{ data }, { data: rewards }, { data: rewardItems }, query] = await Promise.all([
+  const [{ data }, { data: rewards }, { data: equipment }, { data: titles }, query] = await Promise.all([
     client
       ? client.from("v2_events").select("*").order("starts_at")
       : Promise.resolve({ data: [] }),
@@ -21,10 +21,14 @@ export default async function AdminEventsPage({
           .order("sort_order")
       : Promise.resolve({ data: [] }),
     client
-      ? client.from("v2_shop_items").select("id,name,slot").order("name")
+      ? client.from("v2_shop_items").select("id,name,slot").eq("active", true).neq("slot", "title").order("name")
+      : Promise.resolve({ data: [] }),
+    client
+      ? client.from("v2_shop_items").select("id,name,slot").eq("slot", "title").order("name")
       : Promise.resolve({ data: [] }),
     searchParams,
   ]);
+  const rewardItems = [...(equipment ?? []), ...(titles ?? [])];
   return (
     <div className="admin-content admin-editor-page">
       <header className="admin-page-title admin-publisher-hero">
@@ -57,7 +61,7 @@ export default async function AdminEventsPage({
             <p>Preencha os dados abaixo. Você pode publicar agora ou deixar oculto.</p>
           </div>
         </header>
-        <EventForm items={rewardItems ?? []} />
+        <EventForm items={rewardItems} />
       </section>
       <section className="admin-publication-section">
         <header>
@@ -81,7 +85,7 @@ export default async function AdminEventsPage({
               </summary>
               <EventForm
                 event={event}
-                items={rewardItems ?? []}
+                items={rewardItems}
                 rewards={
                   (rewards ?? []).filter(
                     (reward) => reward.event_id === event.id,

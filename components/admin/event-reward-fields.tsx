@@ -70,6 +70,11 @@ export function EventRewardFields({
                     onChange={(event) => update(index, { item_id: event.target.value || null })}
                   >
                     <option value="">Selecione…</option>
+                    {!availableItems.length ? (
+                      <option disabled value="__empty">
+                        Nenhum {reward.reward_type === "title" ? "título" : "item"} disponível
+                      </option>
+                    ) : null}
                     {availableItems.map((item) => (
                       <option key={item.id} value={item.id}>
                         {item.name}

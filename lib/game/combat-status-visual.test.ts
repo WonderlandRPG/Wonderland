@@ -13,7 +13,7 @@ describe("combat status visuals", () => {
     ).toEqual({
       kind: "buff",
       iconKey: "for",
-      label: "Força",
+      label: "Força aumentada",
     });
   });
 
@@ -28,7 +28,22 @@ describe("combat status visuals", () => {
     ).toEqual({
       kind: "debuff",
       iconKey: "for",
-      label: "Força",
+      label: "Força reduzida",
+    });
+  });
+
+  it("uses the applied mechanics instead of a misleading skill name", () => {
+    expect(
+      getCombatStatusVisual({
+        name: "Golpe de Escudo",
+        duration: 2,
+        beneficial: true,
+        modifiers: { DEF: -8, RES: -8 },
+      }),
+    ).toEqual({
+      kind: "debuff",
+      iconKey: "vulnerable",
+      label: "Defesas reduzidas",
     });
   });
 

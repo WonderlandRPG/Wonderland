@@ -35,3 +35,72 @@
 .arena-page .jrpg-action:hover:not(:disabled){transform:translateY(-4px)!important;filter:brightness(1.13)}.arena-page .jrpg-action strong{font-size:1.2rem}.arena-page .jrpg-action small{color:#d8c79f!important}
 @media(max-width:1100px){.arena-page .arena-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.arena-page .jrpg-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(max-width:700px){.arena-page .arena-mode-select>header{min-height:220px;padding:25px!important}.arena-page .arena-mode-grid{grid-template-columns:1fr!important;padding:12px!important}.arena-page .arena-mode-card{min-height:260px!important}.arena-page .jrpg-stage{min-height:500px!important;padding:22px 10px!important}.arena-page .jrpg-actions{grid-template-columns:1fr 1fr!important}.arena-page .jrpg-command-panel>header{display:block}}
+
+
+/* Coesão visual final: conteúdo nítido e uma única família de cores no combate. */
+.arena-page .jrpg-stage .jrpg-fighter,
+.arena-page .jrpg-stage .jrpg-fighter.is-active,
+.arena-page .jrpg-stage .combat-identity-frame,
+.arena-page .jrpg-stage .combat-official-character-card{
+  filter:none!important;
+  transform:none!important;
+  opacity:1!important;
+  backface-visibility:visible!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:geometricPrecision;
+}
+.arena-page .jrpg-stage .formation-back{filter:none!important;opacity:1!important}
+.arena-page .jrpg-stage .jrpg-fighter.is-active::before{
+  border-color:rgba(225,181,82,.78)!important;
+  box-shadow:0 0 0 2px rgba(225,181,82,.1),0 14px 34px rgba(0,0,0,.3),0 0 24px rgba(225,181,82,.16)!important;
+}
+.arena-page .arena-selected-fighter,
+.arena-page .pvp-live-state,
+.arena-page .arena-turn-timer,
+.arena-page .arena-turn-counter{
+  border:1px solid rgba(221,181,91,.5)!important;
+  background:linear-gradient(145deg,#173e2d,#102d21)!important;
+  color:#f7e4b5!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.05),0 8px 18px rgba(0,0,0,.16)!important;
+}
+.arena-page .arena-selected-fighter :where(strong,small,span),
+.arena-page .pvp-live-state :where(strong,small,span),
+.arena-page .arena-turn-timer :where(strong,small,span),
+.arena-page .arena-turn-counter :where(strong,small,span){
+  color:inherit!important;
+}
+.arena-page .arena-turn-timer.is-ending{
+  border-color:#bd7465!important;
+  background:linear-gradient(145deg,#63372f,#3d2421)!important;
+  color:#ffe0d5!important;
+}
+.arena-page .jrpg-turn-order{
+  background:linear-gradient(90deg,#1b4633,#143526)!important;
+  border-bottom-color:rgba(221,181,91,.42)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.04)!important;
+}
+.arena-page .jrpg-turn-order::before{color:#d8bd7d!important;border-color:rgba(216,189,125,.25)!important}
+.arena-page .jrpg-turn-order span{
+  border-color:rgba(226,199,137,.25)!important;
+  background:#244d39!important;
+  color:#ead8ae!important;
+}
+.arena-page .jrpg-turn-order span.is-active{
+  border-color:#e0b85b!important;
+  background:#315f47!important;
+  color:#fff1c7!important;
+}
+.arena-page .turn-action-economy{border-bottom:1px solid rgba(221,181,91,.32)!important}
+.arena-page .turn-action-economy>span{
+  border-color:rgba(226,199,137,.22)!important;
+  background:#244d39!important;
+  color:#f0dfb6!important;
+}
+.arena-page .turn-action-economy>span small{color:#cdbb91!important}
+.arena-page .jrpg-command-panel{
+  background:linear-gradient(145deg,#1d4634,#122f23)!important;
+  box-shadow:inset 0 1px rgba(255,255,255,.04)!important;
+  color:#f2dfb2!important;
+}
+.arena-page .jrpg-command-panel>header h2{color:#fff0c8!important}
+.arena-page .jrpg-command-panel>header small{color:#d4c29a!important}

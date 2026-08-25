@@ -144,18 +144,31 @@ function normalized(value: string) {
     .toLowerCase();
 }
 
+function statusModifiers(status: CombatStatusLike) {
+  return Object.entries(status.modifiers ?? {}).filter(([, value]) => Number(value) !== 0) as Array<
+    [keyof typeof STAT_VISUALS, number]
+  >;
+}
+
 function firstModifier(status: CombatStatusLike) {
-  return Object.entries(status.modifiers ?? {}).find(([, value]) => Number(value) !== 0) as
-    [keyof typeof STAT_VISUALS, number] | undefined;
+  return statusModifiers(status)[0];
 }
 
 export function getCombatStatusVisual(status: CombatStatusLike) {
   const modifier = firstModifier(status);
+  const modifiers = statusModifiers(status);
   const text = normalized(status.name);
+  const hasNegativeModifier = modifiers.some(([, value]) => value < 0);
+  const hasPositiveModifier = modifiers.some(([, value]) => value > 0);
+  const hasNegativeKeyword = negativeKeywords.some((keyword) => text.includes(normalized(keyword)));
   const beneficial =
-    typeof status.beneficial === "boolean"
-      ? status.beneficial
-      : !negativeKeywords.some((keyword) => text.includes(normalized(keyword)));
+    status.periodicDamage && status.periodicDamage > 0
+      ? false
+      : hasNegativeModifier || hasNegativeKeyword
+        ? false
+        : hasPositiveModifier
+          ? true
+          : (status.beneficial ?? true);
   const kind: CombatStatusVisualKind = beneficial ? "buff" : "debuff";
 
   if (status.periodicDamage && status.periodicDamage > 0) {
@@ -168,10 +181,27 @@ export function getCombatStatusVisual(status: CombatStatusLike) {
     return { kind: "debuff" as const, iconKey: "debuff" as const, label: "Dano contínuo" };
   }
 
+  const reducedDefenses = modifiers.filter(
+    ([attribute, value]) => value < 0 && (attribute === "DEF" || attribute === "RES"),
+  );
+  if (reducedDefenses.length) {
+    const label =
+      reducedDefenses.length > 1
+        ? "Defesas reduzidas"
+        : reducedDefenses[0][0] === "DEF"
+          ? "Defesa reduzida"
+          : "Resistência reduzida";
+    return { kind: "debuff" as const, iconKey: "vulnerable" as const, label };
+  }
+
   if (modifier) {
     const [attribute] = modifier;
     const visual = STAT_VISUALS[attribute];
-    return { kind, iconKey: visual.iconKey, label: visual.label };
+    return {
+      kind,
+      iconKey: visual.iconKey,
+      label: `${visual.label} ${kind === "buff" ? "aumentada" : "reduzida"}`,
+    };
   }
 
   if (text.includes("silenc"))
@@ -195,7 +225,9 @@ export function getCombatStatusVisual(status: CombatStatusLike) {
   if (text.includes("cura") || text.includes("regen"))
     return { kind: "buff" as const, iconKey: "regen" as const, label: "Regeneração" };
   if (text.includes("escudo") || text.includes("barreira"))
-    return { kind: "buff" as const, iconKey: "shield" as const, label: "Proteção" };
+    return kind === "debuff"
+      ? { kind, iconKey: "vulnerable" as const, label: "Defesas reduzidas" }
+      : { kind, iconKey: "shield" as const, label: "Proteção" };
   if (text.includes("imortal") || text.includes("imune") || text.includes("bastiao"))
     return { kind: "buff" as const, iconKey: "immune" as const, label: "Imunidade" };
   if (text.includes("sombra") || text.includes("substituicao"))

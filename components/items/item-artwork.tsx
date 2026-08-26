@@ -22,7 +22,11 @@ export function ItemArtwork({ name, rarity, slot, imageUrl, className }: ItemArt
           aria-label={`Imagem de ${name}`}
           className={styles.image}
           role="img"
-          style={{ backgroundImage: `url(${imageUrl})` }}
+          style={{
+            backgroundImage: `url(${imageUrl})`,
+            backgroundSize: "contain",
+            inset: "7%",
+          }}
         />
       ) : (
         <span className={styles.fallback}>

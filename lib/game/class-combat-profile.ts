@@ -106,7 +106,7 @@ export function rebalanceCombatSkill(skill: ClassSkill): ClassSkill {
   const operations = skill.operations.map((operation) => {
     const isDamage = operation.operation === "DAMAGE";
     const isHealing = operation.operation === "HEAL" || operation.operation === "SHIELD";
-    const isModifier = operation.operation === "BUFF" || operation.operation === "DEBUFF";
+    const isModifier = operation.modifiers.length > 0 && !isDamage && !isHealing;
     const scalingFactor = isDamage ? 1.22 : isHealing ? 1.3 : 1;
     const minimumModifier = Math.min(28, 10 + tier * 2);
     return {

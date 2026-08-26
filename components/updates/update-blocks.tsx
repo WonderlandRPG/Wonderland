@@ -1,14 +1,19 @@
 import type { UpdateBlock } from "@/lib/game/update-content";
 
 export function UpdateBlocks({ blocks }: { blocks: UpdateBlock[] }) {
+  const orderedBlocks = [
+    ...blocks.filter((block) => block.type === "image"),
+    ...blocks.filter((block) => block.type !== "image"),
+  ];
   return (
     <div className="update-blocks">
-      {blocks.map((block) => {
+      {orderedBlocks.map((block) => {
         if (block.type === "image")
           return (
             <figure className="update-image" key={block.id}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="Imagem da atualização" src={block.content} />
+              <img alt={block.label || "Imagem da atualização"} src={block.content} />
+              {block.label ? <figcaption>{block.label}</figcaption> : null}
             </figure>
           );
         if (block.type === "heading") return <h3 key={block.id}>{block.content}</h3>;

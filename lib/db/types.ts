@@ -492,8 +492,20 @@ export interface Database {
         Relationships: [];
       };
       v2_event_registrations: {
-        Row: { event_id: string; character_id: string; user_id: string; rewards_snapshot: Json; registered_at: string };
-        Insert: { event_id: string; character_id: string; user_id: string; rewards_snapshot?: Json; registered_at?: string };
+        Row: {
+          event_id: string;
+          character_id: string;
+          user_id: string;
+          rewards_snapshot: Json;
+          registered_at: string;
+        };
+        Insert: {
+          event_id: string;
+          character_id: string;
+          user_id: string;
+          rewards_snapshot?: Json;
+          registered_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_event_registrations"]["Insert"]>;
         Relationships: [];
       };
@@ -519,6 +531,12 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["v2_updates"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_update_reads: {
+        Row: { user_id: string; update_id: string; read_at: string };
+        Insert: { user_id: string; update_id: string; read_at?: string };
+        Update: { read_at?: string };
         Relationships: [];
       };
       v2_inventory: {

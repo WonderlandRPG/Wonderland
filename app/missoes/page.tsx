@@ -136,7 +136,7 @@ export default async function MissionBoardPage({
             <header>
               <span>Contratos disponíveis</span>
               <small>
-                {board.missions.length} papéis fixados · somente Rank {board.character.rank}
+                Seleção semanal · {board.missions.length} contratos · Rank {board.character.rank}
               </small>
             </header>
             <div className="guild-board__grid">
@@ -167,7 +167,7 @@ export default async function MissionBoardPage({
                     <RealmLocationText text={mission.description} />
                   </p>
                   <blockquote>
-                    <small>DIREÇÃO DA CENA</small>
+                    <small>OBJETIVO CLARO</small>
                     <span>
                       <RealmLocationText text={mission.objective} />
                     </span>
@@ -207,7 +207,7 @@ export default async function MissionBoardPage({
           <span>01 · Apenas um contrato por vez</span>
           <span>02 · Arena e Dungeon bloqueadas durante a missão</span>
           <span>03 · Falha impõe espera de 24 horas</span>
-          <span>04 · Contratos retornam após 7 dias</span>
+          <span>04 · O mural recebe uma seleção nova a cada semana</span>
         </footer>
       </div>
       <RealmLocationModalHost />

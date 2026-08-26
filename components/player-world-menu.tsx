@@ -7,9 +7,11 @@ import { SignOutButton } from "@/components/account/sign-out-button";
 export function PlayerWorldMenu({
   activeCharacterId,
   isAdmin,
+  hasUnreadUpdate,
 }: {
   activeCharacterId: string;
   isAdmin: boolean;
+  hasUnreadUpdate: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -52,7 +54,12 @@ export function PlayerWorldMenu({
             <Link href="/eventos">Eventos</Link>
             <small>Informações</small>
             <Link href="/mapas">Mapa</Link>
-            <Link href="/atualizacoes">Atualizações</Link>
+            <Link
+              className={hasUnreadUpdate ? "has-unread-update" : undefined}
+              href="/atualizacoes"
+            >
+              Atualizações {hasUnreadUpdate ? <i aria-label="Nova atualização" /> : null}
+            </Link>
             <Link href="/perfil">Minha conta</Link>
             {isAdmin ? <Link href="/admin">Painel ADM</Link> : null}
             <SignOutButton compact />

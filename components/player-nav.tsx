@@ -4,11 +4,34 @@ import { PlayerWorldMenu } from "@/components/player-world-menu";
 import { BrandMark } from "@/components/brand-mark";
 import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 import { getActiveCharacterNavigation } from "@/lib/content/active-character";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { UpdateNotification } from "@/components/updates/update-notification";
 
 export async function PlayerNav() {
   const account = await getCurrentAccount();
   const activeCharacter = account ? await getActiveCharacterNavigation(account.id) : null;
   const activeCharacterId = activeCharacter?.id ?? null;
+  const client = account ? await createServerSupabaseClient() : null;
+  const { data: latestUpdate } = client
+    ? await client
+        .from("v2_updates")
+        .select("id, version, title")
+        .eq("active", true)
+        .order("published_on", { ascending: false })
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
+  const { data: updateRead } =
+    client && latestUpdate
+      ? await client
+          .from("v2_update_reads")
+          .select("update_id")
+          .eq("user_id", account!.id)
+          .eq("update_id", latestUpdate.id)
+          .maybeSingle()
+      : { data: null };
+  const hasUnreadUpdate = Boolean(latestUpdate && !updateRead);
 
   return (
     <header
@@ -26,6 +49,7 @@ export async function PlayerNav() {
           <PlayerWorldMenu
             activeCharacterId={activeCharacterId}
             isAdmin={Boolean(account && isAdministrativeRole(account.role))}
+            hasUnreadUpdate={hasUnreadUpdate}
           />
         ) : null}
         {!activeCharacterId && account && isAdministrativeRole(account.role) ? (
@@ -36,7 +60,9 @@ export async function PlayerNav() {
         {activeCharacter ? (
           <Link href="/personagens">
             <span>{activeCharacter.name}</span>
-            <small>Nível {activeCharacter.level} · Rank {activeCharacter.adventure_rank}</small>
+            <small>
+              Nível {activeCharacter.level} · Rank {activeCharacter.adventure_rank}
+            </small>
           </Link>
         ) : (
           <Link href={account ? "/personagens?selecionar=1" : "/entrar"}>
@@ -44,6 +70,7 @@ export async function PlayerNav() {
           </Link>
         )}
       </div>
+      {hasUnreadUpdate && latestUpdate ? <UpdateNotification update={latestUpdate} /> : null}
     </header>
   );
 }

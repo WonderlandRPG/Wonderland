@@ -64,3 +64,14 @@ input,select,textarea,option{color:#2b2119!important;background-color:#fff3d2!im
 .realm-gallery article>span,.realm-gallery article>i,.realm-card__sigil{color:#21372d!important;text-shadow:0 1px rgba(255,255,255,.35)}
 
 @media(forced-colors:active){*{text-shadow:none!important;box-shadow:none!important}}
+
+
+/* O modal da nova atualização é um pergaminho claro e não pode herdar texto
+   luminoso das camadas escuras da página que permanece ao fundo. */
+.update-notification > section,
+.update-notification > section :where(h1,h2,h3,h4,p,span,small,strong,b){
+  color:var(--contrast-ink)!important;
+}
+.update-notification > section > span{color:#28533e!important}
+.update-notification > section p{color:var(--contrast-muted)!important}
+.update-notification > section button{color:#fff2cf!important}

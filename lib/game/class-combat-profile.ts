@@ -98,6 +98,47 @@ export function repairCombatSkill(skill: ClassSkill, fallbackAttribute: Attribut
   };
 }
 
+const supportOperations = new Set(["BUFF", "DEBUFF", "HEAL", "SHIELD"]);
+
+/** Normaliza o catálogo para que habilidades desbloqueadas continuem relevantes em níveis altos. */
+export function rebalanceCombatSkill(skill: ClassSkill): ClassSkill {
+  const tier = Math.max(0, Math.floor((skill.level - 1) / 10));
+  const operations = skill.operations.map((operation) => {
+    const isDamage = operation.operation === "DAMAGE";
+    const isHealing = operation.operation === "HEAL" || operation.operation === "SHIELD";
+    const isModifier = operation.operation === "BUFF" || operation.operation === "DEBUFF";
+    const scalingFactor = isDamage ? 1.22 : isHealing ? 1.3 : 1;
+    const minimumModifier = Math.min(28, 10 + tier * 2);
+    return {
+      ...operation,
+      base: isDamage || isHealing ? Math.round(operation.base * scalingFactor + tier * 3) : operation.base,
+      scaling: operation.scaling.map((entry) => ({
+        ...entry,
+        multiplier: Number((entry.multiplier * scalingFactor).toFixed(2)),
+      })),
+      duration: isModifier ? Math.max(2, operation.duration) : operation.duration,
+      modifiers: operation.modifiers.map((modifier) => ({
+        ...modifier,
+        value: isModifier
+          ? Math.sign(modifier.value || 1) * Math.max(minimumModifier, Math.round(Math.abs(modifier.value) * 1.55))
+          : modifier.value,
+      })),
+    };
+  });
+  const scaling = skill.scaling.map((entry) => ({
+    ...entry,
+    multiplier: Number((entry.multiplier * 1.22).toFixed(2)),
+  }));
+  return {
+    ...skill,
+    scaling,
+    operations,
+    playerDescription: supportOperations.has(operations[0]?.operation ?? "")
+      ? `${skill.playerDescription} Potência reforçada pelo balanceamento de combate.`
+      : skill.playerDescription,
+  };
+}
+
 function mechanicSignature(skill: ClassSkill) {
   const operations = skill.operations.map((operation) => ({
     operation: operation.operation,
@@ -219,7 +260,7 @@ export function prepareClassCombatSkills(
       ? "INT"
       : "ARC";
   const repaired = dedupeCombatSkills(
-    unlockedSkills.map((skill) => repairCombatSkill(skill, fallbackAttribute)),
+    unlockedSkills.map((skill) => rebalanceCombatSkill(repairCombatSkill(skill, fallbackAttribute))),
   );
   const hasOffensiveSkill = repaired.some(
     (skill) => skill.kind === "damage" && skill.operations.some((operation) => operation.operation === "DAMAGE"),
@@ -228,5 +269,5 @@ export function prepareClassCombatSkills(
 }
 
 export function prepareRaceCombatSkills(skills: ClassSkill[]) {
-  return dedupeCombatSkills(skills.map((skill) => repairCombatSkill(skill, "INT")));
+  return dedupeCombatSkills(skills.map((skill) => rebalanceCombatSkill(repairCombatSkill(skill, "INT"))));
 }

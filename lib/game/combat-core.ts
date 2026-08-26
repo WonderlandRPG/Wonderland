@@ -70,6 +70,7 @@ export interface ActiveCombatStatus {
   beneficial: boolean;
   periodicDamage?: number;
   periodicDamageType?: DamageType;
+  forcedTargetId?: string;
 }
 
 const harmfulStatusOperations = new Set(["DEBUFF", "STUN", "ROOT", "SILENCE", "FEAR", "TAUNT"]);
@@ -472,6 +473,7 @@ export function resolveSkill(
             ),
             modifiers,
             beneficial: isBeneficialStatusOperation(primaryOperation),
+            forcedTargetId: primaryOperation.operation === "TAUNT" ? actor.id : undefined,
           },
         },
       }

@@ -151,6 +151,7 @@ function applySecondaryOperation(
         ),
         modifiers,
         beneficial,
+        forcedTargetId: operation.operation === "TAUNT" ? actor.id : undefined,
       },
     },
   };

@@ -19,6 +19,7 @@ import {
   buildTurnOrder,
   createTurnActionUsage,
   hasUsedAllCoreActions,
+  getForcedTargetId,
   isSilenced,
   isTurnBlocked,
   type TurnActionUsage,
@@ -154,7 +155,8 @@ function chosenTarget(
     return livingOwn.includes(targetId) ? targetId : null;
   }
   if (skill.target === "enemy") {
-    const targetId = requestedId ?? chooseDuoTarget(state, actorId);
+    const forced = getForcedTargetId(state.fighters[actorId]);
+    const targetId = forced && livingEnemies.includes(forced) ? forced : (requestedId ?? chooseDuoTarget(state, actorId));
     return targetId && livingEnemies.includes(targetId) ? targetId : null;
   }
   return null;
@@ -214,7 +216,8 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
 
   if (action.kind === "basic") {
     if (usage.basic) return { ok: false as const, message: "O Ataque Básico já foi usado neste turno." };
-    const targetId = chooseDuoTarget(state, actorId);
+    const forced = getForcedTargetId(actor);
+    const targetId = forced && (state.fighters[forced]?.hp ?? 0) > 0 ? forced : chooseDuoTarget(state, actorId);
     if (!targetId) return { ok: false as const, message: "Não há alvo adversário disponível." };
     target = state.fighters[targetId];
     const result = resolveBasicAttack(actor, target, defaultCombatRules);

@@ -117,6 +117,10 @@ export function isSilenced(combatant: CombatantState) {
   });
 }
 
+export function getForcedTargetId(combatant: CombatantState) {
+  return Object.values(combatant.statuses).find((status) => status.forcedTargetId)?.forcedTargetId ?? null;
+}
+
 export function resolveWinner(
   fighters: Record<string, CombatantState>,
   teams?: Record<string, string>,

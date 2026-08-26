@@ -21,6 +21,7 @@ import {
   appendBattleLog,
   createTurnActionUsage,
   hasUsedAllCoreActions,
+  getForcedTargetId,
   isSilenced,
   isTurnBlocked,
   type TurnActionUsage,
@@ -88,22 +89,34 @@ function resolveMonsterTurn(state: DungeonBattleState, partyMetadata: PartyMetad
     state.status = "defeat";
     return "O grupo inteiro caiu. A expedição fracassou.";
   }
-  const targetId = [...alive].sort((a, b) => state.fighters[a].hp / state.fighters[a].maxHp - state.fighters[b].hp / state.fighters[b].maxHp)[0];
+  const forced = getForcedTargetId(state.monster);
+  const targetId = forced && alive.includes(forced)
+    ? forced
+    : [...alive].sort((a, b) => {
+        const left = state.fighters[a];
+        const right = state.fighters[b];
+        const leftThreat = (getEffectiveAttributes(left).FOR + getEffectiveAttributes(left).INT + getEffectiveAttributes(left).ARC * 0.8) / Math.max(1, left.maxHp);
+        const rightThreat = (getEffectiveAttributes(right).FOR + getEffectiveAttributes(right).INT + getEffectiveAttributes(right).ARC * 0.8) / Math.max(1, right.maxHp);
+        const leftScore = left.hp / left.maxHp - leftThreat * 0.25 + left.shield / Math.max(1, left.maxHp) * 0.2;
+        const rightScore = right.hp / right.maxHp - rightThreat * 0.25 + right.shield / Math.max(1, right.maxHp) * 0.2;
+        return leftScore - rightScore;
+      })[0];
   const target = state.fighters[targetId];
   const abilities = firstDungeon.encounters[state.encounterIndex].abilities;
-  const ability = state.monster.hp < state.monster.maxHp * 0.4 && abilities.some((name) => name.includes("Regeneração") || name.includes("Banquete"))
+  const ability = state.monster.hp < state.monster.maxHp * 0.58 && abilities.some((name) => name.includes("Regeneração") || name.includes("Banquete"))
     ? abilities.find((name) => name.includes("Regeneração") || name.includes("Banquete"))!
     : state.monster.shield === 0 && abilities.some((name) => name.includes("Muralha"))
       ? abilities.find((name) => name.includes("Muralha"))!
       : abilities[(state.turn + state.encounterIndex) % abilities.length];
-  const power = Math.max(12, Math.round(getEffectiveAttributes(state.monster).INT * 0.42));
+  const monsterStats = getEffectiveAttributes(state.monster);
+  const power = Math.max(18, Math.round(Math.max(monsterStats.INT, monsterStats.FOR * 0.85) * (0.56 + state.encounterIndex * 0.04)));
   let message = "";
   if (ability.includes("Regeneração") || ability.includes("Banquete")) {
-    const healed = Math.min(Math.round(power * 0.7), state.monster.maxHp - state.monster.hp);
+    const healed = Math.min(Math.round(power * 1.05), state.monster.maxHp - state.monster.hp);
     state.monster = { ...state.monster, hp: state.monster.hp + healed };
     message = `${state.monster.name} usou ${ability} e recuperou ${healed} de HP.`;
   } else if (ability.includes("Muralha")) {
-    const shield = Math.max(20, Math.round(power * 0.75));
+    const shield = Math.max(30, Math.round(power * 1.1));
     state.monster = { ...state.monster, shield: state.monster.shield + shield };
     message = `${state.monster.name} usou ${ability} e recebeu ${shield} de escudo.`;
   } else {

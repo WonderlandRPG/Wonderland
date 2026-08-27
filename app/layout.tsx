@@ -20,6 +20,7 @@ import "./ranking-experience.css";
 import "./site-experience.css";
 import "./contrast-guard.css";
 import "./experience-polish.css";
+import "./requested-visual-overhaul.css";
 
 export const metadata: Metadata = {
   title: {

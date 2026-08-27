@@ -17,7 +17,15 @@ export async function claimPresenceRewardAction() {
       message: error.message,
       characterId,
     });
-    redirect("/presenca?status=erro");
+    const message = error.message.toLocaleLowerCase("pt-BR");
+    const status = message.includes("já marcada")
+      ? "ja_marcada"
+      : message.includes("não está disponível")
+        ? "indisponivel"
+        : message.includes("já foram resgatadas")
+          ? "concluido"
+          : "erro";
+    redirect(`/presenca?status=${status}`);
   }
   if (data && typeof data === "object" && "already_claimed" in data && data.already_claimed) {
     revalidatePath("/presenca");

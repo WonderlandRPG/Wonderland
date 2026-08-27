@@ -21,9 +21,14 @@ export async function registerForEventAction(formData: FormData) {
       message: error.message,
       eventId: eventId.data,
     });
-    const status = error.message.toLocaleLowerCase("pt-BR").includes("já inscrito")
+    const message = error.message.toLocaleLowerCase("pt-BR");
+    const status = message.includes("já inscrit")
       ? "existente"
-      : "erro";
+      : message.includes("ainda não inici")
+        ? "aguarde"
+        : message.includes("encerrad")
+          ? "encerrada"
+          : "erro";
     redirect(`/eventos?inscricao=${status}`);
   }
   if (data && typeof data === "object" && "already_registered" in data && data.already_registered) {

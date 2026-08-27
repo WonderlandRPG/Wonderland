@@ -22,16 +22,17 @@ export async function PlayerNav() {
         .limit(1)
         .maybeSingle()
     : { data: null };
-  const { data: updateRead } =
+  const { data: updateReceipt } =
     client && latestUpdate
       ? await client
           .from("v2_update_reads")
-          .select("update_id")
+          .select("update_id, seen_at, read_at")
           .eq("user_id", account!.id)
           .eq("update_id", latestUpdate.id)
           .maybeSingle()
       : { data: null };
-  const hasUnreadUpdate = Boolean(latestUpdate && !updateRead);
+  const hasUnreadUpdate = Boolean(latestUpdate && !updateReceipt?.read_at);
+  const hasUnseenUpdate = Boolean(latestUpdate && !updateReceipt?.seen_at);
 
   return (
     <header
@@ -70,7 +71,7 @@ export async function PlayerNav() {
           </Link>
         )}
       </div>
-      {hasUnreadUpdate && latestUpdate ? <UpdateNotification update={latestUpdate} /> : null}
+      {hasUnseenUpdate && latestUpdate ? <UpdateNotification update={latestUpdate} /> : null}
     </header>
   );
 }

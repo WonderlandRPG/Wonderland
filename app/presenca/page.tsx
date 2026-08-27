@@ -107,6 +107,10 @@ export default async function PresencePage({
               ? "✓ Recompensa enviada para o personagem."
               : query.status === "ja_marcada"
                 ? "✓ A presença deste personagem já foi marcada hoje. Volte amanhã para avançar novamente."
+                : query.status === "indisponivel"
+                  ? "A campanha de presença está fora do período definido pelos administradores."
+                  : query.status === "concluido"
+                    ? "✓ Você já recebeu todas as recompensas desta campanha."
               : "! Não foi possível resgatar. Verifique se a presença de hoje já foi marcada."}
           </div>
         ) : null}

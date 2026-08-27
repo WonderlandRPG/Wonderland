@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { markUpdateReadAction } from "@/app/atualizacoes/actions";
+import { markUpdateReadAction, markUpdateSeenAction } from "@/app/atualizacoes/actions";
 
 export function UpdateNotification({
   update,
@@ -18,6 +18,12 @@ export function UpdateNotification({
       setOpen(false);
       router.push("/atualizacoes");
     });
+  const dismiss = () =>
+    startTransition(async () => {
+      await markUpdateSeenAction(update.id);
+      setOpen(false);
+      router.refresh();
+    });
   if (!open) return null;
   return (
     <div
@@ -29,7 +35,7 @@ export function UpdateNotification({
       <button
         className="update-notification__backdrop"
         aria-label="Fechar aviso"
-        onClick={() => setOpen(false)}
+        onClick={dismiss}
         type="button"
       />
       <section>
@@ -37,7 +43,7 @@ export function UpdateNotification({
         <h2 id="update-notification-title">{update.title}</h2>
         <p>Há novidades em Wonderland. Abra as notas para conhecer todas as mudanças.</p>
         <div>
-          <button type="button" onClick={() => setOpen(false)}>
+          <button disabled={pending} type="button" onClick={dismiss}>
             Ver depois
           </button>
           <button disabled={pending} type="button" onClick={markRead}>

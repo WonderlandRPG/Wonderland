@@ -39,7 +39,7 @@ export default async function RanksPage() {
 
         <section className="guild-trials-scroll">
           <header><span>✦</span><div><small>RITO DE ASCENSÃO</small><h2>Provas da Guilda</h2><p>Cada nova patente exige um feito digno do reconhecimento dos reinos.</p></div></header>
-          <div>{guildTrials.map((trial) => <article key={trial.from}><span>{trial.from}</span><div><small>PROVA OFICIAL</small><h3>{trial.name}</h3><p>{trial.description}</p></div></article>)}</div>
+          <div>{guildTrials.map((trial) => <article key={trial.from}><span className="guild-trial-route"><b>{trial.from.split(" → ")[0]}</b><i>→</i><b>{trial.from.split(" → ")[1]}</b></span><div><small>PROVA OFICIAL</small><h3>{trial.name}</h3><p>{trial.description}</p></div></article>)}</div>
         </section>
       </section>
     </PortalShell>

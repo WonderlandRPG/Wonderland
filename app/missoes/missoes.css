@@ -222,6 +222,48 @@
   background: #7b443b;
   border-color: #61342d;
 }
+.mission-page .mission-full-briefing {
+  margin-top: 14px;
+  border: 1px solid #a17d4e;
+  border-radius: 10px;
+  background: #fff0ca;
+}
+.mission-page .mission-full-briefing summary,
+.mission-page .mission-manager-briefing summary {
+  padding: 10px 12px;
+  list-style-position: inside;
+}
+.mission-page .mission-full-briefing > div,
+.mission-page .mission-manager-briefing > div {
+  padding: 12px;
+  border-top: 1px solid #b49363;
+  background: #f7e5b9;
+}
+.mission-page .mission-full-briefing h3,
+.mission-page .mission-manager-briefing b {
+  display: block;
+  margin: 0 0 5px;
+  color: #315f47;
+}
+.mission-page .mission-manager-briefing {
+  margin-top: 8px;
+  border: 1px solid #b29364;
+  border-radius: 8px;
+  background: #f1ddb2;
+}
+.mission-page .mission-manager-briefing p {
+  margin: 0 0 10px;
+  color: #493829;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+.mission-page .mission-manager-actions {
+  display: grid;
+  gap: 6px;
+}
+.mission-page .mission-manager-actions > form:last-child {
+  grid-template-columns: 1fr;
+}
 .mission-page .mission-ledger__empty {
   padding: 45px 20px;
   text-align: center;

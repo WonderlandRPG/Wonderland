@@ -37,9 +37,15 @@ export default async function MissionBoardPage({
         </section>
       </main>
     );
-  const locked = board.lockedUntil ? new Date(board.lockedUntil) : null;
   const trialReady =
     board.requiredForTrial !== null && board.completedForRank >= board.requiredForTrial;
+  const { data: activeMissionDetails } = board.activeAssignment
+    ? await client!
+        .from("v2_missions")
+        .select("description")
+        .eq("id", board.activeAssignment.missionId)
+        .maybeSingle()
+    : { data: null };
   return (
     <main className="mission-page">
       <PlayerNav />
@@ -114,21 +120,27 @@ export default async function MissionBoardPage({
             <p>
               <RealmLocationText text={board.activeAssignment.objective} />
             </p>
+            <details className="mission-full-briefing">
+              <summary>Ler a missão por inteiro</summary>
+              <div>
+                <h3>Relato completo</h3>
+                <p>
+                  <RealmLocationText
+                    text={activeMissionDetails?.description ?? board.activeAssignment.description}
+                  />
+                </p>
+                <h3>Objetivo</h3>
+                <p>
+                  <RealmLocationText text={board.activeAssignment.objective} />
+                </p>
+              </div>
+            </details>
             <footer>
               <span>
                 Aceita em {new Date(board.activeAssignment.acceptedAt).toLocaleString("pt-BR")}
               </span>
               <b>Missão em andamento</b>
             </footer>
-          </section>
-        ) : locked && locked > new Date() ? (
-          <section className="mission-lockout">
-            <span>⌛</span>
-            <div>
-              <small>PENALIDADE POR FALHA</small>
-              <h2>Novos contratos bloqueados</h2>
-              <p>Você poderá aceitar outra missão em {locked.toLocaleString("pt-BR")}.</p>
-            </div>
           </section>
         ) : (
           <section className="guild-board">
@@ -206,7 +218,7 @@ export default async function MissionBoardPage({
           <strong>Leis do Mural</strong>
           <span>01 · Apenas um contrato por vez</span>
           <span>02 · Arena e Dungeon bloqueadas durante a missão</span>
-          <span>03 · Falha impõe espera de 24 horas</span>
+          <span>03 · Missões não concluídas não bloqueiam novos contratos</span>
           <span>04 · O mural recebe uma seleção nova a cada semana</span>
         </footer>
       </div>

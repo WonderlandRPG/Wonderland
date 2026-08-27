@@ -73,6 +73,10 @@ export default async function EventsPage({
             ? "✓ Inscrição confirmada e recompensas entregues."
             : query.inscricao === "existente"
               ? "Você já está inscrito neste evento."
+              : query.inscricao === "aguarde"
+                ? "As inscrições deste evento ainda não começaram."
+                : query.inscricao === "encerrada"
+                  ? "As inscrições deste evento já foram encerradas."
               : "Não foi possível concluir a inscrição."}
         </div>
       ) : null}

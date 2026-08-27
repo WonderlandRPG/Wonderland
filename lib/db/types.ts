@@ -534,9 +534,14 @@ export interface Database {
         Relationships: [];
       };
       v2_update_reads: {
-        Row: { user_id: string; update_id: string; read_at: string };
-        Insert: { user_id: string; update_id: string; read_at?: string };
-        Update: { read_at?: string };
+        Row: { user_id: string; update_id: string; read_at: string | null; seen_at: string | null };
+        Insert: {
+          user_id: string;
+          update_id: string;
+          read_at?: string | null;
+          seen_at?: string | null;
+        };
+        Update: { read_at?: string | null; seen_at?: string | null };
         Relationships: [];
       };
       v2_inventory: {
@@ -727,6 +732,10 @@ export interface Database {
       v2_get_managed_missions: { Args: Record<PropertyKey, never>; Returns: Json };
       v2_resolve_mission: {
         Args: { p_assignment_id: string; p_completed: boolean };
+        Returns: Json;
+      };
+      v2_cancel_mission_assignment: {
+        Args: { p_assignment_id: string };
         Returns: Json;
       };
       v2_touch_player_presence: { Args: Record<PropertyKey, never>; Returns: undefined };

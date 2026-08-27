@@ -1,77 +1,359 @@
 /* Contraste semântico final — WCAG AA para superfícies do tema Wonderland. */
-:root{--contrast-ink:#2b2119;--contrast-muted:#5e4937;--contrast-light:#fff0c8;--contrast-light-muted:#dfd0ab;--contrast-gold-dark:#765018;--contrast-gold-light:#f1ca69}
+:root {
+  --contrast-ink: #2b2119;
+  --contrast-muted: #5e4937;
+  --contrast-light: #fff0c8;
+  --contrast-light-muted: #dfd0ab;
+  --contrast-gold-dark: #765018;
+  --contrast-gold-light: #f1ca69;
+}
 
 /* Pergaminhos e superfícies claras sempre recebem tinta escura. */
-:where(.home-path,.world-lore-hero,.mission-board-hero,.realm-notice,.mission-parchment,
-.guild-registry-cover,.guild-registry-folio,.public-character-hero,.public-character-summary,
-.public-character-stats,.public-character-equipment,.royal-chronicle__edition,
-.royal-chronicle__archive,.royal-chronicle__volume,.guild-decree,.market-empty,
-.inventory-empty,.presence-progress-card,.presence-pass--enhanced,.ranking-podium__place,
-.ranking-table>a,[class*="grimoire_sheet"],[class*="grimoire_index"]){color:var(--contrast-ink)!important}
-:where(.home-path,.world-lore-hero,.mission-board-hero,.realm-notice,.mission-parchment,
-.guild-registry-cover,.guild-registry-folio,.public-character-hero,.public-character-summary,
-.public-character-stats,.public-character-equipment,.royal-chronicle__edition,
-.royal-chronicle__archive,.royal-chronicle__volume,.guild-decree,.market-empty,
-.inventory-empty,.presence-progress-card,.presence-pass--enhanced,.ranking-podium__place,
-.ranking-table>a,[class*="grimoire_sheet"],[class*="grimoire_index"]) :where(h1,h2,h3,h4,strong,b,p,span,small,em,dt,dd){color:inherit}
-:where(.home-path,.world-lore-hero,.mission-board-hero,.realm-notice,.mission-parchment,
-.guild-registry-cover,.public-character-hero,.royal-chronicle__edition,.guild-decree,
-[class*="grimoire_sheet"],[class*="grimoire_index"]) .eyebrow{color:var(--contrast-gold-dark)!important}
-:where(.home-path,.world-lore-hero,.mission-board-hero,.realm-notice,.mission-parchment,
-.guild-registry-cover,.public-character-hero,.royal-chronicle__edition,.guild-decree,
-[class*="grimoire_sheet"],[class*="grimoire_index"]) p{color:var(--contrast-muted)!important}
+:where(
+  .home-path,
+  .world-lore-hero,
+  .mission-board-hero,
+  .realm-notice,
+  .mission-parchment,
+  .guild-registry-cover,
+  .guild-registry-folio,
+  .public-character-hero,
+  .public-character-summary,
+  .public-character-stats,
+  .public-character-equipment,
+  .royal-chronicle__edition,
+  .royal-chronicle__archive,
+  .royal-chronicle__volume,
+  .guild-decree,
+  .market-empty,
+  .inventory-empty,
+  .presence-progress-card,
+  .presence-pass--enhanced,
+  .ranking-podium__place,
+  .ranking-table > a,
+  [class*="grimoire_sheet"],
+  [class*="grimoire_index"]
+) {
+  color: var(--contrast-ink) !important;
+}
+:where(
+    .home-path,
+    .world-lore-hero,
+    .mission-board-hero,
+    .realm-notice,
+    .mission-parchment,
+    .guild-registry-cover,
+    .guild-registry-folio,
+    .public-character-hero,
+    .public-character-summary,
+    .public-character-stats,
+    .public-character-equipment,
+    .royal-chronicle__edition,
+    .royal-chronicle__archive,
+    .royal-chronicle__volume,
+    .guild-decree,
+    .market-empty,
+    .inventory-empty,
+    .presence-progress-card,
+    .presence-pass--enhanced,
+    .ranking-podium__place,
+    .ranking-table > a,
+    [class*="grimoire_sheet"],
+    [class*="grimoire_index"]
+  )
+  :where(h1, h2, h3, h4, strong, b, p, span, small, em, dt, dd) {
+  color: inherit;
+}
+:where(
+    .home-path,
+    .world-lore-hero,
+    .mission-board-hero,
+    .realm-notice,
+    .mission-parchment,
+    .guild-registry-cover,
+    .public-character-hero,
+    .royal-chronicle__edition,
+    .guild-decree,
+    [class*="grimoire_sheet"],
+    [class*="grimoire_index"]
+  )
+  .eyebrow {
+  color: var(--contrast-gold-dark) !important;
+}
+:where(
+    .home-path,
+    .world-lore-hero,
+    .mission-board-hero,
+    .realm-notice,
+    .mission-parchment,
+    .guild-registry-cover,
+    .public-character-hero,
+    .royal-chronicle__edition,
+    .guild-decree,
+    [class*="grimoire_sheet"],
+    [class*="grimoire_index"]
+  )
+  p {
+  color: var(--contrast-muted) !important;
+}
 
 /* Madeira, verde profundo e painéis de combate sempre recebem texto claro. */
-:where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
-.arena-mode-locked,.arena-game-header,.combat-hud-panel,.arena-message,.shop-cart,
-.market-hero,.ranking-board__header,.ranking-season-banner,.duelist-banner,
-.champions-hall__switcher,.guild-board,.realm-notice-board__wood,.inventory-command__loadout,
-.inventory-inspector,.presence-hero--enhanced,.auth-visual){color:var(--contrast-light)!important}
-:where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
-.arena-mode-locked,.arena-game-header,.combat-hud-panel,.arena-message,.shop-cart,
-.market-hero,.ranking-board__header,.ranking-season-banner,.duelist-banner,
-.champions-hall__switcher,.guild-board,.realm-notice-board__wood,.inventory-command__loadout,
-.inventory-inspector,.presence-hero--enhanced,.auth-visual) :where(h1,h2,h3,h4,strong,b){color:var(--contrast-light)!important}
-:where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
-.arena-mode-locked,.arena-game-header,.combat-hud-panel,.arena-message,.shop-cart,
-.market-hero,.ranking-board__header,.ranking-season-banner,.duelist-banner,
-.champions-hall__switcher,.guild-board,.realm-notice-board__wood,.inventory-command__loadout,
-.inventory-inspector,.presence-hero--enhanced,.auth-visual) :where(p,small,span,em){color:var(--contrast-light-muted)!important}
+:where(
+  .player-nav,
+  .home-hero__tale,
+  .arena-mode-select > header,
+  .arena-mode-card,
+  .arena-mode-locked,
+  .arena-game-header,
+  .combat-hud-panel,
+  .arena-message,
+  .shop-cart,
+  .market-hero,
+  .ranking-board__header,
+  .ranking-season-banner,
+  .duelist-banner,
+  .champions-hall__switcher,
+  .guild-board,
+  .realm-notice-board__wood,
+  .inventory-command__loadout,
+  .inventory-inspector,
+  .presence-hero--enhanced,
+  .auth-visual
+) {
+  color: var(--contrast-light) !important;
+}
+:where(
+    .player-nav,
+    .home-hero__tale,
+    .arena-mode-select > header,
+    .arena-mode-card,
+    .arena-mode-locked,
+    .arena-game-header,
+    .combat-hud-panel,
+    .arena-message,
+    .shop-cart,
+    .market-hero,
+    .ranking-board__header,
+    .ranking-season-banner,
+    .duelist-banner,
+    .champions-hall__switcher,
+    .guild-board,
+    .realm-notice-board__wood,
+    .inventory-command__loadout,
+    .inventory-inspector,
+    .presence-hero--enhanced,
+    .auth-visual
+  )
+  :where(h1, h2, h3, h4, strong, b) {
+  color: var(--contrast-light) !important;
+}
+:where(
+    .player-nav,
+    .home-hero__tale,
+    .arena-mode-select > header,
+    .arena-mode-card,
+    .arena-mode-locked,
+    .arena-game-header,
+    .combat-hud-panel,
+    .arena-message,
+    .shop-cart,
+    .market-hero,
+    .ranking-board__header,
+    .ranking-season-banner,
+    .duelist-banner,
+    .champions-hall__switcher,
+    .guild-board,
+    .realm-notice-board__wood,
+    .inventory-command__loadout,
+    .inventory-inspector,
+    .presence-hero--enhanced,
+    .auth-visual
+  )
+  :where(p, small, span, em) {
+  color: var(--contrast-light-muted) !important;
+}
 
 /* O pergaminho fica dentro da moldura escura do mural, mas continua sendo uma
    superfície clara. Esta regra precisa vencer a herança visual da .guild-board. */
 .guild-board .mission-parchment,
-.guild-board .mission-parchment :where(h1,h2,h3,h4,strong,b,p,span,small,em,dt,dd,blockquote){
-  color:var(--contrast-ink)!important;
+.guild-board
+  .mission-parchment
+  :where(h1, h2, h3, h4, strong, b, p, span, small, em, dt, dd, blockquote) {
+  color: var(--contrast-ink) !important;
 }
-.guild-board .mission-parchment p{color:var(--contrast-muted)!important}
-.guild-board .mission-parchment .mission-trial-ribbon{color:#f7dfac!important}
-.guild-board .mission-parchment button{color:#fff0ca!important}
-:where(.player-nav,.home-hero__tale,.arena-mode-select>header,.arena-mode-card,
-.arena-game-header,.market-hero,.ranking-board__header,.duelist-banner,
-.presence-hero--enhanced,.auth-visual) .eyebrow{color:var(--contrast-gold-light)!important}
+.guild-board .mission-parchment p {
+  color: var(--contrast-muted) !important;
+}
+.guild-board .mission-parchment .mission-trial-ribbon {
+  color: #f7dfac !important;
+}
+.guild-board .mission-parchment button {
+  color: #fff0ca !important;
+}
+:where(
+    .player-nav,
+    .home-hero__tale,
+    .arena-mode-select > header,
+    .arena-mode-card,
+    .arena-game-header,
+    .market-hero,
+    .ranking-board__header,
+    .duelist-banner,
+    .presence-hero--enhanced,
+    .auth-visual
+  )
+  .eyebrow {
+  color: var(--contrast-gold-light) !important;
+}
 
 /* Controles preservam o contraste do próprio fundo, sem herdar do painel pai. */
-.button,.player-nav__character>a,.player-nav__links>a,.player-nav__world-menu>button,
-.ranking-filters button,.champions-hall__switcher button,.shop-cart button,
-.inventory-command button,.arena-command-panel button{color:#fff0ca!important}
-.button--ghost,.player-nav__character>a,.ranking-filters button:not(.is-active),
-.champions-hall__switcher button:not(.is-active),.shop-cart>div>button{color:#302319!important}
-input,select,textarea,option{color:#2b2119!important;background-color:#fff3d2!important}
-::placeholder{color:#76624e!important;opacity:1}
+.button,
+.player-nav__character > a,
+.player-nav__links > a,
+.player-nav__world-menu > button,
+.ranking-filters button,
+.champions-hall__switcher button,
+.shop-cart button,
+.inventory-command button,
+.arena-command-panel button {
+  color: #fff0ca !important;
+}
+.button--ghost,
+.player-nav__character > a,
+.ranking-filters button:not(.is-active),
+.champions-hall__switcher button:not(.is-active),
+.shop-cart > div > button {
+  color: #302319 !important;
+}
+input,
+select,
+textarea,
+option {
+  color: #2b2119 !important;
+  background-color: #fff3d2 !important;
+}
+::placeholder {
+  color: #76624e !important;
+  opacity: 1;
+}
 
 /* Ícones dos reinos usam tinta escura quando o fundo é luminoso. */
-.realm-gallery article>span,.realm-gallery article>i,.realm-card__sigil{color:#21372d!important;text-shadow:0 1px rgba(255,255,255,.35)}
+.realm-gallery article > span,
+.realm-gallery article > i,
+.realm-card__sigil {
+  color: #21372d !important;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.35);
+}
 
-@media(forced-colors:active){*{text-shadow:none!important;box-shadow:none!important}}
-
+@media (forced-colors: active) {
+  * {
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+}
 
 /* O modal da nova atualização é um pergaminho claro e não pode herdar texto
    luminoso das camadas escuras da página que permanece ao fundo. */
 .update-notification > section,
-.update-notification > section :where(h1,h2,h3,h4,p,span,small,strong,b){
-  color:var(--contrast-ink)!important;
+.update-notification > section :where(h1, h2, h3, h4, p, span, small, strong, b) {
+  color: var(--contrast-ink) !important;
 }
-.update-notification > section > span{color:#28533e!important}
-.update-notification > section p{color:var(--contrast-muted)!important}
-.update-notification > section button{color:#fff2cf!important}
+.update-notification > section > span {
+  color: #28533e !important;
+}
+.update-notification > section p {
+  color: var(--contrast-muted) !important;
+}
+.update-notification > section button {
+  color: #fff2cf !important;
+}
+
+/* Navegação clara dentro do cabeçalho escuro: não herdar a tinta clara da barra. */
+#player-world-navigation > small {
+  color: #5f472f !important;
+  opacity: 1 !important;
+}
+#player-world-navigation :where(a, a span, form button) {
+  color: #302319 !important;
+}
+.player-nav__character > a,
+.player-nav__character > a span {
+  color: #2b2119 !important;
+}
+.player-nav__character > a small {
+  color: #604827 !important;
+  opacity: 1 !important;
+}
+
+/* Controles e textos adicionados às missões e à leitura da Lore. */
+.mission-full-briefing,
+.mission-manager-briefing {
+  color: #2b2119 !important;
+}
+.mission-full-briefing summary,
+.mission-manager-briefing summary {
+  color: #234c3a !important;
+  font-weight: 900;
+  cursor: pointer;
+}
+.mission-manager-actions .is-cancelled {
+  background: #6f5438 !important;
+  color: #fff0c8 !important;
+}
+.lore-collapse > header {
+  color: #2b2119 !important;
+}
+.lore-collapse > header small {
+  color: #315f47 !important;
+}
+.lore-collapse > header button {
+  background: #315f47 !important;
+  color: #fff0c8 !important;
+}
+.lore-collapse {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+.lore-collapse > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid #987650;
+  border-radius: 14px;
+  background: #ecd8ad;
+  box-shadow: 0 9px 22px rgba(45, 31, 18, 0.1);
+}
+.lore-collapse > header > div {
+  display: grid;
+  gap: 3px;
+}
+.lore-collapse > header small {
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+.lore-collapse > header strong {
+  font-size: 1.1rem;
+}
+.lore-collapse > header button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid #234c3a;
+  border-radius: 9px;
+  font-weight: 900;
+}
+.lore-collapse[data-collapsed="true"] {
+  margin-bottom: 22px;
+}
+@media (max-width: 620px) {
+  .lore-collapse > header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .lore-collapse > header button {
+    width: 100%;
+  }
+}

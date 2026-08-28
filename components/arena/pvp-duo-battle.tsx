@@ -1,10 +1,12 @@
 "use client";
 /* eslint-disable react-hooks/immutability -- the turn timeout invokes the stable component command below. */
 
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { CombatSkillCard } from "@/components/arena/combat-skill-card";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
+import { CombatResultModal } from "@/components/arena/combat-result-modal";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { defaultCombatRules, type CombatantState } from "@/lib/game/combat";
 import { createTurnActionUsage, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
@@ -213,7 +215,7 @@ export function PvpDuoBattle({
         </section>
       ) : null}
 
-      {finished ? <section className="arena-result"><span>{winnerTeam === ownTeam ? "VITÓRIA" : "DERROTA"}</span><h2>{winnerTeam === ownTeam ? "Sua dupla venceu o confronto." : state.winnerCharacterId ? "A dupla adversária venceu." : "A partida terminou em derrota por desistência."}</h2></section> : null}
+      {finished ? <CombatResultModal victory={winnerTeam === ownTeam} eyebrow="CONFRONTO EM DUPLA ENCERRADO" title={winnerTeam === ownTeam ? "Sua dupla venceu o confronto." : state.winnerCharacterId ? "A dupla adversária venceu." : "A partida terminou em derrota por desistência."} description={winnerTeam === ownTeam ? "A vitória da equipe foi registrada na Arena." : "Reúna sua dupla, ajuste a estratégia e tente novamente."}><Link className="button button--primary" href="/arena">Voltar à Arena</Link></CombatResultModal> : null}
     </section>
   );
 }

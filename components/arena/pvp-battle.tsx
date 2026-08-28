@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { getPvpMatchStateAction, performPvpAction } from "@/app/arena/pvp-match-actions";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { CombatSkillCard } from "@/components/arena/combat-skill-card";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
+import { CombatResultModal } from "@/components/arena/combat-result-modal";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import type { ArenaCharacter, PvpRoomSnapshot } from "@/lib/game/arena-types";
 import { defaultCombatRules, type CombatantState } from "@/lib/game/combat";
@@ -327,16 +329,18 @@ export function PvpBattle({
           )}
         </section>
       ) : (
-        <section className="arena-result">
-          <span>{state.winnerCharacterId === ownId ? "VITÓRIA" : "DERROTA"}</span>
-          <h2>
-            {state.winnerCharacterId === ownId
+        <CombatResultModal
+          victory={state.winnerCharacterId === ownId}
+          eyebrow="DUELO OFICIAL ENCERRADO"
+          title={state.winnerCharacterId === ownId
               ? `${character.name} venceu!`
               : state.winnerCharacterId
                 ? `${opponent.name} venceu.`
                 : "O duelo terminou em derrota por desistência."}
-          </h2>
-        </section>
+          description={state.winnerCharacterId === ownId ? "Vitória registrada no histórico da Arena." : "A derrota foi registrada. Prepare-se para o próximo duelo."}
+        >
+          <Link className="button button--primary" href="/arena">Voltar à Arena</Link>
+        </CombatResultModal>
       )}
     </section>
   );

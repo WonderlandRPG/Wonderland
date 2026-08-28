@@ -6,6 +6,7 @@ import { claimArenaVictoryAction } from "@/app/arena/actions";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { CombatSkillCard } from "@/components/arena/combat-skill-card";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
+import { CombatResultModal } from "@/components/arena/combat-result-modal";
 import {
   calculateDamage,
   createCombatant,
@@ -515,11 +516,11 @@ function JrpgBattle({
           )}
         </section>
       ) : (
-        <section className="arena-result">
-          <span>{enemy.hp <= 0 ? "VITÓRIA" : "DERROTA"}</span>
-          <h2>
-            {enemy.hp <= 0 ? `${enemy.name} foi derrotado.` : `${character.name} caiu em combate.`}
-          </h2>
+        <CombatResultModal
+          victory={enemy.hp <= 0}
+          title={enemy.hp <= 0 ? `${enemy.name} foi derrotado.` : `${character.name} caiu em combate.`}
+          description={enemy.hp <= 0 ? "Seu nome será registrado entre os vencedores da Arena." : "Reorganize sua estratégia e retorne ao campo de batalha."}
+        >
           {mode === "pve" && enemy.hp <= 0 ? (
             <>
               <p>
@@ -547,7 +548,7 @@ function JrpgBattle({
           <button className="button button--ghost" onClick={onReset} type="button">
             Lutar novamente
           </button>
-        </section>
+        </CombatResultModal>
       )}
     </section>
   );

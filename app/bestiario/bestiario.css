@@ -174,8 +174,8 @@
 }
 .bestiary-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.15rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem;
 }
 .bestiary-card {
   position: relative;
@@ -195,7 +195,7 @@
 .bestiary-card__portrait {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 5 / 6;
   border-bottom: 4px solid #cda955;
   background: #102d23;
 }
@@ -206,7 +206,7 @@
   content: "";
 }
 .bestiary-card__portrait img {
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   transition: transform 0.4s ease;
 }
@@ -216,38 +216,30 @@
 .bestiary-card__rank {
   position: absolute;
   z-index: 2;
-  right: 1rem;
-  bottom: 0.85rem;
-  display: flex;
-  align-items: baseline;
-  gap: 0.35rem;
-  padding: 0.42rem 0.7rem;
-  border: 1px solid #e2c36e;
-  border-radius: 999px;
-  background: #103d2d;
-  color: #f8dda0;
-  font-size: 0.67rem;
-  font-weight: 900;
-  letter-spacing: 0.1em;
+  right: 0.55rem;
+  bottom: 0.35rem;
+  display: grid;
+  place-items: center;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.55));
 }
-.bestiary-card__rank b {
-  font-family: Georgia, serif;
-  font-size: 1.2rem;
+.bestiary-card__rank .rank-emblem.is-compact {
+  width: 52px;
+  height: 61px;
 }
 .bestiary-card > header,
 .bestiary-card > p,
 .bestiary-card > dl,
 .bestiary-card > .bestiary-card__section,
 .bestiary-card > footer {
-  margin-left: 1.25rem;
-  margin-right: 1.25rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 .bestiary-card header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-top: 1.2rem;
+  margin-top: 1rem;
 }
 .bestiary-card header small {
   color: #15533d;
@@ -258,12 +250,13 @@
 .bestiary-card h2 {
   margin: 0.25rem 0 0.75rem;
   font-family: Georgia, serif;
-  font-size: 1.65rem;
+  font-size: 1.4rem;
   line-height: 1.05;
 }
 .bestiary-card__description {
-  min-height: 4.7em;
-  line-height: 1.55;
+  min-height: 4.4em;
+  font-size: 0.9rem;
+  line-height: 1.48;
 }
 .bestiary-card dl {
   display: grid;
@@ -347,7 +340,7 @@
   font-family: Georgia, serif;
   font-size: 4rem;
 }
-@media (max-width: 1000px) {
+@media (max-width: 1150px) {
   .bestiary-controls {
     grid-template-columns: 1fr 1fr;
   }
@@ -355,10 +348,15 @@
     grid-column: 1/-1;
   }
   .bestiary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 820px) {
+  .bestiary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-@media (max-width: 680px) {
+@media (max-width: 560px) {
   .bestiary-shell {
     padding-top: 1.2rem;
   }

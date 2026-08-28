@@ -31,12 +31,27 @@ export function parseTextList(value: unknown): string[] {
 }
 
 const physicalWeaknessTerms = [
-  "articula", "asa", "cauda", "coração", "escama", "flanco", "guelra", "olho",
-  "ponto cego", "ventre", "vibra", "filact", "núcleo", "rede", "arma", "artefato",
+  "articula",
+  "asa",
+  "cauda",
+  "coração",
+  "escama",
+  "flanco",
+  "guelra",
+  "olho",
+  "ponto cego",
+  "ventre",
+  "vibra",
+  "filact",
+  "núcleo",
+  "rede",
+  "arma",
+  "artefato",
 ];
 
 export function getCreatureImageUrl(slug: string) {
-  return `/images/bestiary/${slug}.webp`;
+  const assetSlug = slug.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return `/images/bestiary/${assetSlug}.webp`;
 }
 
 export function getCreatureWeaknessKind(weaknesses: string[]): CreatureWeaknessKind {

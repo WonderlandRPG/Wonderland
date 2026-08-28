@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
+import { RankBadge } from "@/components/characters/rank-badge";
 import type { BestiaryCreature, CreatureRank } from "@/lib/game/bestiary";
 import { creatureRanks, getCreatureWeaknessKind } from "@/lib/game/bestiary";
 
@@ -111,8 +112,8 @@ export function BestiaryCatalog({
                 sizes="(max-width: 680px) 100vw, (max-width: 1000px) 50vw, 33vw"
                 src={creature.imageUrl}
               />
-              <span className="bestiary-card__rank" aria-label={`Criatura Rank ${creature.rank}`}>
-                RANK <b>{creature.rank}</b>
+              <span className="bestiary-card__rank">
+                <RankBadge compact rank={creature.rank} />
               </span>
             </div>
             <header>
@@ -144,7 +145,8 @@ export function BestiaryCatalog({
                 ))}
               </ul>
               <strong className="bestiary-card__combat-effect">
-                No PvE: +25% de dano {getCreatureWeaknessKind(creature.weaknesses) === "physical" ? "físico" : "mágico"}
+                No PvE: +25% de dano{" "}
+                {getCreatureWeaknessKind(creature.weaknesses) === "physical" ? "físico" : "mágico"}
               </strong>
             </div>
             <footer>

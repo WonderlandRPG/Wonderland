@@ -1,11 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import { getDungeonRunAction, performDungeonAction } from "@/app/arena/dungeons/[runId]/actions";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { CombatSkillCard } from "@/components/arena/combat-skill-card";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
+import { CombatResultModal } from "@/components/arena/combat-result-modal";
 import { firstDungeon } from "@/lib/game/dungeons";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import type { DungeonBattleState } from "@/lib/game/dungeon-combat";
@@ -136,7 +138,7 @@ export function DungeonBattle({ runId, initialRoom, characters, ownCharacterId }
         </section>
       ) : null}
 
-      {state.status !== "active" ? <section className="arena-result"><span>{state.status === "victory" ? "DUNGEON CONCLUÍDA" : "EXPEDIÇÃO FRACASSOU"}</span><h2>{state.status === "victory" ? "O grupo venceu todos os encontros." : state.message.includes("desist") ? "O grupo confirmou a desistência e saiu derrotado." : "Todos os aventureiros caíram."}</h2></section> : null}
+      {state.status !== "active" ? <CombatResultModal victory={state.status === "victory"} eyebrow={state.status === "victory" ? "DUNGEON CONCLUÍDA" : "EXPEDIÇÃO FRACASSOU"} title={state.status === "victory" ? "O grupo venceu todos os encontros." : state.message.includes("desist") ? "O grupo confirmou a desistência e saiu derrotado." : "Todos os aventureiros caíram."} description={state.status === "victory" ? "A Guilda registrou o feito de todos os integrantes." : "A expedição terminou, mas uma nova tentativa ainda poderá mudar esse destino."}><Link className="button button--primary" href="/arena/dungeons">Voltar às Dungeons</Link></CombatResultModal> : null}
       <details className="dungeon-combat-log" open><summary>Registro do combate <span>{state.log.length} eventos</span></summary><ol>{[...state.log].reverse().map((entry,index)=><li key={`${room.version}-${index}`}>{entry}</li>)}</ol></details>
     </section>
   );

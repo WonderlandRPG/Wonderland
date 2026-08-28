@@ -5,6 +5,7 @@ import { CombatVisualEnhancer } from "@/components/arena/combat-visual-enhancer"
 
 import "./arena.css";
 import "./arena-images.css";
+import "./combat-result-modal.css";
 import "./jrpg.css";
 import "./combat-polish.css";
 import "./jrpg-formation.css";

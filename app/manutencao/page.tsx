@@ -7,6 +7,7 @@ import { getServerOnline } from "@/lib/content/server-status";
 import { getRecentPortalUpdates } from "@/lib/game/player-portal";
 
 import styles from "./maintenance.module.css";
+import contrast from "./maintenance-contrast.module.css";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Servidor em manutenção" };
@@ -30,7 +31,7 @@ export default async function MaintenancePage() {
 
   return (
     <main className="maintenance-page">
-      <section className={styles.shell}>
+      <section className={`${styles.shell} ${contrast.shell}`}>
         <div className="maintenance-page__mark">
           <span>W</span>
         </div>
@@ -58,7 +59,9 @@ export default async function MaintenancePage() {
               <time>{date.format(new Date(`${latestUpdate.published_on}T00:00:00Z`))}</time>
             </header>
             <span className={styles.version}>VERSÃO {latestUpdate.version}</span>
-            <UpdateBlocks blocks={latestUpdate.notes} />
+            <div className="royal-chronicle__story">
+              <UpdateBlocks blocks={latestUpdate.notes} />
+            </div>
           </article>
         ) : (
           <p className={styles.empty}>Nenhuma atualização foi publicada até o momento.</p>

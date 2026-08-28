@@ -8,9 +8,8 @@ import {
 
 describe("bestiary PvE integration", () => {
   it("maps every creature slug to its illustrated portrait", () => {
-    expect(getCreatureImageUrl("lobo-cinzento")).toBe(
-      "/images/bestiary/lobo-cinzento.webp",
-    );
+    expect(getCreatureImageUrl("lobo-cinzento")).toBe("/images/bestiary/lobo-cinzento.webp");
+    expect(getCreatureImageUrl("fênix")).toBe("/images/bestiary/fenix.webp");
   });
 
   it("turns known field weaknesses into a combat damage type", () => {

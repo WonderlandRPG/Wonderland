@@ -180,6 +180,7 @@
 }
 .bestiary-card {
   position: relative;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
   border: 1px solid #927039;
   border-radius: 19px;
@@ -193,29 +194,89 @@
   transform: translateY(-4px);
   box-shadow: 0 21px 38px rgba(39, 28, 14, 0.2);
 }
-.bestiary-card__portrait {
+.bestiary-card__trigger {
   position: relative;
-  width: 100%;
-  line-height: 0;
-  border-bottom: 4px solid #cda955;
-  background: #102d23;
-}
-.bestiary-card__portrait:after {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 58%, rgba(5, 22, 16, 0.75));
-  content: "";
-}
-.bestiary-card__portrait img {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  background: #102d23;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.bestiary-card__trigger:after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 48%,
+    rgba(4, 15, 11, 0.18) 62%,
+    rgba(4, 15, 11, 0.96)
+  );
+  content: "";
+}
+.bestiary-card__trigger img {
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+.bestiary-card:hover .bestiary-card__trigger img,
+.bestiary-card__trigger:focus-visible img {
+  transform: scale(1.035);
+}
+.bestiary-card__trigger:focus-visible {
+  outline: 3px solid #f0cf72;
+  outline-offset: -4px;
+}
+.bestiary-card__caption {
+  position: absolute;
+  z-index: 2;
+  right: 4.7rem;
+  bottom: 1rem;
+  left: 1rem;
+  display: grid;
+  gap: 0.25rem;
+  color: #fff4ce;
+  line-height: 1.08;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+.bestiary-card__caption small {
+  color: #efd17c;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.bestiary-card__caption strong {
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+}
+.bestiary-card__caption em {
+  max-height: 0;
+  overflow: hidden;
+  color: #f4dfae;
+  font-size: 0.7rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  opacity: 0;
+  text-transform: uppercase;
+  transition:
+    max-height 0.2s ease,
+    opacity 0.2s ease;
+}
+.bestiary-card:hover .bestiary-card__caption em,
+.bestiary-card__trigger:focus-visible .bestiary-card__caption em {
+  max-height: 1rem;
+  opacity: 1;
 }
 .bestiary-card__rank {
   position: absolute;
   z-index: 2;
   right: 0.55rem;
-  bottom: 0.35rem;
+  bottom: 0.7rem;
   display: grid;
   place-items: center;
   filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.55));
@@ -224,53 +285,38 @@
   width: 52px;
   height: 61px;
 }
-.bestiary-card > header,
-.bestiary-card > p,
-.bestiary-card > dl,
-.bestiary-card > .bestiary-card__section,
-.bestiary-card > footer {
-  margin-left: 1rem;
-  margin-right: 1rem;
-}
-.bestiary-card header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-.bestiary-card header small {
+.bestiary-modal__content header small {
   color: #15533d;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-.bestiary-card h2 {
+.bestiary-modal__content h2 {
   margin: 0.25rem 0 0.75rem;
   font-family: Georgia, serif;
   font-size: 1.4rem;
   line-height: 1.05;
 }
 .bestiary-card__description {
-  min-height: 4.4em;
+  margin: 0;
   font-size: 0.9rem;
   line-height: 1.48;
 }
-.bestiary-card dl {
+.bestiary-modal__content dl {
   display: grid;
   grid-template-columns: 1fr 1.5fr;
   gap: 0.55rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
-.bestiary-card dl div,
+.bestiary-modal__content dl div,
 .bestiary-card__section {
   padding: 0.75rem;
   border: 1px solid rgba(112, 78, 28, 0.32);
   border-radius: 10px;
   background: rgba(255, 250, 226, 0.68);
 }
-.bestiary-card dt,
+.bestiary-modal__content dt,
 .bestiary-card__section small,
 .bestiary-card footer small {
   color: #60451f;
@@ -279,7 +325,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-.bestiary-card dd {
+.bestiary-modal__content dd {
   margin: 0.25rem 0 0;
   font-weight: 800;
 }
@@ -318,17 +364,91 @@
   color: #772f27;
   font-size: 0.82rem;
 }
-.bestiary-card footer {
+.bestiary-modal__content footer {
   margin-top: 1rem;
   margin-bottom: 1.25rem;
   padding-top: 0.8rem;
   border-top: 1px dashed #9b7842;
 }
-.bestiary-card footer span {
+.bestiary-modal__content footer span {
   display: block;
   margin-top: 0.25rem;
   font-size: 0.85rem;
   font-weight: 700;
+}
+.bestiary-modal {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(3, 12, 9, 0.82);
+  backdrop-filter: blur(8px);
+}
+.bestiary-modal__card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(340px, 1.15fr);
+  width: min(920px, 100%);
+  max-height: min(760px, calc(100vh - 3rem));
+  overflow: hidden;
+  border: 1px solid #b9934d;
+  border-radius: 22px;
+  background: linear-gradient(150deg, #fff5d6, #e7cf99);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.62);
+}
+.bestiary-modal__portrait {
+  position: relative;
+  min-height: 560px;
+  background: #102d23;
+}
+.bestiary-modal__portrait:after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 72%, rgba(13, 35, 27, 0.35));
+  content: "";
+}
+.bestiary-modal__portrait img {
+  object-fit: cover;
+}
+.bestiary-modal__rank {
+  position: absolute;
+  z-index: 2;
+  right: 0.8rem;
+  bottom: 0.8rem;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.55));
+}
+.bestiary-modal__content {
+  overflow-y: auto;
+  padding: 2.2rem 2rem 1.5rem;
+}
+.bestiary-modal__content header {
+  margin-bottom: 0.75rem;
+}
+.bestiary-modal__close {
+  position: absolute;
+  z-index: 4;
+  top: 0.7rem;
+  right: 0.7rem;
+  display: grid;
+  width: 2.2rem;
+  height: 2.2rem;
+  place-items: center;
+  border: 1px solid rgba(93, 56, 24, 0.38);
+  border-radius: 50%;
+  background: #fff2cf;
+  color: #3b2918;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+  box-shadow: 0 5px 15px rgba(31, 20, 10, 0.18);
+}
+.bestiary-modal__close:hover,
+.bestiary-modal__close:focus-visible {
+  background: #3e201b;
+  color: #fff1cb;
+  outline: none;
 }
 .bestiary-empty {
   padding: 5rem 1rem;
@@ -381,5 +501,27 @@
   }
   .bestiary-card__description {
     min-height: 0;
+  }
+}
+@media (max-width: 760px) {
+  .bestiary-modal {
+    align-items: end;
+    padding: 0;
+  }
+  .bestiary-modal__card {
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+  }
+  .bestiary-modal__portrait {
+    min-height: 280px;
+    max-height: 36vh;
+  }
+  .bestiary-modal__portrait:after {
+    background: linear-gradient(180deg, transparent 68%, rgba(13, 35, 27, 0.42));
+  }
+  .bestiary-modal__content {
+    padding: 1.5rem 1.2rem 1.25rem;
   }
 }

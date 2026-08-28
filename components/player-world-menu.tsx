@@ -54,6 +54,7 @@ export function PlayerWorldMenu({
             <Link href="/eventos">Eventos</Link>
             <small>Informações</small>
             <Link href="/mapas">Mapa</Link>
+            <Link href="/bestiario">Bestiário</Link>
             <Link
               className={hasUnreadUpdate ? "has-unread-update" : undefined}
               href="/atualizacoes"

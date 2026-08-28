@@ -46,6 +46,13 @@ export type MissionCard = {
   rewardGold: number;
   isRankTrial: boolean;
   promotionRank: string | null;
+  creature: {
+    slug: string;
+    name: string;
+    rank: string;
+    category: string;
+    weaknesses: string[];
+  } | null;
 };
 export type MissionAssignment = {
   id: string;
@@ -90,6 +97,7 @@ export function parseMissionBoard(value: Json | null): MissionBoard | null {
     ? root.missions
         .map((entry) => {
           const row = record(entry);
+          const creature = record(row.creature);
           return {
             id: text(row.id),
             slug: text(row.slug),
@@ -103,6 +111,19 @@ export function parseMissionBoard(value: Json | null): MissionBoard | null {
             rewardGold: number(row.rewardGold),
             isRankTrial: Boolean(row.isRankTrial),
             promotionRank: text(row.promotionRank) || null,
+            creature: text(creature.slug)
+              ? {
+                  slug: text(creature.slug),
+                  name: text(creature.name),
+                  rank: text(creature.rank),
+                  category: text(creature.category),
+                  weaknesses: Array.isArray(creature.weaknesses)
+                    ? creature.weaknesses.filter(
+                        (weakness): weakness is string => typeof weakness === "string",
+                      )
+                    : [],
+                }
+              : null,
           };
         })
         .filter((mission) => mission.id)

@@ -1,4 +1,31 @@
 /* Wonderland · Missões — mural e gerenciamento. */
+.mission-creature-reference {
+  display: block;
+  margin: 0.8rem 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(22, 78, 57, 0.35);
+  border-left: 4px solid #164e39;
+  border-radius: 9px;
+  background: rgba(232, 217, 166, 0.72);
+  color: #2e2214;
+  text-decoration: none;
+}
+.mission-creature-reference span,
+.mission-creature-reference small {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+.mission-creature-reference strong {
+  display: block;
+  margin: 0.15rem 0;
+  color: #164e39;
+  font-family: Georgia, serif;
+}
+.mission-creature-reference:hover {
+  background: #f6e7b9;
+}
 .mission-page .mission-board-shell,
 .mission-page .mission-management {
   padding-bottom: 72px;

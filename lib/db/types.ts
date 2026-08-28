@@ -636,6 +636,62 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_missions"]["Insert"]>;
         Relationships: [];
       };
+      v2_creatures: {
+        Row: {
+          id: string;
+          slug: string;
+          name: string;
+          category: string;
+          rank: string;
+          size: string;
+          disposition: string;
+          behavior: string;
+          weaknesses: string[];
+          habitats: string[];
+          description: string;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          name: string;
+          category: string;
+          rank: string;
+          size: string;
+          disposition: string;
+          behavior: string;
+          weaknesses?: string[];
+          habitats?: string[];
+          description: string;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_creatures"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_mission_creatures: {
+        Row: {
+          mission_id: string;
+          creature_id: string;
+          role: string;
+          quantity_min: number;
+          quantity_max: number;
+          notes: string;
+        };
+        Insert: {
+          mission_id: string;
+          creature_id: string;
+          role?: string;
+          quantity_min?: number;
+          quantity_max?: number;
+          notes?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_mission_creatures"]["Insert"]>;
+        Relationships: [];
+      };
       v2_mission_assignments: {
         Row: {
           id: string;

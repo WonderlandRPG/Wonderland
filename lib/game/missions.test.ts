@@ -5,7 +5,7 @@ import { officialMissionRewards,parseMissionBoard,promotionTrialCatalogSize,regu
 describe("mural de missões",()=>{
   it("mantém 100 missões de cada Rank para cada reino",()=>{
     expect(regularMissionsPerRankPerKingdom).toBe(100);
-    expect(regularMissionCatalogSize).toBe(2400);
+    expect(regularMissionCatalogSize).toBe(4200);
     expect(promotionTrialCatalogSize).toBe(24);
   });
 

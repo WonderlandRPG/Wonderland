@@ -2293,10 +2293,10 @@ const classes: ClassSeed[] = [
     description: "Especialista técnico que alterna fórmulas para transformar o estado do combate.",
     resource: {
       name: "Catalisadores",
-      initial: 2,
-      maximum: 8,
+      initial: 20,
+      maximum: 80,
       generation:
-        "Ganha 1 Catalisador ao usar uma categoria de operação diferente da ação anterior, limitado a 2 por rodada.",
+        "Ganha 10 Catalisadores ao usar uma categoria de operação diferente da ação anterior, limitado a 20 por rodada.",
       consumption:
         "Fórmulas consomem Catalisadores após a validação do alvo; repetir categoria não gera recurso.",
     },
@@ -2496,10 +2496,10 @@ const classes: ClassSeed[] = [
       "Conjurador complexo que administra Almas, lacaios e sacrifícios para dominar confrontos longos.",
     resource: {
       name: "Almas",
-      initial: 1,
-      maximum: 8,
+      initial: 10,
+      maximum: 80,
       generation:
-        "Ganha 1 Alma quando uma invocação expira ou uma unidade perde ao menos 20% do HP máximo em uma ação.",
+        "Ganha 10 Almas quando uma invocação expira ou uma unidade perde ao menos 20% do HP máximo em uma ação.",
       consumption:
         "Rituais consomem Almas e resolvem sacrifícios da invocação mais antiga primeiro.",
     },

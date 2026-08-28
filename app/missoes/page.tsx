@@ -184,6 +184,16 @@ export default async function MissionBoardPage({
                       <RealmLocationText text={mission.objective} />
                     </span>
                   </blockquote>
+                  {mission.creature ? (
+                    <Link
+                      className="mission-creature-reference"
+                      href={`/bestiario?criatura=${mission.creature.slug}`}
+                    >
+                      <span>BESTIÁRIO · RANK {mission.creature.rank}</span>
+                      <strong>{mission.creature.name}</strong>
+                      <small>Fraquezas: {mission.creature.weaknesses.join(" · ")}</small>
+                    </Link>
+                  ) : null}
                   <dl>
                     <div>
                       <dt>XP</dt>

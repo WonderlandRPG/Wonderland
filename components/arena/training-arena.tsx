@@ -43,6 +43,7 @@ import {
 import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import { applyEventResourceGeneration, applyResourceTrigger } from "@/lib/game/combat-resources";
 import { applyCombatLorePassives } from "@/lib/game/combat-passives";
+import { getCreatureWeaknessBonus, type PveCreature } from "@/lib/game/bestiary";
 
 type BattleFxKind = "damage" | "heal" | "shield" | "magic";
 type BattleFx = { target: "player" | "enemy"; kind: BattleFxKind; token: number } | null;
@@ -55,6 +56,7 @@ export function TrainingArena({
   monsterIndex,
   sessionId,
   opponent,
+  pveCreature,
 }: {
   characters: ArenaCharacter[];
   initialCharacterId?: string;
@@ -63,6 +65,7 @@ export function TrainingArena({
   monsterIndex: number;
   sessionId?: string;
   opponent?: ArenaCharacter;
+  pveCreature?: PveCreature;
 }) {
   const firstId = characters.some((entry) => entry.id === initialCharacterId)
     ? initialCharacterId!
@@ -94,6 +97,7 @@ export function TrainingArena({
       monsterIndex={monsterIndex}
       sessionId={sessionId}
       opponent={opponent}
+      pveCreature={pveCreature}
       onChange={setSelectedId}
       onReset={() => setResetKey((value) => value + 1)}
     />
@@ -108,6 +112,7 @@ function JrpgBattle({
   monsterIndex,
   sessionId,
   opponent,
+  pveCreature,
   onChange,
   onReset,
 }: {
@@ -118,12 +123,13 @@ function JrpgBattle({
   monsterIndex: number;
   sessionId?: string;
   opponent?: ArenaCharacter;
+  pveCreature?: PveCreature;
   onChange(id: string): void;
   onReset(): void;
 }) {
   const initial = useMemo(
-    () => createBattle(character, rules, mode, monsterIndex, opponent),
-    [character, rules, mode, monsterIndex, opponent],
+    () => createBattle(character, rules, mode, monsterIndex, opponent, pveCreature),
+    [character, rules, mode, monsterIndex, opponent, pveCreature],
   );
   const [player, setPlayer] = useState(initial.player);
   const [enemy, setEnemy] = useState(initial.enemy);
@@ -208,26 +214,30 @@ function JrpgBattle({
     areaAction = false,
   ) {
     if (result.event.kind === "error") return setMessage(result.event.message);
+    const weaknessResult =
+      mode === "pve" && pveCreature && !targetIsPlayer
+        ? applyPveWeakness(result, pveCreature)
+        : result;
     const targetCharacter = targetIsPlayer ? character : opponent;
     const generated = applyEventResourceGeneration({
-      actor: result.actor,
-      target: result.target,
+      actor: weaknessResult.actor,
+      target: weaknessResult.target,
       actorCharacter: character,
       targetCharacter,
-      event: result.event,
+      event: weaknessResult.event,
       area: areaAction,
     });
     let nextPlayer = targetIsPlayer ? generated.target : generated.actor;
     const nextEnemy = targetIsPlayer ? enemy : generated.target;
     if (targetIsPlayer && generated.actor.id === player.id)
       nextPlayer = generated.actor.id === generated.target.id ? generated.target : generated.actor;
-    playFx(targetIsPlayer ? "player" : "enemy", result.event);
+    playFx(targetIsPlayer ? "player" : "enemy", weaknessResult.event);
     const nextUsage = { ...usedActions, [slot]: true };
     if (nextEnemy.hp <= 0) {
       setPlayer(nextPlayer);
       setEnemy(nextEnemy);
       setUsedActions(nextUsage);
-      setMessage(`${result.event.message} Vitória!`);
+      setMessage(`${weaknessResult.event.message} Vitória!`);
       return;
     }
     if (hasUsedAllCoreActions(nextUsage))
@@ -235,9 +245,9 @@ function JrpgBattle({
         player.id,
         nextPlayer,
         nextEnemy,
-        `${result.event.message} Sequência do turno concluída.`,
+        `${weaknessResult.event.message} Sequência do turno concluída.`,
       );
-    else keepPlayerTurn(nextPlayer, nextEnemy, result.event.message, nextUsage);
+    else keepPlayerTurn(nextPlayer, nextEnemy, weaknessResult.event.message, nextUsage);
   }
 
   function useSkill(kind: "class" | "race", key: string) {
@@ -360,6 +370,17 @@ function JrpgBattle({
           </span>
         ))}
       </div>
+      {mode === "pve" && pveCreature ? (
+        <aside className="pve-bestiary-intel">
+          <span>BESTIÁRIO · RANK {pveCreature.rank}</span>
+          <div>
+            <strong>Fraqueza ativa: {pveCreature.weaknesses.join(" · ")}</strong>
+            <p>
+              Ataques de dano {pveCreature.weaknessKind === "physical" ? "físico" : "mágico"} causam 25% a mais nesta luta.
+            </p>
+          </div>
+        </aside>
+      ) : null}
       <div className="turn-action-economy">
         <ActionSlot label="Ataque" used={usedActions.basic} />
         <ActionSlot label="Classe" used={usedActions.class} />
@@ -576,6 +597,7 @@ function createBattle(
   mode: ArenaMode,
   monsterIndex: number,
   opponent?: ArenaCharacter,
+  pveCreature?: PveCreature,
 ) {
   const attributes = { ...character.attributes };
   for (const [key, value] of Object.entries(sumItemEffectModifiers(character.equipmentEffects)))
@@ -630,13 +652,13 @@ function createBattle(
       message: "Treino iniciado. Monte sua sequência de Ataque + Classe + Raça sem recompensas.",
     };
   }
-  const monster = arenaMonsters[Math.abs(monsterIndex) % arenaMonsters.length];
+  const monster = pveCreature ?? arenaMonsters[Math.abs(monsterIndex) % arenaMonsters.length];
   const adaptive = buildAdaptiveMonsterAttributes(character.attributes, monster.weights);
   const monsterAttributes = Object.fromEntries(
     Object.entries(adaptive).map(([key, value]) => [key, Math.round(value * 1.12)]),
   ) as typeof adaptive;
   const enemy = createCombatant({
-    id: monster.key,
+    id: "slug" in monster ? monster.slug : monster.key,
     name: monster.name,
     attributes: monsterAttributes,
     baseHp: character.baseHp,
@@ -649,7 +671,31 @@ function createBattle(
     enemy,
     enemyName: monster.name,
     enemyImage: monster.imageUrl,
-    message: `${monster.name} surgiu. A iniciativa decidirá o primeiro turno.`,
+    message: pveCreature
+      ? `${monster.name}, criatura Rank ${pveCreature.rank}, surgiu. O Bestiário aponta: ${pveCreature.weaknesses.join(" e ")}.`
+      : `${monster.name} surgiu. A iniciativa decidirá o primeiro turno.`,
+  };
+}
+
+export function applyPveWeakness(
+  result: { actor: CombatantState; target: CombatantState; event: CombatEvent },
+  creature: PveCreature,
+) {
+  if (
+    result.event.kind !== "damage" ||
+    result.event.damageType !== creature.weaknessKind ||
+    result.event.amount <= 0
+  )
+    return result;
+  const bonus = getCreatureWeaknessBonus(result.event.amount, result.event.damageType, creature);
+  return {
+    actor: result.actor,
+    target: applyDamage(result.target, bonus),
+    event: {
+      ...result.event,
+      amount: result.event.amount + bonus,
+      message: `${result.event.message} Fraqueza explorada: +${bonus} de dano!`,
+    },
   };
 }
 

@@ -14,6 +14,13 @@ import type { Json } from "@/lib/db/types";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 import { leaveAllQueuesAction } from "@/app/arena/queue-actions";
 import { CombatExitGuard } from "@/components/arena/combat-exit-guard";
+import {
+  getCreatureImageUrl,
+  parseTextList,
+  toPveCreature,
+  type BestiaryCreature,
+  type CreatureRank,
+} from "@/lib/game/bestiary";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -75,6 +82,37 @@ export default async function ArenaPage({
       : { data: null };
   const arenaSessionId = arenaSessionResult.data;
   const arenaSessionError = "error" in arenaSessionResult ? arenaSessionResult.error : null;
+  const creatureIndex =
+    typeof arenaSessionId === "string"
+      ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
+      : 0;
+  const { data: pveCreatureRows } =
+    client && activeCharacter && mode === "pve" && !arenaSessionError
+      ? await client
+          .from("v2_creatures")
+          .select("*")
+          .eq("active", true)
+          .eq("rank", activeCharacter.adventure_rank)
+          .order("slug")
+          .range(creatureIndex, creatureIndex)
+      : { data: [] };
+  const pveCreatureRow = pveCreatureRows?.[0];
+  const pveCreature = pveCreatureRow
+    ? toPveCreature({
+        id: pveCreatureRow.id,
+        slug: pveCreatureRow.slug,
+        name: pveCreatureRow.name,
+        category: pveCreatureRow.category,
+        rank: pveCreatureRow.rank as CreatureRank,
+        size: pveCreatureRow.size,
+        disposition: pveCreatureRow.disposition,
+        behavior: pveCreatureRow.behavior,
+        weaknesses: parseTextList(pveCreatureRow.weaknesses),
+        habitats: parseTextList(pveCreatureRow.habitats),
+        description: pveCreatureRow.description,
+        imageUrl: getCreatureImageUrl(pveCreatureRow.slug),
+      } satisfies BestiaryCreature)
+    : undefined;
   const pveStatusResult =
     client && activeCharacter
       ? await client.rpc("v2_get_pve_daily_status", { p_character_id: activeCharacter.id })
@@ -267,11 +305,8 @@ export default async function ArenaPage({
                     .map(toArenaCharacter)}
                   initialCharacterId={query.personagem}
                   mode={mode}
-                  monsterIndex={
-                    typeof arenaSessionId === "string"
-                      ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
-                      : 0
-                  }
+                  monsterIndex={creatureIndex}
+                  pveCreature={pveCreature}
                   sessionId={typeof arenaSessionId === "string" ? arenaSessionId : undefined}
                   opponent={arenaOpponent ?? undefined}
                   rules={defaultCombatRules}

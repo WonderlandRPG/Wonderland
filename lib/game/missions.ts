@@ -1,6 +1,7 @@
 import type { Json } from "@/lib/db/types";
 
-export const missionRanks = ["E", "D", "C", "B"] as const;
+export const missionRanks = ["E", "D", "C", "B", "A", "S", "EX"] as const;
+export const promotionTrialRanks = ["E", "D", "C", "B"] as const;
 export const missionKingdoms = [
   "aokigahara",
   "darkya",
@@ -21,7 +22,7 @@ export const officialMissionRewards = {
 export const regularMissionsPerRankPerKingdom = 100;
 export const regularMissionCatalogSize =
   missionRanks.length * missionKingdoms.length * regularMissionsPerRankPerKingdom;
-export const promotionTrialCatalogSize = missionRanks.length * missionKingdoms.length;
+export const promotionTrialCatalogSize = promotionTrialRanks.length * missionKingdoms.length;
 
 export const kingdomMissionNames: Record<string, string> = {
   aokigahara: "Aokigahara",

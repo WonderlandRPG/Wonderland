@@ -195,7 +195,7 @@
 .bestiary-card__portrait {
   position: relative;
   width: 100%;
-  aspect-ratio: 5 / 6;
+  aspect-ratio: 4 / 5;
   border-bottom: 4px solid #cda955;
   background: #102d23;
 }
@@ -206,12 +206,9 @@
   content: "";
 }
 .bestiary-card__portrait img {
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   transition: transform 0.4s ease;
-}
-.bestiary-card:hover .bestiary-card__portrait img {
-  transform: scale(1.035);
 }
 .bestiary-card__rank {
   position: absolute;

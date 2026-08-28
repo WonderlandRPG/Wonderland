@@ -108,9 +108,10 @@ export function BestiaryCatalog({
             <div className="bestiary-card__portrait">
               <Image
                 alt={`Ilustração de ${creature.name}`}
-                fill
+                height={900}
                 sizes="(max-width: 680px) 100vw, (max-width: 1000px) 50vw, 33vw"
                 src={creature.imageUrl}
+                width={720}
               />
               <span className="bestiary-card__rank">
                 <RankBadge compact rank={creature.rank} />

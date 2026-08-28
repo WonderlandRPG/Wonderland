@@ -2,7 +2,7 @@ import { BestiaryCatalog } from "@/components/bestiary/bestiary-catalog";
 import { PlayerNav } from "@/components/player-nav";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import type { BestiaryCreature, CreatureRank } from "@/lib/game/bestiary";
-import { parseTextList } from "@/lib/game/bestiary";
+import { getCreatureImageUrl, parseTextList } from "@/lib/game/bestiary";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Bestiário de Wonderland" };
@@ -31,6 +31,7 @@ export default async function BestiaryPage({
     weaknesses: parseTextList(entry.weaknesses),
     habitats: parseTextList(entry.habitats),
     description: entry.description,
+    imageUrl: getCreatureImageUrl(entry.slug),
   }));
 
   return (
@@ -38,18 +39,21 @@ export default async function BestiaryPage({
       <PlayerNav />
       <div className="page-container bestiary-shell">
         <header className="bestiary-hero">
-          <div>
+          <div className="bestiary-hero__copy">
             <span className="eyebrow">Arquivo de criaturas da Guilda</span>
             <h1>
               Bestiário de <em>Wonderland</em>
             </h1>
             <p>
-              Registros de campo sobre feras, monstros e entidades encontrados nos seis Reinos.
-              Conhecer o comportamento e a fraqueza de uma criatura pode decidir o resultado de uma
-              missão.
+              Retratos e registros de campo das criaturas de Wonderland. Na Arena, conhecer uma
+              fraqueza concede uma vantagem real no combate.
             </p>
+            <div className="bestiary-hero__rules">
+              <span>✦ PvE pareado pelo seu Rank</span>
+              <span>✦ Fraquezas causam +25% de dano</span>
+            </div>
           </div>
-          <aside>
+          <aside className="bestiary-hero__seal">
             <small>ESPÉCIES CATALOGADAS</small>
             <strong>{creatures.length}</strong>
             <span>Ranks E a EX</span>

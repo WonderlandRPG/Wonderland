@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import type { BestiaryCreature, CreatureRank } from "@/lib/game/bestiary";
-import { creatureRanks } from "@/lib/game/bestiary";
+import { creatureRanks, getCreatureWeaknessKind } from "@/lib/game/bestiary";
 
 const rankCopy: Record<CreatureRank, string> = {
   E: "Inofensivas ou facilmente contidas",
@@ -103,12 +104,22 @@ export function BestiaryCatalog({
       <section className="bestiary-grid">
         {visible.map((creature) => (
           <article className="bestiary-card" data-rank={creature.rank} key={creature.id}>
+            <div className="bestiary-card__portrait">
+              <Image
+                alt={`Ilustração de ${creature.name}`}
+                fill
+                sizes="(max-width: 680px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                src={creature.imageUrl}
+              />
+              <span className="bestiary-card__rank" aria-label={`Criatura Rank ${creature.rank}`}>
+                RANK <b>{creature.rank}</b>
+              </span>
+            </div>
             <header>
               <div>
                 <small>{creature.category}</small>
                 <h2>{creature.name}</h2>
               </div>
-              <span aria-label={`Criatura Rank ${creature.rank}`}>{creature.rank}</span>
             </header>
             <p className="bestiary-card__description">{creature.description}</p>
             <dl>
@@ -132,6 +143,9 @@ export function BestiaryCatalog({
                   <li key={weakness}>{weakness}</li>
                 ))}
               </ul>
+              <strong className="bestiary-card__combat-effect">
+                No PvE: +25% de dano {getCreatureWeaknessKind(creature.weaknesses) === "physical" ? "físico" : "mágico"}
+              </strong>
             </div>
             <footer>
               <small>Habitat</small>

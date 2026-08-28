@@ -11,3 +11,28 @@
 .dungeon-battle .dungeon-encounters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.dungeon-battle .dungeon-encounters>div{display:grid;grid-template-columns:36px 1fr;gap:3px 8px;align-items:center;padding:9px;border:1px solid #ae9065;border-radius:11px;background:#ead8af}.dungeon-battle .dungeon-encounters>div>span{grid-row:1/3;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#7b6a55;color:#fff0c9}.dungeon-battle .dungeon-encounters>div.is-current{border-color:#315f47;background:#dce6d4}.dungeon-battle .dungeon-encounters>div.is-current>span,.dungeon-battle .dungeon-encounters>div.is-cleared>span{background:#315f47}.dungeon-battle .dungeon-encounters small{font-size:.56rem;text-transform:uppercase}.dungeon-battle .dungeon-party-panel,.dungeon-battle .dungeon-tactical-panel,.dungeon-battle .dungeon-combat-log{padding:15px;border:1px solid #9d7f59;border-radius:16px;background:#ead7ad}.dungeon-battle .dungeon-party-panel>header,.dungeon-battle .dungeon-tactical-panel>header{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:10px}.dungeon-battle .dungeon-party-panel>div{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.dungeon-battle .dungeon-party-panel article{display:grid;grid-template-columns:46px minmax(0,1fr);gap:6px 9px;padding:9px;border-radius:11px;background:#fff0ca;border:1px solid #b99c70}.dungeon-battle .dungeon-party-panel article>div{grid-row:1/3;width:44px;height:44px;border-radius:50%;background:#315f47 center/cover no-repeat}.dungeon-battle .dungeon-party-panel progress,.dungeon-battle .dungeon-party-panel article>b{grid-column:1/-1;width:100%}.dungeon-battle .dungeon-party-panel article.is-active{outline:3px solid rgba(49,95,71,.26)}.dungeon-battle .dungeon-party-panel article.is-down{opacity:.55}.dungeon-battle .arena-tactical-map{display:grid;gap:2px;min-width:640px;padding:8px;border:6px solid #65472f;border-radius:14px;background:#9e8b67;overflow:hidden}.dungeon-battle .dungeon-tactical-panel{overflow-x:auto}.dungeon-battle .arena-tactical-map>div{aspect-ratio:1;min-width:0;border:1px solid rgba(73,57,39,.26);background:#d8c79f}.dungeon-battle .arena-tactical-map>div:nth-child(odd){background:#cfbd94}.dungeon-battle .arena-tactical-map>div.is-active{box-shadow:inset 0 0 0 3px #315f47}.dungeon-battle .arena-tactical-map>div.is-enemy{box-shadow:inset 0 0 0 3px #8a493f}.dungeon-battle .dungeon-combat-log summary{cursor:pointer;font-weight:800}.dungeon-battle .dungeon-combat-log ol{max-height:240px;overflow:auto;margin:12px 0 0;padding-left:24px}.dungeon-battle .dungeon-combat-log li{padding:4px 0;border-bottom:1px dashed rgba(92,70,43,.18);font-size:.78rem}
 @media(max-width:900px){.arena-page .arena-mode-grid{grid-template-columns:1fr}.pvp-history-page .pvp-history-metrics{grid-template-columns:repeat(2,1fr)}.dungeon-page .dungeon-bestiary>div{grid-template-columns:repeat(2,1fr)}.dungeon-battle .dungeon-party-panel>div{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:620px){.arena-page .arena-queue-cleanup,.arena-page .arena-load-error,.dungeon-page .dungeon-hero{grid-template-columns:1fr}.arena-page .arena-queue-cleanup .button,.arena-page .arena-load-error>a{width:100%}.arena-page .arena-mode-card,.arena-page .arena-mode-locked{grid-template-columns:64px 1fr;min-height:220px;padding:15px}.arena-page .arena-mode-card__sigil,.arena-page .arena-mode-locked>span{width:60px}.arena-page .pvp-lobby{padding:25px 15px}.arena-page .pvp-lobby>div:not(.pvp-match-card){grid-template-columns:1fr}.pvp-history-page .pvp-history-hero{display:grid;padding:20px}.pvp-history-page .pvp-history-metrics{grid-template-columns:1fr 1fr}.pvp-history-page .pvp-history-ledger>article{grid-template-columns:52px 1fr}.pvp-history-page .pvp-history-ledger>article>strong{grid-column:2}.dungeon-page .dungeon-bestiary>div,.dungeon-battle .dungeon-party-panel>div,.dungeon-battle .dungeon-encounters{grid-template-columns:1fr}}
+.pve-bestiary-intel {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid #b99242;
+  border-left: 5px solid #8c3d32;
+  border-radius: 12px;
+  background: linear-gradient(105deg, #f8e8bb, #e7ce92);
+  color: #332415;
+  box-shadow: 0 8px 20px rgba(39, 29, 15, 0.14);
+}
+.pve-bestiary-intel > span {
+  color: #15523c;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+.pve-bestiary-intel strong { color: #6f2e27; }
+.pve-bestiary-intel p { margin: 0.2rem 0 0; color: #4e3d29; }
+@media (max-width: 650px) {
+  .pve-bestiary-intel { grid-template-columns: 1fr; gap: 0.35rem; }
+}

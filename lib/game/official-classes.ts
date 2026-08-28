@@ -41,6 +41,7 @@ interface ClassSeed {
     name: string;
     initial: number;
     maximum: number;
+    generationStep?: number;
     generation: string;
     consumption: string;
   };
@@ -905,7 +906,7 @@ function buildClass(seed: ClassSeed) {
         generationEvents: [
           {
             trigger: "BASIC_ATTACK_HIT",
-            amount: seed.resource.maximum <= 10 ? 1 : 10,
+            amount: seed.resource.generationStep ?? (seed.resource.maximum <= 10 ? 1 : 10),
             limitPerAction: 1,
           },
         ],
@@ -2295,8 +2296,9 @@ const classes: ClassSeed[] = [
       name: "Catalisadores",
       initial: 20,
       maximum: 80,
+      generationStep: 5,
       generation:
-        "Ganha 10 Catalisadores ao usar uma categoria de operação diferente da ação anterior, limitado a 20 por rodada.",
+        "Ganha 5 Catalisadores ao usar uma categoria de operação diferente da ação anterior, limitado a 10 por rodada.",
       consumption:
         "Fórmulas consomem Catalisadores após a validação do alvo; repetir categoria não gera recurso.",
     },
@@ -2498,8 +2500,9 @@ const classes: ClassSeed[] = [
       name: "Almas",
       initial: 10,
       maximum: 80,
+      generationStep: 5,
       generation:
-        "Ganha 10 Almas quando uma invocação expira ou uma unidade perde ao menos 20% do HP máximo em uma ação.",
+        "Ganha 5 Almas quando uma invocação expira ou uma unidade perde ao menos 20% do HP máximo em uma ação.",
       consumption:
         "Rituais consomem Almas e resolvem sacrifícios da invocação mais antiga primeiro.",
     },

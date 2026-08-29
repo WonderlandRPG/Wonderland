@@ -9,23 +9,23 @@
 [data-wx-theme="default"] {
   color-scheme: light;
 
-  --wx-color-canvas: #d5d4bf;
-  --wx-color-canvas-deep: #cfd1bd;
-  --wx-color-surface: #f3e4bc;
-  --wx-color-surface-alt: #ead4a2;
-  --wx-color-surface-raised: #fff4d8;
+  --wx-color-canvas: #14241c;
+  --wx-color-canvas-deep: #0e1b15;
+  --wx-color-surface: #efe0b8;
+  --wx-color-surface-alt: #dbc08a;
+  --wx-color-surface-raised: #fff3d2;
   --wx-color-surface-soft: #f6e7bd;
   --wx-color-surface-inverse: #173f30;
   --wx-color-surface-inverse-2: #294936;
 
-  --wx-color-text: #2f241d;
-  --wx-color-text-muted: #5b4a3b;
+  --wx-color-text: #291f18;
+  --wx-color-text-muted: #63503d;
   --wx-color-text-subtle: #6f5838;
   --wx-color-on-inverse: #fff0c9;
   --wx-color-on-inverse-muted: #d9c9a5;
 
-  --wx-color-primary: #234c3a;
-  --wx-color-primary-hover: #315f47;
+  --wx-color-primary: #173f30;
+  --wx-color-primary-hover: #2e684e;
   --wx-color-on-primary: #fff3d2;
   --wx-color-accent: #8b5c1f;
   --wx-color-accent-hover: #7a4e18;
@@ -45,18 +45,18 @@
   --wx-color-input-placeholder: #76624e;
   --wx-color-focus: #356a50;
 
-  --wx-color-border: #aa8859;
+  --wx-color-border: #9d7949;
   --wx-color-border-soft: rgba(91, 65, 39, 0.22);
   --wx-color-border-strong: #65462f;
-  --wx-color-gold: #b8842f;
-  --wx-color-gold-soft: #ddbd78;
+  --wx-color-gold: #bd8b32;
+  --wx-color-gold-soft: #e1c37b;
   --wx-color-wine: #6d3f43;
   --wx-color-moss: #7c9273;
-  --wx-color-wood: #68472f;
-  --wx-color-wood-dark: #3d291f;
+  --wx-color-wood: #583925;
+  --wx-color-wood-dark: #251810;
 
-  --wx-shadow-1: 0 8px 22px rgba(43, 31, 20, 0.1);
-  --wx-shadow-2: 0 18px 45px rgba(43, 31, 20, 0.16);
+  --wx-shadow-1: 0 10px 26px rgba(18, 12, 8, 0.18);
+  --wx-shadow-2: 0 22px 58px rgba(18, 12, 8, 0.3);
   --wx-shadow-3: 0 26px 65px rgba(18, 12, 8, 0.28);
 
   --wx-radius-sm: 9px;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AudioProvider } from "@/components/audio/audio-provider";
 import { getCurrentAccount } from "@/lib/auth/account";
 import { PlayerPresence } from "@/components/player-presence";
+import { SiteCosmeticShell } from "@/components/site/site-cosmetic-shell";
 
 /*
  * Sistema visual do Wonderland:
@@ -21,6 +22,7 @@ import "./site-experience.css";
 import "./contrast-guard.css";
 import "./experience-polish.css";
 import "./requested-visual-overhaul.css";
+import "./site-cosmetics.css";
 
 export const metadata: Metadata = {
   title: {
@@ -40,7 +42,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="pt-BR">
       <body>
         {account ? <PlayerPresence /> : null}
-        <AudioProvider>{children}</AudioProvider>
+        <AudioProvider>
+          <SiteCosmeticShell>{children}</SiteCosmeticShell>
+        </AudioProvider>
       </body>
     </html>
   );

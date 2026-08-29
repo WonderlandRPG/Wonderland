@@ -1,0 +1,109 @@
+/*
+ * Contrato semântico de componentes.
+ * Páginas novas devem usar estas classes/atributos em vez de inventar pares de cor.
+ */
+
+:where(.wl-surface, [data-wl-surface="default"]) {
+  color: var(--wl-text);
+  background: var(--wl-surface);
+  border: 1px solid var(--wl-border);
+}
+
+:where(.wl-surface-raised, [data-wl-surface="raised"]) {
+  color: var(--wl-text);
+  background: var(--wl-surface-raised);
+  border: 1px solid var(--wl-border);
+  box-shadow: var(--wl-shadow-soft);
+}
+
+:where(.wl-surface-dark, [data-wl-surface="dark"]) {
+  color: var(--wl-text-inverse);
+  background: var(--wl-surface-dark);
+  border: 1px solid var(--wl-border);
+}
+
+:where(
+  .wl-surface,
+  [data-wl-surface="default"],
+  .wl-surface-raised,
+  [data-wl-surface="raised"]
+) :where(p, small, em) {
+  color: var(--wl-text-muted);
+}
+
+:where(.wl-surface-dark, [data-wl-surface="dark"]) :where(p, small, em) {
+  color: var(--wl-text-inverse-muted);
+}
+
+:where(.wl-action, [data-wl-action="primary"]) {
+  color: var(--wl-action-text);
+  background: var(--wl-action-bg);
+  border-color: var(--wl-border-strong);
+}
+
+:where(.wl-action, [data-wl-action="primary"]):hover {
+  background: var(--wl-action-hover-bg);
+}
+
+:where(.wl-action-accent, [data-wl-action="accent"]) {
+  color: var(--wl-action-accent-text);
+  background: var(--wl-action-accent-bg);
+  border-color: var(--wl-border-strong);
+}
+
+:where(.wl-field, [data-wl-field]) {
+  color: var(--wl-field-text);
+  background: var(--wl-field-bg);
+  border-color: var(--wl-border);
+}
+
+:where(.wl-field, [data-wl-field])::placeholder {
+  color: var(--wl-field-placeholder);
+}
+
+:where(.wl-field, [data-wl-field], .wl-action, [data-wl-action]):focus-visible {
+  outline: 3px solid var(--wl-focus-ring);
+  outline-offset: 2px;
+}
+
+:where(.wl-status-success, [data-wl-status="success"]) {
+  color: var(--wl-success-text);
+  background: var(--wl-success-bg);
+  border-color: var(--wl-success-border);
+}
+
+:where(.wl-status-warning, [data-wl-status="warning"]) {
+  color: var(--wl-warning-text);
+  background: var(--wl-warning-bg);
+  border-color: var(--wl-warning-border);
+}
+
+:where(.wl-status-danger, [data-wl-status="danger"]) {
+  color: var(--wl-danger-text);
+  background: var(--wl-danger-bg);
+  border-color: var(--wl-danger-border);
+}
+
+:where(.wl-panel, [data-wl-component="panel"]) {
+  border: 1px solid var(--wl-border);
+  border-radius: var(--wl-radius);
+  background: var(--wl-surface-raised);
+  color: var(--wl-text);
+  box-shadow: var(--wl-shadow-soft);
+}
+
+:where(.wl-card, [data-wl-component="card"]) {
+  border: 1px solid var(--wl-border);
+  border-radius: var(--wl-radius-md);
+  background: var(--wl-surface);
+  color: var(--wl-text);
+}
+
+:where(
+  .wl-panel,
+  [data-wl-component="panel"],
+  .wl-card,
+  [data-wl-component="card"]
+) :where(p, small, em) {
+  color: var(--wl-text-muted);
+}

@@ -65,6 +65,16 @@ const bloodyMoonCosmetics = [
     preview: "aura",
     key: "procissao-almas-rubras",
   },
+  {
+    type: "Borda",
+    name: "Pórtico da Lua Sangrenta",
+    tag: "Mítico • Borda",
+    description:
+      "Uma estrutura funerária independente que envolve o card sem substituir sua arte: ferro negro retorcido, espinhos, correntes, rosas rubras, crânios, velas e uma lua carmesim no topo. Pode ser combinada com Card e Aura.",
+    highlights: ["Lua carmesim central", "Ferro, espinhos e correntes", "Crânios, rosas e velas", "Combina com Card + Aura"],
+    preview: "border",
+    key: "portico-lua-sangrenta",
+  },
 ] as const;
 
 export function ShopCatalog({
@@ -211,7 +221,7 @@ export function ShopCatalog({
                           name={previewCharacter.name}
                           rank={previewCharacter.rank}
                           title={null}
-                          cosmetics={{ card: null, aura: null }}
+                          cosmetics={{ card: null, aura: null, border: null }}
                           variant="standard"
                         />
                       ) : (
@@ -237,6 +247,7 @@ export function ShopCatalog({
                             cosmetics={{
                               card: cosmetic.preview === "card" ? cosmetic.key : null,
                               aura: cosmetic.preview === "aura" ? cosmetic.key : null,
+                              border: cosmetic.preview === "border" ? cosmetic.key : null,
                             }}
                           />
                         </div>
@@ -285,9 +296,9 @@ export function ShopCatalog({
               <small>CONJUNTO COMPLETO</small>
               <h3>Relíquia do Último Halloween</h3>
               <p>
-                Card + Aura formam a identidade completa da coleção. Quando usados juntos,
-                os dois efeitos compartilham a mesma Lua Sangrenta e criam uma apresentação
-                contínua no personagem.
+                Card + Aura + Borda formam a identidade completa da coleção. Os três cosméticos
+                são independentes e podem ser combinados, criando a apresentação máxima da
+                coleção Cemitério da Lua Sangrenta.
               </p>
             </div>
             <strong>Preço ainda não definido</strong>

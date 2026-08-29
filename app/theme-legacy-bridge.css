@@ -205,3 +205,61 @@ body[data-wl-theme] :where(
 body[data-wl-theme] [data-character-card="official"]{
   color:initial;
 }
+
+
+/* Rede de segurança de contraste para conteúdo legado ainda não migrado. */
+body[data-wl-theme] main :where(
+  h1,h2,h3,h4,h5,h6,p,span,small,strong,b,em,li,dt,dd,label,blockquote,summary
+):not([data-character-card="official"] *){
+  color:var(--wl-text)!important;
+}
+
+body[data-wl-theme] main :where(a):not([data-character-card="official"] *){
+  color:var(--wl-gold-strong)!important;
+}
+
+body[data-wl-theme] main :where(
+  [class*="card"],
+  [class*="panel"],
+  [class*="board"],
+  [class*="folio"],
+  [class*="sheet"],
+  [class*="scroll"],
+  [class*="ledger"],
+  [class*="notice"],
+  [class*="parchment"],
+  [class*="dossier"]
+):not([data-character-card="official"]){
+  background-color:var(--wl-surface-raised)!important;
+  color:var(--wl-text)!important;
+  border-color:var(--wl-border)!important;
+}
+
+body[data-wl-theme] main :where(
+  [class*="hero"],
+  [class*="banner"],
+  [class*="masthead"],
+  [class*="nav"]
+):not([data-character-card="official"]){
+  border-color:var(--wl-border-strong)!important;
+}
+
+body[data-wl-theme] main :where(
+  [class*="hero"],
+  [class*="banner"],
+  [class*="masthead"]
+):not([data-character-card="official"]) :where(
+  h1,h2,h3,h4,h5,h6,strong,b,label,dt,dd
+){
+  color:var(--wl-text-inverse)!important;
+}
+
+body[data-wl-theme] main :where(
+  [class*="hero"],
+  [class*="banner"],
+  [class*="masthead"]
+):not([data-character-card="official"]) :where(
+  p,span,small,em,li
+){
+  color:var(--wl-text-inverse-muted)!important;
+}

@@ -5,6 +5,7 @@ import { EquippedTitle, type EquippedTitleData } from "@/components/characters/e
 import { RankAtmosphere } from "@/components/characters/rank-atmosphere";
 import { RankBadge } from "@/components/characters/rank-badge";
 import styles from "./character-portrait-card.module.css";
+import premiumStyles from "./character-cosmetics-premium.module.css";
 
 type CharacterPortraitCardProps = {
   name: string;
@@ -31,7 +32,9 @@ export function CharacterPortraitCard({
 }: CharacterPortraitCardProps) {
   return (
     <div
-      className={[styles.card, styles[variant], className].filter(Boolean).join(" ")}
+      className={[styles.card, styles[variant], premiumStyles.cardFix, className]
+        .filter(Boolean)
+        .join(" ")}
       data-aura-cosmetic={cosmetics?.aura ?? undefined}
       data-card-cosmetic={cosmetics?.card ?? undefined}
       data-character-card="official"
@@ -49,7 +52,9 @@ export function CharacterPortraitCard({
 
       <RankAtmosphere rank={rank} />
       <span aria-hidden="true" className={styles.cosmeticAura} />
+      <span aria-hidden="true" className={premiumStyles.auraBoost} />
       <span aria-hidden="true" className={styles.cosmeticFrame} />
+      <span aria-hidden="true" className={premiumStyles.frameFix} />
 
       <div className={styles.topMeta}>
         <div className={styles.rankMeta}>

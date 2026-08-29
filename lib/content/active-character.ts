@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { parseCharacterCosmetics } from "@/lib/content/character-cosmetics";
 
 export async function getActiveCharacterId(userId: string) {
   const client = await createServerSupabaseClient();
@@ -64,26 +63,4 @@ export async function requireActiveCharacter(returnTo = "/perfil") {
     redirect(`/personagens?selecionar=1&next=${encodeURIComponent(returnTo)}`);
   }
   return { account, characterId };
-}
-
-export async function getActiveCharacterCosmetics(userId: string) {
-  const client = await createServerSupabaseClient();
-  if (!client) return parseCharacterCosmetics(null);
-
-  const { data: active } = await client
-    .from("v2_active_characters")
-    .select("character_id")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (!active?.character_id) return parseCharacterCosmetics(null);
-
-  const { data: character } = await client
-    .from("v2_characters")
-    .select("cosmetics")
-    .eq("id", active.character_id)
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  return parseCharacterCosmetics(character?.cosmetics);
 }

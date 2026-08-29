@@ -1,5 +1,5 @@
 /* Acabamento global 2026 · páginas públicas e área do jogador */
-:root{--wx-ink:#302319;--wx-green:#27543e;--wx-green-deep:#173b2b;--wx-gold:#c89a43;--wx-paper:#f6e6b9;--wx-paper-soft:#fff1cd;--wx-line:#9d7a4d;--wx-shadow:0 18px 42px rgba(45,31,18,.14)}
+:root{--wx-ink:var(--wl-text);--wx-green:var(--wl-accent);--wx-green-deep:var(--wl-surface-dark);--wx-gold:var(--wl-gold);--wx-paper:var(--wl-surface-raised);--wx-paper-soft:var(--wl-surface);--wx-line:var(--wl-border);--wx-shadow:var(--wl-shadow-soft)}
 body{background-color:#c9c8b5;background-image:radial-gradient(circle at 12% 8%,rgba(255,244,205,.5),transparent 27%),linear-gradient(180deg,rgba(245,235,200,.16),rgba(49,95,71,.08))}
 .page-container{width:min(1240px,calc(100% - 28px))}
 .eyebrow{letter-spacing:.12em;font-weight:900}

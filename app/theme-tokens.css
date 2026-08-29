@@ -140,4 +140,7 @@
   --wx-color-input-placeholder: var(--wl-field-placeholder);
   --wx-color-focus: var(--wl-focus);
   --wx-shadow-1: var(--wl-shadow-soft);
+  --wx-shadow-2: var(--wl-shadow);
+  --wx-radius-lg: var(--wl-radius);
+  --wx-page-width: var(--wl-page);
 }

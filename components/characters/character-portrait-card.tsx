@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
 
 import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
 import { RankAtmosphere } from "@/components/characters/rank-atmosphere";
@@ -14,6 +15,7 @@ type CharacterPortraitCardProps = {
   variant?: "hero" | "standard" | "compact" | "inventory";
   className?: string;
   children?: ReactNode;
+  cosmetics?: Pick<CharacterCosmeticLoadout, "card" | "frame" | "aura">;
 };
 
 export function CharacterPortraitCard({
@@ -25,11 +27,15 @@ export function CharacterPortraitCard({
   variant = "standard",
   className,
   children,
+  cosmetics,
 }: CharacterPortraitCardProps) {
   return (
     <div
       className={[styles.card, styles[variant], className].filter(Boolean).join(" ")}
+      data-aura-cosmetic={cosmetics?.aura ?? undefined}
+      data-card-cosmetic={cosmetics?.card ?? undefined}
       data-character-card="official"
+      data-frame-cosmetic={cosmetics?.frame ?? undefined}
       data-rank={rank}
     >
       <div
@@ -42,6 +48,8 @@ export function CharacterPortraitCard({
       </div>
 
       <RankAtmosphere rank={rank} />
+      <span aria-hidden="true" className={styles.cosmeticAura} />
+      <span aria-hidden="true" className={styles.cosmeticFrame} />
 
       <div className={styles.topMeta}>
         <div className={styles.rankMeta}>

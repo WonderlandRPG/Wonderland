@@ -5,10 +5,10 @@
 
 :root {
   /* Layout only. Colors now live exclusively in theme-tokens.css. */
-  --radius: var(--wl-radius);
-  --page: var(--wl-page);
-  --shadow: var(--wl-shadow);
-  --shadow-soft: var(--wl-shadow-soft);
+  --radius: var(--wx-radius-lg);
+  --page: var(--wx-page-width);
+  --shadow: var(--wx-shadow-2);
+  --shadow-soft: var(--wx-shadow-1);
 }
 
 
@@ -17,15 +17,15 @@
 }
 html {
   min-width: 320px;
-  background: var(--wl-canvas);
+  background: var(--wx-color-canvas);
   scroll-behavior: smooth;
 }
 body {
   margin: 0;
   min-height: 100vh;
-  color: var(--wl-text);
+  color: var(--wx-color-text);
   font-family: Georgia, "Times New Roman", serif;
-  background-color: var(--wl-canvas);
+  background-color: var(--wx-color-canvas);
   background-repeat: no-repeat;
   background-position: center top;
   background-size: cover;
@@ -39,7 +39,7 @@ video {
   height: auto;
 }
 a {
-  color: var(--wl-accent);
+  color: var(--wx-color-primary);
   text-decoration: none;
 }
 a:hover {
@@ -62,7 +62,7 @@ a {
 }
 button:disabled {
   cursor: not-allowed;
-  opacity: var(--wl-disabled-opacity);
+  opacity: 0.58;
 }
 
 /* Fundos por família de página */
@@ -192,7 +192,7 @@ p {
   border-radius: 16px;
   background: linear-gradient(180deg, #765239, #5a3b29);
   box-shadow: 0 8px 22px rgba(33, 23, 16, 0.22);
-  color: var(--wl-text-inverse);
+  color: var(--wx-color-on-inverse);
 }
 .brand-mark {
   display: flex;
@@ -248,7 +248,7 @@ p {
   border: 0;
   border-radius: 9px;
   background: transparent;
-  color: var(--wl-text-inverse);
+  color: var(--wx-color-on-inverse);
   font-size: 0.67rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -266,8 +266,8 @@ p {
   min-width: 112px;
   padding: 7px 11px;
   border-radius: 10px;
-  background: var(--wl-surface-raised);
-  color: var(--wl-text);
+  background: var(--wx-color-surface);
+  color: var(--wx-color-text);
   border: 1px solid #d1b66c;
   line-height: 1.05;
 }
@@ -279,7 +279,7 @@ p {
   font-size: 0.56rem;
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  color: var(--wl-text-muted);
+  color: var(--wx-color-text-muted);
 }
 .player-nav__world-menu {
   position: relative;
@@ -378,9 +378,9 @@ p {
   padding: 14px;
   border: 1px solid #6d4c32;
   border-radius: 15px;
-  background: var(--wl-surface-raised);
+  background: var(--wx-color-surface);
   box-shadow: 0 18px 42px rgba(42, 30, 20, 0.28);
-  color: var(--wl-text);
+  color: var(--wx-color-text);
 }
 #player-world-navigation small {
   grid-column: 1/-1;
@@ -401,8 +401,8 @@ p {
   padding: 8px 10px;
   border: 1px solid transparent;
   border-radius: 9px;
-  background: var(--wl-surface);
-  color: var(--wl-text);
+  background: var(--wx-color-surface-raised);
+  color: var(--wx-color-text);
   font-size: 0.8rem;
   font-weight: 700;
   text-align: left;
@@ -411,7 +411,7 @@ p {
 #player-world-navigation form button:hover {
   border-color: #b38d55;
   background: #ead6a6;
-  color: var(--wl-accent);
+  color: var(--wx-color-primary);
 }
 #player-world-navigation form {
   display: contents;
@@ -427,10 +427,10 @@ input[type="submit"] {
   gap: 7px;
   min-height: 40px;
   padding: 9px 15px;
-  border: 1px solid var(--wl-border-strong);
+  border: 1px solid var(--wx-color-border-strong);
   border-radius: 10px;
   background: linear-gradient(180deg, #805a3c, #62402c);
-  color: var(--wl-text-inverse);
+  color: var(--wx-color-on-inverse);
   font-weight: 800;
   box-shadow:
     0 3px 0 #3c281d,
@@ -469,8 +469,8 @@ textarea {
   padding: 9px 11px;
   border: 1px solid #aa895c;
   border-radius: 9px;
-  background: var(--wl-surface);
-  color: var(--wl-text);
+  background: var(--wx-color-surface-raised);
+  color: var(--wx-color-text);
   outline: none;
 }
 textarea {
@@ -480,13 +480,13 @@ textarea {
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--wl-focus);
-  box-shadow: 0 0 0 3px var(--wl-focus-ring);
+  border-color: var(--wx-color-focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wx-color-focus) 24%, transparent);
 }
 form label {
   display: grid;
   gap: 5px;
-  color: var(--wl-text-muted);
+  color: var(--wx-color-text-muted);
   font-weight: 700;
 }
 
@@ -661,16 +661,16 @@ form label {
 .account-notice {
   margin: 12px 0;
   padding: 12px 14px;
-  border: 1px solid var(--wl-success-border);
+  border: 1px solid #6e8e75;
   border-radius: 10px;
-  background: var(--wl-success-bg);
-  color: var(--wl-success-text);
+  background: #dbe8d4;
+  color: #24472f;
   font-weight: 700;
 }
 .account-notice.is-warning {
-  border-color: var(--wl-warning-border);
-  background: var(--wl-warning-bg);
-  color: var(--wl-warning-text);
+  border-color: #ad775e;
+  background: #f1d7c3;
+  color: #6c382c;
 }
 table {
   width: 100%;

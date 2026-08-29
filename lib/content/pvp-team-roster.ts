@@ -24,6 +24,7 @@ import {
   prepareRaceCombatSkills,
 } from "@/lib/game/class-combat-profile";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
+import { parseCharacterCosmetics } from "@/lib/content/character-cosmetics";
 
 type RawMember = {
   team: number;
@@ -38,6 +39,7 @@ type RawMember = {
     image_url: string | null;
     adventure_rank: string;
     allocated_attributes: unknown;
+    cosmetics?: unknown;
   };
   equipment: Array<{
     id: string;
@@ -143,6 +145,7 @@ export async function getPvpTeamRoster(matchId: string) {
       level: raw.level,
       adventureRank: raw.adventure_rank,
       imageUrl: raw.image_url ?? "",
+      cosmetics: parseCharacterCosmetics(raw.cosmetics),
       equippedTitle: equippedTitle
         ? { name: equippedTitle.name, rarity: equippedTitle.rarity, titleStyle: equippedTitle.titleStyle }
         : null,

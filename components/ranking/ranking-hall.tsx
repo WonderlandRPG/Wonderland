@@ -49,6 +49,7 @@ function PvpRanking({ entries }: { entries: PvpDisplayEntry[] }) {
             name={leader.name}
             rank={leader.adventure_rank}
             title={titleData(leader)}
+            cosmetics={leader.cosmetics}
             variant="standard"
           />
         </div>
@@ -62,7 +63,7 @@ function PvpRanking({ entries }: { entries: PvpDisplayEntry[] }) {
             <Link className="duelist-roll__entry" href={`/jogadores/${entry.id}`} key={entry.id}>
               <b>{String(entry.position).padStart(2, "0")}</b>
               <span className="duelist-roll__identity">
-                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} variant="compact" />
+                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} cosmetics={entry.cosmetics} variant="compact" />
                 <span><strong>{entry.name}</strong><EquippedTitle title={titleData(entry)} /><small>{entry.race_name} · {entry.class_name}</small></span>
               </span>
               <RankBadge compact rank={entry.adventure_rank} />

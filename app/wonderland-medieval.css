@@ -12,7 +12,7 @@ body {
   color: var(--wx-color-text);
   background-color: var(--wx-color-canvas) !important;
   background-image:
-    linear-gradient(180deg, rgba(7, 18, 13, 0.42), rgba(15, 30, 23, 0.7)),
+    linear-gradient(180deg, var(--wl-atmosphere-start), var(--wl-atmosphere-end)),
     url('/backgrounds/lore.svg') !important;
 }
 
@@ -23,15 +23,15 @@ body::after {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 50% -12%, rgba(220, 188, 113, 0.16), transparent 40%),
+    radial-gradient(circle at 50% -12%, var(--wl-atmosphere-glow), transparent 40%),
     linear-gradient(90deg, rgba(3, 10, 7, 0.28), transparent 18%, transparent 82%, rgba(3, 10, 7, 0.28));
 }
 
 /* Navegação — salão real, sem alterar o mecanismo do menu Mundo. */
 .player-nav {
-  border-color: #987642 !important;
+  border-color: var(--wl-border) !important;
   border-radius: 7px 7px 16px 16px !important;
-  background: linear-gradient(180deg, rgba(30, 67, 50, 0.98), rgba(14, 42, 30, 0.98)) !important;
+  background: linear-gradient(180deg, var(--wl-surface-dark), var(--wl-surface-dark-strong)) !important;
   box-shadow: 0 3px 0 #0a2419, 0 15px 34px rgba(2, 10, 6, 0.38), inset 0 1px rgba(255, 238, 186, 0.13) !important;
 }
 
@@ -44,26 +44,26 @@ body::after {
 .player-nav__links > a,
 .player-nav__world-menu > button {
   border-radius: 3px !important;
-  color: #f5e5b8 !important;
+  color: var(--wl-text-inverse) !important;
 }
 
 .player-nav__links > a:hover,
 .player-nav__world-menu > button:hover,
 .player-nav__world-menu.is-open > button {
-  background: linear-gradient(180deg, rgba(231, 198, 120, 0.18), rgba(231, 198, 120, 0.05)) !important;
-  color: #fff8df !important;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--wl-gold-soft) 18%, transparent), color-mix(in srgb, var(--wl-gold-soft) 5%, transparent)) !important;
+  color: var(--wl-accent-contrast) !important;
 }
 
 .player-nav__character > a {
   border-color: #ad8647 !important;
   border-radius: 4px 4px 9px 9px !important;
-  background: linear-gradient(180deg, #f2dfaa, #d6b875) !important;
+  background: linear-gradient(180deg, var(--wl-surface), var(--wl-surface-muted)) !important;
 }
 
 #player-world-navigation {
   border-color: #8b6638 !important;
   border-radius: 5px 5px 14px 14px !important;
-  background: linear-gradient(135deg, #f7e9c2, #d9bd83) !important;
+  background: linear-gradient(135deg, var(--wl-surface), var(--wl-surface-muted)) !important;
   box-shadow: 0 20px 50px rgba(4, 12, 8, 0.48), inset 0 0 0 3px rgba(91, 57, 28, 0.08) !important;
 }
 
@@ -71,7 +71,7 @@ body::after {
 #player-world-navigation form button {
   border-radius: 4px !important;
   background: rgba(255, 245, 216, 0.64) !important;
-  color: #35261c !important;
+  color: var(--wl-text) !important;
   box-shadow: none !important;
 }
 

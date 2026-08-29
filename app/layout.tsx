@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AudioProvider } from "@/components/audio/audio-provider";
 import { getCurrentAccount } from "@/lib/auth/account";
 import { PlayerPresence } from "@/components/player-presence";
+import { getActiveCharacterCosmetics } from "@/lib/content/active-character";
 
 /*
  * Sistema visual do Wonderland:
@@ -11,6 +12,7 @@ import { PlayerPresence } from "@/components/player-presence";
  * CSS Modules continuam isolados em seus próprios componentes.
  */
 import "./theme-tokens.css";
+import "./themes/catedral-ultimo-eclipse.css";
 import "./visual-contract.css";
 import "./wonderland-base.css";
 import "./wonderland-repair.css";
@@ -37,10 +39,13 @@ export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const account = await getCurrentAccount();
+  const cosmetics = account ? await getActiveCharacterCosmetics(account.id) : null;
+  const theme =
+    cosmetics?.theme === "catedral-ultimo-eclipse" ? "catedral-ultimo-eclipse" : undefined;
 
   return (
     <html lang="pt-BR">
-      <body>
+      <body data-wl-theme={theme}>
         {account ? <PlayerPresence /> : null}
         <AudioProvider>{children}</AudioProvider>
       </body>

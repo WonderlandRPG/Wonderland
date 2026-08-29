@@ -106,6 +106,7 @@ export default async function CharacterSheetPage({
               name={character.name}
               rank={character.adventure_rank}
               title={equippedTitle}
+              cosmetics={character.cosmetics}
               variant="hero"
             />
           </div>

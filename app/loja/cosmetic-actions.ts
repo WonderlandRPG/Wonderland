@@ -10,7 +10,6 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 const valid = new Map([
   ["card", "epitafio-lua-carmesim"],
   ["aura", "procissao-almas-rubras"],
-  ["theme", "catedral-ultimo-eclipse"],
 ]);
 
 export async function setAdminCosmeticAction(formData: FormData) {

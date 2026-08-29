@@ -211,6 +211,7 @@ export function ShopCatalog({
                           name={previewCharacter.name}
                           rank={previewCharacter.rank}
                           title={null}
+                          cosmetics={{ card: null, aura: null }}
                           variant="standard"
                         />
                       ) : (

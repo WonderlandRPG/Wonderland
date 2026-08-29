@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { ItemArtwork } from "@/components/items/item-artwork";
 import { ShopBuyButton } from "@/components/shop/shop-buy-button";
+import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { buyCart, buyItem } from "@/app/loja/actions";
 
 export type ShopCatalogItem = {
@@ -75,10 +76,17 @@ export function ShopCatalog({
   items,
   gold,
   showCosmetics = false,
+  previewCharacter,
 }: {
   items: ShopCatalogItem[];
   gold: number;
   showCosmetics?: boolean;
+  previewCharacter?: {
+    name: string;
+    imageUrl: string | null;
+    rank: string;
+    level: number;
+  };
 }) {
   const [section, setSection] = useState<ShopSection>("equipment");
   const [search, setSearch] = useState("");
@@ -189,11 +197,70 @@ export function ShopCatalog({
           <div className="cosmetics-grid">
             {bloodyMoonCosmetics.map((cosmetic) => (
               <article className="cosmetic-card" data-preview={cosmetic.preview} key={cosmetic.name}>
-                <div className="cosmetic-card__visual" aria-hidden="true">
-                  <i className="cosmetic-moon" />
-                  <i className="cosmetic-fog cosmetic-fog--one" />
-                  <i className="cosmetic-fog cosmetic-fog--two" />
-                  <span>{cosmetic.preview === "aura" ? "✦" : cosmetic.preview === "theme" ? "♜" : "☾"}</span>
+                <div className="cosmetic-compare">
+                  <div className="cosmetic-compare__side">
+                    <b>SEM COSMÉTICO</b>
+                    <div className="cosmetic-compare__stage is-before">
+                      {cosmetic.preview === "theme" ? (
+                        <div className="cosmetic-theme-demo">
+                          <header><span>Wonderland</span><i /></header>
+                          <nav><i /><i /><i /></nav>
+                          <main><strong /><p /><p /><button /></main>
+                        </div>
+                      ) : previewCharacter ? (
+                        <CharacterPortraitCard
+                          imageUrl={previewCharacter.imageUrl}
+                          level={previewCharacter.level}
+                          name={previewCharacter.name}
+                          rank={previewCharacter.rank}
+                          title={null}
+                          variant="standard"
+                        />
+                      ) : (
+                        <span className="cosmetic-preview-placeholder">Sem personagem</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <span className="cosmetic-compare__arrow" aria-hidden="true">→</span>
+
+                  <div className="cosmetic-compare__side is-after">
+                    <b>COM COSMÉTICO</b>
+                    <div className={`cosmetic-compare__stage is-after is-${cosmetic.preview}`}>
+                      {cosmetic.preview === "theme" ? (
+                        <div className="cosmetic-theme-demo is-bloody-moon">
+                          <i className="cosmetic-theme-moon" />
+                          <header><span>Wonderland</span><i /></header>
+                          <nav><i /><i /><i /></nav>
+                          <main><strong /><p /><p /><button /></main>
+                          <i className="cosmetic-theme-fog" />
+                        </div>
+                      ) : previewCharacter ? (
+                        <div className={`cosmetic-character-demo is-${cosmetic.preview}`}>
+                          <i className="cosmetic-demo-moon" />
+                          <i className="cosmetic-demo-fog cosmetic-demo-fog--one" />
+                          <i className="cosmetic-demo-fog cosmetic-demo-fog--two" />
+                          {cosmetic.preview === "aura" ? (
+                            <>
+                              <i className="cosmetic-demo-soul soul-one">✦</i>
+                              <i className="cosmetic-demo-soul soul-two">✦</i>
+                              <i className="cosmetic-demo-soul soul-three">✦</i>
+                            </>
+                          ) : null}
+                          <CharacterPortraitCard
+                            imageUrl={previewCharacter.imageUrl}
+                            level={previewCharacter.level}
+                            name={previewCharacter.name}
+                            rank={previewCharacter.rank}
+                            title={null}
+                            variant="standard"
+                          />
+                        </div>
+                      ) : (
+                        <span className="cosmetic-preview-placeholder">Sem personagem</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <div className="cosmetic-card__body">
                   <small>{cosmetic.type}</small>

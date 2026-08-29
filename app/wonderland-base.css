@@ -419,7 +419,7 @@ p {
 
 /* Botões e formulários */
 .button,
-button:not(.player-nav__world-backdrop),
+[data-wl-action],
 input[type="submit"] {
   display: inline-flex;
   align-items: center;
@@ -441,13 +441,13 @@ input[type="submit"] {
     box-shadow 0.15s ease;
 }
 .button:hover,
-button:not(.player-nav__world-backdrop):hover,
+[data-wl-action]:hover,
 input[type="submit"]:hover {
   filter: brightness(1.08);
   transform: translateY(-1px);
 }
 .button:active,
-button:not(.player-nav__world-backdrop):active {
+[data-wl-action]:active {
   transform: translateY(1px);
   box-shadow: 0 1px 0 #3c281d;
 }

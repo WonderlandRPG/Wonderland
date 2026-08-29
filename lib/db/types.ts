@@ -94,6 +94,7 @@ export interface Database {
           kingdom: string;
           adventure_rank: string;
           allocated_attributes: Json;
+          cosmetics: Json;
           created_at: string;
           updated_at: string;
         };
@@ -113,6 +114,7 @@ export interface Database {
           kingdom?: string;
           adventure_rank?: string;
           allocated_attributes: Json;
+          cosmetics?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -780,6 +782,10 @@ export interface Database {
       v2_is_admin: {
         Args: Record<PropertyKey, never>;
         Returns: boolean;
+      };
+      v2_set_character_cosmetic: {
+        Args: { p_character_id: string; p_slot: string; p_key: string | null };
+        Returns: Json;
       };
       v2_is_mission_manager: { Args: Record<PropertyKey, never>; Returns: boolean };
       v2_character_has_active_mission: { Args: { p_character_id: string }; Returns: boolean };

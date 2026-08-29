@@ -75,7 +75,11 @@ export default async function CharacterSheetPage({
   );
 
   return (
-    <main className="sheet-page">
+    <main
+      className="sheet-page"
+      data-sheet-background={character.cosmetics.background ?? undefined}
+      data-sheet-theme={character.cosmetics.theme ?? undefined}
+    >
       <PlayerNav />
       <div className="page-container sheet-page__inner">
         {query.status === "criado" ? (
@@ -106,6 +110,7 @@ export default async function CharacterSheetPage({
               name={character.name}
               rank={character.adventure_rank}
               title={equippedTitle}
+              cosmetics={character.cosmetics}
               variant="hero"
             />
           </div>

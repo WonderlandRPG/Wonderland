@@ -21,6 +21,10 @@ import { parseRacePayload, type RacePayload } from "@/lib/game/races";
 import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
 import { parseItemSpecialEffects, type ItemSpecialEffect } from "@/lib/game/item-effects";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  parseCharacterCosmetics,
+  type CharacterCosmeticLoadout,
+} from "@/lib/content/character-cosmetics";
 
 type CharacterRow = Database["public"]["Tables"]["v2_characters"]["Row"];
 type ContentRow = Database["public"]["Tables"]["v2_content"]["Row"];
@@ -30,8 +34,9 @@ type InventoryRow = Pick<
 >;
 type InventoryRowWithSlots = InventoryRow & { equipped_slots?: string[] | null };
 
-export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes"> {
+export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes" | "cosmetics"> {
   allocatedAttributes: AllocatedAttributes;
+  cosmetics: CharacterCosmeticLoadout;
 }
 
 export interface CharacterSheet extends CharacterRecord {
@@ -63,9 +68,13 @@ export interface CharacterSheet extends CharacterRecord {
 function parseCharacter(row: CharacterRow): CharacterRecord | null {
   const allocated = allocatedAttributesSchema.safeParse(row.allocated_attributes);
   if (!allocated.success) return null;
-  const { allocated_attributes: _raw, ...record } = row;
+  const { allocated_attributes: _raw, cosmetics: rawCosmetics, ...record } = row;
   void _raw;
-  return { ...record, allocatedAttributes: allocated.data };
+  return {
+    ...record,
+    allocatedAttributes: allocated.data,
+    cosmetics: parseCharacterCosmetics(rawCosmetics),
+  };
 }
 
 async function loadSheets(

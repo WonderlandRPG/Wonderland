@@ -247,77 +247,6 @@
 .market-page .soul-two{right:-4%;top:48%;animation-delay:.8s}
 .market-page .soul-three{left:12%;bottom:3%;animation-delay:1.5s}
 
-.market-page .cosmetic-theme-demo{
-  position:relative;
-  width:min(100%,520px);
-  aspect-ratio:16/10;
-  overflow:hidden;
-  border:1px solid var(--wl-border);
-  border-radius:var(--wl-radius-md);
-  background:var(--wl-surface-raised);
-  box-shadow:var(--wl-shadow-soft);
-}
-.market-page .cosmetic-theme-demo header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  height:22%;
-  padding:0 8%;
-  background:var(--wl-accent);
-}
-.market-page .cosmetic-theme-demo header span{
-  width:34%;
-  height:13px;
-  overflow:hidden;
-  color:transparent;
-  border-radius:999px;
-  background:var(--wl-gold-soft);
-}
-.market-page .cosmetic-theme-demo header i{width:18%;height:22px;border-radius:7px;background:var(--wl-surface)}
-.market-page .cosmetic-theme-demo nav{display:flex;gap:6px;padding:5% 8% 2%}
-.market-page .cosmetic-theme-demo nav i{width:16%;height:9px;border-radius:999px;background:var(--wl-border)}
-.market-page .cosmetic-theme-demo main{display:grid;gap:8px;padding:4% 8%}
-.market-page .cosmetic-theme-demo main strong{display:block;width:58%;height:23px;border-radius:6px;background:var(--wl-text)}
-.market-page .cosmetic-theme-demo main p{width:82%;height:9px;margin:0;border-radius:999px;background:var(--wl-text-muted)}
-.market-page .cosmetic-theme-demo main p+ p{width:66%}
-.market-page .cosmetic-theme-demo main button{width:42%;height:27px;border:0;border-radius:7px;background:var(--wl-accent)}
-.market-page .cosmetic-theme-demo.is-bloody-moon{
-  border-color:var(--wl-blood-border);
-  background:
-    radial-gradient(circle at 80% 16%,color-mix(in srgb,var(--wl-blood-bright) 24%,transparent),transparent 22%),
-    linear-gradient(var(--wl-blood-surface),var(--wl-blood-black));
-  box-shadow:0 0 35px color-mix(in srgb,var(--wl-blood) 30%,transparent);
-}
-.market-page .cosmetic-theme-demo.is-bloody-moon header{background:linear-gradient(90deg,var(--wl-blood-black),var(--wl-blood-deep))}
-.market-page .cosmetic-theme-demo.is-bloody-moon header span{background:var(--wl-blood-gold)}
-.market-page .cosmetic-theme-demo.is-bloody-moon header i{background:var(--wl-blood-surface-raised)}
-.market-page .cosmetic-theme-demo.is-bloody-moon nav i{background:var(--wl-blood-border)}
-.market-page .cosmetic-theme-demo.is-bloody-moon main strong{background:var(--wl-blood-text)}
-.market-page .cosmetic-theme-demo.is-bloody-moon main p{background:var(--wl-blood-text-muted)}
-.market-page .cosmetic-theme-demo.is-bloody-moon main button{background:var(--wl-blood)}
-.market-page .cosmetic-theme-moon{
-  position:absolute;
-  right:8%;
-  top:18%;
-  width:62px;
-  height:62px;
-  border-radius:50%;
-  background:var(--wl-blood);
-  box-shadow:0 0 24px color-mix(in srgb,var(--wl-blood-bright) 52%,transparent);
-  animation:bloody-moon-pulse 4s ease-in-out infinite;
-}
-.market-page .cosmetic-theme-fog{
-  position:absolute;
-  left:-20%;
-  bottom:8%;
-  width:140%;
-  height:35px;
-  border-radius:50%;
-  background:var(--wl-blood-fog);
-  filter:blur(10px);
-  animation:grave-fog 8s ease-in-out infinite alternate;
-}
-
 .market-page .cosmetic-card__body{
   padding:20px 26px 24px;
   border-top:1px solid var(--wl-blood-border);
@@ -389,9 +318,7 @@
   .market-page .cosmetic-demo-moon,
   .market-page .cosmetic-demo-fog,
   .market-page .cosmetic-demo-soul,
-  .market-page .cosmetic-character-demo.is-card [data-character-card="official"],
-  .market-page .cosmetic-theme-moon,
-  .market-page .cosmetic-theme-fog{animation:none}
+  .market-page .cosmetic-character-demo.is-card [data-character-card="official"],{animation:none}
 }
 @media(max-width:900px){
   .market-page .cosmetic-card__heading{align-items:flex-start;flex-direction:column}

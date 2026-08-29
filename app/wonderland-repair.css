@@ -25,9 +25,9 @@ body::before {
   display: none !important;
 }
 body {
-  background-color: #cfcab7 !important;
+  background-color: var(--wl-canvas) !important;
   background-image:
-    linear-gradient(rgba(239, 232, 207, 0.79), rgba(203, 207, 189, 0.88)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/lore.svg") !important;
   background-position: center !important;
   background-size: cover !important;
@@ -35,13 +35,13 @@ body {
 }
 body:has(.home-landing) {
   background-image:
-    linear-gradient(rgba(236, 229, 204, 0.72), rgba(197, 206, 188, 0.84)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/lore.svg") !important;
 }
 body:has(.realms-page),
 body:has(.kingdom-current-page) {
   background-image:
-    linear-gradient(rgba(239, 229, 198, 0.73), rgba(195, 203, 183, 0.86)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/realms.svg") !important;
 }
 body:has(.sheet-page),
@@ -50,18 +50,18 @@ body:has(.guild-registry-page),
 body:has(.public-character-page),
 body:has(.characters-page) {
   background-image:
-    linear-gradient(rgba(240, 229, 199, 0.76), rgba(201, 205, 185, 0.87)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/character.svg") !important;
 }
 body:has(.market-page) {
   background-image:
-    linear-gradient(rgba(239, 226, 192, 0.75), rgba(202, 199, 179, 0.88)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/market.svg") !important;
 }
 body:has(.champions-hall),
 body:has(.guild-decrees) {
   background-image:
-    linear-gradient(rgba(238, 226, 193, 0.76), rgba(198, 198, 181, 0.88)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/ranking.svg") !important;
 }
 body:has(.arena-page),
@@ -69,12 +69,12 @@ body:has(.dungeon-page),
 body:has(.pvp-battle),
 body:has(.dungeon-battle) {
   background-image:
-    linear-gradient(rgba(223, 215, 192, 0.78), rgba(184, 191, 176, 0.9)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/arena.svg") !important;
 }
 body:has(.admin-shell) {
   background-image:
-    linear-gradient(rgba(213, 203, 181, 0.84), rgba(182, 184, 169, 0.92)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/admin.svg") !important;
 }
 body:has(.mission-page),
@@ -82,7 +82,7 @@ body:has(.presence-page),
 body:has(.royal-chronicle),
 body:has(.realm-notice-board) {
   background-image:
-    linear-gradient(rgba(239, 230, 202, 0.76), rgba(198, 204, 184, 0.88)),
+    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/lore.svg") !important;
 }
 

@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { resolve, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
@@ -210,6 +210,32 @@ describe("contrato visual do Wonderland", () => {
         "!important",
       );
       expect(css, path + " cria :root concorrente").not.toMatch(/:root\b/);
+    }
+  });
+
+  it("todo preset futuro de tema também atende contraste AA", () => {
+    const themesDirectory = resolve(root, "app/themes");
+    if (!existsSync(themesDirectory)) return;
+
+    const themeFiles = walkCss(themesDirectory);
+    for (const file of themeFiles) {
+      const themeCss = readFileSync(file, "utf8");
+      const overrides = new Map<string, string>();
+
+      for (const match of themeCss.matchAll(/(--wl-[\w-]+)\s*:\s*(#[0-9a-fA-F]{6})\s*;/g)) {
+        overrides.set(match[1], match[2]);
+      }
+
+      for (const [foreground, background] of contrastPairs) {
+        const foregroundName = "--" + foreground;
+        const backgroundName = "--" + background;
+        const foregroundColor = overrides.get(foregroundName) ?? token(foreground);
+        const backgroundColor = overrides.get(backgroundName) ?? token(background);
+        expect(
+          contrast(foregroundColor, backgroundColor),
+          relative(root, file) + ": " + foregroundName + " sobre " + backgroundName,
+        ).toBeGreaterThanOrEqual(4.5);
+      }
     }
   });
 

@@ -93,6 +93,7 @@ export interface Database {
           daily_streak: number;
           kingdom: string;
           adventure_rank: string;
+          cosmetics: Json;
           allocated_attributes: Json;
           created_at: string;
           updated_at: string;
@@ -112,6 +113,7 @@ export interface Database {
           daily_streak?: number;
           kingdom?: string;
           adventure_rank?: string;
+          cosmetics?: Json;
           allocated_attributes: Json;
           created_at?: string;
           updated_at?: string;

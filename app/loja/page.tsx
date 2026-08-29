@@ -138,6 +138,7 @@ export default async function ShopPage({
             imageUrl: character.image_url,
             rank: character.adventure_rank,
             level: character.level,
+            cosmetics: character.cosmetics,
           }}
         />
       </div>

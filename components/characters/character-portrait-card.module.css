@@ -31,3 +31,411 @@
 :global(.official-pvp-card-host)>.card{width:176px!important;min-height:220px!important}
 :global(.duelist-roll__identity:has([data-character-card='official'])){grid-template-columns:74px minmax(0,1fr)!important}
 @media(max-width:620px){.inventory{max-width:320px;min-height:390px}.hero{min-height:380px}.topMeta{left:8px;right:8px;top:8px}.titleMeta{left:8px;right:8px;bottom:8px}}
+
+
+/* =========================================================
+   CEMITÉRIO DA LUA SANGRENTA · COSMÉTICOS REAIS DO CARD
+   ========================================================= */
+.cosmeticCardFx,
+.cosmeticAuraFx{
+  position:absolute;
+  pointer-events:none;
+  opacity:0;
+}
+
+.cosmeticCardFx{
+  z-index:7;
+  inset:0;
+  overflow:hidden;
+  border-radius:inherit;
+}
+
+.cosmeticAuraFx{
+  z-index:11;
+  inset:-16%;
+  overflow:visible;
+}
+
+/* CARD ANIMADO · Epitáfio da Lua Carmesim */
+.card[data-card-cosmetic='epitafio-lua-carmesim']{
+  --epitaph-red:#c62f43;
+  --epitaph-red-bright:#ff6d70;
+  --epitaph-red-dark:#4a0e19;
+  --epitaph-ivory:#ffe6bd;
+  border-color:#8f3949;
+  background:#14090e;
+  box-shadow:
+    0 0 0 2px #2a0a12,
+    0 0 0 4px #7f3943,
+    0 18px 38px rgba(18,4,9,.62),
+    0 0 28px rgba(198,47,67,.42);
+  animation:epitaphOuterPulse 4.8s ease-in-out infinite alternate;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .image{
+  border-radius:18px;
+  overflow:hidden;
+  filter:saturate(.78) contrast(1.08) brightness(.78) sepia(.12);
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .image::after{
+  background:
+    radial-gradient(circle at 76% 18%,rgba(240,74,82,.18),transparent 24%),
+    linear-gradient(180deg,rgba(29,4,12,.20) 0%,rgba(20,3,9,.05) 28%,rgba(32,5,12,.18) 62%,rgba(13,3,7,.94) 100%);
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .cosmeticCardFx{
+  opacity:1;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .cosmeticCardFx::before{
+  content:"";
+  position:absolute;
+  z-index:8;
+  inset:7px;
+  border:1px solid rgba(255,213,166,.58);
+  border-radius:16px;
+  box-shadow:
+    inset 0 0 0 2px rgba(91,13,28,.72),
+    inset 0 0 22px rgba(189,34,53,.16);
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .cosmeticCardFx::after{
+  content:"";
+  position:absolute;
+  z-index:7;
+  inset:0;
+  background:
+    linear-gradient(90deg,rgba(64,6,20,.52),transparent 11%,transparent 89%,rgba(64,6,20,.52)),
+    radial-gradient(ellipse at 50% 100%,rgba(174,35,53,.34),transparent 46%);
+  mix-blend-mode:screen;
+}
+
+.bloodMoon{
+  display:none;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .bloodMoon{
+  display:block;
+  position:absolute;
+  z-index:2;
+  top:7%;
+  right:7%;
+  width:34%;
+  aspect-ratio:1;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 34% 31%,#ffada0 0 5%,transparent 6%),
+    radial-gradient(circle at 54% 58%,rgba(83,8,19,.30) 0 8%,transparent 9%),
+    radial-gradient(circle at 38% 47%,rgba(83,8,19,.22) 0 6%,transparent 7%),
+    radial-gradient(circle,#f65e62 0 30%,#c5283e 58%,#731326 100%);
+  box-shadow:
+    0 0 18px rgba(255,99,102,.72),
+    0 0 46px rgba(202,39,61,.48);
+  opacity:.88;
+  animation:epitaphMoon 4.2s ease-in-out infinite;
+}
+
+.graveyard{
+  display:none;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .graveyard{
+  display:block;
+  position:absolute;
+  z-index:5;
+  left:-3%;
+  right:-3%;
+  bottom:0;
+  height:26%;
+  background:
+    linear-gradient(90deg,
+      transparent 0 5%,
+      #080508 5% 10%,transparent 10% 18%,
+      #080508 18% 25%,transparent 25% 34%,
+      #080508 34% 40%,transparent 40% 59%,
+      #080508 59% 66%,transparent 66% 76%,
+      #080508 76% 83%,transparent 83% 91%,
+      #080508 91% 96%,transparent 96%),
+    linear-gradient(180deg,transparent 0 42%,rgba(6,4,6,.92) 43% 100%);
+  clip-path:polygon(
+    0 100%,0 54%,5% 54%,7% 33%,9% 54%,
+    18% 54%,20% 25%,22% 54%,34% 54%,36% 38%,38% 54%,
+    59% 54%,61% 28%,64% 54%,76% 54%,79% 35%,82% 54%,
+    91% 54%,94% 24%,97% 54%,100% 54%,100% 100%
+  );
+  opacity:.9;
+}
+
+.ravenOne,
+.ravenTwo{
+  display:none;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenOne,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenTwo{
+  display:block;
+  position:absolute;
+  z-index:6;
+  width:24px;
+  height:10px;
+  opacity:.82;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenOne{
+  top:22%;
+  left:13%;
+  animation:ravenDriftOne 7.8s ease-in-out infinite;
+}
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenTwo{
+  top:31%;
+  right:18%;
+  transform:scale(.72);
+  animation:ravenDriftTwo 9.4s ease-in-out 1.2s infinite;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenOne::before,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenOne::after,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenTwo::before,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenTwo::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  width:14px;
+  height:7px;
+  border-top:3px solid #050305;
+}
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenOne::before,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenTwo::before{
+  right:50%;
+  border-radius:80% 0 0 0;
+  transform:rotate(16deg);
+}
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenOne::after,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenTwo::after{
+  left:50%;
+  border-radius:0 80% 0 0;
+  transform:rotate(-16deg);
+}
+
+.candleOne,
+.candleTwo{
+  display:none;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .candleOne,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .candleTwo{
+  display:block;
+  position:absolute;
+  z-index:9;
+  bottom:14%;
+  width:5px;
+  height:17px;
+  border-radius:2px 2px 1px 1px;
+  background:#e7d0a7;
+  box-shadow:0 0 9px rgba(255,144,92,.4);
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .candleOne{left:9%}
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .candleTwo{right:9%;height:13px}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .candleOne::before,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .candleTwo::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:100%;
+  width:7px;
+  height:10px;
+  border-radius:60% 45% 58% 40%;
+  background:radial-gradient(circle at 50% 70%,#fff2a8 0 20%,#ff824d 45%,transparent 70%);
+  transform:translateX(-50%);
+  filter:drop-shadow(0 0 6px #ff6d4d);
+  animation:candleFlicker .9s ease-in-out infinite alternate;
+}
+
+.cardFogOne,
+.cardFogTwo{
+  display:none;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .cardFogOne,
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .cardFogTwo{
+  display:block;
+  position:absolute;
+  z-index:8;
+  left:-35%;
+  width:170%;
+  height:14%;
+  border-radius:50%;
+  background:rgba(239,215,207,.10);
+  filter:blur(11px);
+  pointer-events:none;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .cardFogOne{
+  bottom:9%;
+  animation:cardFogMove 7s ease-in-out infinite alternate;
+}
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .cardFogTwo{
+  bottom:20%;
+  opacity:.55;
+  animation:cardFogMove 10s ease-in-out 1.4s infinite alternate-reverse;
+}
+
+/* AURA ANIMADA · Procissão das Almas Rubras */
+.card[data-aura-cosmetic='procissao-almas-rubras']{
+  overflow:visible;
+  box-shadow:
+    0 14px 30px rgba(38,27,18,.22),
+    0 0 22px rgba(198,47,67,.40),
+    0 0 54px rgba(135,19,43,.20);
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .image{
+  border-radius:18px;
+  overflow:hidden;
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx{
+  opacity:1;
+}
+
+.soul{
+  display:none;
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soul{
+  display:block;
+  position:absolute;
+  width:34px;
+  height:52px;
+  border-radius:52% 52% 42% 42% / 34% 34% 66% 66%;
+  background:
+    radial-gradient(circle at 38% 30%,rgba(73,5,17,.88) 0 2px,transparent 3px),
+    radial-gradient(circle at 62% 30%,rgba(73,5,17,.88) 0 2px,transparent 3px),
+    radial-gradient(ellipse at 50% 38%,#fff3df 0 12%,#ff9b9c 21%,#e14356 44%,rgba(137,15,41,.72) 66%,transparent 72%);
+  filter:
+    drop-shadow(0 0 6px rgba(255,126,132,.95))
+    drop-shadow(0 0 15px rgba(209,42,63,.72));
+  opacity:.88;
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soul::before{
+  content:"";
+  position:absolute;
+  left:17%;
+  right:17%;
+  top:31%;
+  height:34%;
+  border-radius:40% 40% 55% 55%;
+  background:linear-gradient(180deg,rgba(255,159,161,.72),rgba(173,25,48,.42));
+  filter:blur(1px);
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soul::after{
+  content:"";
+  position:absolute;
+  left:20%;
+  right:20%;
+  top:58%;
+  height:46%;
+  background:linear-gradient(180deg,rgba(191,33,53,.56),transparent);
+  clip-path:polygon(0 0,100% 0,78% 42%,96% 58%,68% 72%,82% 100%,48% 78%,23% 100%,31% 67%,4% 54%,24% 38%);
+  filter:blur(1px);
+}
+
+.soulOne{left:2%;top:20%;animation:soulProcessionOne 5.6s ease-in-out infinite}
+.soulTwo{right:0;top:34%;transform:scale(.82);animation:soulProcessionTwo 6.4s ease-in-out .7s infinite}
+.soulThree{left:12%;bottom:4%;transform:scale(.68);animation:soulProcessionThree 7.1s ease-in-out 1.2s infinite}
+.soulFour{right:12%;bottom:9%;transform:scale(.58);animation:soulProcessionFour 5.9s ease-in-out 1.8s infinite}
+.soulFive{left:44%;top:0;transform:scale(.52);animation:soulProcessionFive 8.2s ease-in-out 2.1s infinite}
+
+.ashField{
+  display:none;
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .ashField{
+  display:block;
+  position:absolute;
+  inset:3%;
+  background:
+    radial-gradient(circle at 10% 25%,rgba(255,158,155,.75) 0 1px,transparent 2px),
+    radial-gradient(circle at 87% 18%,rgba(255,158,155,.55) 0 1px,transparent 2px),
+    radial-gradient(circle at 18% 78%,rgba(255,158,155,.55) 0 1px,transparent 2px),
+    radial-gradient(circle at 76% 69%,rgba(255,158,155,.62) 0 1px,transparent 2px),
+    radial-gradient(circle at 52% 12%,rgba(255,220,197,.50) 0 1px,transparent 2px),
+    radial-gradient(circle at 42% 88%,rgba(255,220,197,.45) 0 1px,transparent 2px);
+  animation:ashDrift 5s linear infinite;
+  filter:drop-shadow(0 0 4px rgba(220,56,70,.8));
+}
+
+@keyframes epitaphOuterPulse{
+  from{box-shadow:0 0 0 2px #2a0a12,0 0 0 4px #7f3943,0 18px 38px rgba(18,4,9,.58),0 0 20px rgba(198,47,67,.28)}
+  to{box-shadow:0 0 0 2px #2a0a12,0 0 0 4px #9c4752,0 20px 44px rgba(18,4,9,.68),0 0 38px rgba(231,68,83,.56)}
+}
+@keyframes epitaphMoon{
+  0%,100%{transform:scale(.96);filter:brightness(.88)}
+  50%{transform:scale(1.06);filter:brightness(1.16)}
+}
+@keyframes ravenDriftOne{
+  0%,100%{transform:translate(0,2px) scale(.78);opacity:.18}
+  25%{opacity:.88}
+  55%{transform:translate(42px,-10px) scale(1);opacity:.9}
+  80%{transform:translate(78px,4px) scale(.72);opacity:.15}
+}
+@keyframes ravenDriftTwo{
+  0%,100%{transform:translate(0,3px) scale(.55);opacity:.1}
+  35%{opacity:.74}
+  70%{transform:translate(-52px,-14px) scale(.82);opacity:.72}
+}
+@keyframes candleFlicker{
+  from{transform:translateX(-50%) scale(.88) rotate(-3deg);opacity:.72}
+  to{transform:translateX(-50%) scale(1.12) rotate(4deg);opacity:1}
+}
+@keyframes cardFogMove{
+  from{transform:translateX(-8%) scaleY(.8);opacity:.35}
+  to{transform:translateX(9%) scaleY(1.15);opacity:.78}
+}
+@keyframes soulProcessionOne{
+  0%,100%{transform:translate(0,18px) scale(.72) rotate(-4deg);opacity:.18}
+  35%{transform:translate(-12px,-6px) scale(1) rotate(3deg);opacity:.96}
+  72%{transform:translate(14px,-30px) scale(.82) rotate(-2deg);opacity:.55}
+}
+@keyframes soulProcessionTwo{
+  0%,100%{transform:translate(0,-4px) scale(.62) rotate(3deg);opacity:.20}
+  42%{transform:translate(12px,-25px) scale(.92) rotate(-3deg);opacity:.94}
+  76%{transform:translate(-10px,15px) scale(.72) rotate(2deg);opacity:.48}
+}
+@keyframes soulProcessionThree{
+  0%,100%{transform:translate(-8px,12px) scale(.52);opacity:.14}
+  52%{transform:translate(18px,-34px) scale(.78);opacity:.78}
+}
+@keyframes soulProcessionFour{
+  0%,100%{transform:translate(6px,10px) scale(.48);opacity:.12}
+  48%{transform:translate(-20px,-28px) scale(.74);opacity:.8}
+}
+@keyframes soulProcessionFive{
+  0%,100%{transform:translateY(12px) scale(.42);opacity:.08}
+  45%{transform:translateY(-18px) scale(.68);opacity:.62}
+}
+@keyframes ashDrift{
+  from{transform:translateY(6px);opacity:.35}
+  50%{opacity:.8}
+  to{transform:translateY(-16px);opacity:.28}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .card[data-card-cosmetic='epitafio-lua-carmesim'],
+  .card[data-card-cosmetic='epitafio-lua-carmesim'] .bloodMoon,
+  .card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenOne,
+  .card[data-card-cosmetic='epitafio-lua-carmesim'] .ravenTwo,
+  .card[data-card-cosmetic='epitafio-lua-carmesim'] .candleOne::before,
+  .card[data-card-cosmetic='epitafio-lua-carmesim'] .candleTwo::before,
+  .card[data-card-cosmetic='epitafio-lua-carmesim'] .cardFogOne,
+  .card[data-card-cosmetic='epitafio-lua-carmesim'] .cardFogTwo,
+  .card[data-aura-cosmetic='procissao-almas-rubras'] .soul,
+  .card[data-aura-cosmetic='procissao-almas-rubras'] .ashField{
+    animation:none;
+  }
+}

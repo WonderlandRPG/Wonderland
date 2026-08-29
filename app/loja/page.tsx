@@ -2,6 +2,7 @@ import "./loja.css";
 import "./rarity-glow.css";
 import "./shop-rework.css";
 import "./cosmetics.css";
+import "./cosmetics-premium.css";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 

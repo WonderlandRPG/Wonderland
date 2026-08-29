@@ -1,0 +1,207 @@
+/*
+ * Ponte temporária entre o sistema de temas e folhas legadas com cores fixas.
+ * Não define paleta: apenas aplica tokens oficiais quando um tema está ativo.
+ * Pode ser removida progressivamente à medida que as rotas forem migradas.
+ */
+
+body[data-wl-theme]{
+  background-color:var(--wl-canvas)!important;
+  color:var(--wl-text)!important;
+}
+
+body[data-wl-theme] :where(
+  .page-container,
+  .portal-shell,
+  .portal-panel,
+  .sheet-section,
+  .inventory-hud,
+  .ranking-board,
+  .duelist-roll,
+  .presence-pass--enhanced,
+  .guild-trials-scroll,
+  .guild-decrees__intro,
+  .mission-board,
+  .mission-ledger,
+  .realm-dossiers--atlas>article,
+  .admin-tool-section,
+  .admin-content,
+  [class*="grimoire_index"],
+  [class*="grimoire_sheet"]
+){
+  background:var(--wl-surface-raised)!important;
+  color:var(--wl-text)!important;
+  border-color:var(--wl-border)!important;
+}
+
+body[data-wl-theme] :where(
+  .player-nav,
+  .home-hero,
+  .market-hero,
+  .character-command-hero,
+  .public-character-hero,
+  .ranking-season-banner,
+  .champions-hall__switcher,
+  .duelist-banner,
+  .presence-hero--enhanced,
+  .mission-board-hero,
+  .world-lore-hero,
+  .realms-hero,
+  .admin-command-welcome,
+  .arena-hero,
+  .arena-stage,
+  .pvp-stage
+){
+  background-color:var(--wl-surface-dark)!important;
+  background-image:linear-gradient(135deg,var(--wl-surface-dark),var(--wl-surface-dark-strong))!important;
+  color:var(--wl-text-inverse)!important;
+  border-color:var(--wl-border-strong)!important;
+}
+
+body[data-wl-theme] :where(
+  .player-nav,
+  .home-hero,
+  .market-hero,
+  .character-command-hero,
+  .public-character-hero,
+  .ranking-season-banner,
+  .champions-hall__switcher,
+  .duelist-banner,
+  .presence-hero--enhanced,
+  .mission-board-hero,
+  .world-lore-hero,
+  .realms-hero,
+  .admin-command-welcome,
+  .arena-hero,
+  .arena-stage,
+  .pvp-stage
+) :where(h1,h2,h3,h4,strong,b,label,dt,dd,a,button){
+  color:var(--wl-text-inverse)!important;
+}
+
+body[data-wl-theme] :where(
+  .player-nav,
+  .home-hero,
+  .market-hero,
+  .character-command-hero,
+  .public-character-hero,
+  .ranking-season-banner,
+  .champions-hall__switcher,
+  .duelist-banner,
+  .presence-hero--enhanced,
+  .mission-board-hero,
+  .world-lore-hero,
+  .realms-hero,
+  .admin-command-welcome,
+  .arena-hero,
+  .arena-stage,
+  .pvp-stage
+) :where(p,small,em,span){
+  color:var(--wl-text-inverse-muted)!important;
+}
+
+body[data-wl-theme] :where(
+  .page-container,
+  .portal-shell,
+  .portal-panel,
+  .sheet-section,
+  .inventory-hud,
+  .ranking-board,
+  .duelist-roll,
+  .presence-pass--enhanced,
+  .guild-trials-scroll,
+  .guild-decrees__intro,
+  .mission-board,
+  .mission-ledger,
+  .realm-dossiers--atlas>article,
+  .admin-tool-section,
+  .admin-content,
+  [class*="grimoire_index"],
+  [class*="grimoire_sheet"]
+) :where(h1,h2,h3,h4,strong,b,label,dt,dd,a){
+  color:var(--wl-text)!important;
+}
+
+body[data-wl-theme] :where(
+  .page-container,
+  .portal-shell,
+  .portal-panel,
+  .sheet-section,
+  .inventory-hud,
+  .ranking-board,
+  .duelist-roll,
+  .presence-pass--enhanced,
+  .guild-trials-scroll,
+  .guild-decrees__intro,
+  .mission-board,
+  .mission-ledger,
+  .realm-dossiers--atlas>article,
+  .admin-tool-section,
+  .admin-content,
+  [class*="grimoire_index"],
+  [class*="grimoire_sheet"]
+) :where(p,small,em,span){
+  color:var(--wl-text-muted)!important;
+}
+
+body[data-wl-theme] :where(input,select,textarea){
+  background:var(--wl-field-bg)!important;
+  color:var(--wl-field-text)!important;
+  border-color:var(--wl-border)!important;
+}
+
+body[data-wl-theme] :where(input,textarea)::placeholder{
+  color:var(--wl-field-placeholder)!important;
+}
+
+body[data-wl-theme] :where(
+  .button,
+  [data-wl-action="primary"],
+  input[type="submit"]
+){
+  background:var(--wl-action-bg)!important;
+  color:var(--wl-action-text)!important;
+  border-color:var(--wl-border-strong)!important;
+}
+
+body[data-wl-theme] :where(
+  .ranking-table>a,
+  .ranking-podium__place,
+  .presence-reward-grid>article,
+  .mission-parchment,
+  .realm-notice,
+  .guild-decree,
+  [class*="grimoire_entry"]
+):not([data-character-card="official"]){
+  background:var(--wl-surface)!important;
+  color:var(--wl-text)!important;
+  border-color:var(--wl-border)!important;
+}
+
+body[data-wl-theme] :where(
+  .ranking-table>a,
+  .ranking-podium__place,
+  .presence-reward-grid>article,
+  .mission-parchment,
+  .realm-notice,
+  .guild-decree,
+  [class*="grimoire_entry"]
+) :where(h2,h3,h4,strong,b){
+  color:var(--wl-text)!important;
+}
+
+body[data-wl-theme] :where(
+  .ranking-table>a,
+  .ranking-podium__place,
+  .presence-reward-grid>article,
+  .mission-parchment,
+  .realm-notice,
+  .guild-decree,
+  [class*="grimoire_entry"]
+) :where(p,small,span){
+  color:var(--wl-text-muted)!important;
+}
+
+/* O card oficial mantém sua própria identidade/rank/cosmético. */
+body[data-wl-theme] [data-character-card="official"]{
+  color:initial;
+}

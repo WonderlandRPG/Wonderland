@@ -1,0 +1,92 @@
+/*
+ * Wonderland Visual System — fonte única de cores semânticas.
+ *
+ * REGRA:
+ * - páginas e componentes novos usam somente --wl-* para cor;
+ * - temas futuros sobrescrevem somente estes tokens;
+ * - não criar :root concorrente em folhas de página;
+ * - aliases legados existem apenas durante a migração do CSS antigo.
+ */
+:root {
+  color-scheme: light;
+
+  /* Texto */
+  --wl-text: #291f18;
+  --wl-text-muted: #63503d;
+  --wl-text-subtle: #76624e;
+  --wl-text-inverse: #fff0c8;
+  --wl-text-inverse-muted: #dfd0ab;
+
+  /* Marca / ações */
+  --wl-accent: #173f30;
+  --wl-accent-hover: #2e684e;
+  --wl-accent-soft: #dbe8d4;
+  --wl-accent-contrast: #fff0c8;
+
+  --wl-gold: #bd8b32;
+  --wl-gold-strong: #765018;
+  --wl-gold-soft: #e1c37b;
+  --wl-gold-contrast: #2b2119;
+
+  /* Superfícies */
+  --wl-canvas: #14241c;
+  --wl-surface: #fff3d2;
+  --wl-surface-raised: #efe0b8;
+  --wl-surface-muted: #dbc08a;
+  --wl-surface-dark: #173f30;
+  --wl-surface-dark-strong: #0c251b;
+  --wl-surface-overlay: rgba(24, 17, 12, 0.72);
+
+  /* Estrutura */
+  --wl-border: #9d7949;
+  --wl-border-strong: #65462f;
+  --wl-border-soft: rgba(91, 65, 39, 0.22);
+  --wl-focus: #2e684e;
+  --wl-focus-ring: rgba(46, 104, 78, 0.24);
+
+  /* Estados */
+  --wl-success-bg: #dbe8d4;
+  --wl-success-text: #24472f;
+  --wl-success-border: #6e8e75;
+
+  --wl-warning-bg: #f1d7c3;
+  --wl-warning-text: #6c382c;
+  --wl-warning-border: #ad775e;
+
+  --wl-danger-bg: #f3d1cb;
+  --wl-danger-text: #742b25;
+  --wl-danger-border: #b55f56;
+
+  --wl-disabled-opacity: 0.58;
+
+  /* Elevação e geometria */
+  --wl-shadow: 0 22px 58px rgba(18, 12, 8, 0.3);
+  --wl-shadow-soft: 0 10px 26px rgba(18, 12, 8, 0.18);
+  --wl-radius: 18px;
+  --wl-page: 1120px;
+
+  /*
+   * ALIASES LEGADOS.
+   * Não usar em código novo. Eles impedem regressões enquanto o CSS antigo
+   * é migrado gradualmente para os nomes semânticos acima.
+   */
+  --ink: var(--wl-text);
+  --ink-soft: var(--wl-text-muted);
+  --forest: var(--wl-accent);
+  --forest-2: var(--wl-accent-hover);
+  --moss: #7c9273;
+  --wine: #6d3f43;
+  --gold: var(--wl-gold);
+  --gold-soft: var(--wl-gold-soft);
+  --parchment: var(--wl-surface-raised);
+  --parchment-2: var(--wl-surface-muted);
+  --paper: var(--wl-surface);
+  --wood: #583925;
+  --wood-dark: #251810;
+  --line: var(--wl-border);
+  --line-soft: var(--wl-border-soft);
+  --shadow: var(--wl-shadow);
+  --shadow-soft: var(--wl-shadow-soft);
+  --radius: var(--wl-radius);
+  --page: var(--wl-page);
+}

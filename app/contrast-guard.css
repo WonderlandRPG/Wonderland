@@ -1,11 +1,12 @@
 /* Contraste semântico final — WCAG AA para superfícies do tema Wonderland. */
 :root {
-  --contrast-ink: #2b2119;
-  --contrast-muted: #5e4937;
-  --contrast-light: #fff0c8;
-  --contrast-light-muted: #dfd0ab;
-  --contrast-gold-dark: #765018;
-  --contrast-gold-light: #f1ca69;
+  /* Compatibility aliases. Contrast is governed by theme-tokens.css. */
+  --contrast-ink: var(--wl-text);
+  --contrast-muted: var(--wl-text-muted);
+  --contrast-light: var(--wl-text-inverse);
+  --contrast-light-muted: var(--wl-text-inverse-muted);
+  --contrast-gold-dark: var(--wl-gold-strong);
+  --contrast-gold-light: var(--wl-gold-soft);
 }
 
 /* Pergaminhos e superfícies claras sempre recebem tinta escura. */
@@ -188,7 +189,7 @@
   color: #f7dfac !important;
 }
 .guild-board .mission-parchment button {
-  color: #fff0ca !important;
+  color: var(--wl-text-inverse) !important;
 }
 :where(
     .player-nav,
@@ -216,24 +217,24 @@
 .shop-cart button,
 .inventory-command button,
 .arena-command-panel button {
-  color: #fff0ca !important;
+  color: var(--wl-text-inverse) !important;
 }
 .button--ghost,
 .player-nav__character > a,
 .ranking-filters button:not(.is-active),
 .champions-hall__switcher button:not(.is-active),
 .shop-cart > div > button {
-  color: #302319 !important;
+  color: var(--wl-text) !important;
 }
 input,
 select,
 textarea,
 option {
-  color: #2b2119 !important;
-  background-color: #fff3d2 !important;
+  color: var(--wl-text) !important;
+  background-color: var(--wl-surface) !important;
 }
 ::placeholder {
-  color: #76624e !important;
+  color: var(--wl-text-subtle) !important;
   opacity: 1;
 }
 
@@ -274,11 +275,11 @@ option {
   opacity: 1 !important;
 }
 #player-world-navigation :where(a, a span, form button) {
-  color: #302319 !important;
+  color: var(--wl-text) !important;
 }
 .player-nav__character > a,
 .player-nav__character > a span {
-  color: #2b2119 !important;
+  color: var(--wl-text) !important;
 }
 .player-nav__character > a small {
   color: #604827 !important;
@@ -288,7 +289,7 @@ option {
 /* Controles e textos adicionados às missões e à leitura da Lore. */
 .mission-full-briefing,
 .mission-manager-briefing {
-  color: #2b2119 !important;
+  color: var(--wl-text) !important;
 }
 .mission-full-briefing summary,
 .mission-manager-briefing summary {
@@ -301,7 +302,7 @@ option {
   color: #fff0c8 !important;
 }
 .lore-collapse > header {
-  color: #2b2119 !important;
+  color: var(--wl-text) !important;
 }
 .lore-collapse > header small {
   color: #315f47 !important;

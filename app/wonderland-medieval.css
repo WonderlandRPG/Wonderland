@@ -6,11 +6,11 @@
 /* Palette is defined once in theme-tokens.css. */
 
 
-html { background: var(--wl-canvas); }
+html { background: var(--wx-color-canvas); }
 
 body {
-  color: var(--wl-text);
-  background-color: var(--wl-canvas) !important;
+  color: var(--wx-color-text);
+  background-color: var(--wx-color-canvas) !important;
   background-image:
     linear-gradient(180deg, rgba(7, 18, 13, 0.42), rgba(15, 30, 23, 0.7)),
     url('/backgrounds/lore.svg') !important;

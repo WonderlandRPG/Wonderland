@@ -957,6 +957,10 @@ export interface Database {
         Returns: number;
       };
       v2_admin_delete_title: { Args: { p_title_id: string }; Returns: number };
+      v2_set_character_cosmetics: {
+        Args: { p_character_id: string; p_cosmetics: Json };
+        Returns: Json;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

@@ -65,16 +65,6 @@ const bloodyMoonCosmetics = [
     preview: "aura",
     key: "procissao-almas-rubras",
   },
-  {
-    type: "Tema",
-    name: "Catedral do Último Eclipse",
-    tag: "Mítico • Tema completo",
-    description:
-      "Transforma a experiência visual do perfil em um cemitério gótico sob a Lua Sangrenta: vitrais partidos, ferro envelhecido, névoa, velas e detalhes carmesim. Painéis recebem textura de pedra e transições sutis de sombras atravessam a interface.",
-    highlights: ["Interface gótica", "Vitrais e pedra", "Névoa ambiental", "Detalhes carmesim"],
-    preview: "theme",
-    key: "catedral-ultimo-eclipse",
-  },
 ] as const;
 
 export function ShopCatalog({
@@ -214,13 +204,7 @@ export function ShopCatalog({
                   <div className="cosmetic-compare__side">
                     <b>SEM COSMÉTICO</b>
                     <div className="cosmetic-compare__stage is-before">
-                      {cosmetic.preview === "theme" ? (
-                        <div className="cosmetic-theme-demo">
-                          <header><span>Wonderland</span><i /></header>
-                          <nav><i /><i /><i /></nav>
-                          <main><strong /><p /><p /><button /></main>
-                        </div>
-                      ) : previewCharacter ? (
+                      {previewCharacter ? (
                         <CharacterPortraitCard
                           imageUrl={previewCharacter.imageUrl}
                           level={previewCharacter.level}
@@ -240,15 +224,7 @@ export function ShopCatalog({
                   <div className="cosmetic-compare__side is-after">
                     <b>COM COSMÉTICO</b>
                     <div className={`cosmetic-compare__stage is-after is-${cosmetic.preview}`}>
-                      {cosmetic.preview === "theme" ? (
-                        <div className="cosmetic-theme-demo is-bloody-moon">
-                          <i className="cosmetic-theme-moon" />
-                          <header><span>Wonderland</span><i /></header>
-                          <nav><i /><i /><i /></nav>
-                          <main><strong /><p /><p /><button /></main>
-                          <i className="cosmetic-theme-fog" />
-                        </div>
-                      ) : previewCharacter ? (
+                      {previewCharacter ? (
                         <div className={`cosmetic-character-demo is-${cosmetic.preview}`}>
                           <CharacterPortraitCard
                             imageUrl={previewCharacter.imageUrl}
@@ -260,7 +236,6 @@ export function ShopCatalog({
                             cosmetics={{
                               card: cosmetic.preview === "card" ? cosmetic.key : null,
                               aura: cosmetic.preview === "aura" ? cosmetic.key : null,
-                              theme: null,
                             }}
                           />
                         </div>
@@ -309,9 +284,9 @@ export function ShopCatalog({
               <small>CONJUNTO COMPLETO</small>
               <h3>Relíquia do Último Halloween</h3>
               <p>
-                Card + Aura + Tema formam a identidade completa da coleção. Quando usados juntos,
-                os três efeitos compartilham a mesma Lua Sangrenta e criam uma apresentação
-                contínua no perfil.
+                Card + Aura formam a identidade completa da coleção. Quando usados juntos,
+                os dois efeitos compartilham a mesma Lua Sangrenta e criam uma apresentação
+                contínua no personagem.
               </p>
             </div>
             <strong>Preço ainda não definido</strong>

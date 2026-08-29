@@ -6,6 +6,8 @@ import { ItemArtwork } from "@/components/items/item-artwork";
 import { ShopBuyButton } from "@/components/shop/shop-buy-button";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { buyCart, buyItem } from "@/app/loja/actions";
+import { setAdminCosmeticAction } from "@/app/loja/cosmetic-actions";
+import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
 
 export type ShopCatalogItem = {
   id: string;
@@ -51,6 +53,7 @@ const bloodyMoonCosmetics = [
       "Um card de perfil vivo, cercado por lápides, névoa rasteira e uma lua de sangue pulsante. Corvos atravessam o céu em intervalos raros, velas funerárias tremulam nas bordas e o nome do personagem recebe um brilho carmesim que parece respirar.",
     highlights: ["Lua pulsante", "Névoa em movimento", "Corvos e velas", "Moldura funerária"],
     preview: "card",
+    key: "epitafio-lua-carmesim",
   },
   {
     type: "Aura animada",
@@ -60,6 +63,7 @@ const bloodyMoonCosmetics = [
       "Uma aura espectral para envolver o personagem. Almas rubras surgem aos pés, orbitam lentamente o corpo e se desfazem em cinzas; a cada ciclo, um eclipse carmesim se forma atrás do retrato e deixa um rastro sobrenatural.",
     highlights: ["Almas orbitais", "Cinzas flutuantes", "Eclipse espectral", "Pulso carmesim"],
     preview: "aura",
+    key: "procissao-almas-rubras",
   },
   {
     type: "Tema",
@@ -69,6 +73,7 @@ const bloodyMoonCosmetics = [
       "Transforma a experiência visual do perfil em um cemitério gótico sob a Lua Sangrenta: vitrais partidos, ferro envelhecido, névoa, velas e detalhes carmesim. Painéis recebem textura de pedra e transições sutis de sombras atravessam a interface.",
     highlights: ["Interface gótica", "Vitrais e pedra", "Névoa ambiental", "Detalhes carmesim"],
     preview: "theme",
+    key: "catedral-ultimo-eclipse",
   },
 ] as const;
 
@@ -86,6 +91,7 @@ export function ShopCatalog({
     imageUrl: string | null;
     rank: string;
     level: number;
+    cosmetics: CharacterCosmeticLoadout;
   };
 }) {
   const [section, setSection] = useState<ShopSection>("equipment");
@@ -244,16 +250,6 @@ export function ShopCatalog({
                         </div>
                       ) : previewCharacter ? (
                         <div className={`cosmetic-character-demo is-${cosmetic.preview}`}>
-                          <i className="cosmetic-demo-moon" />
-                          <i className="cosmetic-demo-fog cosmetic-demo-fog--one" />
-                          <i className="cosmetic-demo-fog cosmetic-demo-fog--two" />
-                          {cosmetic.preview === "aura" ? (
-                            <>
-                              <i className="cosmetic-demo-soul soul-one">✦</i>
-                              <i className="cosmetic-demo-soul soul-two">✦</i>
-                              <i className="cosmetic-demo-soul soul-three">✦</i>
-                            </>
-                          ) : null}
                           <CharacterPortraitCard
                             imageUrl={previewCharacter.imageUrl}
                             level={previewCharacter.level}
@@ -261,6 +257,11 @@ export function ShopCatalog({
                             rank={previewCharacter.rank}
                             title={null}
                             variant="standard"
+                            cosmetics={{
+                              card: cosmetic.preview === "card" ? cosmetic.key : null,
+                              aura: cosmetic.preview === "aura" ? cosmetic.key : null,
+                              theme: null,
+                            }}
                           />
                         </div>
                       ) : (
@@ -277,9 +278,27 @@ export function ShopCatalog({
                     ))}
                   </ul>
                 </div>
-                <footer>
-                  <span>Parte da coleção</span>
-                  <strong>Cemitério da Lua Sangrenta</strong>
+                <footer className="cosmetic-card__footer">
+                  <div>
+                    <span>Parte da coleção</span>
+                    <strong>Cemitério da Lua Sangrenta</strong>
+                  </div>
+                  <form action={setAdminCosmeticAction}>
+                    <input name="slot" type="hidden" value={cosmetic.preview} />
+                    <input name="key" type="hidden" value={cosmetic.key} />
+                    {previewCharacter?.cosmetics[cosmetic.preview] === cosmetic.key ? (
+                      <>
+                        <input name="remove" type="hidden" value="1" />
+                        <button className="cosmetic-equip is-equipped" type="submit">
+                          ✓ Equipado · Remover
+                        </button>
+                      </>
+                    ) : (
+                      <button className="cosmetic-equip" type="submit">
+                        Equipar cosmético
+                      </button>
+                    )}
+                  </form>
                 </footer>
               </article>
             ))}

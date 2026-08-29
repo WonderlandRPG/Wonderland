@@ -25,6 +25,7 @@ import "./site-experience.css";
 import "./contrast-guard.css";
 import "./experience-polish.css";
 import "./requested-visual-overhaul.css";
+import "./theme-legacy-bridge.css";
 
 export const metadata: Metadata = {
   title: {

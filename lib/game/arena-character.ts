@@ -27,6 +27,7 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
     level: character.level,
     adventureRank: character.adventure_rank,
     imageUrl: character.image_url ?? "",
+    cosmetics: character.cosmetics,
     equippedTitle: equippedTitle
       ? {
           name: equippedTitle.name,

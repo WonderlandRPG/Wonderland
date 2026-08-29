@@ -12,6 +12,7 @@ import { PlayerPresence } from "@/components/player-presence";
  */
 import "./theme-tokens.css";
 import "./visual-contract.css";
+import "./design-tokens.css";
 import "./wonderland-base.css";
 import "./wonderland-repair.css";
 import "./rank-visuals.css";

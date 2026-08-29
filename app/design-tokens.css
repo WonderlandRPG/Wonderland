@@ -1,0 +1,125 @@
+/*
+ * WONDERLAND DESIGN TOKENS
+ * Fonte única de verdade para cores, contraste, espaçamento e superfícies.
+ *
+ * REGRA: temas futuros alteram SOMENTE os tokens --wx-* dentro de um
+ * seletor de tema. Componentes não devem definir uma paleta própria.
+ */
+:root,
+[data-wx-theme="default"] {
+  color-scheme: light;
+
+  --wx-color-canvas: #d5d4bf;
+  --wx-color-canvas-deep: #cfd1bd;
+  --wx-color-surface: #f3e4bc;
+  --wx-color-surface-alt: #ead4a2;
+  --wx-color-surface-raised: #fff4d8;
+  --wx-color-surface-soft: #f6e7bd;
+  --wx-color-surface-inverse: #173f30;
+  --wx-color-surface-inverse-2: #294936;
+
+  --wx-color-text: #2f241d;
+  --wx-color-text-muted: #5b4a3b;
+  --wx-color-text-subtle: #6f5838;
+  --wx-color-on-inverse: #fff0c9;
+  --wx-color-on-inverse-muted: #d9c9a5;
+
+  --wx-color-primary: #234c3a;
+  --wx-color-primary-hover: #315f47;
+  --wx-color-on-primary: #fff3d2;
+  --wx-color-accent: #8b5c1f;
+  --wx-color-accent-hover: #7a4e18;
+  --wx-color-on-accent: #fff7da;
+
+  --wx-color-success: #315f47;
+  --wx-color-on-success: #fff4dc;
+  --wx-color-warning: #765018;
+  --wx-color-on-warning: #fff4dc;
+  --wx-color-danger: #7d4036;
+  --wx-color-on-danger: #fff4dc;
+  --wx-color-info: #315f6b;
+  --wx-color-on-info: #fff4dc;
+
+  --wx-color-input: #fff6dc;
+  --wx-color-input-text: #34261e;
+  --wx-color-input-placeholder: #76624e;
+  --wx-color-focus: #356a50;
+
+  --wx-color-border: #aa8859;
+  --wx-color-border-soft: rgba(91, 65, 39, 0.22);
+  --wx-color-border-strong: #65462f;
+  --wx-color-gold: #b8842f;
+  --wx-color-gold-soft: #ddbd78;
+  --wx-color-wine: #6d3f43;
+  --wx-color-moss: #7c9273;
+  --wx-color-wood: #68472f;
+  --wx-color-wood-dark: #3d291f;
+
+  --wx-shadow-1: 0 8px 22px rgba(43, 31, 20, 0.1);
+  --wx-shadow-2: 0 18px 45px rgba(43, 31, 20, 0.16);
+  --wx-shadow-3: 0 26px 65px rgba(18, 12, 8, 0.28);
+
+  --wx-radius-sm: 9px;
+  --wx-radius-md: 14px;
+  --wx-radius-lg: 18px;
+  --wx-radius-xl: 24px;
+
+  --wx-page-width: 1120px;
+  --wx-page-width-wide: 1240px;
+  --wx-page-gutter: 18px;
+
+  --ink: var(--wx-color-text);
+  --ink-soft: var(--wx-color-text-muted);
+  --forest: var(--wx-color-primary);
+  --forest-2: var(--wx-color-primary-hover);
+  --moss: var(--wx-color-moss);
+  --wine: var(--wx-color-wine);
+  --gold: var(--wx-color-gold);
+  --gold-soft: var(--wx-color-gold-soft);
+  --parchment: var(--wx-color-surface);
+  --parchment-2: var(--wx-color-surface-alt);
+  --paper: var(--wx-color-surface-raised);
+  --wood: var(--wx-color-wood);
+  --wood-dark: var(--wx-color-wood-dark);
+  --line: var(--wx-color-border);
+  --line-soft: var(--wx-color-border-soft);
+  --shadow: var(--wx-shadow-2);
+  --shadow-soft: var(--wx-shadow-1);
+  --radius: var(--wx-radius-lg);
+  --page: var(--wx-page-width);
+}
+
+[data-wx-surface="default"],
+.wx-surface {
+  color: var(--wx-color-text);
+  background: var(--wx-color-surface);
+  border-color: var(--wx-color-border);
+}
+
+[data-wx-surface="raised"],
+.wx-surface-raised {
+  color: var(--wx-color-text);
+  background: var(--wx-color-surface-raised);
+  border-color: var(--wx-color-border);
+}
+
+[data-wx-surface="inverse"],
+.wx-surface-inverse {
+  color: var(--wx-color-on-inverse);
+  background: var(--wx-color-surface-inverse);
+  border-color: color-mix(in srgb, var(--wx-color-gold) 66%, var(--wx-color-surface-inverse));
+}
+
+[data-wx-surface="inverse"] :where(p, small, em),
+.wx-surface-inverse :where(p, small, em) {
+  color: var(--wx-color-on-inverse-muted);
+}
+
+[data-wx-tone="muted"] { color: var(--wx-color-text-muted); }
+[data-wx-tone="danger"] { color: var(--wx-color-danger); }
+[data-wx-tone="success"] { color: var(--wx-color-success); }
+
+:where(a, button, input, select, textarea, [role="button"]):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--wx-color-focus) 72%, white);
+  outline-offset: 3px;
+}

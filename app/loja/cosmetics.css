@@ -1,7 +1,372 @@
-/* Cosmetics storefront route layer */
-.market-page .shop-departments{display:flex!important;gap:8px!important;margin:18px 0 12px!important;padding:7px!important;border:1px solid #8c6b37!important;border-radius:15px!important;background:#ead29a!important}
-.market-page .shop-departments button{flex:0 1 220px!important;min-height:44px!important;padding:8px 14px!important;border:1px solid #9d7d45!important;border-radius:10px!important;background:#f6e5b8!important;color:#3c2d22!important;box-shadow:none!important}.market-page .shop-departments button.is-active{background:#153e2d!important;color:#ffe7a9!important}.market-page .shop-departments button small{margin-left:7px!important;padding:2px 5px!important;border-radius:999px!important;background:#7e2630!important;color:#ffe5d0!important}
-.market-page .cosmetics-preview{display:grid!important;gap:18px!important}.market-page .cosmetics-collection-hero{position:relative!important;display:grid!important;grid-template-columns:minmax(0,1fr) 260px!important;gap:24px!important;align-items:end!important;min-height:330px!important;padding:38px!important;overflow:hidden!important;border:1px solid #a74445!important;border-radius:22px!important;background:radial-gradient(circle at 78% 30%,rgba(196,38,48,.34) 0 9%,transparent 10%),linear-gradient(120deg,#170f17,#25121a 48%,#3a1118)!important;color:#f7e7d0!important;box-shadow:0 25px 55px rgba(32,10,15,.35)!important}.market-page .cosmetics-collection-hero:before{content:"☾"!important;position:absolute!important;right:7%!important;top:-35px!important;font-size:15rem!important;color:rgba(225,51,61,.16)!important}.market-page .cosmetics-collection-hero>div,.market-page .cosmetics-collection-hero>aside{position:relative!important;z-index:1!important}.market-page .cosmetics-collection-hero>div>span{color:#e66668!important;font-size:.68rem!important;font-weight:900!important;letter-spacing:.16em!important}.market-page .cosmetics-collection-hero h2{margin:8px 0 13px!important;color:#ffe7c4!important;font-size:clamp(2.7rem,6vw,5.4rem)!important;line-height:.92!important}.market-page .cosmetics-collection-hero p{margin:0!important;color:#d8c1b2!important;line-height:1.65!important}.market-page .cosmetics-collection-hero aside{display:grid!important;gap:5px!important;padding:17px!important;border:1px solid rgba(221,82,86,.48)!important;border-radius:14px!important;background:rgba(9,5,9,.55)!important}.market-page .cosmetics-collection-hero aside strong{color:#ffe2bd!important}.market-page .cosmetics-collection-hero aside span{color:#baa79d!important}
-.market-page .cosmetics-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}.market-page .cosmetic-card{display:grid!important;grid-template-rows:245px 1fr auto!important;overflow:hidden!important;border:1px solid #74363d!important;border-radius:20px!important;background:linear-gradient(160deg,#28151b,#160e13)!important;color:#ead9c8!important;box-shadow:0 18px 35px rgba(30,11,16,.24)!important}.market-page .cosmetic-card__visual{position:relative!important;display:grid!important;place-items:center!important;overflow:hidden!important;background:radial-gradient(circle at 50% 38%,rgba(190,38,49,.24),transparent 28%),linear-gradient(#211019,#09070a)!important}.market-page .cosmetic-card__visual:after{content:"†  †    †  †"!important;position:absolute!important;bottom:18px!important;color:#070609!important;font-size:2.6rem!important}.market-page .cosmetic-moon{position:absolute!important;top:28px!important;width:112px!important;height:112px!important;border-radius:50%!important;background:radial-gradient(circle at 36% 34%,#f07b72,#b91f31 54%,#67111f)!important;box-shadow:0 0 32px rgba(205,35,50,.55)!important;animation:bloody-moon-pulse 4s ease-in-out infinite!important}.market-page .cosmetic-card__visual>span{position:relative!important;z-index:2!important;display:grid!important;place-items:center!important;width:92px!important;height:112px!important;margin-top:60px!important;border:1px solid rgba(232,185,142,.48)!important;border-radius:46px 46px 12px 12px!important;background:rgba(17,8,13,.62)!important;color:#ffd7a8!important;font-size:2.6rem!important}.market-page .cosmetic-fog{position:absolute!important;z-index:3!important;left:-35%!important;bottom:15px!important;width:170%!important;height:42px!important;border-radius:50%!important;background:rgba(214,201,194,.08)!important;filter:blur(10px)!important;animation:grave-fog 7s linear infinite!important}.market-page .cosmetic-fog--two{bottom:44px!important;animation-duration:10s!important;animation-direction:reverse!important}.market-page .cosmetic-card[data-preview="aura"] .cosmetic-card__visual>span{box-shadow:0 0 0 12px rgba(188,29,47,.07),0 0 42px rgba(220,39,56,.48)!important;animation:soul-aura 2.8s ease-in-out infinite!important}.market-page .cosmetic-card__body{padding:18px!important}.market-page .cosmetic-card__body>small{color:#e45a62!important;font-weight:900!important;text-transform:uppercase!important}.market-page .cosmetic-card__body h3{margin:5px 0!important;color:#ffe4bd!important;font-size:1.55rem!important}.market-page .cosmetic-card__body>b{display:inline-block!important;margin-bottom:10px!important;color:#c9817c!important}.market-page .cosmetic-card__body p{margin:0!important;color:#cbb9aa!important;line-height:1.55!important}.market-page .cosmetic-card__body ul{display:grid!important;grid-template-columns:1fr 1fr!important;gap:5px!important;margin:14px 0 0!important;padding:0!important;list-style:none!important}.market-page .cosmetic-card__body li{color:#e1c6af!important}.market-page .cosmetic-card>footer{display:grid!important;padding:13px 18px!important;border-top:1px solid rgba(177,69,74,.28)!important;background:#100a0e!important}.market-page .cosmetic-card>footer strong{color:#d9a989!important}
-.market-page .cosmetics-bundle{display:flex!important;justify-content:space-between!important;gap:24px!important;align-items:center!important;padding:22px 26px!important;border:1px solid #8c3a42!important;border-radius:18px!important;background:linear-gradient(100deg,#35141d,#160d12)!important;color:#ead8c4!important}.market-page .cosmetics-bundle h3{margin:4px 0!important;color:#ffe1b7!important}.market-page .cosmetics-bundle p{margin:0!important;color:#c9b5a6!important}.market-page .cosmetics-bundle>strong{padding:11px 14px!important;border:1px solid #874047!important;border-radius:999px!important;color:#e8b7a0!important;background:#160a0e!important}
-@keyframes bloody-moon-pulse{50%{transform:scale(1.045);box-shadow:0 0 52px rgba(221,40,55,.7)}}@keyframes grave-fog{50%{transform:translateX(12%)}}@keyframes soul-aura{50%{transform:translateY(-4px)}}@media(max-width:950px){.market-page .cosmetics-grid{grid-template-columns:1fr 1fr!important}.market-page .cosmetics-collection-hero{grid-template-columns:1fr!important}}@media(max-width:650px){.market-page .shop-departments{display:grid!important}.market-page .cosmetics-collection-hero{padding:25px 20px!important}.market-page .cosmetics-grid{grid-template-columns:1fr!important}}
+/* Loja > Cosméticos · Cemitério da Lua Sangrenta */
+.market-page .shop-departments{
+  display:flex;
+  gap:8px;
+  margin:18px 0 12px;
+  padding:7px;
+  border:1px solid var(--wl-border);
+  border-radius:var(--wl-radius-md);
+  background:var(--wl-surface-raised);
+}
+.market-page .shop-departments button{
+  flex:0 1 220px;
+  min-height:44px;
+  padding:8px 14px;
+  border:1px solid var(--wl-border);
+  border-radius:var(--wl-radius-sm);
+  background:var(--wl-surface);
+  color:var(--wl-text);
+  box-shadow:none;
+}
+.market-page .shop-departments button.is-active{
+  border-color:var(--wl-accent);
+  background:var(--wl-accent);
+  color:var(--wl-accent-contrast);
+}
+.market-page .shop-departments button small{
+  margin-left:7px;
+  padding:2px 5px;
+  border-radius:999px;
+  background:var(--wl-blood-deep);
+  color:var(--wl-blood-text);
+  font-size:.52rem;
+}
+
+.market-page .cosmetics-preview{display:grid;gap:18px}
+.market-page .cosmetics-collection-hero{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 260px;
+  gap:24px;
+  align-items:end;
+  min-height:330px;
+  padding:38px;
+  overflow:hidden;
+  border:1px solid var(--wl-blood-border);
+  border-radius:var(--wl-radius-xl);
+  background:
+    radial-gradient(circle at 78% 30%,color-mix(in srgb,var(--wl-blood) 38%,transparent) 0 9%,transparent 10%),
+    linear-gradient(120deg,var(--wl-blood-black),var(--wl-blood-surface) 48%,var(--wl-blood-deep));
+  color:var(--wl-blood-text);
+  box-shadow:var(--wl-shadow);
+}
+.market-page .cosmetics-collection-hero::before{
+  content:"☾";
+  position:absolute;
+  right:7%;
+  top:-35px;
+  font-size:15rem;
+  line-height:1;
+  color:color-mix(in srgb,var(--wl-blood-bright) 18%,transparent);
+}
+.market-page .cosmetics-collection-hero>div,
+.market-page .cosmetics-collection-hero>aside{position:relative;z-index:1}
+.market-page .cosmetics-collection-hero>div>span{
+  color:var(--wl-blood-bright);
+  font-size:.68rem;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+.market-page .cosmetics-collection-hero h2{
+  max-width:720px;
+  margin:8px 0 13px;
+  color:var(--wl-blood-text);
+  font-size:clamp(2.7rem,6vw,5.4rem);
+  line-height:.92;
+}
+.market-page .cosmetics-collection-hero p{
+  max-width:700px;
+  margin:0;
+  color:var(--wl-blood-text-muted);
+  line-height:1.65;
+}
+.market-page .cosmetics-collection-hero aside{
+  display:grid;
+  gap:5px;
+  padding:17px;
+  border:1px solid var(--wl-blood-border);
+  border-radius:var(--wl-radius-md);
+  background:color-mix(in srgb,var(--wl-blood-black) 82%,transparent);
+}
+.market-page .cosmetics-collection-hero aside small{color:var(--wl-blood-bright);font-weight:900}
+.market-page .cosmetics-collection-hero aside strong{color:var(--wl-blood-text);font-size:1.2rem}
+.market-page .cosmetics-collection-hero aside span{color:var(--wl-blood-text-muted);font-size:.72rem}
+
+.market-page .cosmetics-grid{display:grid;gap:18px}
+.market-page .cosmetic-card{
+  overflow:hidden;
+  border:1px solid var(--wl-blood-border);
+  border-radius:var(--wl-radius-xl);
+  background:linear-gradient(160deg,var(--wl-blood-surface),var(--wl-blood-black));
+  color:var(--wl-blood-text);
+  box-shadow:var(--wl-shadow-soft);
+}
+.market-page .cosmetic-compare{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);
+  gap:12px;
+  align-items:stretch;
+  padding:18px;
+  background:color-mix(in srgb,var(--wl-blood-black) 84%,var(--wl-surface-dark));
+}
+.market-page .cosmetic-compare__side{
+  display:grid;
+  grid-template-rows:auto 1fr;
+  gap:8px;
+  min-width:0;
+}
+.market-page .cosmetic-compare__side>b{
+  color:var(--wl-blood-text-muted);
+  font-size:.62rem;
+  text-align:center;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.market-page .cosmetic-compare__side.is-after>b{color:var(--wl-blood-bright)}
+.market-page .cosmetic-compare__arrow{
+  display:grid;
+  place-items:center;
+  color:var(--wl-blood-gold);
+  font-size:2.2rem;
+  font-weight:900;
+}
+.market-page .cosmetic-compare__stage{
+  position:relative;
+  display:grid;
+  place-items:center;
+  min-height:390px;
+  padding:28px;
+  overflow:hidden;
+  border:1px solid var(--wl-blood-border);
+  border-radius:var(--wl-radius-md);
+  background:var(--wl-surface-raised);
+}
+.market-page .cosmetic-compare__stage.is-after{
+  background:
+    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--wl-blood) 24%,transparent),transparent 34%),
+    linear-gradient(var(--wl-blood-surface),var(--wl-blood-black));
+}
+.market-page .cosmetic-compare__stage [data-character-card="official"]{
+  width:min(100%,245px);
+  min-height:0;
+  z-index:3;
+}
+.market-page .cosmetic-character-demo{
+  position:relative;
+  display:grid;
+  place-items:center;
+  width:min(100%,280px);
+}
+.market-page .cosmetic-character-demo.is-card [data-character-card="official"]{
+  border-color:var(--wl-blood-gold);
+  box-shadow:
+    0 0 0 2px var(--wl-blood-deep),
+    0 0 24px color-mix(in srgb,var(--wl-blood-bright) 55%,transparent),
+    var(--wl-shadow);
+  animation:bloody-card-breathe 3.8s ease-in-out infinite alternate;
+}
+.market-page .cosmetic-demo-moon{
+  position:absolute;
+  z-index:1;
+  top:-18px;
+  right:-12px;
+  width:118px;
+  height:118px;
+  border-radius:50%;
+  background:radial-gradient(circle at 36% 34%,var(--wl-blood-text),var(--wl-blood-bright) 18%,var(--wl-blood) 58%,var(--wl-blood-deep));
+  box-shadow:0 0 42px color-mix(in srgb,var(--wl-blood-bright) 62%,transparent);
+  animation:bloody-moon-pulse 4s ease-in-out infinite;
+}
+.market-page .cosmetic-demo-fog{
+  position:absolute;
+  z-index:5;
+  left:-28%;
+  bottom:6%;
+  width:156%;
+  height:48px;
+  border-radius:50%;
+  background:var(--wl-blood-fog);
+  filter:blur(12px);
+  animation:grave-fog 7s linear infinite alternate;
+  pointer-events:none;
+}
+.market-page .cosmetic-demo-fog--two{bottom:19%;animation-duration:10s;animation-direction:alternate-reverse}
+.market-page .cosmetic-character-demo.is-aura [data-character-card="official"]{
+  box-shadow:
+    0 0 24px color-mix(in srgb,var(--wl-blood-bright) 56%,transparent),
+    0 0 54px color-mix(in srgb,var(--wl-blood) 36%,transparent),
+    var(--wl-shadow-soft);
+}
+.market-page .cosmetic-demo-soul{
+  position:absolute;
+  z-index:6;
+  color:var(--wl-blood-text);
+  font-size:1.55rem;
+  text-shadow:0 0 14px var(--wl-blood-bright);
+  animation:soul-orbit 4.6s ease-in-out infinite;
+  pointer-events:none;
+}
+.market-page .soul-one{left:-2%;top:28%}
+.market-page .soul-two{right:-4%;top:48%;animation-delay:.8s}
+.market-page .soul-three{left:12%;bottom:3%;animation-delay:1.5s}
+
+.market-page .cosmetic-theme-demo{
+  position:relative;
+  width:min(100%,360px);
+  aspect-ratio:16/11;
+  overflow:hidden;
+  border:1px solid var(--wl-border);
+  border-radius:var(--wl-radius-md);
+  background:var(--wl-surface-raised);
+  box-shadow:var(--wl-shadow-soft);
+}
+.market-page .cosmetic-theme-demo header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  height:22%;
+  padding:0 8%;
+  background:var(--wl-accent);
+}
+.market-page .cosmetic-theme-demo header span{
+  width:34%;
+  height:13px;
+  overflow:hidden;
+  color:transparent;
+  border-radius:999px;
+  background:var(--wl-gold-soft);
+}
+.market-page .cosmetic-theme-demo header i{width:18%;height:22px;border-radius:7px;background:var(--wl-surface)}
+.market-page .cosmetic-theme-demo nav{display:flex;gap:6px;padding:5% 8% 2%}
+.market-page .cosmetic-theme-demo nav i{width:16%;height:9px;border-radius:999px;background:var(--wl-border)}
+.market-page .cosmetic-theme-demo main{display:grid;gap:8px;padding:4% 8%}
+.market-page .cosmetic-theme-demo main strong{display:block;width:58%;height:23px;border-radius:6px;background:var(--wl-text)}
+.market-page .cosmetic-theme-demo main p{width:82%;height:9px;margin:0;border-radius:999px;background:var(--wl-text-muted)}
+.market-page .cosmetic-theme-demo main p+ p{width:66%}
+.market-page .cosmetic-theme-demo main button{width:42%;height:27px;border:0;border-radius:7px;background:var(--wl-accent)}
+.market-page .cosmetic-theme-demo.is-bloody-moon{
+  border-color:var(--wl-blood-border);
+  background:
+    radial-gradient(circle at 80% 16%,color-mix(in srgb,var(--wl-blood-bright) 24%,transparent),transparent 22%),
+    linear-gradient(var(--wl-blood-surface),var(--wl-blood-black));
+  box-shadow:0 0 35px color-mix(in srgb,var(--wl-blood) 30%,transparent);
+}
+.market-page .cosmetic-theme-demo.is-bloody-moon header{background:linear-gradient(90deg,var(--wl-blood-black),var(--wl-blood-deep))}
+.market-page .cosmetic-theme-demo.is-bloody-moon header span{background:var(--wl-blood-gold)}
+.market-page .cosmetic-theme-demo.is-bloody-moon header i{background:var(--wl-blood-surface-raised)}
+.market-page .cosmetic-theme-demo.is-bloody-moon nav i{background:var(--wl-blood-border)}
+.market-page .cosmetic-theme-demo.is-bloody-moon main strong{background:var(--wl-blood-text)}
+.market-page .cosmetic-theme-demo.is-bloody-moon main p{background:var(--wl-blood-text-muted)}
+.market-page .cosmetic-theme-demo.is-bloody-moon main button{background:var(--wl-blood)}
+.market-page .cosmetic-theme-moon{
+  position:absolute;
+  right:8%;
+  top:18%;
+  width:62px;
+  height:62px;
+  border-radius:50%;
+  background:var(--wl-blood);
+  box-shadow:0 0 24px color-mix(in srgb,var(--wl-blood-bright) 52%,transparent);
+  animation:bloody-moon-pulse 4s ease-in-out infinite;
+}
+.market-page .cosmetic-theme-fog{
+  position:absolute;
+  left:-20%;
+  bottom:8%;
+  width:140%;
+  height:35px;
+  border-radius:50%;
+  background:var(--wl-blood-fog);
+  filter:blur(10px);
+  animation:grave-fog 8s ease-in-out infinite alternate;
+}
+
+.market-page .cosmetic-card__body{padding:20px 22px}
+.market-page .cosmetic-card__body>small{
+  color:var(--wl-blood-bright);
+  font-size:.62rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+}
+.market-page .cosmetic-card__body h3{margin:5px 0;color:var(--wl-blood-text);font-size:1.65rem;line-height:1.05}
+.market-page .cosmetic-card__body>b{display:inline-block;margin-bottom:10px;color:var(--wl-blood-bright);font-size:.7rem}
+.market-page .cosmetic-card__body p{margin:0;color:var(--wl-blood-text-muted);line-height:1.55}
+.market-page .cosmetic-card__body ul{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin:16px 0 0;
+  padding:0;
+  list-style:none;
+}
+.market-page .cosmetic-card__body li{
+  padding:7px 9px;
+  border:1px solid var(--wl-blood-border);
+  border-radius:999px;
+  color:var(--wl-blood-text);
+  font-size:.68rem;
+  text-align:center;
+}
+.market-page .cosmetic-card>footer{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px 22px;
+  border-top:1px solid var(--wl-blood-border);
+  background:var(--wl-blood-black);
+}
+.market-page .cosmetic-card>footer span{color:var(--wl-blood-text-muted);font-size:.58rem;text-transform:uppercase}
+.market-page .cosmetic-card>footer strong{color:var(--wl-blood-gold);font-size:.76rem}
+
+.market-page .cosmetics-bundle{
+  display:flex;
+  justify-content:space-between;
+  gap:24px;
+  align-items:center;
+  padding:22px 26px;
+  border:1px solid var(--wl-blood-border);
+  border-radius:var(--wl-radius-lg);
+  background:linear-gradient(100deg,var(--wl-blood-surface-raised),var(--wl-blood-black));
+  color:var(--wl-blood-text);
+}
+.market-page .cosmetics-bundle small{color:var(--wl-blood-bright);font-weight:900}
+.market-page .cosmetics-bundle h3{margin:4px 0;color:var(--wl-blood-text);font-size:1.7rem}
+.market-page .cosmetics-bundle p{max-width:760px;margin:0;color:var(--wl-blood-text-muted)}
+.market-page .cosmetics-bundle>strong{
+  flex:0 0 auto;
+  padding:11px 14px;
+  border:1px solid var(--wl-blood-border);
+  border-radius:999px;
+  color:var(--wl-blood-gold);
+  background:var(--wl-blood-black);
+}
+
+@keyframes bloody-moon-pulse{50%{transform:scale(1.055);filter:brightness(1.12)}}
+@keyframes grave-fog{50%{transform:translateX(11%)}}
+@keyframes bloody-card-breathe{to{transform:translateY(-2px);filter:brightness(1.05)}}
+@keyframes soul-orbit{0%,100%{transform:translate(0,8px) scale(.8);opacity:.45}50%{transform:translate(8px,-18px) scale(1.08);opacity:1}}
+
+@media(prefers-reduced-motion:reduce){
+  .market-page .cosmetic-demo-moon,
+  .market-page .cosmetic-demo-fog,
+  .market-page .cosmetic-demo-soul,
+  .market-page .cosmetic-character-demo.is-card [data-character-card="official"],
+  .market-page .cosmetic-theme-moon,
+  .market-page .cosmetic-theme-fog{animation:none}
+}
+@media(max-width:900px){
+  .market-page .cosmetic-compare{grid-template-columns:1fr}
+  .market-page .cosmetic-compare__arrow{transform:rotate(90deg)}
+  .market-page .cosmetic-card__body ul{grid-template-columns:1fr 1fr}
+  .market-page .cosmetics-collection-hero{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+  .market-page .shop-departments{display:grid}
+  .market-page .shop-departments button{width:100%;max-width:none}
+  .market-page .cosmetics-collection-hero{min-height:0;padding:25px 20px}
+  .market-page .cosmetic-compare{padding:12px}
+  .market-page .cosmetic-compare__stage{min-height:330px;padding:18px}
+  .market-page .cosmetic-card__body ul{grid-template-columns:1fr}
+  .market-page .cosmetics-bundle{align-items:flex-start;flex-direction:column}
+}

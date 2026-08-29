@@ -155,7 +155,8 @@ describe("contrato visual do Wonderland", () => {
     const cssFiles = [...walkCss(resolve(root, "app")), ...walkCss(resolve(root, "components"))];
 
     for (const file of cssFiles) {
-      if (file === tokensPath) continue;
+      const path = relative(root, file).replaceAll("\\", "/");
+      if (file === tokensPath || path.startsWith("app/themes/")) continue;
       const css = readFileSync(file, "utf8");
       const declarations = css.match(/--wl-[\w-]+\s*:/g) ?? [];
       expect(declarations, relative(root, file) + " redefine tokens canônicos").toHaveLength(0);

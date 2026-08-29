@@ -9,3 +9,29 @@
 .ranking-player-cell>span{min-width:0}
 .ranking-player-cell>span>b,.ranking-player-cell>span>small{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:620px){.ranking-player-cell{grid-template-columns:78px minmax(0,1fr)!important}}
+
+
+/* Cosméticos do card precisam permanecer visíveis no Ranking.
+   Card, Aura e Borda são parte pública da identidade do personagem. */
+.ranking-table>a,
+.ranking-player-cell,
+.ranking-player-cell>[data-character-card='official'],
+.ranking-podium__place,
+.ranking-podium__portrait,
+.official-ranking-card-host,
+.duelist-roll__entry,
+.duelist-roll__identity,
+.official-pvp-card-host{
+  overflow:visible!important;
+}
+
+.ranking-player-cell>[data-character-card='official']{
+  position:relative;
+  z-index:2;
+}
+
+.ranking-player-cell>[data-character-card='official'][data-card-cosmetic],
+.ranking-player-cell>[data-character-card='official'][data-aura-cosmetic],
+.ranking-player-cell>[data-character-card='official'][data-border-cosmetic]{
+  z-index:4;
+}

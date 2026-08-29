@@ -8,22 +8,10 @@
  * It intentionally replaces the former stack of fixes/hotfixes.
  */
 
-:root{
-  --wl-page:1240px;
-  --wl-ink:#35291f;
-  --wl-muted:#6d604f;
-  --wl-paper:#f4e6bf;
-  --wl-paper-soft:#fff2d2;
-  --wl-paper-deep:#dfc791;
-  --wl-forest:#315f47;
-  --wl-forest-dark:#183e2e;
-  --wl-wood:#65472f;
-  --wl-line:#a8895e;
-  --wl-shadow:0 14px 34px rgba(47,33,20,.16);
-}
+/* Paleta local removida: este arquivo consome apenas theme-tokens.css. */
 
 html,body{min-width:0;overflow-x:hidden}
-body{color:var(--wl-ink);background-color:#d9d5c3;background-attachment:fixed;background-position:center;background-size:cover}
+body{color:var(--wl-text);background-color:#d9d5c3;background-attachment:fixed;background-position:center;background-size:cover}
 body:has(.sheet-page),body:has(.character-creator),body:has(.profile-page){background-image:linear-gradient(rgba(246,238,214,.84),rgba(222,221,202,.90)),url('/backgrounds/character.svg')}
 body:has(.market-page){background-image:linear-gradient(rgba(246,237,211,.84),rgba(221,219,199,.91)),url('/backgrounds/market.svg')}
 body:has(.realms-page),body:has(.kingdom-current-page){background-image:linear-gradient(rgba(245,237,214,.82),rgba(219,221,202,.91)),url('/backgrounds/realms.svg')}
@@ -41,8 +29,8 @@ main{max-width:none}
 .arena-page__inner,
 .market-shell,
 .world-lore-shell{
-  width:min(var(--wl-page),calc(100% - 32px));
-  max-width:var(--wl-page);
+  width:min(var(--wl-page-wide),calc(100% - 32px));
+  max-width:var(--wl-page-wide);
   margin-inline:auto;
   min-width:0;
 }
@@ -52,7 +40,7 @@ button,input,select,textarea{max-width:100%}
 img{max-width:100%}
 
 /* Keep the shared HUD predictable on every route. */
-.player-nav,.site-header{width:min(var(--wl-page),calc(100% - 32px));max-width:var(--wl-page);margin-inline:auto;z-index:100}
+.player-nav,.site-header{width:min(var(--wl-page-wide),calc(100% - 32px));max-width:var(--wl-page-wide);margin-inline:auto;z-index:100}
 .player-nav__links{min-width:0}
 .player-nav__world-menu{position:relative;z-index:120}
 .player-nav__world-backdrop{position:fixed!important;inset:0!important;z-index:110!important;width:100vw!important;height:100vh!important;opacity:0!important;pointer-events:auto!important}
@@ -84,7 +72,7 @@ img{max-width:100%}
   grid-template-areas:"head head head" "left hero right"!important;
   gap:18px!important;
   padding:22px!important;
-  border:1px solid var(--wl-line)!important;
+  border:1px solid var(--wl-border)!important;
   border-radius:22px!important;
   background:rgba(244,229,191,.96)!important;
   box-shadow:var(--wl-shadow)!important;
@@ -161,7 +149,7 @@ img{max-width:100%}
 /* ---------- REALMS / MAP ---------- */
 .realms-page{width:100%;max-width:none;margin:0;padding-bottom:80px}
 .realms-page>.player-nav{margin-inline:auto}
-.world-lore-shell{width:min(var(--wl-page),calc(100% - 32px));max-width:var(--wl-page);margin-inline:auto}
+.world-lore-shell{width:min(var(--wl-page-wide),calc(100% - 32px));max-width:var(--wl-page-wide);margin-inline:auto}
 .realms-hero{width:100%;min-width:0}
 .world-map--illustrated{position:relative;width:100%;min-height:620px;overflow:hidden;border:7px solid #67482e;border-radius:18px;background:#1d2d29;box-shadow:var(--wl-shadow)}
 .world-map__painting{position:absolute!important;inset:12px!important;background:linear-gradient(rgba(7,17,18,.05),rgba(7,17,18,.18)),url('/images/kingdoms/wonderland-map.webp') center/cover no-repeat!important;filter:brightness(.92) saturate(.94)!important;border-radius:10px}
@@ -180,7 +168,7 @@ img{max-width:100%}
 /* ---------- ARENA ---------- */
 .arena-page{width:100%;max-width:none;margin:0;padding-bottom:80px}
 .arena-page>.player-nav{margin-inline:auto}
-.arena-page__inner{width:min(var(--wl-page),calc(100% - 32px));max-width:var(--wl-page);margin-inline:auto}
+.arena-page__inner{width:min(var(--wl-page-wide),calc(100% - 32px));max-width:var(--wl-page-wide);margin-inline:auto}
 .arena-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .arena-mode-card,.arena-mode-locked{min-width:0}
 .dungeon-party-panel{min-width:0}

@@ -1,108 +1,97 @@
-/* Cosméticos globais do personagem ativo. Escopo fechado em .site-cosmetic-shell para evitar vazamento de contraste. */
+/* Cosméticos globais do personagem ativo. */
+body:has(.site-cosmetic-shell[data-site-background="cemiterio-lua-sangrenta"]){
+  background-image:none!important;
+  background:
+    radial-gradient(circle at 82% 9%,rgba(241,83,49,.5) 0 4.8%,rgba(122,27,49,.31) 5.2% 8.5%,transparent 12.5%),
+    radial-gradient(ellipse at 50% 100%,rgba(113,151,128,.16),transparent 42%),
+    linear-gradient(180deg,#08050d 0%,#120b17 32%,#101713 62%,#070b09 100%)!important;
+  background-attachment:fixed!important;
+  color:#efe4d3!important
+}
+body:has(.site-cosmetic-shell[data-site-theme="noite-de-halloween"]){
+  --ink:#f2e5d2;
+  --ink-soft:#cbb8a6;
+  --forest:#73d4ad;
+  --forest-2:#3f8d71;
+  --moss:#789b86;
+  --wine:#9a577b;
+  --gold:#dc8b43;
+  --gold-soft:#f0b66a;
+  --parchment:#28172e;
+  --parchment-2:#1b2922;
+  --paper:#211626;
+  --wood:#392037;
+  --wood-dark:#140c18;
+  --line:#764c68;
+  --line-soft:rgba(171,93,138,.32);
+  --shadow:0 18px 45px rgba(5,2,8,.36);
+  --shadow-soft:0 8px 22px rgba(5,2,8,.24);
+  color:#f2e5d2!important
+}
+
 .site-cosmetic-shell{min-height:100vh;position:relative;isolation:isolate}
 .site-cosmetic-shell__atmosphere{position:fixed;inset:0;z-index:-3;pointer-events:none;opacity:0}
-
-.site-cosmetic-shell[data-site-background="cemiterio-lua-sangrenta"]{
-  background:
-    radial-gradient(circle at 82% 9%,rgba(241,83,49,.42) 0 4.6%,rgba(120,28,49,.28) 5% 8%,transparent 12%),
-    linear-gradient(180deg,#0b0710 0%,#140d18 28%,#111914 62%,#090e0b 100%);
-  color:#efe4d3
-}
 .site-cosmetic-shell[data-site-background="cemiterio-lua-sangrenta"]::before{
   content:"";position:fixed;inset:0;z-index:-4;pointer-events:none;
   background:
-    radial-gradient(ellipse at 50% 92%,rgba(188,223,201,.13),transparent 43%),
-    linear-gradient(90deg,transparent 0 7%,rgba(5,7,6,.7) 7.5% 8.4%,transparent 8.8% 16%,rgba(5,7,6,.5) 16.4% 17.2%,transparent 17.6% 100%),
-    linear-gradient(180deg,transparent 0 58%,rgba(0,0,0,.25) 100%);
+    linear-gradient(90deg,transparent 0 7%,rgba(3,4,4,.62) 7.4% 8.2%,transparent 8.7% 18%,rgba(3,4,4,.45) 18.4% 19.2%,transparent 19.7% 100%),
+    linear-gradient(180deg,transparent 0 58%,rgba(0,0,0,.28) 100%);
 }
 .site-cosmetic-shell[data-site-background="cemiterio-lua-sangrenta"] .site-cosmetic-shell__atmosphere{
-  opacity:1;
-  background:
-    radial-gradient(circle at 8% 74%,rgba(105,255,214,.14) 0 1.5%,transparent 4%),
-    radial-gradient(circle at 91% 68%,rgba(195,118,255,.13) 0 1.8%,transparent 4%),
-    radial-gradient(ellipse at 50% 100%,rgba(159,194,174,.14),transparent 46%);
-  animation:siteMistDrift 8s ease-in-out infinite alternate
+  opacity:1;background:radial-gradient(circle at 8% 74%,rgba(105,255,214,.15) 0 1.5%,transparent 4%),radial-gradient(circle at 91% 68%,rgba(195,118,255,.14) 0 1.8%,transparent 4%),radial-gradient(ellipse at 50% 100%,rgba(159,194,174,.16),transparent 46%);animation:siteMistDrift 8s ease-in-out infinite alternate
 }
 
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"]{
-  --site-ink:#f3e7d7;
-  --site-muted:#cdbdaa;
-  --site-gold:#df9650;
-  --site-purple:#9b60c8;
-  --site-green:#65d2a8;
-  --site-panel:#201523;
-  --site-panel-2:#16231d;
-  --site-border:#71445f;
-  color:#f3e7d7
+  --site-ink:#f3e7d7;--site-muted:#cdbdaa;--site-gold:#df9650;--site-purple:#9b60c8;--site-green:#65d2a8;--site-panel:#201523;--site-panel-2:#16231d;--site-border:#71445f;color:#f3e7d7
 }
 
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(
-  .page-container,.market-shell,.admin-content,.player-profile,.ranking-shell,.arena-shell,
-  .sheet-section,.character-progress-strip,.market-hero,.cosmetic-item,.account-card,.profile-card,
-  .ranking-card,.battle-panel,.arena-panel,.inventory-hud,.shop-panel,.modal-card,.panel,.card
-){
-  border-color:rgba(126,72,102,.64)!important;
-}
+  .player-nav,.market-hero,.market-tabs,.sheet-tabs,.character-command-hero,.character-progress-strip,
+  .sheet-section,.sheet-stat-grid article,.sheet-attributes article,.combat-formulas article,.sheet-lore-block article,
+  .cosmetic-item,.shop-purchase-notice,.account-notice,.inventory-hud,.inventory-command__loadout,
+  .ranking-page section,.champions-hall section,.arena-page section,.mission-page section,.presence-page section,
+  .public-character-page section,.characters-page section,.profile-card,.account-card,.panel,.modal-card
+){border-color:rgba(126,72,102,.7)!important}
 
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(
-  .sheet-section,.character-progress-strip,.cosmetic-item,.account-card,.profile-card,.ranking-card,
-  .battle-panel,.arena-panel,.inventory-hud,.shop-panel,.modal-card,.panel
+  .market-hero,.character-command-hero,.character-progress-strip,.sheet-section,.sheet-stat-grid article,.sheet-attributes article,
+  .combat-formulas article,.sheet-lore-block article,.cosmetic-item,.inventory-hud,.inventory-command__loadout,
+  .ranking-page section,.champions-hall section,.arena-page section,.mission-page section,.presence-page section,
+  .public-character-page section,.characters-page section,.profile-card,.account-card,.panel,.modal-card
 ){
   background:linear-gradient(145deg,rgba(32,21,35,.97),rgba(21,35,29,.96))!important;
-  color:#f0e4d3!important;
-  box-shadow:0 18px 38px rgba(5,2,8,.28),inset 0 0 0 1px rgba(224,126,72,.07)!important
+  color:#f0e4d3!important;box-shadow:0 18px 38px rgba(5,2,8,.28),inset 0 0 0 1px rgba(224,126,72,.07)!important
 }
 
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(h1,h2,h3,h4,strong,b){color:#fff0d6}
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(p,li,dd,span,label){border-color:inherit}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .player-nav{
+  background:linear-gradient(90deg,#1a0f20,#13251c 58%,#2c1718)!important;color:#fff0d6!important;
+  border-color:#7e4a69!important;box-shadow:0 12px 28px rgba(5,2,8,.34)!important
+}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.brand-mark,.player-nav a,.player-nav button){color:#f6e7d1!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.market-tabs,.sheet-tabs){background:rgba(22,13,27,.94)!important;border-color:#774a64!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.market-tabs a,.sheet-tabs a){color:#d8c6b5!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.market-tabs a.is-active,.sheet-tabs a.is-active){background:linear-gradient(135deg,#7a3d2c,#633171)!important;color:#fff1d7!important}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(h1,h2,h3,h4,strong,b){color:#fff0d6!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(p,li,dd,label){color:#e1d2c0!important}
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.eyebrow,dt,small,.muted,.subtitle){color:#d9a06a!important}
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] a:not(.button){color:#f2d8b3}
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] a:not(.button):hover{color:#fff2d5}
 
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(input,select,textarea){
-  border-color:#6e4a6a!important;background:#120d16!important;color:#f5e9d8!important
-}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(input,select,textarea){border-color:#6e4a6a!important;background:#120d16!important;color:#f5e9d8!important}
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(input,select,textarea)::placeholder{color:#9f8f83!important}
-
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--primary{
-  border-color:#a75a35!important;background:linear-gradient(180deg,#d77a36,#9b4c22)!important;color:#fff4dc!important;
-  box-shadow:0 8px 18px rgba(132,52,28,.28),inset 0 1px rgba(255,220,166,.2)!important
-}
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--dark{
-  border-color:#70496b!important;background:linear-gradient(180deg,#37203e,#21162a)!important;color:#f7e9d4!important
-}
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--secondary{
-  border-color:#397860!important;background:linear-gradient(180deg,#27634f,#183f34)!important;color:#efffe9!important
-}
-
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(
-  .player-nav,.site-nav,.navbar,.admin-sidebar,.market-tabs,.sheet-tabs
-){
-  border-color:#774a64!important;background:linear-gradient(90deg,#1c1021,#14241c 58%,#2b1718)!important;
-  color:#f5e8d5!important;box-shadow:0 12px 28px rgba(5,2,8,.28)!important
-}
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.market-tabs a,.sheet-tabs a){color:#d8c6b5!important}
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.market-tabs a.is-active,.sheet-tabs a.is-active){
-  background:linear-gradient(135deg,#7a3d2c,#633171)!important;color:#fff1d7!important
-}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--primary{border-color:#a75a35!important;background:linear-gradient(180deg,#d77a36,#9b4c22)!important;color:#fff4dc!important;box-shadow:0 8px 18px rgba(132,52,28,.28),inset 0 1px rgba(255,220,166,.2)!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--dark{border-color:#70496b!important;background:linear-gradient(180deg,#37203e,#21162a)!important;color:#f7e9d4!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--secondary{border-color:#397860!important;background:linear-gradient(180deg,#27634f,#183f34)!important;color:#efffe9!important}
 
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(table,thead,tbody,tr,td,th){border-color:rgba(119,75,104,.5)!important}
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] th{background:#2a1b2f!important;color:#f2d5ae!important}
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] td{background:rgba(27,22,29,.9)!important;color:#eadfce!important}
-
-.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.account-notice,.shop-purchase-notice){
-  border-color:#7d526e!important;background:linear-gradient(135deg,#2c1d32,#1b2b24)!important;color:#f6e8d5!important
-}
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.is-success,.success){color:#a5f2ce!important}
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.is-error,.error,.is-warning){color:#ffc6a8!important}
 
 .site-cosmetic-shell[data-site-theme="noite-de-halloween"][data-site-background="cemiterio-lua-sangrenta"]::after{
-  content:"";position:fixed;left:0;right:0;bottom:0;height:150px;z-index:-2;pointer-events:none;
-  background:
-    radial-gradient(ellipse at 12% 100%,rgba(255,99,28,.14),transparent 13%),
-    radial-gradient(ellipse at 26% 100%,rgba(143,71,184,.16),transparent 14%),
-    radial-gradient(ellipse at 78% 100%,rgba(255,108,31,.12),transparent 13%),
-    linear-gradient(180deg,transparent,rgba(0,0,0,.32));
+  content:"";position:fixed;left:0;right:0;bottom:0;height:160px;z-index:-2;pointer-events:none;background:radial-gradient(ellipse at 12% 100%,rgba(255,99,28,.16),transparent 13%),radial-gradient(ellipse at 26% 100%,rgba(143,71,184,.18),transparent 14%),radial-gradient(ellipse at 78% 100%,rgba(255,108,31,.14),transparent 13%),linear-gradient(180deg,transparent,rgba(0,0,0,.36))
 }
 
 @keyframes siteMistDrift{from{transform:translate3d(-1.5%,0,0) scale(1);opacity:.65}to{transform:translate3d(1.5%,-1%,0) scale(1.03);opacity:1}}

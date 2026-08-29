@@ -35,3 +35,14 @@
 .ranking-player-cell>[data-character-card='official'][data-border-cosmetic]{
   z-index:4;
 }
+
+
+/* Reserva espaço visual para cosméticos externos no card compacto. */
+.ranking-player-cell:has([data-border-cosmetic]),
+.ranking-player-cell:has([data-aura-cosmetic]){
+  grid-template-columns:102px minmax(0,1fr)!important;
+}
+.duelist-roll__identity:has([data-border-cosmetic]),
+.duelist-roll__identity:has([data-aura-cosmetic]){
+  grid-template-columns:96px minmax(0,1fr)!important;
+}

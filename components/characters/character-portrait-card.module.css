@@ -37,7 +37,8 @@
    CEMITÉRIO DA LUA SANGRENTA · COSMÉTICOS REAIS DO CARD
    ========================================================= */
 .cosmeticCardFx,
-.cosmeticAuraFx{
+.cosmeticAuraFx,
+.cosmeticBorderFx{
   position:absolute;
   pointer-events:none;
   opacity:0;
@@ -54,6 +55,14 @@
   z-index:11;
   inset:-16%;
   overflow:visible;
+}
+
+.cosmeticBorderFx{
+  z-index:12;
+  inset:-6% -16% -7%;
+  background:center/100% 100% no-repeat;
+  filter:drop-shadow(0 7px 10px rgba(13,2,6,.72)) drop-shadow(0 0 10px rgba(188,31,48,.32));
+  transform-origin:center;
 }
 
 /* CARD ANIMADO · Epitáfio da Lua Carmesim */
@@ -436,6 +445,79 @@
   .card[data-card-cosmetic='epitafio-lua-carmesim'] .cardFogTwo,
   .card[data-aura-cosmetic='procissao-almas-rubras'] .soul,
   .card[data-aura-cosmetic='procissao-almas-rubras'] .ashField{
+    animation:none;
+  }
+}
+
+
+/* BORDA · Pórtico da Lua Sangrenta
+   Asset real enviado para a coleção, independente do Card e da Aura. */
+.card[data-border-cosmetic='portico-lua-sangrenta']{
+  overflow:visible;
+}
+
+.card[data-border-cosmetic='portico-lua-sangrenta'] .image{
+  overflow:hidden;
+  border-radius:inherit;
+}
+
+.card[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
+  opacity:1;
+  background-image:url('/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta.png');
+  animation:borderBloodBreath 4.6s ease-in-out infinite alternate;
+}
+
+.card[data-border-cosmetic='portico-lua-sangrenta'] .topMeta,
+.card[data-border-cosmetic='portico-lua-sangrenta'] .titleMeta,
+.card[data-border-cosmetic='portico-lua-sangrenta'] .overlay{
+  z-index:14;
+}
+
+/* No Ranking o card tem só 74px: os efeitos precisam continuar legíveis. */
+.compact[data-card-cosmetic='epitafio-lua-carmesim']{
+  border-color:#d74655;
+  box-shadow:
+    0 0 0 1px #4a0e19,
+    0 0 9px rgba(231,68,83,.78),
+    0 5px 12px rgba(18,4,9,.55);
+}
+.compact[data-card-cosmetic='epitafio-lua-carmesim'] .bloodMoon{
+  top:4%;
+  right:3%;
+  width:44%;
+  opacity:.96;
+}
+.compact[data-card-cosmetic='epitafio-lua-carmesim'] .graveyard{
+  height:31%;
+}
+.compact[data-card-cosmetic='epitafio-lua-carmesim'] .candleOne,
+.compact[data-card-cosmetic='epitafio-lua-carmesim'] .candleTwo{
+  width:2px;
+  height:7px;
+}
+.compact[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx{
+  inset:-20%;
+}
+.compact[data-aura-cosmetic='procissao-almas-rubras'] .soul{
+  width:14px;
+  height:22px;
+  filter:drop-shadow(0 0 4px rgba(255,126,132,.95)) drop-shadow(0 0 7px rgba(209,42,63,.78));
+}
+.compact[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
+  inset:-6% -17% -7%;
+  filter:drop-shadow(0 3px 4px rgba(13,2,6,.76)) drop-shadow(0 0 5px rgba(221,49,65,.55));
+}
+:global(.ranking-character-card)[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
+  inset:-6% -16% -7%;
+}
+
+@keyframes borderBloodBreath{
+  from{filter:drop-shadow(0 7px 10px rgba(13,2,6,.66)) drop-shadow(0 0 7px rgba(188,31,48,.24))}
+  to{filter:drop-shadow(0 8px 12px rgba(13,2,6,.78)) drop-shadow(0 0 14px rgba(229,55,69,.48))}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .card[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
     animation:none;
   }
 }

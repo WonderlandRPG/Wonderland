@@ -327,6 +327,7 @@ export default async function CharacterSheetPage({
                 imageUrl: character.image_url,
                 rank: character.adventure_rank,
                 level: character.level,
+                cosmetics: character.cosmetics,
               }}
               slots={equipmentSlots.map((slot) => {
                 const item = character.inventory.find((entry) => entry.equippedSlots.includes(slot.key));

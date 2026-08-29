@@ -10,7 +10,7 @@ import {
 const themeStorageKey = "wonderland:theme";
 
 function applyTheme(theme: ThemeName) {
-  document.documentElement.dataset.theme = theme;
+  document.documentElement.dataset.wlTheme = theme;
   try {
     window.localStorage.setItem(themeStorageKey, theme);
   } catch {
@@ -45,7 +45,7 @@ export function ThemeControl({
       ? (stored as ThemeName)
       : defaultTheme;
     const current: ThemeName = availability[requested] || isAdmin ? requested : defaultTheme;
-    document.documentElement.dataset.theme = current;
+    document.documentElement.dataset.wlTheme = current;
     queueMicrotask(() => setTheme(current));
   }, [availability, defaultTheme, isAdmin]);
 

@@ -34,7 +34,6 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
           titleStyle: equippedTitle.titleStyle,
         }
       : null,
-    cosmetics: character.cosmetics,
     raceName: character.race.name,
     className: character.characterClass.name,
     baseHp: character.race.payload.baseHp,

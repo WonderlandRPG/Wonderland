@@ -92,7 +92,6 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
                 name={entry.name}
                 rank={entry.adventure_rank}
                 title={titleData(entry)}
-                cosmetics={entry.cosmetics}
                 variant="standard"
               />
             </span>
@@ -125,7 +124,7 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
             <Link href={`/jogadores/${entry.id}`} key={entry.id} role="row">
               <strong className="ranking-position">#{entry.rank}</strong>
               <span className="ranking-player-cell">
-                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} cosmetics={entry.cosmetics} variant="compact" />
+                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} variant="compact" />
                 <span><b>{entry.name}</b><PlayerTitle entry={entry} /><small>{entry.race_name} · {entry.class_name}</small></span>
               </span>
               <span className="ranking-kingdom">{kingdomName(entry.kingdom)}</span>

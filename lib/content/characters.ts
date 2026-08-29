@@ -3,7 +3,6 @@ import "server-only";
 import { notFound } from "next/navigation";
 
 import { getCharacterRules } from "@/lib/content/character-settings";
-import { parseCharacterCosmetics, type CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
 import { defaultCombatRules } from "@/lib/game/combat";
 import type { Database } from "@/lib/db/types";
 import {
@@ -31,9 +30,8 @@ type InventoryRow = Pick<
 >;
 type InventoryRowWithSlots = InventoryRow & { equipped_slots?: string[] | null };
 
-export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes" | "cosmetics"> {
+export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes"> {
   allocatedAttributes: AllocatedAttributes;
-  cosmetics: CharacterCosmeticLoadout;
 }
 
 export interface CharacterSheet extends CharacterRecord {
@@ -65,13 +63,9 @@ export interface CharacterSheet extends CharacterRecord {
 function parseCharacter(row: CharacterRow): CharacterRecord | null {
   const allocated = allocatedAttributesSchema.safeParse(row.allocated_attributes);
   if (!allocated.success) return null;
-  const { allocated_attributes: _raw, cosmetics: rawCosmetics, ...record } = row;
+  const { allocated_attributes: _raw, ...record } = row;
   void _raw;
-  return {
-    ...record,
-    allocatedAttributes: allocated.data,
-    cosmetics: parseCharacterCosmetics(rawCosmetics),
-  };
+  return { ...record, allocatedAttributes: allocated.data };
 }
 
 async function loadSheets(

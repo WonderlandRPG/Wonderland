@@ -93,7 +93,6 @@ export interface Database {
           daily_streak: number;
           kingdom: string;
           adventure_rank: string;
-          cosmetics: Json;
           allocated_attributes: Json;
           created_at: string;
           updated_at: string;
@@ -113,7 +112,6 @@ export interface Database {
           daily_streak?: number;
           kingdom?: string;
           adventure_rank?: string;
-          cosmetics?: Json;
           allocated_attributes: Json;
           created_at?: string;
           updated_at?: string;
@@ -877,7 +875,6 @@ export interface Database {
           title_name: string | null;
           title_style: Json | null;
           title_rarity: string | null;
-          cosmetics: Json;
         }>;
       };
       v2_my_pvp_history: {
@@ -912,7 +909,6 @@ export interface Database {
           title_name: string | null;
           title_style: Json | null;
           title_rarity: string | null;
-          cosmetics: Json;
         }>;
       };
       v2_equip_inventory_item: {
@@ -959,10 +955,6 @@ export interface Database {
         Returns: number;
       };
       v2_admin_delete_title: { Args: { p_title_id: string }; Returns: number };
-      v2_set_character_cosmetics: {
-        Args: { p_character_id: string; p_cosmetics: Json };
-        Returns: Json;
-      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

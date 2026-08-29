@@ -75,11 +75,7 @@ export default async function CharacterSheetPage({
   );
 
   return (
-    <main
-      className="sheet-page"
-      data-sheet-background={character.cosmetics.background ?? undefined}
-      data-sheet-theme={character.cosmetics.theme ?? undefined}
-    >
+    <main className="sheet-page">
       <PlayerNav />
       <div className="page-container sheet-page__inner">
         {query.status === "criado" ? (
@@ -110,7 +106,6 @@ export default async function CharacterSheetPage({
               name={character.name}
               rank={character.adventure_rank}
               title={equippedTitle}
-              cosmetics={character.cosmetics}
               variant="hero"
             />
           </div>
@@ -327,7 +322,6 @@ export default async function CharacterSheetPage({
                 imageUrl: character.image_url,
                 rank: character.adventure_rank,
                 level: character.level,
-                cosmetics: character.cosmetics,
               }}
               slots={equipmentSlots.map((slot) => {
                 const item = character.inventory.find((entry) => entry.equippedSlots.includes(slot.key));

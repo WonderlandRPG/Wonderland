@@ -8,7 +8,6 @@ import {
   unequipItemAction,
 } from "@/app/personagens/[id]/equipment-actions";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
-import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { ItemArtwork } from "@/components/items/item-artwork";
 
@@ -38,7 +37,7 @@ export function InventoryWorkbench({
   slots,
   items,
 }: {
-  character: { id: string; name: string; imageUrl: string | null; rank: string; level: number; cosmetics: CharacterCosmeticLoadout };
+  character: { id: string; name: string; imageUrl: string | null; rank: string; level: number };
   slots: Slot[];
   items: InventoryItem[];
 }) {
@@ -176,7 +175,6 @@ export function InventoryWorkbench({
             name={character.name}
             rank={character.rank}
             title={equippedTitleData}
-            cosmetics={character.cosmetics}
             variant="inventory"
           />
           <div className="inventory-character-card__caption">

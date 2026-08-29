@@ -381,7 +381,6 @@ function Fighter({
           rank={character.adventureRank}
           level={character.level}
           title={character.equippedTitle}
-          cosmetics={character.cosmetics}
           variant="compact"
           className="combat-official-character-card"
         />

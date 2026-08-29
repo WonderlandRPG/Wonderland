@@ -58,7 +58,6 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
                     name={character.name}
                     rank={character.adventure_rank}
                     title={equippedTitle}
-                    cosmetics={character.cosmetics}
                     variant="standard"
                   />
                   <div className={styles.body}>

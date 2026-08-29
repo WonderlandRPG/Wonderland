@@ -56,7 +56,6 @@ export default async function PublicCharacterProfile({
               name={sheet.name}
               rank={sheet.adventure_rank}
               title={equippedTitle}
-              cosmetics={sheet.cosmetics}
               variant="hero"
             />
           </div>

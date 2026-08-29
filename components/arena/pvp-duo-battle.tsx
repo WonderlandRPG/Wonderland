@@ -226,7 +226,7 @@ function DuoFighter({ fighter, character, active, controlled = false, fx }: { fi
     <article className={`pvp-fighter jrpg-fighter duo-fighter ${active ? "is-active" : ""} ${controlled ? "is-controlled" : ""} ${fighter.hp <= 0 ? "is-down" : ""} ${fx ? `fx-${fx.kind}` : ""}`}>
       <div className="combat-hp-float"><span>HP <b>{fighter.hp.toLocaleString("pt-BR")} / {fighter.maxHp.toLocaleString("pt-BR")}</b></span><progress max={fighter.maxHp} value={fighter.hp} /></div>
       <div className="combat-identity-frame">
-        <CharacterPortraitCard name={character.name} imageUrl={character.imageUrl || null} rank={character.adventureRank} level={character.level} title={character.equippedTitle} cosmetics={character.cosmetics} variant="compact" className="combat-official-character-card" />
+        <CharacterPortraitCard name={character.name} imageUrl={character.imageUrl || null} rank={character.adventureRank} level={character.level} title={character.equippedTitle} variant="compact" className="combat-official-character-card" />
         {controlled ? <span className="duo-control-badge">SEU PERSONAGEM</span> : null}
         {fx ? <span key={fx.token} className={`combat-fx combat-fx--${fx.kind}`}>{fx.kind === "heal" ? "+" : fx.kind === "shield" ? "✦" : "✹"}</span> : null}
       </div>

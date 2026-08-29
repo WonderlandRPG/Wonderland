@@ -51,7 +51,7 @@ const bloodyMoonCosmetics = [
     tag: "Lendário • Animado",
     description:
       "Um card de perfil vivo, cercado por lápides, névoa rasteira e uma lua de sangue pulsante. Corvos atravessam o céu em intervalos raros, velas funerárias tremulam nas bordas e o nome do personagem recebe um brilho carmesim que parece respirar.",
-    highlights: ["Lua pulsante", "Névoa em movimento", "Corvos e velas", "Moldura funerária"],
+    highlights: ["Lua pulsante", "Névoa em movimento", "Corvos e velas", "Iluminação carmesim"],
     preview: "card",
     key: "epitafio-lua-carmesim",
   },

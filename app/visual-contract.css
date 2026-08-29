@@ -1,0 +1,76 @@
+/*
+ * Contrato semântico de componentes.
+ * Estas classes são a base recomendada para páginas novas.
+ * Elas evitam que cada página invente combinações de cor próprias.
+ */
+.wl-surface {
+  color: var(--wl-text);
+  background: var(--wl-surface);
+  border: 1px solid var(--wl-border);
+}
+
+.wl-surface-raised {
+  color: var(--wl-text);
+  background: var(--wl-surface-raised);
+  border: 1px solid var(--wl-border);
+  box-shadow: var(--wl-shadow-soft);
+}
+
+.wl-surface-dark {
+  color: var(--wl-text-inverse);
+  background: var(--wl-surface-dark);
+  border: 1px solid var(--wl-border);
+}
+
+.wl-surface :where(p, small),
+.wl-surface-raised :where(p, small) {
+  color: var(--wl-text-muted);
+}
+
+.wl-surface-dark :where(p, small) {
+  color: var(--wl-text-inverse-muted);
+}
+
+.wl-action {
+  color: var(--wl-accent-contrast);
+  background: var(--wl-accent);
+  border-color: var(--wl-border-strong);
+}
+
+.wl-action:hover {
+  background: var(--wl-accent-hover);
+}
+
+.wl-field {
+  color: var(--wl-text);
+  background: var(--wl-surface);
+  border-color: var(--wl-border);
+}
+
+.wl-field::placeholder {
+  color: var(--wl-text-subtle);
+}
+
+.wl-field:focus-visible,
+.wl-action:focus-visible {
+  outline: 3px solid var(--wl-focus-ring);
+  outline-offset: 2px;
+}
+
+.wl-status-success {
+  color: var(--wl-success-text);
+  background: var(--wl-success-bg);
+  border-color: var(--wl-success-border);
+}
+
+.wl-status-warning {
+  color: var(--wl-warning-text);
+  background: var(--wl-warning-bg);
+  border-color: var(--wl-warning-border);
+}
+
+.wl-status-danger {
+  color: var(--wl-danger-text);
+  background: var(--wl-danger-bg);
+  border-color: var(--wl-danger-border);
+}

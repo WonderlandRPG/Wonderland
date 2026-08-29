@@ -410,3 +410,44 @@
   .market-page .cosmetic-card__body ul{grid-template-columns:1fr}
   .market-page .cosmetics-bundle{align-items:flex-start;flex-direction:column}
 }
+
+
+.market-page .cosmetic-card__footer{
+  align-items:center;
+}
+.market-page .cosmetic-card__footer>div{
+  display:grid;
+  gap:2px;
+}
+.market-page .cosmetic-card__footer form{
+  margin:0;
+}
+.market-page .cosmetic-equip{
+  min-height:42px;
+  padding:9px 14px;
+  border:1px solid var(--wl-blood-border);
+  border-radius:var(--wl-radius-sm);
+  background:var(--wl-blood);
+  color:var(--wl-blood-text);
+  font-weight:900;
+  box-shadow:var(--wl-shadow-soft);
+}
+.market-page .cosmetic-equip:hover{
+  background:var(--wl-blood-bright);
+  color:var(--wl-blood-black);
+}
+.market-page .cosmetic-equip.is-equipped{
+  background:var(--wl-accent);
+  color:var(--wl-accent-contrast);
+  border-color:var(--wl-accent);
+}
+@media(max-width:650px){
+  .market-page .cosmetic-card__footer{
+    align-items:stretch;
+    flex-direction:column;
+  }
+  .market-page .cosmetic-card__footer form,
+  .market-page .cosmetic-equip{
+    width:100%;
+  }
+}

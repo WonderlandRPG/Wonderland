@@ -111,4 +111,33 @@
   --shadow-soft: var(--wl-shadow-soft);
   --radius: var(--wl-radius);
   --page: var(--wl-page);
+
+  /*
+   * ALIASES WX LEGADOS — NÃO USAR EM CÓDIGO NOVO.
+   * Diversas folhas antigas ainda referenciam estes nomes. Mantê-los como
+   * ponte evita que uma variável ausente faça o navegador herdar preto/branco
+   * incorretamente. Todos apontam para a mesma fonte --wl-*.
+   */
+  --wx-color-canvas: var(--wl-canvas);
+  --wx-color-text: var(--wl-text);
+  --wx-color-text-muted: var(--wl-text-muted);
+  --wx-color-text-subtle: var(--wl-text-subtle);
+  --wx-color-on-inverse: var(--wl-text-inverse);
+  --wx-color-on-inverse-muted: var(--wl-text-inverse-muted);
+  --wx-color-primary: var(--wl-accent);
+  --wx-color-primary-hover: var(--wl-accent-hover);
+  --wx-color-on-primary: var(--wl-accent-contrast);
+  --wx-color-accent: var(--wl-gold-strong);
+  --wx-color-gold: var(--wl-gold);
+  --wx-color-gold-soft: var(--wl-gold-soft);
+  --wx-color-surface: var(--wl-surface);
+  --wx-color-surface-raised: var(--wl-surface-raised);
+  --wx-color-surface-inverse: var(--wl-surface-dark);
+  --wx-color-border: var(--wl-border);
+  --wx-color-border-strong: var(--wl-border-strong);
+  --wx-color-input: var(--wl-field-bg);
+  --wx-color-input-text: var(--wl-field-text);
+  --wx-color-input-placeholder: var(--wl-field-placeholder);
+  --wx-color-focus: var(--wl-focus);
+  --wx-shadow-1: var(--wl-shadow-soft);
 }

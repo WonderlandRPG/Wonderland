@@ -3,28 +3,14 @@
  * ou comportamento de controles usados pelas páginas do jogo.
  */
 
-:root {
-  --ink: #291f18;
-  --ink-soft: #63503d;
-  --forest: #173f30;
-  --forest-2: #2e684e;
-  --gold: #bd8b32;
-  --gold-soft: #e1c37b;
-  --parchment: #efe0b8;
-  --parchment-2: #dbc08a;
-  --paper: #fff3d2;
-  --wood: #583925;
-  --wood-dark: #251810;
-  --line: #9d7949;
-  --shadow: 0 22px 58px rgba(18, 12, 8, 0.3);
-  --shadow-soft: 0 10px 26px rgba(18, 12, 8, 0.18);
-}
+/* Palette is defined once in theme-tokens.css. */
 
-html { background: #0e1b15; }
+
+html { background: var(--wl-canvas); }
 
 body {
-  color: var(--ink);
-  background-color: #14241c !important;
+  color: var(--wl-text);
+  background-color: var(--wl-canvas) !important;
   background-image:
     linear-gradient(180deg, rgba(7, 18, 13, 0.42), rgba(15, 30, 23, 0.7)),
     url('/backgrounds/lore.svg') !important;

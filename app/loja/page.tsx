@@ -1,9 +1,15 @@
 import "./loja.css";
 import "./rarity-glow.css";
 import "./shop-rework.css";
+import "./cosmetics.css";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
 import { PlayerNav } from "@/components/player-nav";
+import { CosmeticShop } from "@/components/shop/cosmetic-shop";
 import { ShopCatalog, type ShopCatalogItem } from "@/components/shop/shop-catalog";
 import { requireActiveCharacter } from "@/lib/content/active-character";
+import { isAdministrativeRole } from "@/lib/auth/roles";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { itemSlotLabel } from "@/lib/game/equipment";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
@@ -26,12 +32,16 @@ export default async function ShopPage({
 }: {
   searchParams: Promise<{ compra?: string }>;
 }) {
-  const { characterId } = await requireActiveCharacter("/loja");
+  const { account, characterId } = await requireActiveCharacter("/loja");
   const [rows, character, query] = await Promise.all([
     getShopItems(),
     requireCharacterSheet(characterId),
     searchParams,
   ]);
+  const cosmeticsTab = query.tab === "cosmeticos";
+  const canSeeCosmetics = isAdministrativeRole(account.role);
+  if (cosmeticsTab && !canSeeCosmetics) redirect("/loja");
+
   const client = await createServerSupabaseClient();
   const { data: kingdomState } = client
     ? await client
@@ -73,59 +83,86 @@ export default async function ShopPage({
       <div className="page-container market-shell">
         <header className="market-hero">
           <div>
-            <span className="eyebrow">Mercado dos cinco reinos</span>
-            <h1>Arsenal de Wonderland</h1>
+            <span className="eyebrow">
+              {cosmeticsTab ? "Boutique especial de Wonderland" : "Mercado dos cinco reinos"}
+            </span>
+            <h1>{cosmeticsTab ? "Loja de Cosméticos" : "Arsenal de Wonderland"}</h1>
             <p>
-              Escolha com calma, compare os atributos e prepare seu personagem para a próxima
-              batalha.
+              {cosmeticsTab
+                ? "Personalize a identidade visual da sua ficha sem alterar atributos ou combate."
+                : "Escolha com calma, compare os atributos e prepare seu personagem para a próxima batalha."}
             </p>
           </div>
           <aside>
-            <small>Carteira de {character.name}</small>
-            <strong>{character.gold.toLocaleString("pt-BR")} WG</strong>
-            <span>{items.length} equipamentos no catálogo</span>
+            <small>{cosmeticsTab ? "Personagem selecionado" : `Carteira de ${character.name}`}</small>
+            <strong>{cosmeticsTab ? character.name : `${character.gold.toLocaleString("pt-BR")} WG`}</strong>
+            <span>
+              {cosmeticsTab
+                ? `Nível ${character.level} · Rank ${character.adventure_rank}`
+                : `${items.length} equipamentos no catálogo`}
+            </span>
           </aside>
         </header>
-        {query.compra ? (
-          <div
-            className={`shop-purchase-notice ${query.compra === "sucesso" || query.compra === "carrinho" ? "is-success" : "is-error"}`}
-            role="status"
-          >
-            <span>{query.compra === "sucesso" || query.compra === "carrinho" ? "✓" : "!"}</span>
-            <div>
-              <strong>
-                {query.compra === "sucesso" || query.compra === "carrinho"
-                  ? query.compra === "carrinho"
-                    ? "Carrinho comprado com sucesso"
-                    : "Item enviado para a mochila"
-                  : query.compra === "saldo"
-                    ? "WG insuficiente"
-                    : "Compra não concluída"}
-              </strong>
-              <small>
-                {query.compra === "sucesso" || query.compra === "carrinho"
-                  ? `O equipamento já pode ser usado por ${character.name}.`
-                  : "Nenhum WG foi descontado."}
-              </small>
+
+        <nav className="market-tabs" aria-label="Seções da loja">
+          <Link className={!cosmeticsTab ? "is-active" : ""} href="/loja">
+            ⚔ Equipamentos
+          </Link>
+          {canSeeCosmetics ? (
+            <Link
+              className={`is-admin-only ${cosmeticsTab ? "is-active" : ""}`}
+              href="/loja?tab=cosmeticos"
+            >
+              ☾ Cosméticos
+            </Link>
+          ) : null}
+        </nav>
+        {cosmeticsTab ? (
+          <CosmeticShop character={character} status={query.status} />
+        ) : (
+          <>
+          {query.compra ? (
+            <div
+              className={`shop-purchase-notice ${query.compra === "sucesso" || query.compra === "carrinho" ? "is-success" : "is-error"}`}
+              role="status"
+            >
+              <span>{query.compra === "sucesso" || query.compra === "carrinho" ? "✓" : "!"}</span>
+              <div>
+                <strong>
+                  {query.compra === "sucesso" || query.compra === "carrinho"
+                    ? query.compra === "carrinho"
+                      ? "Carrinho comprado com sucesso"
+                      : "Item enviado para a mochila"
+                    : query.compra === "saldo"
+                      ? "WG insuficiente"
+                      : "Compra não concluída"}
+                </strong>
+                <small>
+                  {query.compra === "sucesso" || query.compra === "carrinho"
+                    ? `O equipamento já pode ser usado por ${character.name}.`
+                    : "Nenhum WG foi descontado."}
+                </small>
+              </div>
             </div>
-          </div>
-        ) : null}
-        {shopMultiplier !== 1 ? (
-          <div className={`shop-purchase-notice ${shopMultiplier < 1 ? "is-success" : "is-error"}`}>
-            <span>{shopMultiplier < 1 ? "↓" : "↑"}</span>
-            <div>
-              <strong>
-                {shopMultiplier < 1
-                  ? `Mercado Próspero: ${Math.round((1 - shopMultiplier) * 100)}% de desconto`
-                  : `Consequência de guerra: ${Math.round((shopMultiplier - 1) * 100)}% de aumento`}
-              </strong>
-              <small>
-                O preço exibido já é o valor final exclusivo para os moradores deste reino.
-              </small>
+          ) : null}
+          {shopMultiplier !== 1 ? (
+            <div className={`shop-purchase-notice ${shopMultiplier < 1 ? "is-success" : "is-error"}`}>
+              <span>{shopMultiplier < 1 ? "↓" : "↑"}</span>
+              <div>
+                <strong>
+                  {shopMultiplier < 1
+                    ? `Mercado Próspero: ${Math.round((1 - shopMultiplier) * 100)}% de desconto`
+                    : `Consequência de guerra: ${Math.round((shopMultiplier - 1) * 100)}% de aumento`}
+                </strong>
+                <small>
+                  O preço exibido já é o valor final exclusivo para os moradores deste reino.
+                </small>
+              </div>
             </div>
-          </div>
-        ) : null}
-        <ShopCatalog gold={character.gold} items={items} />
+          ) : null}
+          <ShopCatalog gold={character.gold} items={items} />
+          </>
+        )}
       </div>
     </main>
   );

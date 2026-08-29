@@ -3,7 +3,7 @@ export type CharacterCosmeticSlot = "card" | "aura" | "border";
 export type CharacterCosmeticLoadout = {
   card: string | null;
   aura: string | null;
-  border: string | null;
+  border?: string | null;
 };
 
 export const emptyCharacterCosmetics: CharacterCosmeticLoadout = {

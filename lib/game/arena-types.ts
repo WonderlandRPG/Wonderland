@@ -3,6 +3,7 @@ import type { CombatAttributes, CombatantState } from "@/lib/game/combat";
 import type { ItemSpecialEffect } from "@/lib/game/item-effects";
 import type { EquippedTitleData } from "@/components/characters/equipped-title";
 import type { SharedBattleState } from "@/lib/game/turn-engine";
+import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
 
 export interface ArenaCharacter {
   id: string;
@@ -11,6 +12,7 @@ export interface ArenaCharacter {
   adventureRank: string;
   imageUrl: string;
   equippedTitle: EquippedTitleData | null;
+  cosmetics: CharacterCosmeticLoadout;
   raceName: string;
   className: string;
   baseHp: number;

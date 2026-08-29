@@ -5,17 +5,18 @@
  */
 
 :root {
-  --repair-page: 1240px;
-  --repair-ink: #38291d;
-  --repair-muted: #6c5b47;
-  --repair-paper: #f3e2b8;
-  --repair-paper-2: #fff0c9;
-  --repair-paper-3: #dfc697;
-  --repair-green: #315f47;
-  --repair-green-2: #1d4635;
-  --repair-wood: #65472f;
-  --repair-line: #9f8056;
-  --repair-shadow: 0 14px 34px rgba(45, 31, 19, 0.17);
+  /* Compatibilidade da camada de reparo com a paleta canônica. */
+  --repair-page: var(--wl-page-wide);
+  --repair-ink: var(--wl-text);
+  --repair-muted: var(--wl-text-muted);
+  --repair-paper: var(--wl-surface-raised);
+  --repair-paper-2: var(--wl-surface);
+  --repair-paper-3: var(--wl-surface-muted);
+  --repair-green: var(--wl-accent-hover);
+  --repair-green-2: var(--wl-accent);
+  --repair-wood: var(--wl-border-strong);
+  --repair-line: var(--wl-border);
+  --repair-shadow: var(--wl-shadow-soft);
 }
 
 /* ---------- FUNDO REAL DAS PÁGINAS ---------- */

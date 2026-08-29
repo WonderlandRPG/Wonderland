@@ -76,6 +76,7 @@ export default async function ProfilePage({ searchParams }: ProfilePageProps) {
               name={activeCharacter.name}
               rank={activeCharacter.adventure_rank}
               title={equippedTitle}
+              cosmetics={activeCharacter.cosmetics}
               variant="standard"
             />
           </div>

@@ -10,6 +10,8 @@ import { PlayerPresence } from "@/components/player-presence";
  * 3. rank-visuals é isolado nos emblemas, retratos e efeitos de Rank.
  * CSS Modules continuam isolados em seus próprios componentes.
  */
+import "./theme-tokens.css";
+import "./visual-contract.css";
 import "./wonderland-base.css";
 import "./wonderland-repair.css";
 import "./rank-visuals.css";

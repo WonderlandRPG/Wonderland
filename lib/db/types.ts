@@ -881,6 +881,7 @@ export interface Database {
           title_name: string | null;
           title_style: Json | null;
           title_rarity: string | null;
+          cosmetics: Json;
         }>;
       };
       v2_my_pvp_history: {
@@ -915,6 +916,7 @@ export interface Database {
           title_name: string | null;
           title_style: Json | null;
           title_rarity: string | null;
+          cosmetics: Json;
         }>;
       };
       v2_equip_inventory_item: {

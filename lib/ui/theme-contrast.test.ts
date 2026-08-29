@@ -176,6 +176,33 @@ describe("contrato visual do Wonderland", () => {
       }
 
       const css = readFileSync(file, "utf8");
+
+      if (path.startsWith("app/themes/")) {
+        expect(css, path + " usa !important dentro de tema").not.toContain("!important");
+        expect(css, path + " cria :root; tema deve usar data-wl-theme").not.toMatch(/:root\b/);
+        expect(css, path + " tenta estilizar componente em vez de tokens").not.toMatch(
+          /\.(player-nav|market-page|sheet-page|ranking|arena|button|card|panel)\b/,
+        );
+
+        const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, "");
+        const blocks = [...withoutComments.matchAll(/([^{}]+)\{([^{}]*)\}/g)];
+        expect(blocks.length, path + " precisa declarar ao menos um tema").toBeGreaterThan(0);
+
+        for (const [, selector, body] of blocks) {
+          expect(selector.trim(), path + " usa seletor de tema inválido").toMatch(
+            /^\[data-wl-theme=["'][a-z0-9-]+["']\]$/,
+          );
+          const declarations = body
+            .split(";")
+            .map((value) => value.trim())
+            .filter(Boolean);
+          for (const declaration of declarations) {
+            expect(declaration, path + " só pode sobrescrever --wl-*").toMatch(/^--wl-[\w-]+\s*:/);
+          }
+        }
+        continue;
+      }
+
       expect(css, path + " usa cor literal; use --wl-*").not.toMatch(
         /#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/,
       );

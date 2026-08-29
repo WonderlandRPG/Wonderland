@@ -36,6 +36,7 @@ export function CharacterPortraitCard({
       data-rank={rank}
       data-card-cosmetic={cosmetics?.card ?? undefined}
       data-aura-cosmetic={cosmetics?.aura ?? undefined}
+      data-border-cosmetic={cosmetics?.border ?? undefined}
     >
       <div
         aria-label={`Retrato de ${name}`}
@@ -58,6 +59,8 @@ export function CharacterPortraitCard({
         <i className={styles.cardFogOne} />
         <i className={styles.cardFogTwo} />
       </div>
+
+      <div className={styles.cosmeticBorderFx} aria-hidden="true" />
 
       <div className={styles.cosmeticAuraFx} aria-hidden="true">
         <i className={[styles.soul, styles.soulOne].join(" ")} />

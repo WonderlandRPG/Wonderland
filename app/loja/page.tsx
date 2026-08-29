@@ -30,7 +30,7 @@ export const dynamic = "force-dynamic";
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: Promise<{ compra?: string }>;
+  searchParams: Promise<{ compra?: string; tab?: string; status?: string }>;
 }) {
   const { account, characterId } = await requireActiveCharacter("/loja");
   const [rows, character, query] = await Promise.all([

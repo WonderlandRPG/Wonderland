@@ -31,6 +31,9 @@ function PreviewMockup({
   return (
     <div className="cosmetic-sheet-mockup" data-active={active ? "true" : "false"} data-slot={slot}>
       <div className="cosmetic-sheet-mockup__moon" />
+      <div className="cosmetic-sheet-mockup__castle" />
+      <div className="cosmetic-sheet-mockup__pumpkins"><i /><i /><i /></div>
+      <div className="cosmetic-sheet-mockup__candles"><i /><i /><i /></div>
       <div className="cosmetic-sheet-mockup__top">
         <span />
         <span />
@@ -86,8 +89,8 @@ export function CosmeticShop({
           <span className="eyebrow">Coleção inaugural · Halloween 2026</span>
           <h2>Festival das Almas</h2>
           <p>
-            Cada item abaixo mostra uma comparação entre o visual padrão e o resultado com o
-            cosmético aplicado. As peças são independentes e não alteram atributos ou combate.
+            Uma coleção pensada para parecer rara de verdade: luz espectral, lua sangrenta,
+            névoa viva e uma ficha totalmente transformada. Cada peça continua sendo 100% visual.
           </p>
         </div>
         <div className="cosmetic-collection-actions">
@@ -173,14 +176,14 @@ export function CosmeticShop({
                   <span>O que muda</span>
                   <strong>
                     {item.slot === "card"
-                      ? "Cores, atmosfera e acabamento do card do personagem."
+                      ? "Lua sangrenta, sombras violetas, brilho de borda e atmosfera sobrenatural no card."
                       : item.slot === "frame"
-                        ? "A borda visual ao redor do retrato e da ficha."
+                        ? "Moldura artística sobreposta ao card, com ornamentos e brilho próprio."
                         : item.slot === "background"
-                          ? "O cenário atrás de toda a ficha do personagem."
+                          ? "Cemitério, castelo, lua sangrenta, névoa e elementos de Halloween atrás da ficha."
                           : item.slot === "aura"
-                            ? "Efeitos animados ao redor do retrato."
-                            : "Paleta, painéis, abas e elementos visuais da ficha inteira."}
+                            ? "Almas maiores, rastros luminosos e névoa animada circulando o retrato."
+                            : "Toda a ficha vira uma interface de Halloween: painéis, abas, destaques, textos e iluminação."}
                   </strong>
                 </div>
               </div>

@@ -197,6 +197,13 @@ export function ShopCatalog({
           <div className="cosmetics-grid">
             {bloodyMoonCosmetics.map((cosmetic) => (
               <article className="cosmetic-card" data-preview={cosmetic.preview} key={cosmetic.name}>
+                <header className="cosmetic-card__heading">
+                  <div>
+                    <small>{cosmetic.type}</small>
+                    <h3>{cosmetic.name}</h3>
+                  </div>
+                  <b>{cosmetic.tag}</b>
+                </header>
                 <div className="cosmetic-compare">
                   <div className="cosmetic-compare__side">
                     <b>SEM COSMÉTICO</b>
@@ -263,9 +270,6 @@ export function ShopCatalog({
                   </div>
                 </div>
                 <div className="cosmetic-card__body">
-                  <small>{cosmetic.type}</small>
-                  <h3>{cosmetic.name}</h3>
-                  <b>{cosmetic.tag}</b>
                   <p>{cosmetic.description}</p>
                   <ul>
                     {cosmetic.highlights.map((highlight) => (

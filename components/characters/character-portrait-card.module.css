@@ -128,10 +128,7 @@
   border-left:4px solid #b86a42;
   border-top:4px solid #e3a052;
   border-radius:12px 0 0 0;
-  box-shadow:
-    5px 5px 0 -3px #71366f,
-    calc(100% + 194px) 0 0 -1px #b86a42,
-    0 calc(100% + 244px) 0 -1px #71366f
+  box-shadow:5px 5px 0 -3px #71366f
 }
 .card[data-frame-cosmetic='espinhos-do-alem'] .cosmeticFrame::after{
   right:-5px;

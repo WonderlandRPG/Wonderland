@@ -45,7 +45,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     cosmetics?.theme === "catedral-ultimo-eclipse" ? "catedral-ultimo-eclipse" : undefined;
 
   return (
-    <html lang="pt-BR">
+    <html data-wl-theme={theme} lang="pt-BR">
       <body data-wl-theme={theme}>
         {account ? <PlayerPresence /> : null}
         <AudioProvider>{children}</AudioProvider>

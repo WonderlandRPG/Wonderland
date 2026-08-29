@@ -129,7 +129,17 @@ export default async function ShopPage({
             </div>
           </div>
         ) : null}
-        <ShopCatalog gold={character.gold} items={items} showCosmetics={canPreviewCosmetics} />
+        <ShopCatalog
+          gold={character.gold}
+          items={items}
+          showCosmetics={canPreviewCosmetics}
+          previewCharacter={{
+            name: character.name,
+            imageUrl: character.image_url,
+            rank: character.adventure_rank,
+            level: character.level,
+          }}
+        />
       </div>
     </main>
   );

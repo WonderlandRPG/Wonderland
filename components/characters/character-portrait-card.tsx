@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
 import { RankAtmosphere } from "@/components/characters/rank-atmosphere";
 import { RankBadge } from "@/components/characters/rank-badge";
+import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
 import styles from "./character-portrait-card.module.css";
 
 type CharacterPortraitCardProps = {
@@ -14,6 +15,7 @@ type CharacterPortraitCardProps = {
   variant?: "hero" | "standard" | "compact" | "inventory";
   className?: string;
   children?: ReactNode;
+  cosmetics?: CharacterCosmeticLoadout;
 };
 
 export function CharacterPortraitCard({
@@ -25,12 +27,15 @@ export function CharacterPortraitCard({
   variant = "standard",
   className,
   children,
+  cosmetics,
 }: CharacterPortraitCardProps) {
   return (
     <div
       className={[styles.card, styles[variant], className].filter(Boolean).join(" ")}
       data-character-card="official"
       data-rank={rank}
+      data-card-cosmetic={cosmetics?.card ?? undefined}
+      data-aura-cosmetic={cosmetics?.aura ?? undefined}
     >
       <div
         aria-label={`Retrato de ${name}`}
@@ -42,6 +47,26 @@ export function CharacterPortraitCard({
       </div>
 
       <RankAtmosphere rank={rank} />
+
+      <div className={styles.cosmeticCardFx} aria-hidden="true">
+        <i className={styles.bloodMoon} />
+        <i className={styles.graveyard} />
+        <i className={styles.ravenOne} />
+        <i className={styles.ravenTwo} />
+        <i className={styles.candleOne} />
+        <i className={styles.candleTwo} />
+        <i className={styles.cardFogOne} />
+        <i className={styles.cardFogTwo} />
+      </div>
+
+      <div className={styles.cosmeticAuraFx} aria-hidden="true">
+        <i className={[styles.soul, styles.soulOne].join(" ")} />
+        <i className={[styles.soul, styles.soulTwo].join(" ")} />
+        <i className={[styles.soul, styles.soulThree].join(" ")} />
+        <i className={[styles.soul, styles.soulFour].join(" ")} />
+        <i className={[styles.soul, styles.soulFive].join(" ")} />
+        <i className={styles.ashField} />
+      </div>
 
       <div className={styles.topMeta}>
         <div className={styles.rankMeta}>

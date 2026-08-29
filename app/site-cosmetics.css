@@ -1,0 +1,109 @@
+/* Cosméticos globais do personagem ativo. Escopo fechado em .site-cosmetic-shell para evitar vazamento de contraste. */
+.site-cosmetic-shell{min-height:100vh;position:relative;isolation:isolate}
+.site-cosmetic-shell__atmosphere{position:fixed;inset:0;z-index:-3;pointer-events:none;opacity:0}
+
+.site-cosmetic-shell[data-site-background="cemiterio-lua-sangrenta"]{
+  background:
+    radial-gradient(circle at 82% 9%,rgba(241,83,49,.42) 0 4.6%,rgba(120,28,49,.28) 5% 8%,transparent 12%),
+    linear-gradient(180deg,#0b0710 0%,#140d18 28%,#111914 62%,#090e0b 100%);
+  color:#efe4d3
+}
+.site-cosmetic-shell[data-site-background="cemiterio-lua-sangrenta"]::before{
+  content:"";position:fixed;inset:0;z-index:-4;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 50% 92%,rgba(188,223,201,.13),transparent 43%),
+    linear-gradient(90deg,transparent 0 7%,rgba(5,7,6,.7) 7.5% 8.4%,transparent 8.8% 16%,rgba(5,7,6,.5) 16.4% 17.2%,transparent 17.6% 100%),
+    linear-gradient(180deg,transparent 0 58%,rgba(0,0,0,.25) 100%);
+}
+.site-cosmetic-shell[data-site-background="cemiterio-lua-sangrenta"] .site-cosmetic-shell__atmosphere{
+  opacity:1;
+  background:
+    radial-gradient(circle at 8% 74%,rgba(105,255,214,.14) 0 1.5%,transparent 4%),
+    radial-gradient(circle at 91% 68%,rgba(195,118,255,.13) 0 1.8%,transparent 4%),
+    radial-gradient(ellipse at 50% 100%,rgba(159,194,174,.14),transparent 46%);
+  animation:siteMistDrift 8s ease-in-out infinite alternate
+}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"]{
+  --site-ink:#f3e7d7;
+  --site-muted:#cdbdaa;
+  --site-gold:#df9650;
+  --site-purple:#9b60c8;
+  --site-green:#65d2a8;
+  --site-panel:#201523;
+  --site-panel-2:#16231d;
+  --site-border:#71445f;
+  color:#f3e7d7
+}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(
+  .page-container,.market-shell,.admin-content,.player-profile,.ranking-shell,.arena-shell,
+  .sheet-section,.character-progress-strip,.market-hero,.cosmetic-item,.account-card,.profile-card,
+  .ranking-card,.battle-panel,.arena-panel,.inventory-hud,.shop-panel,.modal-card,.panel,.card
+){
+  border-color:rgba(126,72,102,.64)!important;
+}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(
+  .sheet-section,.character-progress-strip,.cosmetic-item,.account-card,.profile-card,.ranking-card,
+  .battle-panel,.arena-panel,.inventory-hud,.shop-panel,.modal-card,.panel
+){
+  background:linear-gradient(145deg,rgba(32,21,35,.97),rgba(21,35,29,.96))!important;
+  color:#f0e4d3!important;
+  box-shadow:0 18px 38px rgba(5,2,8,.28),inset 0 0 0 1px rgba(224,126,72,.07)!important
+}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(h1,h2,h3,h4,strong,b){color:#fff0d6}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(p,li,dd,span,label){border-color:inherit}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.eyebrow,dt,small,.muted,.subtitle){color:#d9a06a!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] a:not(.button){color:#f2d8b3}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] a:not(.button):hover{color:#fff2d5}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(input,select,textarea){
+  border-color:#6e4a6a!important;background:#120d16!important;color:#f5e9d8!important
+}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(input,select,textarea)::placeholder{color:#9f8f83!important}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--primary{
+  border-color:#a75a35!important;background:linear-gradient(180deg,#d77a36,#9b4c22)!important;color:#fff4dc!important;
+  box-shadow:0 8px 18px rgba(132,52,28,.28),inset 0 1px rgba(255,220,166,.2)!important
+}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--dark{
+  border-color:#70496b!important;background:linear-gradient(180deg,#37203e,#21162a)!important;color:#f7e9d4!important
+}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] .button--secondary{
+  border-color:#397860!important;background:linear-gradient(180deg,#27634f,#183f34)!important;color:#efffe9!important
+}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(
+  .player-nav,.site-nav,.navbar,.admin-sidebar,.market-tabs,.sheet-tabs
+){
+  border-color:#774a64!important;background:linear-gradient(90deg,#1c1021,#14241c 58%,#2b1718)!important;
+  color:#f5e8d5!important;box-shadow:0 12px 28px rgba(5,2,8,.28)!important
+}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.market-tabs a,.sheet-tabs a){color:#d8c6b5!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.market-tabs a.is-active,.sheet-tabs a.is-active){
+  background:linear-gradient(135deg,#7a3d2c,#633171)!important;color:#fff1d7!important
+}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(table,thead,tbody,tr,td,th){border-color:rgba(119,75,104,.5)!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] th{background:#2a1b2f!important;color:#f2d5ae!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] td{background:rgba(27,22,29,.9)!important;color:#eadfce!important}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.account-notice,.shop-purchase-notice){
+  border-color:#7d526e!important;background:linear-gradient(135deg,#2c1d32,#1b2b24)!important;color:#f6e8d5!important
+}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.is-success,.success){color:#a5f2ce!important}
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"] :is(.is-error,.error,.is-warning){color:#ffc6a8!important}
+
+.site-cosmetic-shell[data-site-theme="noite-de-halloween"][data-site-background="cemiterio-lua-sangrenta"]::after{
+  content:"";position:fixed;left:0;right:0;bottom:0;height:150px;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 12% 100%,rgba(255,99,28,.14),transparent 13%),
+    radial-gradient(ellipse at 26% 100%,rgba(143,71,184,.16),transparent 14%),
+    radial-gradient(ellipse at 78% 100%,rgba(255,108,31,.12),transparent 13%),
+    linear-gradient(180deg,transparent,rgba(0,0,0,.32));
+}
+
+@keyframes siteMistDrift{from{transform:translate3d(-1.5%,0,0) scale(1);opacity:.65}to{transform:translate3d(1.5%,-1%,0) scale(1.03);opacity:1}}
+@media(prefers-reduced-motion:reduce){.site-cosmetic-shell__atmosphere{animation:none!important}}

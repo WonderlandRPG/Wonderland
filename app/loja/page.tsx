@@ -10,6 +10,7 @@ import { parseItemSpecialEffects } from "@/lib/game/item-effects";
 import { getShopItems } from "@/lib/game/player-portal";
 import { attributesSchema } from "@/lib/game/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 
 const rarityLabels: Record<string, string> = {
   common: "Comum",
@@ -27,11 +28,13 @@ export default async function ShopPage({
   searchParams: Promise<{ compra?: string }>;
 }) {
   const { characterId } = await requireActiveCharacter("/loja");
-  const [rows, character, query] = await Promise.all([
+  const [rows, character, query, account] = await Promise.all([
     getShopItems(),
     requireCharacterSheet(characterId),
     searchParams,
+    getCurrentAccount(),
   ]);
+  const canPreviewCosmetics = Boolean(account && isAdministrativeRole(account.role));
   const client = await createServerSupabaseClient();
   const { data: kingdomState } = client
     ? await client
@@ -125,7 +128,7 @@ export default async function ShopPage({
             </div>
           </div>
         ) : null}
-        <ShopCatalog gold={character.gold} items={items} />
+        <ShopCatalog gold={character.gold} items={items} showCosmetics={canPreviewCosmetics} />
       </div>
     </main>
   );

@@ -39,7 +39,48 @@ const normalize = (value: string) =>
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase();
 
-export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: number }) {
+type ShopSection = "equipment" | "cosmetics";
+
+const bloodyMoonCosmetics = [
+  {
+    type: "Card animado",
+    name: "Epitáfio da Lua Carmesim",
+    tag: "Lendário • Animado",
+    description:
+      "Um card de perfil vivo, cercado por lápides, névoa rasteira e uma lua de sangue pulsante. Corvos atravessam o céu em intervalos raros, velas funerárias tremulam nas bordas e o nome do personagem recebe um brilho carmesim que parece respirar.",
+    highlights: ["Lua pulsante", "Névoa em movimento", "Corvos e velas", "Moldura funerária"],
+    preview: "card",
+  },
+  {
+    type: "Aura animada",
+    name: "Procissão das Almas Rubras",
+    tag: "Mítico • Animado",
+    description:
+      "Uma aura espectral para envolver o personagem. Almas rubras surgem aos pés, orbitam lentamente o corpo e se desfazem em cinzas; a cada ciclo, um eclipse carmesim se forma atrás do retrato e deixa um rastro sobrenatural.",
+    highlights: ["Almas orbitais", "Cinzas flutuantes", "Eclipse espectral", "Pulso carmesim"],
+    preview: "aura",
+  },
+  {
+    type: "Tema",
+    name: "Catedral do Último Eclipse",
+    tag: "Mítico • Tema completo",
+    description:
+      "Transforma a experiência visual do perfil em um cemitério gótico sob a Lua Sangrenta: vitrais partidos, ferro envelhecido, névoa, velas e detalhes carmesim. Painéis recebem textura de pedra e transições sutis de sombras atravessam a interface.",
+    highlights: ["Interface gótica", "Vitrais e pedra", "Névoa ambiental", "Detalhes carmesim"],
+    preview: "theme",
+  },
+] as const;
+
+export function ShopCatalog({
+  items,
+  gold,
+  showCosmetics = false,
+}: {
+  items: ShopCatalogItem[];
+  gold: number;
+  showCosmetics?: boolean;
+}) {
+  const [section, setSection] = useState<ShopSection>("equipment");
   const [search, setSearch] = useState("");
   const [rarity, setRarity] = useState("");
   const [slot, setSlot] = useState("");
@@ -107,6 +148,87 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
 
   return (
     <>
+      {showCosmetics ? (
+        <nav className="shop-departments" aria-label="Seções da loja">
+          <button
+            className={section === "equipment" ? "is-active" : ""}
+            onClick={() => setSection("equipment")}
+            type="button"
+          >
+            ⚔ Equipamentos
+          </button>
+          <button
+            className={section === "cosmetics" ? "is-active is-cosmetic" : "is-cosmetic"}
+            onClick={() => setSection("cosmetics")}
+            type="button"
+          >
+            ✦ Cosméticos <small>ADM</small>
+          </button>
+        </nav>
+      ) : null}
+
+      {section === "cosmetics" && showCosmetics ? (
+        <section className="cosmetics-preview" aria-label="Prévia administrativa de cosméticos">
+          <header className="cosmetics-collection-hero">
+            <div>
+              <span>HALLOWEEN • COLEÇÃO LIMITADA</span>
+              <h2>Cemitério da Lua Sangrenta</h2>
+              <p>
+                Quando a lua tinge as lápides de vermelho, os mortos de Wonderland não descansam.
+                Uma coleção sombria criada para jogadores que querem transformar presença em
+                espetáculo — sem conceder qualquer vantagem de combate.
+              </p>
+            </div>
+            <aside>
+              <small>ACESSO DE PRÉVIA</small>
+              <strong>Somente Administração</strong>
+              <span>Venda aos jogadores ainda bloqueada</span>
+            </aside>
+          </header>
+
+          <div className="cosmetics-grid">
+            {bloodyMoonCosmetics.map((cosmetic) => (
+              <article className="cosmetic-card" data-preview={cosmetic.preview} key={cosmetic.name}>
+                <div className="cosmetic-card__visual" aria-hidden="true">
+                  <i className="cosmetic-moon" />
+                  <i className="cosmetic-fog cosmetic-fog--one" />
+                  <i className="cosmetic-fog cosmetic-fog--two" />
+                  <span>{cosmetic.preview === "aura" ? "✦" : cosmetic.preview === "theme" ? "♜" : "☾"}</span>
+                </div>
+                <div className="cosmetic-card__body">
+                  <small>{cosmetic.type}</small>
+                  <h3>{cosmetic.name}</h3>
+                  <b>{cosmetic.tag}</b>
+                  <p>{cosmetic.description}</p>
+                  <ul>
+                    {cosmetic.highlights.map((highlight) => (
+                      <li key={highlight}>✦ {highlight}</li>
+                    ))}
+                  </ul>
+                </div>
+                <footer>
+                  <span>Parte da coleção</span>
+                  <strong>Cemitério da Lua Sangrenta</strong>
+                </footer>
+              </article>
+            ))}
+          </div>
+
+          <aside className="cosmetics-bundle">
+            <div>
+              <small>CONJUNTO COMPLETO</small>
+              <h3>Relíquia do Último Halloween</h3>
+              <p>
+                Card + Aura + Tema formam a identidade completa da coleção. Quando usados juntos,
+                os três efeitos compartilham a mesma Lua Sangrenta e criam uma apresentação
+                contínua no perfil.
+              </p>
+            </div>
+            <strong>Preço ainda não definido</strong>
+          </aside>
+        </section>
+      ) : (
+      <>
       <section className="shop-controls" aria-label="Filtros da loja">
         <nav>
           {rarityTabs.map(([key, label]) => (
@@ -341,6 +463,8 @@ export function ShopCatalog({ items, gold }: { items: ShopCatalogItem[]; gold: n
           )}
         </aside>
       </div>
+      </>
+      )}
     </>
   );
 }

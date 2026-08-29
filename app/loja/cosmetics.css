@@ -1,0 +1,48 @@
+/* Loja de cosméticos — aba administrativa dentro da loja normal. */
+.market-page .market-tabs{display:flex;gap:8px;align-items:center;margin:-2px 0 18px;padding:8px;border:1px solid #8e6d3d;border-radius:14px;background:#e6cc91;box-shadow:0 8px 20px rgba(44,31,19,.1)}
+.market-page .market-tabs a{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:8px 14px;border:1px solid transparent;border-radius:10px;color:#4c3926;font-weight:900;text-decoration:none}
+.market-page .market-tabs a.is-active{border-color:#214b36;background:#153e2d;color:#ffe5a5;box-shadow:0 8px 16px rgba(22,52,39,.18)}
+.market-page .market-tabs a.is-admin-only::after{content:"ADM";padding:3px 5px;border-radius:999px;background:#7e4d74;color:#fff1d5;font-size:.52rem;letter-spacing:.08em}
+
+.cosmetic-shop{display:grid;gap:18px}
+.cosmetic-collection-banner{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center;padding:24px;border:1px solid #9a693f;border-radius:20px;background:radial-gradient(circle at 82% 18%,rgba(211,94,58,.24),transparent 16%),linear-gradient(135deg,#25142e,#17251e 62%,#43251b);color:#f6e6cb;box-shadow:0 18px 36px rgba(28,15,31,.22)}
+.cosmetic-collection-banner h2{margin:5px 0 8px;color:#fff0cf;font-size:clamp(2.3rem,4vw,4rem)}
+.cosmetic-collection-banner p{max-width:760px;margin:0;color:#d8c8b8}
+.cosmetic-collection-banner .eyebrow{color:#dfa06b!important}
+.cosmetic-collection-actions{display:flex;max-width:440px;flex-wrap:wrap;justify-content:flex-end;gap:8px}.cosmetic-collection-actions form{margin:0}
+
+.cosmetic-grid{display:grid;gap:18px}
+.cosmetic-item{overflow:hidden;border:1px solid #997448;border-radius:20px;background:#f2dfb3;box-shadow:0 14px 30px rgba(46,31,18,.12)}
+.cosmetic-item.is-equipped{border-color:#6d4676;box-shadow:0 0 0 2px rgba(109,70,118,.18),0 18px 34px rgba(55,33,61,.16)}
+.cosmetic-item>header{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:17px 20px;border-bottom:1px solid #b38f5a;background:#e4c68c}
+.cosmetic-item>header small{display:block;color:#6b5339;font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em}.cosmetic-item>header h3{margin:3px 0 0;font-size:1.65rem}.cosmetic-item>header>span{padding:5px 8px;border-radius:999px;background:#315f47;color:#fff1ca;font-size:.6rem;font-weight:900;text-transform:uppercase;letter-spacing:.07em}
+.cosmetic-item.is-equipped>header>span{background:#6e4879}
+
+.cosmetic-comparison{display:grid;grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:10px;align-items:stretch;padding:18px;background:#d7bd87}
+.cosmetic-comparison__panel{display:grid;grid-template-rows:auto 1fr;gap:8px;min-width:0;padding:10px;border:1px solid rgba(74,51,28,.28);border-radius:15px;background:#ead9ac}
+.cosmetic-comparison__panel>b{text-align:center;color:#6c5438;font-size:.65rem;text-transform:uppercase;letter-spacing:.1em}
+.cosmetic-comparison__panel.is-after{border-color:#8a5b6f;background:linear-gradient(145deg,#dac6a0,#d3b9b1)}
+.cosmetic-comparison__panel.is-after>b{color:#704063}
+.cosmetic-comparison__visual{position:relative;display:grid;place-items:center;min-height:355px;overflow:hidden;border-radius:12px;background:linear-gradient(150deg,#c8b17f,#a99060)}
+.cosmetic-comparison__visual>div[data-character-card="official"]{width:min(245px,88%)!important}
+.cosmetic-comparison__arrow{display:grid;place-items:center;color:#684c2d;font-size:2.4rem;font-weight:900}
+
+.cosmetic-sheet-mockup{position:relative;width:min(330px,88%);aspect-ratio:4/3;overflow:hidden;border:1px solid #7c684e;border-radius:13px;background:linear-gradient(145deg,#ead9aa,#c6b07d);box-shadow:0 13px 24px rgba(31,22,17,.19)}
+.cosmetic-sheet-mockup__top{display:flex;justify-content:space-between;padding:13px}.cosmetic-sheet-mockup__top span{display:block;width:36%;height:13px;border-radius:99px;background:#6f604d}.cosmetic-sheet-mockup__top span+span{width:20%}
+.cosmetic-sheet-mockup__body{display:grid;grid-template-columns:34% 1fr;gap:10px;padding:0 13px 13px}.cosmetic-sheet-mockup__body aside,.cosmetic-sheet-mockup__body section{display:grid;gap:7px;padding:10px;border:1px solid rgba(82,62,40,.3);border-radius:9px;background:rgba(255,244,210,.52)}
+.cosmetic-sheet-mockup__body i,.cosmetic-sheet-mockup__body b{display:block;height:18px;border-radius:5px;background:#9e895f}.cosmetic-sheet-mockup__body section{grid-template-columns:1fr 1fr}.cosmetic-sheet-mockup__body section b{height:42px}
+.cosmetic-sheet-mockup__moon,.cosmetic-sheet-mockup__mist{display:none}
+
+.cosmetic-sheet-mockup[data-active="true"][data-slot="background"]{border-color:#a35643;background:radial-gradient(circle at 78% 18%,#c75d45 0 8%,#712f42 9% 12%,transparent 13% 22%),linear-gradient(180deg,#1a1021,#20261f 66%,#121912);box-shadow:0 0 28px rgba(123,48,85,.34)}
+.cosmetic-sheet-mockup[data-active="true"][data-slot="background"]::before{content:"";position:absolute;inset:auto 0 0;height:40%;background:linear-gradient(90deg,transparent 0 12%,#0a0d0b 12% 15%,transparent 15% 27%,#090c0a 27% 31%,transparent 31% 68%,#0a0d0b 68% 71%,transparent 71%);opacity:.72}
+.cosmetic-sheet-mockup[data-active="true"][data-slot="background"] .cosmetic-sheet-mockup__top span{background:#c59a68}.cosmetic-sheet-mockup[data-active="true"][data-slot="background"] .cosmetic-sheet-mockup__body aside,.cosmetic-sheet-mockup[data-active="true"][data-slot="background"] .cosmetic-sheet-mockup__body section{background:rgba(25,20,29,.82);border-color:#77596c}.cosmetic-sheet-mockup[data-active="true"][data-slot="background"] .cosmetic-sheet-mockup__body i,.cosmetic-sheet-mockup[data-active="true"][data-slot="background"] .cosmetic-sheet-mockup__body b{background:#6f536f}
+
+.cosmetic-sheet-mockup[data-active="true"][data-slot="theme"]{border-color:#aa673d;background:linear-gradient(145deg,#211329,#14251d);box-shadow:0 0 0 2px rgba(116,62,126,.28),0 0 26px rgba(89,44,103,.32)}
+.cosmetic-sheet-mockup[data-active="true"][data-slot="theme"] .cosmetic-sheet-mockup__top span{background:linear-gradient(90deg,#d26c45,#9f5db1)}.cosmetic-sheet-mockup[data-active="true"][data-slot="theme"] .cosmetic-sheet-mockup__body aside,.cosmetic-sheet-mockup[data-active="true"][data-slot="theme"] .cosmetic-sheet-mockup__body section{background:rgba(43,28,50,.9);border-color:#a06654}.cosmetic-sheet-mockup[data-active="true"][data-slot="theme"] .cosmetic-sheet-mockup__body i{background:#4f8d72}.cosmetic-sheet-mockup[data-active="true"][data-slot="theme"] .cosmetic-sheet-mockup__body b{background:linear-gradient(135deg,#6e426f,#6b573a)}
+.cosmetic-sheet-mockup[data-active="true"][data-slot="theme"]::after{content:"NOITE DE HALLOWEEN";position:absolute;right:10px;bottom:8px;color:#d79a67;font-size:.55rem;font-weight:900;letter-spacing:.08em}
+
+.cosmetic-item__body{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,.6fr);gap:16px;padding:18px 20px}.cosmetic-item__body>p{margin:0;line-height:1.55}.cosmetic-effect-note{padding:11px 12px;border-left:4px solid #76507e;border-radius:8px;background:#e3cda1}.cosmetic-effect-note span,.cosmetic-effect-note strong{display:block}.cosmetic-effect-note span{color:#76507e;font-size:.58rem;font-weight:900;text-transform:uppercase;letter-spacing:.09em}.cosmetic-effect-note strong{margin-top:3px;font-size:.75rem}
+.cosmetic-item>footer{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px 20px;border-top:1px solid #b79763;background:#e4ca94}.cosmetic-item>footer>span{font-size:.68rem;font-weight:900;color:#6b5036}
+
+@media(max-width:860px){.cosmetic-collection-banner{grid-template-columns:1fr}.cosmetic-collection-actions{justify-content:flex-start}.cosmetic-comparison{grid-template-columns:1fr}.cosmetic-comparison__arrow{transform:rotate(90deg)}.cosmetic-item__body{grid-template-columns:1fr}}
+@media(max-width:620px){.market-page .market-tabs{overflow:auto}.cosmetic-comparison__visual{min-height:300px}.cosmetic-item>header,.cosmetic-item>footer{align-items:flex-start}.cosmetic-item>footer{display:grid}.cosmetic-collection-banner{padding:18px}}

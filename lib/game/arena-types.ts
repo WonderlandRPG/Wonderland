@@ -12,7 +12,7 @@ export interface ArenaCharacter {
   adventureRank: string;
   imageUrl: string;
   equippedTitle: EquippedTitleData | null;
-  cosmetics: CharacterCosmeticLoadout;
+  cosmetics?: CharacterCosmeticLoadout;
   raceName: string;
   className: string;
   baseHp: number;

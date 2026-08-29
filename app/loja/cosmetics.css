@@ -23,7 +23,10 @@
 .cosmetic-comparison__panel>b{text-align:center;color:#6c5438;font-size:.65rem;text-transform:uppercase;letter-spacing:.1em}
 .cosmetic-comparison__panel.is-after{border-color:#8a5b6f;background:linear-gradient(145deg,#dac6a0,#d3b9b1)}
 .cosmetic-comparison__panel.is-after>b{color:#704063}
-.cosmetic-comparison__visual{position:relative;display:grid;place-items:center;min-height:355px;overflow:hidden;border-radius:12px;background:linear-gradient(150deg,#c8b17f,#a99060)}
+.cosmetic-comparison__visual{position:relative;display:grid;place-items:center;min-height:410px;padding:34px;overflow:visible;border-radius:12px;background:radial-gradient(circle at 50% 44%,rgba(255,238,190,.42),transparent 48%),linear-gradient(150deg,#c8b17f,#a99060)}
+.cosmetic-comparison__panel.is-after .cosmetic-comparison__visual{background:radial-gradient(circle at 50% 44%,rgba(117,57,133,.28),transparent 48%),linear-gradient(150deg,#b59a67,#8f764f)}
+.cosmetic-comparison__panel.is-after{overflow:visible}
+.cosmetic-comparison__panel.is-after .cosmetic-comparison__visual::after{content:"PRÉVIA ANIMADA";position:absolute;right:10px;bottom:9px;padding:4px 7px;border-radius:999px;background:rgba(31,18,37,.78);color:#f3d9ad;font-size:.5rem;font-weight:900;letter-spacing:.08em;pointer-events:none}
 .cosmetic-comparison__visual>div[data-character-card="official"]{width:min(245px,88%)!important}
 .cosmetic-comparison__arrow{display:grid;place-items:center;color:#684c2d;font-size:2.4rem;font-weight:900}
 

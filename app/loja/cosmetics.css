@@ -92,8 +92,14 @@
 .market-page .cosmetics-collection-hero aside strong{color:var(--wl-blood-text);font-size:1.2rem}
 .market-page .cosmetics-collection-hero aside span{color:var(--wl-blood-text-muted);font-size:.72rem}
 
-.market-page .cosmetics-grid{display:grid;gap:18px}
+.market-page .cosmetics-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  gap:26px;
+}
 .market-page .cosmetic-card{
+  display:block;
+  width:100%;
   overflow:hidden;
   border:1px solid var(--wl-blood-border);
   border-radius:var(--wl-radius-xl);
@@ -101,12 +107,43 @@
   color:var(--wl-blood-text);
   box-shadow:var(--wl-shadow-soft);
 }
+.market-page .cosmetic-card__heading{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:24px;
+  padding:22px 26px 18px;
+  border-bottom:1px solid var(--wl-blood-border);
+  background:linear-gradient(100deg,var(--wl-blood-surface-raised),var(--wl-blood-black));
+}
+.market-page .cosmetic-card__heading small{
+  color:var(--wl-blood-bright);
+  font-size:.65rem;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+}
+.market-page .cosmetic-card__heading h3{
+  margin:5px 0 0;
+  color:var(--wl-blood-text);
+  font-size:clamp(1.8rem,3vw,2.55rem);
+  line-height:1;
+}
+.market-page .cosmetic-card__heading>b{
+  flex:0 0 auto;
+  padding:7px 10px;
+  border:1px solid var(--wl-blood-border);
+  border-radius:999px;
+  color:var(--wl-blood-gold);
+  background:var(--wl-blood-black);
+  font-size:.72rem;
+}
 .market-page .cosmetic-compare{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr);
-  gap:12px;
+  grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);
+  gap:18px;
   align-items:stretch;
-  padding:18px;
+  padding:24px 26px 28px;
   background:color-mix(in srgb,var(--wl-blood-black) 84%,var(--wl-surface-dark));
 }
 .market-page .cosmetic-compare__side{
@@ -134,8 +171,8 @@
   position:relative;
   display:grid;
   place-items:center;
-  min-height:390px;
-  padding:28px;
+  min-height:500px;
+  padding:34px;
   overflow:hidden;
   border:1px solid var(--wl-blood-border);
   border-radius:var(--wl-radius-md);
@@ -147,7 +184,7 @@
     linear-gradient(var(--wl-blood-surface),var(--wl-blood-black));
 }
 .market-page .cosmetic-compare__stage [data-character-card="official"]{
-  width:min(100%,245px);
+  width:min(100%,315px);
   min-height:0;
   z-index:3;
 }
@@ -155,7 +192,7 @@
   position:relative;
   display:grid;
   place-items:center;
-  width:min(100%,280px);
+  width:min(100%,350px);
 }
 .market-page .cosmetic-character-demo.is-card [data-character-card="official"]{
   border-color:var(--wl-blood-gold);
@@ -212,8 +249,8 @@
 
 .market-page .cosmetic-theme-demo{
   position:relative;
-  width:min(100%,360px);
-  aspect-ratio:16/11;
+  width:min(100%,520px);
+  aspect-ratio:16/10;
   overflow:hidden;
   border:1px solid var(--wl-border);
   border-radius:var(--wl-radius-md);
@@ -281,17 +318,18 @@
   animation:grave-fog 8s ease-in-out infinite alternate;
 }
 
-.market-page .cosmetic-card__body{padding:20px 22px}
-.market-page .cosmetic-card__body>small{
-  color:var(--wl-blood-bright);
-  font-size:.62rem;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.13em;
+.market-page .cosmetic-card__body{
+  padding:20px 26px 24px;
+  border-top:1px solid var(--wl-blood-border);
+  background:var(--wl-blood-surface);
 }
-.market-page .cosmetic-card__body h3{margin:5px 0;color:var(--wl-blood-text);font-size:1.65rem;line-height:1.05}
-.market-page .cosmetic-card__body>b{display:inline-block;margin-bottom:10px;color:var(--wl-blood-bright);font-size:.7rem}
-.market-page .cosmetic-card__body p{margin:0;color:var(--wl-blood-text-muted);line-height:1.55}
+.market-page .cosmetic-card__body p{
+  max-width:1000px;
+  margin:0;
+  color:var(--wl-blood-text-muted);
+  font-size:.98rem;
+  line-height:1.65
+}
 .market-page .cosmetic-card__body ul{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -356,8 +394,10 @@
   .market-page .cosmetic-theme-fog{animation:none}
 }
 @media(max-width:900px){
+  .market-page .cosmetic-card__heading{align-items:flex-start;flex-direction:column}
   .market-page .cosmetic-compare{grid-template-columns:1fr}
-  .market-page .cosmetic-compare__arrow{transform:rotate(90deg)}
+  .market-page .cosmetic-compare__arrow{min-height:34px;transform:rotate(90deg)}
+  .market-page .cosmetic-compare__stage{min-height:460px}
   .market-page .cosmetic-card__body ul{grid-template-columns:1fr 1fr}
   .market-page .cosmetics-collection-hero{grid-template-columns:1fr}
 }
@@ -366,7 +406,7 @@
   .market-page .shop-departments button{width:100%;max-width:none}
   .market-page .cosmetics-collection-hero{min-height:0;padding:25px 20px}
   .market-page .cosmetic-compare{padding:12px}
-  .market-page .cosmetic-compare__stage{min-height:330px;padding:18px}
+  .market-page .cosmetic-compare__stage{min-height:420px;padding:22px}
   .market-page .cosmetic-card__body ul{grid-template-columns:1fr}
   .market-page .cosmetics-bundle{align-items:flex-start;flex-direction:column}
 }

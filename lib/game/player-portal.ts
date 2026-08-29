@@ -2,6 +2,7 @@ import "server-only";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { parseUpdateBlocks } from "@/lib/game/update-content";
+import { parseCharacterCosmetics } from "@/lib/content/character-cosmetics";
 
 export async function getRanking() {
   const client = await createServerSupabaseClient();
@@ -9,6 +10,7 @@ export async function getRanking() {
   const { data } = await client.rpc("v2_character_ranking", {});
   return (data ?? []).map((row, index) => ({
     ...row,
+    cosmetics: parseCharacterCosmetics(row.cosmetics),
     rank: index + 1,
   }));
 }
@@ -19,7 +21,11 @@ export async function getPvpRanking() {
   const client = await createServerSupabaseClient();
   if (!client) return [];
   const { data } = await client.rpc("v2_pvp_ranking", {});
-  return (data ?? []).map((row, index) => ({ ...row, position: index + 1 }));
+  return (data ?? []).map((row, index) => ({
+    ...row,
+    cosmetics: parseCharacterCosmetics(row.cosmetics),
+    position: index + 1,
+  }));
 }
 
 export type PvpRankingEntry = Awaited<ReturnType<typeof getPvpRanking>>[number];

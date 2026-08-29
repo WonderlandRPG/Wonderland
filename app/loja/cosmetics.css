@@ -318,7 +318,7 @@
   .market-page .cosmetic-demo-moon,
   .market-page .cosmetic-demo-fog,
   .market-page .cosmetic-demo-soul,
-  .market-page .cosmetic-character-demo.is-card [data-character-card="official"],{animation:none}
+  .market-page .cosmetic-character-demo.is-card [data-character-card="official"]{animation:none}
 }
 @media(max-width:900px){
   .market-page .cosmetic-card__heading{align-items:flex-start;flex-direction:column}

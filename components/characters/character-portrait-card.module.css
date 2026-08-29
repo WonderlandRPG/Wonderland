@@ -521,3 +521,26 @@
     animation:none;
   }
 }
+
+
+/* A Borda também reposiciona os metadados nos encaixes da própria arte. */
+.card[data-border-cosmetic='portico-lua-sangrenta'] .topMeta{
+  left:-8%;
+  right:-8%;
+  top:-1%;
+}
+.card[data-border-cosmetic='portico-lua-sangrenta'] .titleMeta{
+  left:14%;
+  right:14%;
+  bottom:-1.5%;
+}
+.compact[data-border-cosmetic='portico-lua-sangrenta'] .topMeta{
+  left:-7%;
+  right:-7%;
+  top:-1%;
+}
+.compact[data-border-cosmetic='portico-lua-sangrenta'] .titleMeta{
+  left:12%;
+  right:12%;
+  bottom:-1%;
+}

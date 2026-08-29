@@ -15,7 +15,7 @@ type CharacterPortraitCardProps = {
   variant?: "hero" | "standard" | "compact" | "inventory";
   className?: string;
   children?: ReactNode;
-  cosmetics?: CharacterCosmeticLoadout;
+  cosmetics: CharacterCosmeticLoadout | undefined;
 };
 
 export function CharacterPortraitCard({

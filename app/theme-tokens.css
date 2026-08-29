@@ -38,6 +38,13 @@
   --wl-surface-dark-strong: #0c251b;
   --wl-surface-overlay: rgba(24, 17, 12, 0.72);
 
+  /* Atmosfera global — imagens de rota permanecem, a coloração vem do tema. */
+  --wl-page-overlay-start: rgba(239, 230, 202, 0.76);
+  --wl-page-overlay-end: rgba(198, 204, 184, 0.88);
+  --wl-atmosphere-start: rgba(7, 18, 13, 0.42);
+  --wl-atmosphere-end: rgba(15, 30, 23, 0.70);
+  --wl-atmosphere-glow: rgba(220, 188, 113, 0.16);
+
   /* Estrutura */
   --wl-border: #9d7949;
   --wl-border-strong: #65462f;

@@ -74,7 +74,7 @@ export default async function PresencePage({
         <header className="presence-hero presence-hero--enhanced">
           <div className="presence-hero__copy">
             <span className="presence-kicker">✦ Recompensas diárias ✦</span>
-            <h1>Seu retorno<br /><em>merece uma recompensa</em></h1>
+            <h1>Seu retorno <br /><em>merece uma recompensa</em></h1>
             <p>
               Marque a presença de <strong>{character.name}</strong>, fortaleça sua jornada e avance
               até o tesouro final deste ciclo.

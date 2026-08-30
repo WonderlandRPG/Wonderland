@@ -16,7 +16,7 @@ export default function RealmsPage() {
         <header className="world-lore-hero realms-hero">
           <span className="eyebrow">Atlas dos seis reinos</span>
           <h1>
-            Terras de
+            Terras de{" "}
             <br />
             <em>Wonderland</em>
           </h1>

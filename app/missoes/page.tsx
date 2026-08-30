@@ -56,7 +56,7 @@ export default async function MissionBoardPage({
               Guilda de {kingdomMissionNames[board.character.kingdom] ?? board.character.kingdom}
             </span>
             <h1>
-              Mural de
+              Mural de{" "}
               <br />
               <em>Missões</em>
             </h1>

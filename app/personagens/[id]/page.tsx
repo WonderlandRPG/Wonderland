@@ -73,11 +73,20 @@ export default async function CharacterSheetPage({
     character.stats.attributes.INT,
     character.race.payload.resource?.maximum ?? 0,
   );
+  const xpRemaining = Math.max(progress.next - character.xp, 0);
+  const tabHref = (nextTab: "resumo" | "habilidades" | "equipamentos") =>
+    `/personagens/${character.id}?tab=${nextTab}`;
 
   return (
     <main className="sheet-page">
       <PlayerNav />
       <div className="page-container sheet-page__inner">
+        <nav className="sheet-breadcrumb" aria-label="Localização na jornada">
+          <Link href="/personagens">Meus personagens</Link>
+          <span aria-hidden="true">/</span>
+          <strong>{character.name}</strong>
+          <span className="sheet-breadcrumb__status">● Em jornada</span>
+        </nav>
         {query.status === "criado" ? (
           <div className="account-notice" data-sfx-on-mount="confirm" role="status">
             <span>✓</span>Personagem criado! A ficha já está salva no seu perfil.
@@ -111,18 +120,34 @@ export default async function CharacterSheetPage({
             />
           </div>
           <div className="character-command-hero__identity">
-            <span className="eyebrow">Personagem online · {kingdomName(character.kingdom)}</span>
+            <div className="character-command-hero__overline">
+              <span className="eyebrow">Dossiê do aventureiro</span>
+              <span className="character-command-hero__online">● Online · {kingdomName(character.kingdom)}</span>
+            </div>
             <h1>{character.name}</h1>
-            <p>{character.race.name} · {character.characterClass.name}</p>
+            <p className="character-command-hero__calling">
+              <strong>{character.race.name}</strong>
+              <span aria-hidden="true">◆</span>
+              <strong>{character.characterClass.name}</strong>
+              <span aria-hidden="true">◆</span>
+              <span>{classPath?.name ?? "Caminho ainda não escolhido"}</span>
+            </p>
             <dl className="character-command-hero__facts">
-              <div><dt>Rank</dt><dd>{rank.key}</dd></div>
+              <div className="is-rank"><dt>Rank atual</dt><dd>{rank.key}</dd></div>
               <div><dt>Nível</dt><dd>{character.level}</dd></div>
               <div><dt>Reino</dt><dd>{kingdomName(character.kingdom)}</dd></div>
               <div><dt>Caminho</dt><dd>{classPath?.name ?? "Não definido"}</dd></div>
             </dl>
+            <div className="character-readiness" aria-label="Prontidão para combate">
+              <div><small>Vitalidade</small><strong>{character.stats.maxHp}</strong><span>HP máximo</span></div>
+              <div><small>Defesa</small><strong>{character.stats.attributes.DEF}</strong><span>Redução física</span></div>
+              <div><small>Iniciativa</small><strong>{character.stats.initiative}</strong><span>Ordem de ação</span></div>
+              <div><small>Maior poder</small><strong>{Math.max(character.stats.physicalPower, character.stats.magicalPower, character.stats.supportPower)}</strong><span>Potência atual</span></div>
+            </div>
             <nav className="character-command-hero__actions">
-              <Link className="button button--primary" href={`/arena?personagem=${character.id}`}>Entrar na Arena</Link>
-              <Link className="button button--dark" href="/loja">Visitar loja</Link>
+              <Link className="button button--primary" href={`/arena?personagem=${character.id}`}>⚔ Entrar na Arena</Link>
+              <Link className="button button--dark" href={tabHref("equipamentos")}>◈ Preparar equipamentos</Link>
+              <Link className="character-command-hero__shop" href="/loja">Visitar mercado →</Link>
             </nav>
             <details className="character-command-hero__image-editor">
               <summary>Alterar retrato do personagem</summary>
@@ -149,23 +174,36 @@ export default async function CharacterSheetPage({
           className="character-progress-strip character-vitals-panel"
           style={{ "--character-rank": rank.color } as React.CSSProperties}
         >
-          <div><small>Nível atual</small><strong>{character.level}</strong></div>
+          <div className="character-progress-strip__level"><small>Nível atual</small><strong>{character.level}</strong></div>
           <div className="player-xp">
-            <small>Experiência</small>
-            <strong>{character.xp.toLocaleString("pt-BR")} / {progress.next.toLocaleString("pt-BR")} XP</strong>
-            <span><i style={{ width: `${progress.percent}%` }} /></span>
+            <div><small>Progresso para o nível {character.level + 1}</small><strong>{progress.percent}%</strong></div>
+            <span aria-label={`${progress.percent}% do nível concluído`} aria-valuemax={100} aria-valuemin={0} aria-valuenow={progress.percent} role="progressbar"><i style={{ width: `${progress.percent}%` }} /></span>
+            <small>{character.xp.toLocaleString("pt-BR")} XP · faltam {xpRemaining.toLocaleString("pt-BR")}</small>
           </div>
-          <div><small>WG de {character.name}</small><strong>◆ {character.gold.toLocaleString("pt-BR")}</strong></div>
+          <div className="character-progress-strip__wallet"><small>Carteira</small><strong>◆ {character.gold.toLocaleString("pt-BR")} WG</strong></div>
         </section>
 
         <nav className="sheet-tabs" aria-label="Seções da ficha">
-          <Link className={tab === "resumo" ? "is-active" : ""} href={`/personagens/${character.id}?tab=resumo`}>Ficha</Link>
-          <Link className={tab === "habilidades" ? "is-active" : ""} href={`/personagens/${character.id}?tab=habilidades`}>Habilidades</Link>
-          <Link className={tab === "equipamentos" ? "is-active" : ""} href={`/personagens/${character.id}?tab=equipamentos`}>Equipamentos</Link>
+          <Link aria-current={tab === "resumo" ? "page" : undefined} className={tab === "resumo" ? "is-active" : ""} href={tabHref("resumo")}><span>01</span><strong>Ficha</strong><small>Atributos e identidade</small></Link>
+          <Link aria-current={tab === "habilidades" ? "page" : undefined} className={tab === "habilidades" ? "is-active" : ""} href={tabHref("habilidades")}><span>02</span><strong>Habilidades</strong><small>{character.unlockedRaceAbilities.length + character.unlockedClassSkills.length + unlockedPathSkills.length} técnicas disponíveis</small></Link>
+          <Link aria-current={tab === "equipamentos" ? "page" : undefined} className={tab === "equipamentos" ? "is-active" : ""} href={tabHref("equipamentos")}><span>03</span><strong>Equipamentos</strong><small>{character.inventory.filter((item) => item.equippedSlot).length} itens equipados</small></Link>
         </nav>
 
         {tab === "resumo" ? (
           <>
+            <section className="sheet-stat-grid" aria-label="Resumo de combate">
+              <article data-stat="hp"><span>HP máximo</span><strong>{character.stats.maxHp}</strong><small>Sobrevivência total</small></article>
+              <article data-stat="resource">
+                <span>Recursos iniciais</span>
+                <strong>{`+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}</strong>
+                <small>Disponíveis no início</small>
+              </article>
+              <article data-stat="initiative"><span>Iniciativa</span><strong>{character.stats.initiative}</strong><small>Prioridade de turno</small></article>
+              <article data-stat="physical"><span>Poder físico</span><strong>{character.stats.physicalPower}</strong><small>Escala com FOR</small></article>
+              <article data-stat="magic"><span>Poder mágico</span><strong>{character.stats.magicalPower}</strong><small>Escala com INT</small></article>
+              <article data-stat="support"><span>Poder de suporte</span><strong>{character.stats.supportPower}</strong><small>Escala com ARC</small></article>
+            </section>
+
             {!classPath ? (
               <section className="sheet-section path-selection-board">
                 <header>
@@ -203,24 +241,9 @@ export default async function CharacterSheetPage({
               </section>
             ) : null}
 
-            <section className="sheet-stat-grid">
-              <article><span>HP máximo</span><strong>{character.stats.maxHp}</strong></article>
-              <article>
-                <span>Recursos iniciais</span>
-                <strong>{`+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}</strong>
-              </article>
-              <article><span>Iniciativa</span><strong>{character.stats.initiative}</strong></article>
-              <article><span>Poder físico</span><strong>{character.stats.physicalPower}</strong></article>
-              <article><span>Poder mágico</span><strong>{character.stats.magicalPower}</strong></article>
-              <article><span>Poder de suporte</span><strong>{character.stats.supportPower}</strong></article>
-            </section>
-
-            <section className="sheet-section combat-formulas">
-              <header>
-                <span className="eyebrow">Transparência de combate</span>
-                <h2>Como os cálculos funcionam</h2>
-                <p>Os mesmos cálculos são usados em Arena, PvE, Treino e Dungeon.</p>
-              </header>
+            <details className="sheet-section combat-formulas">
+              <summary><span><small>Manual de combate</small><strong>Como os cálculos funcionam</strong></span><em>Abrir fórmulas</em></summary>
+              <p className="combat-formulas__intro">Os mesmos cálculos são usados em Arena, PvE, Treino e Dungeon.</p>
               <div>
                 <article><b>HP máximo</b><code>HP base + RES × {defaultCombatRules.hpPerResistance}</code><p>RES aumenta sua vida total antes do combate.</p></article>
                 <article><b>Ataque básico</b><code>maior valor entre FOR e INT × {defaultCombatRules.basicAttackMultiplier}</code><p>FOR causa dano físico; INT causa dano mágico quando for maior.</p></article>
@@ -229,7 +252,7 @@ export default async function CharacterSheetPage({
                 <article><b>Habilidades</b><code>Σ atributo × multiplicador da habilidade</code><p>Cada card informa quais atributos entram na escala.</p></article>
                 <article><b>Escudo e defesa</b><code>Escudo absorve primeiro · Defender bloqueia o próximo dano</code><p>Dano verdadeiro ignora DEF e RES. O dano mínimo normal é {defaultCombatRules.minimumDamage}.</p></article>
               </div>
-            </section>
+            </details>
 
             <section className="sheet-section">
               <header>

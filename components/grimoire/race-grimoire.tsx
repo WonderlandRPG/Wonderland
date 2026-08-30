@@ -27,7 +27,7 @@ export function RaceGrimoire({ entries }: { entries: Entry[] }) {
         </label>
         <nav className={styles.list}>
           {visible.map((item) => (
-            <button className={`${styles.entry} ${item.slug === entry.slug ? styles.entryActive : ""}`} onClick={() => setSelected(item.slug)} key={item.slug}>
+            <button aria-pressed={item.slug === entry.slug} className={`${styles.entry} ${item.slug === entry.slug ? styles.entryActive : ""}`} onClick={() => setSelected(item.slug)} key={item.slug} type="button">
               <i className={styles.portrait} style={item.payload.imageUrl ? { backgroundImage: `url(${item.payload.imageUrl})` } : undefined}>
                 {item.payload.imageUrl ? "" : item.name.slice(0, 2).toUpperCase()}
               </i>
@@ -36,11 +36,14 @@ export function RaceGrimoire({ entries }: { entries: Entry[] }) {
             </button>
           ))}
         </nav>
+        {visible.length === 0 ? <p className={styles.emptyIndex}>Nenhum povo encontrado.</p> : null}
       </aside>
 
       <article className={styles.sheet}>
         <header className={styles.showcase}>
-          <div className={styles.art} style={entry.payload.imageUrl ? { backgroundImage: `url(${entry.payload.imageUrl})` } : undefined} />
+          <div className={styles.art} style={entry.payload.imageUrl ? { backgroundImage: `url(${entry.payload.imageUrl})` } : undefined}>
+            {entry.payload.imageUrl ? null : <span className={styles.artFallback}><b>{entry.name.slice(0, 1)}</b><small>{entry.name}</small></span>}
+          </div>
           <div className={styles.identity}>
             <small>Povo de Wonderland</small>
             <h2>{entry.name}</h2>

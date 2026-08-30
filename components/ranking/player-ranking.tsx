@@ -28,7 +28,7 @@ function PlayerTitle({ entry }: { entry: RankingEntry }) {
   return <EquippedTitle title={titleData(entry)} />;
 }
 
-export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
+export function PlayerRanking({ currentCharacterId, entries }: { currentCharacterId: string; entries: RankingEntry[] }) {
   const [query, setQuery] = useState("");
   const [rank, setRank] = useState<(typeof rankOrder)[number]>("Todos");
   const leaders = entries.slice(0, 3);
@@ -53,6 +53,7 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
           .toLocaleLowerCase("pt-BR")
           .includes(normalized)),
   );
+  const currentEntry = entries.find((entry) => entry.id === currentCharacterId);
 
   if (!entries.length) {
     return (
@@ -76,12 +77,13 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
           <div><dt>Competidores</dt><dd>{entries.length}</dd></div>
           <div><dt>Maior nível</dt><dd>{entries[0]?.level ?? 0}</dd></div>
           <div><dt>Rank mais alto</dt><dd>{highestRank}</dd></div>
+          <div className="ranking-self"><dt>Sua posição</dt><dd>{currentEntry ? `#${currentEntry.rank}` : "—"}</dd><small>{currentEntry ? `Nível ${currentEntry.level}` : "Sem registro"}</small></div>
         </dl>
       </section>
 
       <section className="ranking-podium" aria-label="Pódio dos três melhores jogadores">
         {podium.map(({ entry, position }) => (
-          <Link className={`ranking-podium__place is-place-${position}`} href={`/jogadores/${entry.id}`} key={entry.id}>
+          <Link className={`ranking-podium__place is-place-${position} ${entry.id === currentCharacterId ? "is-current" : ""}`} href={`/jogadores/${entry.id}`} key={entry.id}>
             <b className="ranking-podium__number">{position}</b>
             <span className="ranking-podium__portrait official-ranking-card-host">
               {position === 1 ? <span className="ranking-crown" aria-label="Primeiro colocado">♛</span> : null}
@@ -122,7 +124,7 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
         <div className="ranking-table" role="table" aria-label="Ranking de jogadores">
           <div className="ranking-table__labels" role="row"><span>Posição</span><span>Jogador</span><span>Reino</span><span>Progresso</span><span>Rank</span></div>
           {visible.map((entry) => (
-            <Link href={`/jogadores/${entry.id}`} key={entry.id} role="row">
+            <Link className={entry.id === currentCharacterId ? "is-current" : ""} href={`/jogadores/${entry.id}`} key={entry.id} role="row">
               <strong className="ranking-position">#{entry.rank}</strong>
               <span className="ranking-player-cell">
                 <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} cosmetics={entry.cosmetics} variant="compact" />

@@ -9,6 +9,7 @@ import { getCharacterSheets } from "@/lib/content/characters";
 import { getActiveCharacterId } from "@/lib/content/active-character";
 import { getAdventureRank } from "@/lib/game/ranks";
 import { getRecentPortalUpdates } from "@/lib/game/player-portal";
+import { getLevelProgress } from "@/lib/game/experience";
 import { selectCharacterAction } from "./select-actions";
 import styles from "./personagens.module.css";
 
@@ -29,23 +30,83 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
   const selecting = query.selecionar === "1" || !activeCharacterId;
   const activeCharacter = characters.find((character) => character.id === activeCharacterId);
   const visibleCharacters = selecting ? characters : activeCharacter ? [activeCharacter] : characters;
+  const activeProgress = activeCharacter ? getLevelProgress(activeCharacter.xp) : null;
+  const activeRank = activeCharacter ? getAdventureRank(activeCharacter.adventure_rank) : null;
+  const equippedCount = activeCharacter?.inventory.filter((item) => item.equippedSlot).length ?? 0;
+  const abilityCount = activeCharacter
+    ? activeCharacter.unlockedRaceAbilities.length + activeCharacter.unlockedClassSkills.length
+    : 0;
+  const peakPower = activeCharacter
+    ? Math.max(activeCharacter.stats.physicalPower, activeCharacter.stats.magicalPower, activeCharacter.stats.supportPower)
+    : 0;
 
   return (
     <main className={styles.page}>
       <PlayerNav />
       <div className={styles.inner}>
-        <header className={styles.intro}>
+        <header className={`${styles.intro} ${!selecting ? styles.commandHeader : ""}`}>
           <div>
-            <small>{selecting ? `Salão de ${account.displayName}` : "Aventureiro em jornada"}</small>
-            <h1>{selecting ? "Escolha seu aventureiro" : `Bem-vindo, ${activeCharacter?.name}`}</h1>
-            <p>{selecting ? "Cada ficha representa uma história diferente. Escolha quem atravessará os portões de Wonderland." : "Seu personagem está em campo. Continue a jornada a partir daqui."}</p>
+            <small>{selecting ? `Salão de ${account.displayName}` : "Central do aventureiro"}</small>
+            <h1>{selecting ? "Escolha seu aventureiro" : "Comando de jornada"}</h1>
+            <p>{selecting ? "Cada ficha representa uma história diferente. Escolha quem atravessará os portões de Wonderland." : `Tudo que ${activeCharacter?.name} precisa para continuar a aventura, em uma única tela.`}</p>
           </div>
-          {!selecting ? <div className={styles.online}>Online em Wonderland</div> : characters.length < rules.maximumSlots ? <Link className="button button--primary" href="/personagens/novo">Criar personagem ＋</Link> : <span>{characters.length} / {rules.maximumSlots} fichas</span>}
+          {!selecting ? <div className={styles.headerActions}><span className={styles.online}>● Online</span><Link href="/personagens?selecionar=1">Trocar aventureiro</Link></div> : characters.length < rules.maximumSlots ? <Link className="button button--primary" href="/personagens/novo">Criar personagem ＋</Link> : <span>{characters.length} / {rules.maximumSlots} fichas</span>}
         </header>
 
         {query.notice && noticeMessages[query.notice] ? <div className={styles.notice} role="status">{noticeMessages[query.notice]}</div> : null}
 
-        {characters.length > 0 ? (
+        {!selecting && activeCharacter && activeProgress && activeRank ? (
+          <section className={styles.activeDashboard} style={{ "--card-rank": activeRank.color } as React.CSSProperties}>
+            <div className={`${styles.activePortrait} official-character-card-host`}>
+              <CharacterPortraitCard
+                imageUrl={activeCharacter.image_url}
+                level={activeCharacter.level}
+                name={activeCharacter.name}
+                rank={activeCharacter.adventure_rank}
+                title={activeCharacter.inventory.find((item) => item.equippedSlot === "title") ?? null}
+                cosmetics={activeCharacter.cosmetics}
+                variant="standard"
+              />
+            </div>
+            <div className={styles.activeSummary}>
+              <header>
+                <div><small>Em jornada por Wonderland</small><h2>{activeCharacter.name}</h2><p>{activeCharacter.race.name} · {activeCharacter.characterClass.name} · Rank {activeRank.key}</p></div>
+                <strong className={styles.levelBadge}><small>Nível</small>{activeCharacter.level}</strong>
+              </header>
+              <div className={styles.progress}>
+                <div><span>Próximo nível</span><strong>{activeProgress.percent}%</strong></div>
+                <i><b style={{ width: `${activeProgress.percent}%` }} /></i>
+                <small>{activeCharacter.xp.toLocaleString("pt-BR")} XP · faltam {(activeProgress.next - activeCharacter.xp).toLocaleString("pt-BR")}</small>
+              </div>
+              <dl className={styles.dashboardStats}>
+                <div><dt>Vitalidade</dt><dd>{activeCharacter.stats.maxHp}</dd><small>HP máximo</small></div>
+                <div><dt>Iniciativa</dt><dd>{activeCharacter.stats.initiative}</dd><small>Ordem de ação</small></div>
+                <div><dt>Pico de poder</dt><dd>{peakPower}</dd><small>Potência atual</small></div>
+                <div><dt>Carteira</dt><dd>{activeCharacter.gold.toLocaleString("pt-BR")}</dd><small>WG disponível</small></div>
+              </dl>
+              <div className={styles.readiness}>
+                <span><b>{equippedCount}</b> itens equipados</span>
+                <span><b>{abilityCount}</b> técnicas liberadas</span>
+                <span><b>{activeCharacter.characterClass.payload.resource.name}</b> recurso de classe</span>
+              </div>
+              <div className={styles.primaryActions}>
+                <Link className="button button--primary" href={`/personagens/${activeCharacter.id}`}>Abrir ficha completa</Link>
+                <Link className="button button--dark" href="/arena">Entrar na Arena</Link>
+              </div>
+            </div>
+            <aside className={styles.destinations}>
+              <header><small>Acesso rápido</small><h2>Próximo destino</h2></header>
+              <nav>
+                <Link href={`/personagens/${activeCharacter.id}?tab=equipamentos`}><span>◈</span><b>Equipamentos</b><small>Preparar build</small></Link>
+                <Link href="/loja"><span>◆</span><b>Mercado</b><small>Comprar itens</small></Link>
+                <Link href="/missoes"><span>✦</span><b>Missões</b><small>Ganhar XP</small></Link>
+                <Link href="/presenca"><span>◇</span><b>Presença</b><small>Resgatar prêmio</small></Link>
+                <Link href="/eventos"><span>⌁</span><b>Eventos</b><small>Ver agenda</small></Link>
+                <Link href="/ranking"><span>♜</span><b>Ranking</b><small>Ver posição</small></Link>
+              </nav>
+            </aside>
+          </section>
+        ) : characters.length > 0 ? (
           <section className={`${styles.roster} ${!selecting ? styles.rosterLobby : ""}`}>
             {visibleCharacters.map((character) => {
               const rank = getAdventureRank(character.adventure_rank);
@@ -76,32 +137,10 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
               );
             })}
 
-            {!selecting && activeCharacter ? (
-              <aside className={styles.session}>
-                <small>Registro da jornada</small><h2>{activeCharacter.name} está em campo</h2>
-                <p>Todas as ações de combate, comércio, inventário e presença serão realizadas por este aventureiro até que você troque de personagem.</p>
-                <dl><div><dt>Personagem</dt><dd>{activeCharacter.name}</dd></div><div><dt>Raça</dt><dd>{activeCharacter.race.name}</dd></div><div><dt>Classe</dt><dd>{activeCharacter.characterClass.name}</dd></div><div><dt>Nível</dt><dd>{activeCharacter.level}</dd></div></dl>
-                <Link className="button button--secondary" href="/personagens?selecionar=1">Trocar aventureiro</Link>
-              </aside>
-            ) : null}
           </section>
         ) : (
           <section className={styles.empty}><h2>Sua primeira lenda começa aqui</h2><p>Escolha raça, classe e distribua seus pontos para atravessar os portões de Wonderland.</p><Link className="button button--primary" href="/personagens/novo">Criar primeiro personagem</Link></section>
         )}
-
-        {!selecting && activeCharacter ? (
-          <section className={styles.commands}>
-            <header><small>Escolha o próximo destino</small><h2>Para onde a jornada segue?</h2></header>
-            <div className={styles.signs}>
-              <Link className={styles.sign} href="/arena"><span>⚔</span><small>Combate</small><strong>Arena</strong></Link>
-              <Link className={styles.sign} href={`/personagens/${activeCharacter.id}?tab=equipamentos`}><span>◈</span><small>Preparação</small><strong>Equipamentos</strong></Link>
-              <Link className={styles.sign} href="/loja"><span>◆</span><small>Comércio</small><strong>Mercado</strong></Link>
-              <div className={`${styles.sign} ${styles.disabled}`}><span>⌖</span><small>Exploração</small><strong>Mapa em manutenção</strong></div>
-              <Link className={styles.sign} href="/eventos"><span>◇</span><small>Agenda</small><strong>Eventos</strong></Link>
-              <Link className={styles.sign} href="/ranking"><span>♜</span><small>Prestígio</small><strong>Ranking</strong></Link>
-            </div>
-          </section>
-        ) : null}
 
         {recentUpdates.length > 0 ? (
           <section className={styles.updates}>

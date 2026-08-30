@@ -19,10 +19,10 @@ function titleData(entry: Pick<PvpRankingEntry, "title_name" | "title_style" | "
   return { name: entry.title_name, rarity: entry.title_rarity ?? "title", titleStyle };
 }
 
-export function RankingHall({ levelEntries, pvpEntries }: { levelEntries: RankingEntry[]; pvpEntries: PvpDisplayEntry[] }) {
+export function RankingHall({ currentCharacterId, levelEntries, pvpEntries }: { currentCharacterId: string; levelEntries: RankingEntry[]; pvpEntries: PvpDisplayEntry[] }) {
   const [mode, setMode] = useState<"level" | "pvp">("level");
   return (
-    <section className="champions-hall">
+    <section className="champions-hall ranking-command">
       <header className="champions-hall__switcher">
         <div><small>LIVRO DE HONRA</small><h2>Escolha o registro</h2></div>
         <nav aria-label="Tipo de ranking">
@@ -30,12 +30,12 @@ export function RankingHall({ levelEntries, pvpEntries }: { levelEntries: Rankin
           <button className={mode === "pvp" ? "is-active" : ""} onClick={() => setMode("pvp")} type="button"><span>Ⅱ</span><div><small>ARENA DOS REINOS</small><strong>Vitórias & Derrotas</strong></div></button>
         </nav>
       </header>
-      {mode === "level" ? <PlayerRanking entries={levelEntries} /> : <PvpRanking entries={pvpEntries} />}
+      {mode === "level" ? <PlayerRanking currentCharacterId={currentCharacterId} entries={levelEntries} /> : <PvpRanking currentCharacterId={currentCharacterId} entries={pvpEntries} />}
     </section>
   );
 }
 
-function PvpRanking({ entries }: { entries: PvpDisplayEntry[] }) {
+function PvpRanking({ currentCharacterId, entries }: { currentCharacterId: string; entries: PvpDisplayEntry[] }) {
   if (!entries.length) return <section className="champions-empty"><span>⚔</span><h2>O salão aguarda seu primeiro campeão</h2><p>As placas de honra serão gravadas depois da primeira luta oficial.</p></section>;
   const leader = entries[0];
   return (
@@ -60,7 +60,7 @@ function PvpRanking({ entries }: { entries: PvpDisplayEntry[] }) {
         <header><div><small>REGISTRO OFICIAL</small><h2>Ordem dos duelistas</h2></div><span>{entries.length} nomes gravados</span></header>
         <div>
           {entries.map((entry) => (
-            <Link className="duelist-roll__entry" href={`/jogadores/${entry.id}`} key={entry.id}>
+            <Link className={`duelist-roll__entry ${entry.id === currentCharacterId ? "is-current" : ""}`} href={`/jogadores/${entry.id}`} key={entry.id}>
               <b>{String(entry.position).padStart(2, "0")}</b>
               <span className="duelist-roll__identity">
                 <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} cosmetics={entry.cosmetics} variant="compact" />

@@ -14,18 +14,22 @@ export function RaceGrimoire({ entries }: { entries: Entry[] }) {
     () => entries.filter((entry) => `${entry.name} ${entry.payload.specialization}`.toLowerCase().includes(search.toLowerCase())),
     [entries, search],
   );
-  const entry = entries.find((item) => item.slug === selected) ?? visible[0] ?? entries[0];
+  const entry = visible.find((item) => item.slug === selected) ?? visible[0] ?? entries[0];
   if (!entry) return null;
   const abilities = getStructuredRaceAbilities(entry.payload);
 
   return (
     <div className={styles.book}>
       <aside className={styles.index}>
+        <header className={styles.indexHeader}>
+          <span>Arquivo de linhagens</span>
+          <strong>{visible.length} de {entries.length}</strong>
+        </header>
         <label className={styles.search}>
           <span>Índice dos povos</span>
           <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Procure pelo nome ou estilo..." />
         </label>
-        <nav className={styles.list}>
+        <nav aria-label="Raças disponíveis" className={styles.list}>
           {visible.map((item) => (
             <button aria-pressed={item.slug === entry.slug} className={`${styles.entry} ${item.slug === entry.slug ? styles.entryActive : ""}`} onClick={() => setSelected(item.slug)} key={item.slug} type="button">
               <i className={styles.portrait} style={item.payload.imageUrl ? { backgroundImage: `url(${item.payload.imageUrl})` } : undefined}>
@@ -36,7 +40,7 @@ export function RaceGrimoire({ entries }: { entries: Entry[] }) {
             </button>
           ))}
         </nav>
-        {visible.length === 0 ? <p className={styles.emptyIndex}>Nenhum povo encontrado.</p> : null}
+        {visible.length === 0 ? <div className={styles.emptyIndex}><p>Nenhum povo encontrado.</p><button onClick={() => setSearch("")} type="button">Limpar busca</button></div> : null}
       </aside>
 
       <article className={styles.sheet}>
@@ -45,7 +49,7 @@ export function RaceGrimoire({ entries }: { entries: Entry[] }) {
             {entry.payload.imageUrl ? null : <span className={styles.artFallback}><b>{entry.name.slice(0, 1)}</b><small>{entry.name}</small></span>}
           </div>
           <div className={styles.identity}>
-            <small>Povo de Wonderland</small>
+            <div className={styles.identityOverline}><small>Povo de Wonderland</small><span>Registro {String(entries.findIndex((item) => item.slug === entry.slug) + 1).padStart(2, "0")}</span></div>
             <h2>{entry.name}</h2>
             <strong>{entry.payload.specialization}</strong>
             <p>{entry.payload.description}</p>
@@ -54,6 +58,7 @@ export function RaceGrimoire({ entries }: { entries: Entry[] }) {
               <div><dt>Recurso</dt><dd>{entry.payload.resource?.name ?? "Nenhum"}</dd></div>
               <div><dt>Dificuldade</dt><dd>{entry.payload.difficulty}/5</dd></div>
             </dl>
+            <div className={styles.identityGuide}><b>Perfil de jogo</b><span>{entry.payload.specialization}. A herança concede {Object.entries(entry.payload.attributeBonuses).filter(([, value]) => value > 0).map(([key, value]) => `+${value} ${key}`).join(" · ")}.</span></div>
           </div>
         </header>
 

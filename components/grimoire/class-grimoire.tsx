@@ -13,17 +13,21 @@ export function ClassGrimoire({ entries }: { entries: Entry[] }) {
     () => entries.filter((entry) => `${entry.name} ${entry.payload.specialization}`.toLowerCase().includes(search.toLowerCase())),
     [entries, search],
   );
-  const entry = entries.find((item) => item.slug === selected) ?? visible[0] ?? entries[0];
+  const entry = visible.find((item) => item.slug === selected) ?? visible[0] ?? entries[0];
   if (!entry) return null;
 
   return (
     <div className={styles.book}>
       <aside className={styles.index}>
+        <header className={styles.indexHeader}>
+          <span>Catálogo da Guilda</span>
+          <strong>{visible.length} de {entries.length}</strong>
+        </header>
         <label className={styles.search}>
           <span>Índice das vocações</span>
           <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Procure pela classe ou função..." />
         </label>
-        <nav className={styles.list}>
+        <nav aria-label="Classes disponíveis" className={styles.list}>
           {visible.map((item) => (
             <button aria-pressed={item.slug === entry.slug} className={`${styles.entry} ${item.slug === entry.slug ? styles.entryActive : ""}`} onClick={() => setSelected(item.slug)} key={item.slug} type="button">
               <i className={styles.portrait} style={item.payload.imageUrl ? { backgroundImage: `url(${item.payload.imageUrl})` } : undefined}>
@@ -34,7 +38,7 @@ export function ClassGrimoire({ entries }: { entries: Entry[] }) {
             </button>
           ))}
         </nav>
-        {visible.length === 0 ? <p className={styles.emptyIndex}>Nenhuma vocação encontrada.</p> : null}
+        {visible.length === 0 ? <div className={styles.emptyIndex}><p>Nenhuma vocação encontrada.</p><button onClick={() => setSearch("")} type="button">Limpar busca</button></div> : null}
       </aside>
 
       <article className={styles.sheet}>
@@ -43,7 +47,7 @@ export function ClassGrimoire({ entries }: { entries: Entry[] }) {
             {entry.payload.imageUrl ? null : <span className={styles.artFallback}><b>{entry.name.slice(0, 1)}</b><small>{entry.name}</small></span>}
           </div>
           <div className={styles.identity}>
-            <small>Vocação de aventureiro</small>
+            <div className={styles.identityOverline}><small>Vocação de aventureiro</small><span>Registro {String(entries.findIndex((item) => item.slug === entry.slug) + 1).padStart(2, "0")}</span></div>
             <h2>{entry.name}</h2>
             <strong>{entry.payload.specialization}</strong>
             <p>{entry.payload.description}</p>
@@ -52,6 +56,7 @@ export function ClassGrimoire({ entries }: { entries: Entry[] }) {
               <div><dt>Função</dt><dd>{entry.payload.specialization}</dd></div>
               <div><dt>Atributos</dt><dd>{entry.payload.primaryAttributes.join(" · ")}</dd></div>
             </dl>
+            <div className={styles.identityGuide}><b>Como joga</b><span>Priorize {entry.payload.primaryAttributes.join(" e ")} e domine o recurso {entry.payload.resource.name} para sustentar a função de {entry.payload.specialization.toLowerCase()}.</span></div>
           </div>
         </header>
 

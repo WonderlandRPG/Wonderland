@@ -9,6 +9,7 @@ import { getCharacterSheet } from "@/lib/content/characters";
 import { itemSlotLabel } from "@/lib/game/equipment";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { attributeLabels } from "@/lib/game/races";
+import { getAdventureRank } from "@/lib/game/ranks";
 import { attributeKeys } from "@/lib/game/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -42,13 +43,26 @@ export default async function PublicCharacterProfile({
   const path = sheet.characterClass.payload.paths?.find(
     (entry) => entry.key === sheet.class_path_key,
   );
+  const rank = getAdventureRank(sheet.adventure_rank);
+  const strongestAttribute = attributeKeys.reduce((strongest, key) =>
+    sheet.stats.attributes[key] > sheet.stats.attributes[strongest] ? key : strongest,
+  );
+  const peakPower = Math.max(
+    sheet.stats.physicalPower,
+    sheet.stats.magicalPower,
+    sheet.stats.supportPower,
+  );
 
   return (
     <main className="public-character-page">
       <PlayerNav />
       <div className="page-container public-character-shell">
         <Link className="public-character-back" href="/ranking">← Voltar aos rankings</Link>
-        <section className="public-character-hero" data-rank={sheet.adventure_rank}>
+        <section
+          className="public-character-hero public-character-dossier"
+          data-rank={sheet.adventure_rank}
+          style={{ "--public-rank": rank.color } as React.CSSProperties}
+        >
           <div className="public-character-hero__portrait official-character-card-host">
             <CharacterPortraitCard
               imageUrl={sheet.image_url}
@@ -61,34 +75,60 @@ export default async function PublicCharacterProfile({
             />
           </div>
           <div className="public-character-hero__copy">
-            <span className="eyebrow">Ficha pública de aventureiro</span>
+            <div className="public-character-dossier__overline">
+              <span className="eyebrow">Registro oficial da Guilda</span>
+              <span className="public-character-dossier__status">● Aventureiro verificado</span>
+            </div>
             <h1>{sheet.name}</h1>
-            <p>{sheet.race.name} · {sheet.characterClass.name}</p>
-            <dl>
-              <div><dt>Nível</dt><dd>{sheet.level}</dd></div>
-              <div><dt>Rank</dt><dd>{sheet.adventure_rank}</dd></div>
+            <p className="public-character-dossier__calling">
+              <strong>{sheet.race.name}</strong>
+              <span aria-hidden="true">◆</span>
+              <strong>{sheet.characterClass.name}</strong>
+              <span aria-hidden="true">◆</span>
+              <span>{path?.name ?? "Caminho ainda não escolhido"}</span>
+            </p>
+            <dl className="public-character-dossier__facts">
+              <div className="is-rank"><dt>Rank atual</dt><dd>{sheet.adventure_rank}</dd><small>{rank.title}</small></div>
+              <div><dt>Nível</dt><dd>{sheet.level}</dd><small>Experiência de jornada</small></div>
               <div><dt>Reino</dt><dd>{kingdomName(sheet.kingdom)}</dd></div>
               <div><dt>Caminho</dt><dd>{path?.name ?? "Ainda não escolhido"}</dd></div>
             </dl>
-            <small>
-              Personagem de {profile?.display_name || "Aventureiro"} · membro desde{" "}
-              {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("pt-BR") : "—"}
-            </small>
+            <div className="public-character-readiness" aria-label="Prontidão pública para combate">
+              <article><small>Vitalidade</small><strong>{sheet.stats.maxHp}</strong><span>HP máximo</span></article>
+              <article><small>Defesa</small><strong>{sheet.stats.attributes.DEF}</strong><span>Proteção física</span></article>
+              <article><small>Iniciativa</small><strong>{sheet.stats.initiative}</strong><span>Prioridade de turno</span></article>
+              <article><small>Pico de poder</small><strong>{peakPower}</strong><span>Potência atual</span></article>
+            </div>
+            <footer className="public-character-dossier__owner">
+              <span>Registrado por <strong>{profile?.display_name || "Aventureiro"}</strong></span>
+              <span>Membro desde {profile?.created_at ? new Date(profile.created_at).toLocaleDateString("pt-BR") : "—"}</span>
+            </footer>
           </div>
         </section>
         <section className="public-character-summary">
-          <header><span className="eyebrow">Resumo de combate</span><h2>Atributos finais</h2></header>
+          <header className="public-character-section-heading">
+            <div><span className="eyebrow">Leitura de build</span><h2>Atributos finais</h2></div>
+            <p>Maior afinidade: <strong>{attributeLabels[strongestAttribute]}</strong> · {sheet.stats.attributes[strongestAttribute]} pontos</p>
+          </header>
           <div className="public-character-stats">
-            <article><small>HP máximo</small><strong>{sheet.stats.maxHp}</strong></article>
+            <article data-stat="hp"><small>HP máximo</small><strong>{sheet.stats.maxHp}</strong><span>Sobrevivência</span></article>
             {attributeKeys.map((key) => (
-              <article key={key}><small>{attributeLabels[key]}</small><strong>{sheet.stats.attributes[key]}</strong></article>
+              <article data-highlight={key === strongestAttribute ? "true" : undefined} key={key}>
+                <small>{attributeLabels[key]}</small><strong>{sheet.stats.attributes[key]}</strong>
+                <span>{key === strongestAttribute ? "Afinidade principal" : key}</span>
+              </article>
             ))}
+          </div>
+          <div className="public-character-power-grid">
+            <article><small>Poder físico</small><strong>{sheet.stats.physicalPower}</strong><span>Escala principal de força</span></article>
+            <article><small>Poder mágico</small><strong>{sheet.stats.magicalPower}</strong><span>Escala principal de inteligência</span></article>
+            <article><small>Poder de suporte</small><strong>{sheet.stats.supportPower}</strong><span>Escala principal de arcano</span></article>
           </div>
         </section>
         <section className="public-character-equipment">
           <header>
-            <div><span className="eyebrow">Equipamento público</span><h2>Conjunto utilizado</h2></div>
-            <small>{equipped.length} itens equipados</small>
+            <div><span className="eyebrow">Arsenal inspecionado</span><h2>Conjunto utilizado</h2><p>Itens, bônus e efeitos que compõem esta build.</p></div>
+            <span className="public-character-equipment__count"><strong>{equipped.length}</strong> itens equipados</span>
           </header>
           <div>
             {equipped.map((item) => (

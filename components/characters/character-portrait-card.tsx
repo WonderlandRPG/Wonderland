@@ -64,7 +64,7 @@ export function CharacterPortraitCard({
         <img
           alt=""
           className={styles.borderArtwork}
-          src="/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta-v2.png"
+          src="/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta-v3.png"
         />
       </div>
 

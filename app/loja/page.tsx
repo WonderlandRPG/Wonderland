@@ -2,6 +2,7 @@ import "./loja.css";
 import "./rarity-glow.css";
 import "./shop-rework.css";
 import "./cosmetics.css";
+import Link from "next/link";
 import { PlayerNav } from "@/components/player-nav";
 import { ShopCatalog, type ShopCatalogItem } from "@/components/shop/shop-catalog";
 import { requireActiveCharacter } from "@/lib/content/active-character";
@@ -77,17 +78,22 @@ export default async function ShopPage({
       <div className="page-container market-shell">
         <header className="market-hero">
           <div>
-            <span className="eyebrow">Mercado dos cinco reinos</span>
-            <h1>Arsenal de Wonderland</h1>
+            <span className="eyebrow">Mercado dos cinco reinos · {character.name}</span>
+            <h1>Mercado do Aventureiro</h1>
             <p>
-              Escolha com calma, compare os atributos e prepare seu personagem para a próxima
-              batalha.
+              Encontre melhorias para a sua build, compare atributos e compre sem perder de vista
+              o seu orçamento.
             </p>
+            <nav className="market-hero__actions">
+              <Link href={`/personagens/${character.id}?tab=equipamentos`}>Ver equipamentos atuais</Link>
+              <Link href="/missoes">Ganhar mais WG</Link>
+            </nav>
           </div>
           <aside>
-            <small>Carteira de {character.name}</small>
+            <small>Poder de compra</small>
             <strong>{character.gold.toLocaleString("pt-BR")} WG</strong>
-            <span>{items.length} equipamentos no catálogo</span>
+            <span>Nível {character.level} · Rank {character.adventure_rank}</span>
+            <span>{items.length} opções no catálogo</span>
           </aside>
         </header>
         {query.compra ? (

@@ -6,7 +6,7 @@ import { RankingHall } from "@/components/ranking/ranking-hall";
 export const dynamic = "force-dynamic";
 
 export default async function RankingPage() {
-  await requireActiveCharacter("/ranking");
+  const { characterId } = await requireActiveCharacter("/ranking");
   const [ranking, pvpRanking] = await Promise.all([getRanking(), getPvpRanking()]);
   const levels = new Map(ranking.map((entry) => [entry.id, entry.level]));
   const enrichedPvpRanking = pvpRanking.map((entry) => ({
@@ -17,10 +17,10 @@ export default async function RankingPage() {
   return (
     <PortalShell
       eyebrow="Salão competitivo"
-      title="Rankings de Wonderland"
-      description="Compare a progressão dos aventureiros e conheça os campeões da Arena PvP."
+      title="Salão dos Campeões"
+      description="Sua posição, os líderes da temporada e os rivais da Arena em um único painel."
     >
-      <RankingHall levelEntries={ranking} pvpEntries={enrichedPvpRanking} />
+      <RankingHall currentCharacterId={characterId} levelEntries={ranking} pvpEntries={enrichedPvpRanking} />
     </PortalShell>
   );
 }

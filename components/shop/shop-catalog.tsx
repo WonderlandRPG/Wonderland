@@ -102,7 +102,7 @@ export function ShopCatalog({
   const [order, setOrder] = useState("featured");
   const [page, setPage] = useState(1);
   const [cart, setCart] = useState<string[]>([]);
-  const pageSize = 18;
+  const pageSize = 15;
   const slots = useMemo(
     () =>
       [...new Map(items.map((item) => [item.slot, item.slotLabel])).entries()].sort((a, b) =>
@@ -148,6 +148,9 @@ export function ShopCatalog({
     .map((id) => items.find((item) => item.id === id))
     .filter((item): item is ShopCatalogItem => Boolean(item));
   const cartTotal = cartItems.reduce((total, item) => total + item.price, 0);
+  const affordableCount = filtered.filter((item) => item.price <= gold).length;
+  const buildMatches = filtered.filter((item) => item.recommendedClasses.length > 0).length;
+  const remainingGold = gold - cartTotal;
   const addToCart = (id: string) => setCart((current) => [...current, id]);
   const removeFromCart = (index: number) =>
     setCart((current) => current.filter((_, itemIndex) => itemIndex !== index));
@@ -392,11 +395,17 @@ export function ShopCatalog({
           ) : null}
         </div>
       </section>
+      <section className="shop-intelligence" aria-label="Resumo do mercado">
+        <div><small>Resultados</small><strong>{filtered.length}</strong><span>itens encontrados</span></div>
+        <div><small>Ao seu alcance</small><strong>{affordableCount}</strong><span>cabem na carteira</span></div>
+        <div><small>Com recomendação</small><strong>{buildMatches}</strong><span>possuem indicação de classe</span></div>
+        <div data-negative={remainingGold < 0 ? "true" : undefined}><small>Saldo após carrinho</small><strong>{remainingGold.toLocaleString("pt-BR")}</strong><span>WG projetado</span></div>
+      </section>
       <div className="shop-browser">
         <section>
           <header className="shop-browser__result">
             <strong>{filtered.length} equipamentos</strong>
-            <span>Efeitos, atributos e raridade aparecem diretamente nos cards.</span>
+            <span>Exibindo {visible.length} · página {currentPage} de {pageCount}</span>
           </header>
           {visible.length ? (
             <div className="classic-item-grid">

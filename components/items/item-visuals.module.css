@@ -1,1 +1,151 @@
-.glyph{--item-accent:#b8842f;display:inline-grid;place-items:center;width:38px;height:38px;min-width:38px;min-height:38px;border:1px solid color-mix(in srgb,var(--item-accent) 62%,#6e5034);border-radius:10px;background:linear-gradient(145deg,#f6e6ba,#d8bf8c);color:#463326;box-shadow:inset 0 0 0 2px rgba(255,255,255,.22),0 3px 8px rgba(56,39,23,.12);font-family:Georgia,'Times New Roman',serif;font-size:1.05rem;font-weight:900;line-height:1;flex:0 0 auto}.artwork{--item-accent:#b8842f;position:relative;display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0;overflow:hidden;border:1px solid color-mix(in srgb,var(--item-accent) 48%,#8e704b);border-radius:10px;background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--item-accent) 18%,#f4e4b9),#d8c294 72%);isolation:isolate}.artwork[data-rarity='common']{--item-accent:#8b8b82}.artwork[data-rarity='uncommon']{--item-accent:#57955f}.artwork[data-rarity='rare']{--item-accent:#4c79ba}.artwork[data-rarity='epic']{--item-accent:#8a5fb5}.artwork[data-rarity='legendary']{--item-accent:#c08a35}.artwork[data-rarity='mythic']{--item-accent:#bd4e4e}.artwork[data-rarity='awakened']{--item-accent:#d3b14c}.image{position:absolute;inset:0;background-position:center;background-repeat:no-repeat;background-size:cover}.fallback{position:relative;z-index:1;display:grid;place-items:center;gap:5px;width:100%;height:100%;padding:10px;text-align:center;color:#483629}.fallback .glyph{width:48px;height:48px;min-width:48px;min-height:48px;border-radius:14px;font-size:1.35rem;background:rgba(255,241,203,.76)}.fallback small{display:block;max-width:100%;font-size:.58rem;font-weight:800;line-height:1.15;text-transform:uppercase;letter-spacing:.045em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.artwork::after{content:"";position:absolute;inset:auto 0 0;height:34%;z-index:2;background:linear-gradient(transparent,color-mix(in srgb,var(--item-accent) 20%,rgba(58,41,24,.32)));pointer-events:none}.artwork.hasImage::after{height:25%;background:linear-gradient(transparent,rgba(36,26,18,.24))}@media(max-width:520px){.glyph{width:34px;height:34px;min-width:34px;min-height:34px}.fallback .glyph{width:44px;height:44px;min-width:44px;min-height:44px}}
+.glyph {
+  --item-accent: #b8842f;
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border: 1px solid color-mix(in srgb, var(--item-accent) 62%, #6e5034);
+  border-radius: 10px;
+  background: linear-gradient(145deg, #f6e6ba, #d8bf8c);
+  color: #463326;
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
+    0 3px 8px rgba(56, 39, 23, 0.12);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+:global(body) {
+  .glyph,
+  .artwork,
+  .fallback .glyph {
+    border-color: color-mix(in srgb, var(--item-accent) 58%, var(--wl-border));
+    background: radial-gradient(
+      circle at 50% 35%,
+      color-mix(in srgb, var(--item-accent) 15%, var(--wl-surface-raised)),
+      var(--wl-surface-dark)
+    );
+    color: var(--wl-text);
+    box-shadow:
+      inset 0 0 0 2px var(--wl-border-soft),
+      var(--wl-shadow-soft);
+  }
+  .fallback {
+    color: var(--wl-text-muted);
+  }
+}
+.artwork {
+  --item-accent: #b8842f;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--item-accent) 48%, #8e704b);
+  border-radius: 10px;
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--item-accent) 18%, #f4e4b9),
+    #d8c294 72%
+  );
+  isolation: isolate;
+}
+.artwork[data-rarity="common"] {
+  --item-accent: #8b8b82;
+}
+.artwork[data-rarity="uncommon"] {
+  --item-accent: #57955f;
+}
+.artwork[data-rarity="rare"] {
+  --item-accent: #4c79ba;
+}
+.artwork[data-rarity="epic"] {
+  --item-accent: #8a5fb5;
+}
+.artwork[data-rarity="legendary"] {
+  --item-accent: #c08a35;
+}
+.artwork[data-rarity="mythic"] {
+  --item-accent: #bd4e4e;
+}
+.artwork[data-rarity="awakened"] {
+  --item-accent: #d3b14c;
+}
+.image {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.fallback {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  gap: 5px;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #483629;
+}
+.fallback .glyph {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 14px;
+  font-size: 1.35rem;
+  background: rgba(255, 241, 203, 0.76);
+}
+.fallback small {
+  display: block;
+  max-width: 100%;
+  font-size: 0.58rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.artwork::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 34%;
+  z-index: 2;
+  background: linear-gradient(
+    transparent,
+    color-mix(in srgb, var(--item-accent) 20%, rgba(58, 41, 24, 0.32))
+  );
+  pointer-events: none;
+}
+.artwork.hasImage::after {
+  height: 25%;
+  background: linear-gradient(transparent, rgba(36, 26, 18, 0.24));
+}
+@media (max-width: 520px) {
+  .glyph {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+  }
+  .fallback .glyph {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

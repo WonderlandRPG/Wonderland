@@ -1,12 +1,3 @@
-/* Redesenho final solicitado para os arquivos públicos do mundo. */
-.guild-decrees__intro,.mission-board-hero,.world-lore-hero{position:relative!important;overflow:hidden!important}
-.guild-decrees__intro::after,.mission-board-hero::after,.world-lore-hero::after{content:"✦"!important;position:absolute!important;right:24px!important;top:10px!important;color:rgba(160,112,38,.16)!important;font-size:7rem!important;line-height:1!important;pointer-events:none!important}
-.guild-decrees__intro{padding:30px!important;border-radius:24px!important}.guild-decrees__wax{position:relative!important;z-index:1!important;box-shadow:0 0 0 8px rgba(107,61,53,.08),0 12px 24px rgba(60,38,25,.18)!important}.guild-decrees__intro h2{font-size:clamp(2.15rem,4vw,3.7rem)!important;line-height:1!important}.guild-decree{min-height:250px!important;padding:0 20px 0 0!important}.guild-decree__copy h2{font-size:clamp(2rem,3vw,3rem)!important}.guild-decree__copy>small{display:inline-flex!important;padding:5px 9px!important;border-radius:999px!important;background:rgba(49,95,71,.1)!important}.guild-decree__copy li{margin-top:5px!important}.guild-trials-scroll{padding:28px!important;border-radius:24px!important}.guild-trials-scroll>header h2{font-size:clamp(2.3rem,4vw,3.7rem)!important}.guild-trials-scroll>div{margin-top:20px!important}
-.mission-board-hero{border-radius:26px!important;box-shadow:0 20px 48px rgba(39,29,18,.18)!important}.mission-board-progress{border-radius:18px!important;box-shadow:0 10px 26px rgba(44,31,18,.1)!important}.guild-board{border-radius:24px!important;box-shadow:0 22px 52px rgba(42,27,15,.22)!important}.mission-parchment{border-radius:7px 18px 8px 14px!important;box-shadow:5px 10px 22px rgba(46,30,17,.2)!important}.mission-parchment h2{font-size:1.7rem!important}.mission-parchment blockquote{border-radius:12px!important;background:rgba(49,95,71,.09)!important}.mission-full-briefing{margin-top:18px!important;border:1px solid #9b7b51!important;border-radius:14px!important;background:rgba(255,244,211,.72)!important}.mission-full-briefing summary{padding:13px 16px!important}.mission-full-briefing>div{padding:0 16px 16px!important}.mission-ledger{border-radius:22px!important;overflow:hidden!important;box-shadow:0 18px 40px rgba(42,29,17,.16)!important}.mission-manager-briefing{margin-top:9px!important;border:1px solid #a4865d!important;border-radius:10px!important;background:#f6e6bd!important}.mission-manager-briefing summary{padding:9px 11px!important}.mission-manager-briefing>div{padding:0 11px 10px!important}
-.realms-hero{padding:clamp(28px,5vw,52px)!important;border-radius:28px!important;box-shadow:0 22px 52px rgba(39,29,18,.18)!important}.realms-hero h1{font-size:clamp(3.5rem,8vw,7rem)!important}.realms-hero nav a{border:1px solid rgba(91,69,43,.18)!important;box-shadow:0 5px 14px rgba(46,33,20,.07)!important}.realm-dossiers--atlas>article{overflow:hidden!important;border-radius:26px!important;box-shadow:0 20px 46px rgba(42,29,17,.15)!important}.realm-dossiers--atlas>article>header{position:relative!important}.realm-gallery a{overflow:hidden!important;border-radius:16px!important;box-shadow:0 10px 24px rgba(38,27,18,.18)!important}.realm-gallery img{transition:transform .35s ease!important}.realm-gallery a:hover img{transform:scale(1.035)!important}
-.realm-notice-board>header h2{font-size:clamp(2.5rem,5vw,4.5rem)!important;line-height:.95!important}.realm-notice{min-height:440px!important;padding:30px 26px!important}.realm-notice h2{font-size:clamp(2rem,4vw,3rem)!important;line-height:1!important}.realm-notice__rewards{display:flex!important;flex-wrap:wrap!important;gap:7px!important;padding:0!important;list-style:none!important}.realm-notice__rewards li{padding:6px 9px!important;border-radius:999px!important;background:rgba(49,95,71,.1)!important;color:#274c39!important;font-weight:900!important}
-@media(max-width:760px){.guild-decrees__intro{padding:22px!important}.guild-decree{padding:14px!important}.guild-trials-scroll{padding:20px 14px!important}.mission-parchment h2{font-size:1.45rem!important}.realm-notice{min-height:0!important;padding:23px 18px!important}.realms-hero h1{font-size:3.7rem!important}}
-
 /*
  * WONDERLAND · GAME UI 2026
  * Camada canônica carregada por todas as rotas.
@@ -1605,3 +1596,107 @@ dialog::backdrop {
   }
 }
 
+/* Cobertura final das famílias legadas que ainda possuíam superfícies próprias. */
+.maintenance-page,
+.bestiary-page,
+.royal-chronicle,
+.guild-decrees,
+.champions-hall,
+.kingdom-current-page,
+.realms-page,
+.mission-page,
+.market-page,
+.presence-page,
+.arena-page,
+.character-public-page {
+  color: var(--game-text) !important;
+}
+
+.bestiary-hero,
+.bestiary-hero__rules,
+.bestiary-controls,
+.bestiary-card,
+.bestiary-modal__card,
+.mission-board-progress,
+.mission-board-rules,
+.mission-full-briefing,
+.mission-manager-briefing,
+.mission-creature-reference,
+.kingdom-current-hero,
+.kingdom-leadership,
+.kingdom-treasury,
+.kingdom-resources,
+.kingdom-resource-bar,
+.kingdom-salaries,
+.kingdom-diplomacy,
+.kingdom-war-panel,
+.kingdom-war-alert,
+.kingdom-crown-start,
+.kingdom-crown-votes,
+.kingdom-upgrade,
+.kingdom-empty,
+.realms-hero,
+.realm-dossiers--atlas > article,
+.realm-gallery a,
+.presence-progress-card,
+.presence-reward-grid > article,
+.arena-mode-card,
+.dungeon-hero,
+.dungeon-bestiary,
+.dungeon-bestiary article,
+.dungeon-party-panel,
+.dungeon-party-panel article,
+.dungeon-tactical-panel,
+.dungeon-combat-log,
+.pvp-history-hero,
+.pvp-history-metrics article,
+.pvp-history-ledger,
+.pvp-history-ledger > article,
+.character-public-hero,
+.character-public-summary,
+.character-public-equipment,
+.character-public-stats > article {
+  border-color: var(--game-line) !important;
+  background: linear-gradient(145deg, var(--game-panel-2), var(--game-panel)) !important;
+  color: var(--game-text) !important;
+  box-shadow: var(--game-shadow-soft) !important;
+}
+
+.bestiary-card__caption,
+.bestiary-card__section,
+.bestiary-modal__content,
+.mission-full-briefing > div,
+.mission-manager-briefing > div,
+.kingdom-current-page article,
+.presence-progress-card > div,
+.dungeon-encounters > div,
+.character-public-hero__copy > dl > div,
+.character-public-equipment > div > article,
+.character-public-equipment article aside {
+  border-color: var(--game-line) !important;
+  background: rgba(11, 14, 20, 0.48) !important;
+  color: var(--game-text) !important;
+}
+
+.bestiary-card p,
+.bestiary-modal__content p,
+.mission-page p,
+.kingdom-current-page p,
+.realms-page p,
+.presence-page p,
+.character-public-page p,
+.character-public-page small {
+  color: var(--game-muted) !important;
+}
+
+.bestiary-card__rank,
+.bestiary-result-line strong,
+.mission-full-briefing summary,
+.mission-manager-briefing summary,
+.kingdom-current-page .eyebrow,
+.realms-page .eyebrow,
+.presence-page .eyebrow,
+.character-public-page .eyebrow,
+.character-public-stats strong {
+  color: var(--game-cyan) !important;
+}

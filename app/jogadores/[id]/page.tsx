@@ -93,7 +93,7 @@ export default async function PublicCharacterProfile({
           <div>
             {equipped.map((item) => (
               <article data-rarity={item.rarity} key={`${item.id}-${item.equippedSlot}`}>
-                <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
+                <ItemArtwork imageUrl={item.imageUrl} name={item.name} rarity={item.rarity} slot={item.slot} />
                 <span>
                   <small>{itemSlotLabel(item.equippedSlot ?? item.slot)} · {item.rarity}</small>
                   <strong>{item.name}</strong>

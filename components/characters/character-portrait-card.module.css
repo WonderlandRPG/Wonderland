@@ -506,6 +506,18 @@
   }
 }
 
+/* O conjunto completo usa uma só direção: pórtico dominante, card e aura atmosféricos. */
+.card[data-card-cosmetic='epitafio-lua-carmesim'][data-aura-cosmetic='procissao-almas-rubras'][data-border-cosmetic='portico-lua-sangrenta'] .bloodMoon{top:16%;right:12%;width:18%;opacity:.38;filter:blur(.2px)}
+.card[data-card-cosmetic='epitafio-lua-carmesim'][data-aura-cosmetic='procissao-almas-rubras'][data-border-cosmetic='portico-lua-sangrenta'] .graveyard{height:19%;opacity:.58}
+.card[data-card-cosmetic='epitafio-lua-carmesim'][data-aura-cosmetic='procissao-almas-rubras'][data-border-cosmetic='portico-lua-sangrenta'] .cosmeticAuraFx{z-index:10;inset:-9%;opacity:.72}
+.card[data-card-cosmetic='epitafio-lua-carmesim'][data-aura-cosmetic='procissao-almas-rubras'][data-border-cosmetic='portico-lua-sangrenta'] .soul{width:34px;height:54px;filter:saturate(.7) drop-shadow(0 0 5px rgba(255,110,120,.55))}
+.card[data-card-cosmetic='epitafio-lua-carmesim'][data-aura-cosmetic='procissao-almas-rubras'][data-border-cosmetic='portico-lua-sangrenta'] .soulFive,
+.card[data-card-cosmetic='epitafio-lua-carmesim'][data-aura-cosmetic='procissao-almas-rubras'][data-border-cosmetic='portico-lua-sangrenta'] .soulSeven{display:none}
+.card[data-border-cosmetic='portico-lua-sangrenta'] .topMeta{z-index:14;left:3%;right:3%;top:4%}
+.card[data-border-cosmetic='portico-lua-sangrenta'] .rankMeta :global(.rank-emblem){filter:sepia(.16) saturate(.75) drop-shadow(0 4px 6px rgba(0,0,0,.55))}
+.card[data-border-cosmetic='portico-lua-sangrenta'] .levelMeta{border-color:rgba(230,190,145,.6);background:linear-gradient(180deg,rgba(42,24,22,.92),rgba(17,9,11,.94));color:#ffe7bd;box-shadow:0 0 0 2px rgba(95,17,28,.7),0 5px 13px rgba(0,0,0,.48)}
+.card[data-border-cosmetic='portico-lua-sangrenta'] .titleMeta{z-index:14;bottom:4.5%}
+
 
 /* BORDA · Pórtico da Lua Sangrenta
    Asset real enviado para a coleção, independente do Card e da Aura. */

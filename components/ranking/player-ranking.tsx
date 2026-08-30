@@ -7,6 +7,7 @@ import { RankBadge } from "@/components/characters/rank-badge";
 import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
 import { kingdomName } from "@/lib/game/kingdoms";
 import type { RankingEntry } from "@/lib/game/player-portal";
+import styles from "./player-ranking.module.css";
 
 const rankOrder = ["Todos", "E", "D", "C", "B", "A", "S", "EX"] as const;
 const adventureRankOrder = ["E", "D", "C", "B", "A", "S", "EX"] as const;
@@ -119,21 +120,29 @@ export function PlayerRanking({ entries }: { entries: RankingEntry[] }) {
             </button>
           ))}
         </nav>
-        <div className="ranking-table" role="table" aria-label="Ranking de jogadores">
-          <div className="ranking-table__labels" role="row"><span>Posição</span><span>Jogador</span><span>Reino</span><span>Progresso</span><span>Rank</span></div>
+        <div className={styles.ledger} aria-label="Ranking de jogadores">
           {visible.map((entry) => (
-            <Link href={`/jogadores/${entry.id}`} key={entry.id} role="row">
-              <strong className="ranking-position">#{entry.rank}</strong>
-              <span className="ranking-player-cell">
-                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} cosmetics={entry.cosmetics} variant="compact" />
-                <span><b>{entry.name}</b><PlayerTitle entry={entry} /><small>{entry.race_name} · {entry.class_name}</small></span>
+            <Link className={styles.entry} href={`/jogadores/${entry.id}`} key={entry.id}>
+              <span className={styles.position}><small>Posição</small><strong>#{entry.rank}</strong></span>
+              <span className={styles.portrait}>
+                <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} cosmetics={entry.cosmetics} variant="standard" />
               </span>
-              <span className="ranking-kingdom">{kingdomName(entry.kingdom)}</span>
-              <span className="ranking-level"><b>Nível {entry.level}</b><small>{entry.xp.toLocaleString("pt-BR")} XP</small></span>
-              <RankBadge compact rank={entry.adventure_rank} />
+              <span className={styles.identity}>
+                <small>Aventureiro classificado</small>
+                <b>{entry.name}</b>
+                <PlayerTitle entry={entry} />
+                <span>{entry.race_name} · {entry.class_name}</span>
+                <em>{kingdomName(entry.kingdom)}</em>
+              </span>
+              <span className={styles.progress}>
+                <span className={styles.seal}><small>Nível</small><strong>{entry.level}</strong></span>
+                <span className={styles.seal}><small>Experiência</small><strong>{entry.xp.toLocaleString("pt-BR")}</strong><em>XP conquistada</em></span>
+                <span className={styles.rankSeal}><small>Patente</small><RankBadge rank={entry.adventure_rank} /></span>
+                <span className={styles.open}>Abrir ficha pública <b aria-hidden="true">→</b></span>
+              </span>
             </Link>
           ))}
-          {!visible.length ? <p className="ranking-no-results">Nenhum aventureiro encontrado com esses filtros.</p> : null}
+          {!visible.length ? <p className={styles.empty}>Nenhum aventureiro encontrado com esses filtros.</p> : null}
         </div>
       </section>
     </div>

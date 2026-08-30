@@ -3,13 +3,15 @@
 
 /* Meus Personagens */
 .page .inner{display:grid;gap:18px;padding-top:18px}
-.page .intro{position:relative;isolation:isolate;overflow:hidden;align-items:center;margin:0;padding:22px 26px;border-color:var(--wl-border);background:linear-gradient(120deg,var(--wl-surface),var(--wl-accent-soft));box-shadow:var(--wl-shadow-soft)}
+.page .intro{position:relative;isolation:isolate;overflow:hidden;align-items:center;margin:0;padding:28px 32px;border-color:var(--wl-border-strong);background:linear-gradient(120deg,var(--wl-surface-dark-strong),var(--wl-surface-dark));box-shadow:var(--wl-shadow)}
 .page .intro::after{content:"";position:absolute;z-index:-1;right:-55px;top:-95px;width:280px;height:280px;border:1px solid color-mix(in srgb,var(--wl-gold) 25%,transparent);border-radius:50%;box-shadow:0 0 0 34px color-mix(in srgb,var(--wl-gold) 8%,transparent),0 0 0 70px color-mix(in srgb,var(--wl-accent) 5%,transparent)}
-.page .intro h1{font-size:clamp(2.4rem,4.5vw,4rem);line-height:.95;text-wrap:balance}
+.page .intro small,.page .intro p{color:var(--wl-gold-soft)}
+.page .intro h1{font-size:clamp(2.7rem,5vw,4.6rem);line-height:.9;color:var(--wl-text-inverse);text-wrap:balance}
 .page .online{border:1px solid color-mix(in srgb,var(--wl-gold) 42%,transparent);background:var(--wl-surface-dark);color:var(--wl-text-inverse);box-shadow:var(--wl-shadow-soft)}
-.page .rosterLobby{grid-template-columns:minmax(0,1.35fr) minmax(310px,.65fr);align-items:stretch;gap:18px}
-.page .rosterLobby .heroCard{grid-template-columns:minmax(250px,330px) minmax(0,1fr);grid-template-rows:1fr auto;min-height:430px;overflow:visible;border-color:var(--card-rank,var(--wl-border));background:linear-gradient(145deg,var(--wl-surface),var(--wl-surface-raised));box-shadow:var(--wl-shadow)}
-.page .rosterLobby .heroCard>[data-character-card="official"]{grid-row:1/3;width:100%;height:100%;min-height:430px;border-radius:21px 0 0 21px}
+.page .rosterLobby{grid-template-columns:minmax(0,1.55fr) minmax(330px,.45fr);align-items:stretch;gap:18px}
+.page .rosterLobby .heroCard{position:relative;grid-template-columns:minmax(300px,390px) minmax(0,1fr);grid-template-rows:1fr auto;min-height:510px;overflow:visible;border-color:var(--card-rank,var(--wl-border));background:linear-gradient(105deg,var(--wl-surface-dark-strong) 0 36%,var(--wl-surface) 36%);box-shadow:var(--wl-shadow)}
+.page .rosterLobby .heroCard::after{content:"";position:absolute;inset:9px;border:1px solid var(--wl-border-soft);border-radius:calc(var(--wl-radius-xl) - 7px);pointer-events:none}
+.page .rosterLobby .heroCard>[data-character-card="official"]{z-index:1;grid-row:1/3;width:min(100%,370px);height:auto;min-height:462px;place-self:center;overflow:visible}
 .page .rosterLobby .body{display:flex;flex-direction:column;justify-content:center;padding:28px 26px}
 .page .rosterLobby .body h2{margin:5px 0 18px;font-size:clamp(2.3rem,4vw,3.5rem);line-height:.95}
 .page .rosterLobby .identity{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -17,18 +19,20 @@
 .page .rosterLobby .wallet{margin-top:18px;color:var(--wl-text-muted)}
 .page .rosterLobby .wallet strong{color:var(--wl-accent)}
 .page .rosterLobby .footer{grid-column:2;align-items:center;padding:15px 26px;border-color:var(--wl-border);background:color-mix(in srgb,var(--wl-surface-muted) 64%,var(--wl-surface-raised))}
-.page .session{display:flex;flex-direction:column;justify-content:center;padding:30px;border-color:var(--wl-border);background:linear-gradient(150deg,var(--wl-accent-soft),var(--wl-surface-raised));box-shadow:var(--wl-shadow-soft)}
+.page .session{display:flex;flex-direction:column;justify-content:center;padding:34px;border-color:var(--wl-border-strong);background:linear-gradient(155deg,var(--wl-surface-dark),var(--wl-surface-dark-strong));box-shadow:var(--wl-shadow)}
+.page .session>small,.page .session p,.page .session dt{color:var(--wl-gold-soft)}
+.page .session h2,.page .session dd{color:var(--wl-text-inverse)}
 .page .session h2{margin:7px 0 12px;font-size:clamp(2rem,3vw,3rem);line-height:1}
-.page .session dl div{border:1px solid var(--wl-border-soft);background:color-mix(in srgb,var(--wl-surface) 55%,transparent)}
+.page .session dl div{border:1px solid color-mix(in srgb,var(--wl-gold) 24%,transparent);background:color-mix(in srgb,var(--wl-surface) 8%,transparent)}
 .page .commands{margin-top:0;border-color:var(--wl-border);background:linear-gradient(145deg,var(--wl-surface-raised),var(--wl-surface-muted));box-shadow:var(--wl-shadow-soft)}
 .page .sign{border-color:var(--wl-border-soft);background:var(--wl-surface);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
 .page .sign:hover{border-color:var(--wl-accent);background:var(--wl-accent-soft);box-shadow:var(--wl-shadow-soft)}
 
 /* Ficha completa */
-.sheet-page .character-command-hero{grid-template-columns:minmax(250px,330px) minmax(0,1fr);min-height:420px;overflow:visible;border-color:var(--wl-border);border-radius:var(--wl-radius-xl);background:linear-gradient(125deg,var(--wl-surface) 0,var(--wl-surface-raised) 62%,var(--wl-surface-muted));box-shadow:var(--wl-shadow)}
+.sheet-page .character-command-hero{grid-template-columns:minmax(330px,420px) minmax(0,1fr);min-height:570px;padding:22px;overflow:visible;border-color:var(--wl-border-strong);border-radius:var(--wl-radius-xl);background:linear-gradient(105deg,var(--wl-surface-dark-strong) 0 35%,var(--wl-surface) 35%);box-shadow:var(--wl-shadow)}
 .sheet-page .character-command-hero::before{content:"";position:absolute;z-index:-1;inset:14px -8px -8px 14px;border:1px solid color-mix(in srgb,var(--character-rank) 32%,var(--wl-border));border-radius:inherit;pointer-events:none}
-.sheet-page .character-command-hero__art{min-height:420px;border-right:1px solid var(--wl-border);border-radius:var(--wl-radius-xl) 0 0 var(--wl-radius-xl);background:radial-gradient(circle at 50% 25%,color-mix(in srgb,var(--character-rank) 20%,transparent),transparent 46%),var(--wl-surface-dark-strong)}
-.sheet-page .character-command-hero__art>[data-character-card="official"]{width:min(100%,315px)}
+.sheet-page .character-command-hero__art{min-height:520px;border-right:1px solid var(--wl-border-soft);border-radius:var(--wl-radius-xl) 0 0 var(--wl-radius-xl);background:radial-gradient(circle at 50% 25%,color-mix(in srgb,var(--character-rank) 20%,transparent),transparent 46%)}
+.sheet-page .character-command-hero__art>[data-character-card="official"]{width:min(100%,370px);min-height:462px}
 .sheet-page .character-command-hero__identity{padding:clamp(26px,4vw,46px)}
 .sheet-page .character-command-hero__identity h1{font-size:clamp(3.4rem,6vw,5.8rem)}
 .sheet-page .character-command-hero__facts{margin:20px 0;gap:8px}

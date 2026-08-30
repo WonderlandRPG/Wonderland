@@ -121,18 +121,16 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
             </button>
           ))}
         </nav>
-        <div className="ranking-table" role="table" aria-label="Ranking de jogadores">
-          <div className="ranking-table__labels" role="row"><span>Posição</span><span>Jogador</span><span>Reino</span><span>Progresso</span><span>Rank</span></div>
+        <div className="ranking-grid" role="list" aria-label="Ranking de jogadores">
           {visible.map((entry) => (
-            <Link className={entry.id === currentCharacterId ? "is-current" : ""} href={`/jogadores/${entry.id}`} key={entry.id} role="row">
-              <strong className="ranking-position">#{entry.rank}</strong>
-              <span className="ranking-player-cell">
+            <Link className={`ranking-grid__entry ${entry.id === currentCharacterId ? "is-current" : ""}`} href={`/jogadores/${entry.id}`} key={entry.id} role="listitem">
+              <strong className="ranking-grid__position"><small>Posição</small>#{entry.rank}</strong>
+              <span className="ranking-grid__portrait">
                 <CharacterPortraitCard imageUrl={entry.image_url} level={entry.level} name={entry.name} rank={entry.adventure_rank} title={titleData(entry)} cosmetics={entry.cosmetics} variant="compact" />
-                <span><b>{entry.name}</b><PlayerTitle entry={entry} /><small>{entry.race_name} · {entry.class_name}</small></span>
               </span>
-              <span className="ranking-kingdom">{kingdomName(entry.kingdom)}</span>
-              <span className="ranking-level"><b>Nível {entry.level}</b><small>{entry.xp.toLocaleString("pt-BR")} XP</small></span>
-              <RankBadge compact rank={entry.adventure_rank} />
+              <span className="ranking-grid__identity"><b>{entry.name}</b><PlayerTitle entry={entry} /><small>{entry.race_name} · {entry.class_name}</small><em>{kingdomName(entry.kingdom)}</em></span>
+              <span className="ranking-grid__progress"><small>Progresso</small><b>Nível {entry.level}</b><em>{entry.xp.toLocaleString("pt-BR")} XP</em></span>
+              <span className="ranking-grid__rank"><RankBadge compact rank={entry.adventure_rank} /><small>Rank {entry.adventure_rank}</small></span>
             </Link>
           ))}
           {!visible.length ? <p className="ranking-no-results">Nenhum aventureiro encontrado com esses filtros.</p> : null}

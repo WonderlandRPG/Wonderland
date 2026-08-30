@@ -60,8 +60,8 @@ const bloodyMoonCosmetics = [
     name: "Procissão das Almas Rubras",
     tag: "Mítico • Animado",
     description:
-      "Uma aura espectral para envolver o personagem. Almas rubras surgem aos pés, orbitam lentamente o corpo e se desfazem em cinzas; a cada ciclo, um eclipse carmesim se forma atrás do retrato e deixa um rastro sobrenatural.",
-    highlights: ["Almas orbitais", "Cinzas flutuantes", "Eclipse espectral", "Pulso carmesim"],
+      "Um cortejo espectral de sete almas rubras envolve o personagem em diferentes profundidades. Cada espírito possui rosto, corpo e cauda própria, atravessa o card deixando rastros carmesim e desaparece em névoa e cinzas. Um círculo funerário pulsa ao redor do retrato como se o personagem estivesse no centro de uma procissão dos mortos.",
+    highlights: ["7 almas espectrais", "Rastros carmesim", "Círculo funerário pulsante", "Névoa e cinzas vivas"],
     preview: "aura",
     key: "procissao-almas-rubras",
   },

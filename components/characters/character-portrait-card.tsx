@@ -68,6 +68,8 @@ export function CharacterPortraitCard({
         <i className={[styles.soul, styles.soulThree].join(" ")} />
         <i className={[styles.soul, styles.soulFour].join(" ")} />
         <i className={[styles.soul, styles.soulFive].join(" ")} />
+        <i className={[styles.soul, styles.soulSix].join(" ")} />
+        <i className={[styles.soul, styles.soulSeven].join(" ")} />
         <i className={styles.ashField} />
       </div>
 

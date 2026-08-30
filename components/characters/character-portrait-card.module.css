@@ -544,3 +544,291 @@
   right:12%;
   bottom:-1%;
 }
+
+
+/* =========================================================
+   PROCISSÃO DAS ALMAS RUBRAS · REWORK PREMIUM
+   A aura precisa parecer uma procissão de espíritos, não partículas.
+   ========================================================= */
+.card[data-aura-cosmetic='procissao-almas-rubras']{
+  --soul-red:#ff5364;
+  --soul-core:#ffe9df;
+  --soul-deep:#710f2a;
+  --soul-shadow:#23040e;
+  overflow:visible;
+  box-shadow:
+    0 14px 30px rgba(38,27,18,.22),
+    0 0 18px rgba(255,75,92,.44),
+    0 0 48px rgba(174,24,52,.34),
+    0 0 86px rgba(96,8,30,.20);
+  animation:crimsonAuraHeartbeat 3.4s ease-in-out infinite;
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx{
+  opacity:1;
+  inset:-24%;
+  z-index:11;
+  filter:drop-shadow(0 0 9px rgba(213,37,64,.28));
+}
+
+/* Halo funerário — duas órbitas largas atrás do card. */
+.card[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx::before{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  inset:7%;
+  border-radius:34%;
+  background:
+    conic-gradient(
+      from 12deg,
+      transparent 0 7%,
+      rgba(255,92,103,.10) 8% 12%,
+      rgba(255,226,218,.46) 13%,
+      rgba(198,32,61,.20) 15% 23%,
+      transparent 25% 38%,
+      rgba(255,89,103,.18) 40% 48%,
+      rgba(255,232,219,.38) 49%,
+      rgba(141,17,45,.18) 51% 60%,
+      transparent 62% 79%,
+      rgba(236,55,75,.18) 82% 91%,
+      transparent 94% 100%
+    );
+  -webkit-mask:radial-gradient(ellipse at center,transparent 0 54%,#000 56% 61%,transparent 63%);
+  mask:radial-gradient(ellipse at center,transparent 0 54%,#000 56% 61%,transparent 63%);
+  animation:funeralOrbit 13s linear infinite;
+  filter:blur(.4px) drop-shadow(0 0 8px rgba(255,77,92,.55));
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx::after{
+  content:"";
+  position:absolute;
+  z-index:-3;
+  inset:2%;
+  border-radius:42%;
+  background:
+    radial-gradient(ellipse at 50% 51%,transparent 0 54%,rgba(236,61,79,.11) 59%,transparent 67%),
+    radial-gradient(ellipse at 50% 51%,transparent 0 66%,rgba(116,11,37,.20) 72%,transparent 80%);
+  box-shadow:
+    inset 0 0 26px rgba(255,76,91,.11),
+    0 0 30px rgba(149,20,46,.18);
+  animation:funeralHaloPulse 4.2s ease-in-out infinite;
+}
+
+/* Cada alma tem cabeça/rosto, peito luminoso e uma cauda espectral longa. */
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soul{
+  display:block;
+  position:absolute;
+  width:46px;
+  height:72px;
+  border-radius:50% 50% 43% 43% / 28% 28% 72% 72%;
+  background:
+    radial-gradient(circle at 38% 26%,rgba(71,3,18,.96) 0 2.4px,transparent 2.8px),
+    radial-gradient(circle at 62% 26%,rgba(71,3,18,.96) 0 2.4px,transparent 2.8px),
+    radial-gradient(ellipse at 50% 35%,
+      var(--soul-core) 0 7%,
+      #ffb3ac 12%,
+      var(--soul-red) 27%,
+      rgba(191,29,59,.88) 45%,
+      rgba(104,10,38,.56) 64%,
+      transparent 73%
+    );
+  box-shadow:
+    inset 0 0 12px rgba(255,233,223,.28),
+    0 0 9px rgba(255,105,116,.95),
+    0 0 24px rgba(225,49,74,.70),
+    0 0 44px rgba(123,12,42,.34);
+  filter:drop-shadow(0 0 6px rgba(255,110,120,.75));
+  opacity:0;
+  transform-origin:50% 50%;
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soul::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:14%;
+  right:14%;
+  top:33%;
+  height:76%;
+  border-radius:42% 42% 54% 54%;
+  background:
+    linear-gradient(180deg,
+      rgba(255,138,143,.64) 0,
+      rgba(198,37,63,.48) 38%,
+      rgba(116,12,42,.30) 67%,
+      transparent 100%
+    );
+  clip-path:polygon(
+    13% 0,87% 0,100% 34%,79% 44%,96% 62%,68% 66%,
+    82% 88%,55% 76%,48% 100%,36% 77%,12% 94%,25% 63%,
+    0 55%,22% 38%
+  );
+  filter:blur(1.5px);
+}
+
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soul::after{
+  content:"";
+  position:absolute;
+  left:-35%;
+  top:39%;
+  width:170%;
+  height:42%;
+  border-radius:50%;
+  background:linear-gradient(90deg,transparent,rgba(255,86,101,.17),rgba(255,232,220,.28),rgba(255,86,101,.13),transparent);
+  filter:blur(5px);
+  transform:rotate(-13deg);
+  opacity:.85;
+}
+
+/* Sete espíritos: profundidades, escalas e caminhos diferentes. */
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soulOne{
+  left:-2%;top:19%;
+  animation:processionSoulOne 7.2s cubic-bezier(.42,0,.58,1) infinite;
+}
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soulTwo{
+  right:-3%;top:34%;
+  animation:processionSoulTwo 8.1s cubic-bezier(.42,0,.58,1) .55s infinite;
+}
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soulThree{
+  left:11%;bottom:1%;
+  animation:processionSoulThree 8.8s ease-in-out 1.15s infinite;
+}
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soulFour{
+  right:10%;bottom:4%;
+  animation:processionSoulFour 7.7s ease-in-out 1.8s infinite;
+}
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soulFive{
+  left:43%;top:-5%;
+  animation:processionSoulFive 9.3s ease-in-out 2.25s infinite;
+}
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soulSix{
+  left:-11%;bottom:28%;
+  animation:processionSoulSix 10.1s ease-in-out 3.05s infinite;
+}
+.card[data-aura-cosmetic='procissao-almas-rubras'] .soulSeven{
+  right:-10%;top:6%;
+  animation:processionSoulSeven 9.7s ease-in-out 3.65s infinite;
+}
+
+/* Cinzas quentes + pequenas brasas espirituais. */
+.card[data-aura-cosmetic='procissao-almas-rubras'] .ashField{
+  display:block;
+  position:absolute;
+  z-index:1;
+  inset:4%;
+  background:
+    radial-gradient(circle at 7% 20%,rgba(255,204,193,.82) 0 1.2px,transparent 1.8px),
+    radial-gradient(circle at 91% 15%,rgba(255,104,112,.92) 0 1.2px,transparent 1.8px),
+    radial-gradient(circle at 16% 73%,rgba(255,113,120,.78) 0 1.4px,transparent 2px),
+    radial-gradient(circle at 79% 78%,rgba(255,210,196,.74) 0 1px,transparent 1.6px),
+    radial-gradient(circle at 51% 7%,rgba(255,122,127,.82) 0 1px,transparent 1.7px),
+    radial-gradient(circle at 42% 92%,rgba(255,215,202,.72) 0 1px,transparent 1.7px),
+    radial-gradient(circle at 26% 44%,rgba(240,64,83,.72) 0 1px,transparent 1.8px),
+    radial-gradient(circle at 69% 52%,rgba(255,227,213,.65) 0 1px,transparent 1.8px);
+  background-size:100% 100%;
+  filter:drop-shadow(0 0 4px rgba(229,55,78,.92));
+  animation:crimsonAshRise 5.8s linear infinite;
+  opacity:.84;
+}
+
+/* Ranking: mantém a leitura do efeito mesmo em 74px. */
+.compact[data-aura-cosmetic='procissao-almas-rubras']{
+  box-shadow:
+    0 0 0 1px rgba(112,13,41,.78),
+    0 0 10px rgba(255,78,93,.80),
+    0 0 20px rgba(167,21,51,.48),
+    0 5px 12px rgba(18,4,9,.52);
+}
+.compact[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx{
+  inset:-28%;
+}
+.compact[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx::before{
+  inset:3%;
+  filter:drop-shadow(0 0 4px rgba(255,77,92,.68));
+}
+.compact[data-aura-cosmetic='procissao-almas-rubras'] .soul{
+  width:17px;
+  height:27px;
+  box-shadow:
+    0 0 4px rgba(255,133,139,.96),
+    0 0 8px rgba(229,55,78,.78);
+}
+.compact[data-aura-cosmetic='procissao-almas-rubras'] .soulSix,
+.compact[data-aura-cosmetic='procissao-almas-rubras'] .soulSeven{
+  display:none;
+}
+
+@keyframes crimsonAuraHeartbeat{
+  0%,100%{filter:brightness(.95)}
+  47%{filter:brightness(1)}
+  52%{filter:brightness(1.11)}
+  57%{filter:brightness(.98)}
+}
+@keyframes funeralOrbit{
+  to{transform:rotate(360deg)}
+}
+@keyframes funeralHaloPulse{
+  0%,100%{transform:scale(.96);opacity:.50}
+  50%{transform:scale(1.035);opacity:1}
+}
+@keyframes crimsonAshRise{
+  0%{transform:translate3d(0,10px,0);opacity:.30}
+  45%{opacity:.88}
+  100%{transform:translate3d(5px,-25px,0);opacity:.22}
+}
+@keyframes processionSoulOne{
+  0%{transform:translate(-24px,38px) scale(.55) rotate(-7deg);opacity:0}
+  18%{opacity:.78}
+  46%{transform:translate(2px,-3px) scale(1.05) rotate(2deg);opacity:1}
+  76%{opacity:.66}
+  100%{transform:translate(35px,-48px) scale(.72) rotate(7deg);opacity:0}
+}
+@keyframes processionSoulTwo{
+  0%{transform:translate(30px,28px) scale(.48) rotate(7deg);opacity:0}
+  22%{opacity:.70}
+  53%{transform:translate(-2px,-7px) scale(.98) rotate(-2deg);opacity:1}
+  100%{transform:translate(-37px,-50px) scale(.64) rotate(-8deg);opacity:0}
+}
+@keyframes processionSoulThree{
+  0%{transform:translate(-22px,32px) scale(.40);opacity:0}
+  27%{opacity:.60}
+  58%{transform:translate(18px,-12px) scale(.78);opacity:.95}
+  100%{transform:translate(52px,-76px) scale(.46);opacity:0}
+}
+@keyframes processionSoulFour{
+  0%{transform:translate(18px,34px) scale(.44);opacity:0}
+  24%{opacity:.64}
+  56%{transform:translate(-16px,-14px) scale(.82);opacity:.96}
+  100%{transform:translate(-48px,-70px) scale(.50);opacity:0}
+}
+@keyframes processionSoulFive{
+  0%{transform:translateY(32px) scale(.35);opacity:0}
+  28%{opacity:.52}
+  57%{transform:translateY(-3px) scale(.68);opacity:.86}
+  100%{transform:translateY(-55px) scale(.38);opacity:0}
+}
+@keyframes processionSoulSix{
+  0%{transform:translate(-15px,22px) scale(.34) rotate(-10deg);opacity:0}
+  31%{opacity:.50}
+  59%{transform:translate(22px,-18px) scale(.64) rotate(3deg);opacity:.84}
+  100%{transform:translate(70px,-48px) scale(.36) rotate(8deg);opacity:0}
+}
+@keyframes processionSoulSeven{
+  0%{transform:translate(20px,18px) scale(.31) rotate(8deg);opacity:0}
+  34%{opacity:.46}
+  62%{transform:translate(-23px,-20px) scale(.62) rotate(-4deg);opacity:.82}
+  100%{transform:translate(-68px,-54px) scale(.34) rotate(-9deg);opacity:0}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .card[data-aura-cosmetic='procissao-almas-rubras'],
+  .card[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx::before,
+  .card[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx::after,
+  .card[data-aura-cosmetic='procissao-almas-rubras'] .soul,
+  .card[data-aura-cosmetic='procissao-almas-rubras'] .ashField{
+    animation:none;
+  }
+  .card[data-aura-cosmetic='procissao-almas-rubras'] .soul{
+    opacity:.82;
+  }
+}

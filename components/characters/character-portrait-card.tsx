@@ -60,7 +60,13 @@ export function CharacterPortraitCard({
         <i className={styles.cardFogTwo} />
       </div>
 
-      <div className={styles.cosmeticBorderFx} aria-hidden="true" />
+      <div className={styles.cosmeticBorderFx} aria-hidden="true">
+        <img
+          alt=""
+          className={styles.borderArtwork}
+          src="/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta-v2.png"
+        />
+      </div>
 
       <div className={styles.cosmeticAuraFx} aria-hidden="true">
         <i className={[styles.soul, styles.soulOne].join(" ")} />

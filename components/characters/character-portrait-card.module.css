@@ -508,8 +508,8 @@
 
 .card[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
   opacity:1;
-  background-image:url('/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta.png');
-  inset:-8%;
+  background-image:url('/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta-v2.png');
+  inset:-11% -10% -12%;
   animation:borderBloodBreath 4.6s ease-in-out infinite alternate;
 }
 

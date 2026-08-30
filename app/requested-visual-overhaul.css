@@ -199,7 +199,8 @@ body a {
 
 /* Controles compartilhados */
 .button,
-button:not(.player-nav__world-backdrop):not(.update-notification__backdrop),
+.admin-action-button,
+.auth-submit,
 input[type="submit"] {
   min-height: 42px;
   border: 1px solid rgba(0, 204, 255, 0.42) !important;
@@ -225,7 +226,8 @@ input[type="submit"] {
 }
 
 .button:hover,
-button:not(:disabled):not(.player-nav__world-backdrop):not(.update-notification__backdrop):hover,
+.admin-action-button:not(:disabled):hover,
+.auth-submit:not(:disabled):hover,
 input[type="submit"]:hover {
   border-color: var(--game-cyan) !important;
   box-shadow:
@@ -246,7 +248,7 @@ input[type="submit"]:hover {
 }
 
 .button--danger,
-button.is-failed,
+.admin-action-button.is-failed,
 .admin-action-button.is-danger {
   border-color: rgba(239, 110, 120, 0.6) !important;
   background: linear-gradient(180deg, #a84c58, #70343d) !important;
@@ -1699,4 +1701,236 @@ dialog::backdrop {
 .character-public-page .eyebrow,
 .character-public-stats strong {
   color: var(--game-cyan) !important;
+}
+
+/*
+ * Correção de arquitetura: componentes com estilo próprio não recebem mais o
+ * botão azul genérico. Cada sistema preserva sua hierarquia e seus estados.
+ */
+button[data-ui="catalog-entry"] {
+  min-height: 66px !important;
+  border-color: var(--game-line) !important;
+  background: var(--game-panel-2) !important;
+  box-shadow: none !important;
+  color: var(--game-text) !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+
+button[data-ui="catalog-entry"][aria-pressed="true"] {
+  border-color: var(--game-cyan) !important;
+  background: linear-gradient(90deg, rgba(0, 204, 255, 0.16), var(--game-panel-2)) !important;
+}
+
+/* História oficial */
+.lore-page .lore-collapse {
+  display: grid !important;
+  gap: 14px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.lore-page .lore-collapse > header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  padding: 14px 16px !important;
+  border: 1px solid var(--game-line) !important;
+  border-left: 3px solid var(--game-cyan) !important;
+  border-radius: 5px !important;
+  background: linear-gradient(90deg, rgba(0, 204, 255, 0.08), var(--game-panel)) !important;
+  box-shadow: var(--game-shadow-soft) !important;
+}
+
+.lore-page .lore-collapse > header > div {
+  display: grid !important;
+  gap: 3px !important;
+}
+
+.lore-page .lore-collapse > header small {
+  color: var(--game-cyan) !important;
+  font-family: ui-monospace, monospace !important;
+  font-size: 0.58rem !important;
+  letter-spacing: 0.14em !important;
+}
+
+.lore-page .lore-collapse > header strong {
+  color: var(--game-paper) !important;
+}
+
+.lore-page .lore-collapse > header button {
+  min-height: 38px !important;
+  padding: 8px 12px !important;
+  border: 1px solid var(--game-line-strong) !important;
+  border-radius: 3px !important;
+  background: var(--game-panel-2) !important;
+  box-shadow: none !important;
+  color: var(--game-cyan) !important;
+  font-size: 0.68rem !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+}
+
+/* Carregamentos: remove o último cartão verde do HUD anterior. */
+.route-loading,
+.arena-entry-overlay {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(34, 153, 221, 0.12), transparent 28rem), var(--game-bg) !important;
+}
+
+.route-loading__gate,
+.arena-entry-overlay > div {
+  border: 1px solid var(--game-line-strong) !important;
+  border-radius: 6px !important;
+  background: linear-gradient(145deg, var(--game-panel-2), var(--game-panel)) !important;
+  box-shadow:
+    var(--game-shadow),
+    0 0 32px rgba(0, 204, 255, 0.1) !important;
+  color: var(--game-text) !important;
+}
+
+.route-loading__crest,
+.route-loading__gate small,
+.arena-entry-overlay small {
+  border-color: var(--game-cyan) !important;
+  color: var(--game-cyan) !important;
+}
+
+.route-loading__progress,
+.arena-entry-overlay progress {
+  background: #090c11 !important;
+}
+
+.route-loading__progress i {
+  background: linear-gradient(90deg, var(--game-blue), var(--game-cyan)) !important;
+}
+
+/* Missões */
+.mission-page .mission-board-progress,
+.mission-page .mission-board-rules,
+.mission-page .guild-board,
+.mission-page .mission-parchment,
+.mission-page .mission-ledger,
+.mission-page .mission-full-briefing,
+.mission-page .mission-creature-reference,
+.mission-management .mission-manager-briefing,
+.mission-management .mission-ledger {
+  border-color: var(--game-line) !important;
+  background: linear-gradient(145deg, var(--game-panel-2), var(--game-panel)) !important;
+  color: var(--game-text) !important;
+  box-shadow: var(--game-shadow-soft) !important;
+}
+
+.mission-page .mission-parchment blockquote,
+.mission-page .mission-full-briefing > div,
+.mission-management .mission-manager-briefing > div {
+  border-color: var(--game-line) !important;
+  background: rgba(11, 14, 20, 0.5) !important;
+  color: var(--game-muted) !important;
+}
+
+.mission-page .mission-unavailable,
+.mission-page .mission-lockout {
+  border-color: var(--game-line-strong) !important;
+  background: linear-gradient(145deg, var(--game-panel-2), var(--game-panel)) !important;
+  color: var(--game-text) !important;
+}
+
+/* Reinos */
+.realms-page .realms-hero,
+.realms-page .realm-dossiers--atlas > article,
+.kingdom-current-page .kingdom-current-hero,
+.kingdom-current-page .kingdom-leadership,
+.kingdom-current-page .kingdom-resources,
+.kingdom-current-page .kingdom-treasury,
+.kingdom-current-page .kingdom-salaries,
+.kingdom-current-page .kingdom-diplomacy,
+.kingdom-current-page .kingdom-war-panel {
+  border-color: var(--game-line) !important;
+  background: linear-gradient(145deg, var(--game-panel-2), var(--game-panel)) !important;
+  color: var(--game-text) !important;
+}
+
+.realms-page .realm-dossiers--atlas > article > header,
+.realms-page .realm-dossiers__body,
+.kingdom-current-page article,
+.kingdom-current-page dl > div {
+  border-color: var(--game-line) !important;
+  background: rgba(17, 21, 30, 0.9) !important;
+  color: var(--game-text) !important;
+}
+
+.realms-page .realm-gallery a {
+  border-color: var(--game-line) !important;
+  background: var(--game-bg) !important;
+}
+
+/* Loja e inventário */
+.market-page .market-hero,
+.market-page .shop-browser,
+.market-page .shop-controls,
+.market-page .shop-cart,
+.market-page .classic-item-card,
+.market-page .market-empty,
+.character-page .inventory-hud,
+.character-page .inventory-browser,
+.character-page .inventory-command,
+.character-page .inventory-inspector,
+.character-page .inventory-character-card,
+.character-page .inventory-classic-card {
+  border-color: var(--game-line) !important;
+  background: linear-gradient(145deg, var(--game-panel-2), var(--game-panel)) !important;
+  color: var(--game-text) !important;
+  box-shadow: var(--game-shadow-soft) !important;
+}
+
+.market-page .classic-item-card__art,
+.market-page .classic-item-card__body,
+.market-page .classic-item-card__effect,
+.character-page .inventory-browser__catalog,
+.character-page .inventory-command__loadout,
+.character-page .inventory-slot-column,
+.character-page .inventory-classic-grid {
+  border-color: var(--game-line) !important;
+  background: rgba(11, 14, 20, 0.48) !important;
+  color: var(--game-text) !important;
+}
+
+.market-page .classic-item-card p,
+.market-page .classic-item-card small,
+.character-page .inventory-hud p,
+.character-page .inventory-hud small {
+  color: var(--game-muted) !important;
+}
+
+/* Presença */
+.presence-page .presence-hero,
+.presence-page .presence-pass,
+.presence-page .presence-pass--enhanced,
+.presence-page .presence-progress-card,
+.presence-page .presence-reward-grid > article,
+.presence-page .presence-preserved {
+  border-color: var(--game-line) !important;
+  background: linear-gradient(145deg, var(--game-panel-2), var(--game-panel)) !important;
+  color: var(--game-text) !important;
+  box-shadow: var(--game-shadow-soft) !important;
+}
+
+.presence-page .presence-progress-card > div,
+.presence-page .presence-hero__next {
+  border-color: var(--game-line) !important;
+  background: rgba(11, 14, 20, 0.48) !important;
+  color: var(--game-text) !important;
+}
+
+@media (max-width: 700px) {
+  .lore-page .lore-collapse > header {
+    display: grid !important;
+  }
+
+  .lore-page .lore-collapse > header button {
+    width: 100% !important;
+  }
 }

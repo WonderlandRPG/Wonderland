@@ -44,12 +44,12 @@ export default async function PublicCharacterProfile({
   );
 
   return (
-    <main className="character-public-page">
+    <main className="public-character-page">
       <PlayerNav />
-      <div className="page-container character-public-shell">
-        <Link className="character-public-back" href="/ranking">← Voltar aos rankings</Link>
-        <section className="character-public-hero" data-rank={sheet.adventure_rank}>
-          <div className="character-public-hero__portrait official-character-card-host">
+      <div className="page-container public-character-shell">
+        <Link className="public-character-back" href="/ranking">← Voltar aos rankings</Link>
+        <section className="public-character-hero" data-rank={sheet.adventure_rank}>
+          <div className="public-character-hero__portrait official-character-card-host">
             <CharacterPortraitCard
               imageUrl={sheet.image_url}
               level={sheet.level}
@@ -60,7 +60,7 @@ export default async function PublicCharacterProfile({
               variant="hero"
             />
           </div>
-          <div className="character-public-hero__copy">
+          <div className="public-character-hero__copy">
             <span className="eyebrow">Ficha pública de aventureiro</span>
             <h1>{sheet.name}</h1>
             <p>{sheet.race.name} · {sheet.characterClass.name}</p>
@@ -76,16 +76,16 @@ export default async function PublicCharacterProfile({
             </small>
           </div>
         </section>
-        <section className="character-public-summary">
+        <section className="public-character-summary">
           <header><span className="eyebrow">Resumo de combate</span><h2>Atributos finais</h2></header>
-          <div className="character-public-stats">
+          <div className="public-character-stats">
             <article><small>HP máximo</small><strong>{sheet.stats.maxHp}</strong></article>
             {attributeKeys.map((key) => (
               <article key={key}><small>{attributeLabels[key]}</small><strong>{sheet.stats.attributes[key]}</strong></article>
             ))}
           </div>
         </section>
-        <section className="character-public-equipment">
+        <section className="public-character-equipment">
           <header>
             <div><span className="eyebrow">Equipamento público</span><h2>Conjunto utilizado</h2></div>
             <small>{equipped.length} itens equipados</small>
@@ -93,7 +93,7 @@ export default async function PublicCharacterProfile({
           <div>
             {equipped.map((item) => (
               <article data-rarity={item.rarity} key={`${item.id}-${item.equippedSlot}`}>
-                <ItemArtwork imageUrl={item.imageUrl} name={item.name} rarity={item.rarity} slot={item.slot} />
+                <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
                 <span>
                   <small>{itemSlotLabel(item.equippedSlot ?? item.slot)} · {item.rarity}</small>
                   <strong>{item.name}</strong>
@@ -109,7 +109,7 @@ export default async function PublicCharacterProfile({
                 ))}
               </article>
             ))}
-            {!equipped.length ? <p className="character-public-empty">Este personagem ainda não equipou itens.</p> : null}
+            {!equipped.length ? <p className="public-character-empty">Este personagem ainda não equipou itens.</p> : null}
           </div>
         </section>
       </div>

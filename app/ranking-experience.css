@@ -2,24 +2,6 @@
 @media(max-width:900px){.ranking-podium__place.is-place-1{order:1;transform:none!important}.ranking-podium__place.is-place-2{order:2}.ranking-podium__place.is-place-3{order:3}}
 @media(max-width:620px){.ranking-podium{padding:48px 10px 14px!important;border-width:6px!important}.ranking-podium__place{min-height:0!important}.ranking-board__header{padding:17px!important}.ranking-table>a{margin-inline:7px!important}.ranking-position{width:40px;height:40px}.ranking-season-banner{padding:17px!important}}
 
-/* Ranking alinhado ao cliente de jogo: sem blocos claros concorrendo com o HUD. */
-body:has(.champions-hall){background-color:var(--wl-canvas)!important;background-image:linear-gradient(var(--wl-atmosphere-start),var(--wl-atmosphere-end)),url('/backgrounds/ranking.svg')!important}
-.champions-hall .portal-hero{border-color:var(--wl-border)!important;border-radius:4px!important;background:linear-gradient(120deg,var(--wl-surface-dark-strong),var(--wl-surface-dark))!important;color:var(--wl-text-inverse)!important}
-.champions-hall .portal-hero :is(h1,h2,h3){color:var(--wl-text-inverse)!important}
-.champions-hall .portal-hero :is(p,small){color:var(--wl-text-inverse-muted)!important}
-.champions-hall__switcher{border-radius:4px!important;background:linear-gradient(120deg,var(--wl-surface-dark-strong),var(--wl-surface-dark))!important}
-.champions-hall__switcher button{border-color:var(--wl-border)!important;background:color-mix(in srgb,var(--wl-surface) 8%,transparent)!important;color:var(--wl-text-inverse)!important}
-.champions-hall__switcher button.is-active{background:var(--wl-gold)!important;color:var(--wl-gold-contrast)!important}
-.ranking-season-banner{border-radius:4px!important;background:linear-gradient(120deg,var(--wl-surface-dark),var(--wl-surface-dark-strong))!important;color:var(--wl-text-inverse)!important}
-.ranking-season-banner :is(h2,p,.eyebrow){color:var(--wl-text-inverse)!important}
-.ranking-season-banner dl>div{border-color:color-mix(in srgb,var(--wl-gold) 28%,transparent)!important;background:color-mix(in srgb,var(--wl-surface) 7%,transparent)!important;color:var(--wl-text-inverse)!important}
-.ranking-season-banner :is(dt,dd){color:var(--wl-text-inverse)!important}
-.ranking-board{border-radius:4px!important;background:var(--wl-surface-dark-strong)!important}
-.ranking-board__header{background:var(--wl-surface-dark)!important}
-.ranking-filters{background:var(--wl-surface-dark-strong)!important}
-.ranking-filters button{border-color:color-mix(in srgb,var(--wl-gold) 24%,transparent)!important;background:color-mix(in srgb,var(--wl-surface) 7%,transparent)!important;color:var(--wl-text-inverse)!important}
-.ranking-filters button.is-active{background:var(--wl-gold)!important;color:var(--wl-gold-contrast)!important}
-
 /* The official compact portrait is 74px wide. Keep the identity column wider
    than the card so player names and titles never render underneath it. */
 .ranking-player-cell{grid-template-columns:82px minmax(0,1fr)!important;min-width:0}

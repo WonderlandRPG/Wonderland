@@ -71,41 +71,6 @@ export async function PlayerNav() {
           </Link>
         )}
       </div>
-      <section className="player-nav__hud" aria-label="Estado da jornada">
-        <div
-          className={`player-nav__portrait ${activeCharacter?.image_url ? "has-image" : ""}`}
-          style={
-            activeCharacter?.image_url
-              ? {
-                  backgroundImage: `url(${JSON.stringify(activeCharacter.image_url).slice(1, -1)})`,
-                }
-              : undefined
-          }
-          aria-hidden="true"
-        >
-          {!activeCharacter?.image_url ? "W" : null}
-        </div>
-        <div className="player-nav__hud-copy">
-          <small>{activeCharacter ? "Personagem ativo" : "Portal de Wonderland"}</small>
-          <strong>
-            {activeCharacter?.name ?? (account ? "Escolha seu herói" : "A jornada aguarda")}
-          </strong>
-        </div>
-        <div className="player-nav__hud-stat">
-          <small>Nível</small>
-          <strong>{activeCharacter?.level ?? "—"}</strong>
-        </div>
-        <div className="player-nav__hud-stat is-rank">
-          <small>Rank</small>
-          <strong>{activeCharacter?.adventure_rank ?? "—"}</strong>
-        </div>
-        <div className="player-nav__energy" aria-hidden="true">
-          <span />
-        </div>
-        <Link className="player-nav__hud-action" href={account ? "/personagens" : "/entrar"}>
-          {account ? "Trocar personagem" : "Entrar no jogo"}
-        </Link>
-      </section>
       {hasUnseenUpdate && latestUpdate ? <UpdateNotification update={latestUpdate} /> : null}
     </header>
   );

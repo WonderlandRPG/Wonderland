@@ -1,23 +1,25 @@
 .shell {
   background:
-    radial-gradient(
-      circle at 86% 8%,
-      color-mix(in srgb, var(--wl-accent) 18%, transparent),
-      transparent 27%
-    ),
-    linear-gradient(180deg, var(--wl-surface-dark-strong), var(--wl-surface));
+    radial-gradient(circle at 86% 8%, rgba(224, 183, 91, 0.2), transparent 27%),
+    linear-gradient(180deg, #173a2b 0 430px, #ead6a5 431px, #dbc08a 100%) !important;
 }
 
 .shell > h1 {
-  color: var(--wl-text);
-  text-shadow: 0 3px 18px var(--wl-surface-overlay);
+  color: #fff0ca !important;
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.28);
 }
 
-.shell > p,
-.shell :global(.royal-chronicle__story) {
-  color: var(--wl-text-muted);
+.shell > p {
+  color: #eadfbe !important;
 }
 
 .shell :global(.royal-chronicle__story) {
   margin-top: 22px;
+  color: #2d2118;
+}
+
+@media (max-width: 760px) {
+  .shell {
+    background: linear-gradient(180deg, #173a2b 0 470px, #ebd6a5 471px) !important;
+  }
 }

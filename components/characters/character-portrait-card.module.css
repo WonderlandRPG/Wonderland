@@ -128,9 +128,9 @@
   display:block;
   position:absolute;
   z-index:2;
-  top:7%;
-  right:7%;
-  width:34%;
+  top:8%;
+  right:8%;
+  width:23%;
   aspect-ratio:1;
   border-radius:50%;
   background:
@@ -141,8 +141,28 @@
   box-shadow:
     0 0 18px rgba(255,99,102,.72),
     0 0 46px rgba(202,39,61,.48);
-  opacity:.88;
+  opacity:.84;
   animation:epitaphMoon 4.2s ease-in-out infinite;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .bloodMoon::before{
+  content:"";
+  position:absolute;
+  inset:-24%;
+  border:1px solid rgba(255,116,122,.34);
+  border-radius:50%;
+  box-shadow:0 0 18px rgba(225,48,69,.35),inset 0 0 16px rgba(255,116,122,.18);
+  animation:epitaphMoonCorona 3.2s ease-out infinite;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .bloodMoon::after{
+  content:"";
+  position:absolute;
+  inset:10%;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 68% 32%,rgba(84,5,21,.32) 0 7%,transparent 8%),
+    radial-gradient(circle at 30% 64%,rgba(84,5,21,.24) 0 10%,transparent 11%);
 }
 
 .graveyard{
@@ -282,6 +302,18 @@
   pointer-events:none;
 }
 
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .image{
+  animation:epitaphPortraitDrift 9s ease-in-out infinite alternate;
+}
+
+.card[data-card-cosmetic='epitafio-lua-carmesim'] .cosmeticCardFx::after{
+  background:
+    linear-gradient(112deg,transparent 18%,rgba(255,173,158,.10) 39%,transparent 52%) -130% 0/52% 100% no-repeat,
+    linear-gradient(90deg,rgba(64,6,20,.52),transparent 11%,transparent 89%,rgba(64,6,20,.52)),
+    radial-gradient(ellipse at 50% 100%,rgba(174,35,53,.34),transparent 46%);
+  animation:epitaphLightSweep 7.5s ease-in-out infinite;
+}
+
 .card[data-card-cosmetic='epitafio-lua-carmesim'] .cardFogOne{
   bottom:9%;
   animation:cardFogMove 7s ease-in-out infinite alternate;
@@ -387,6 +419,19 @@
   0%,100%{transform:scale(.96);filter:brightness(.88)}
   50%{transform:scale(1.06);filter:brightness(1.16)}
 }
+@keyframes epitaphMoonCorona{
+  0%{transform:scale(.76);opacity:0}
+  38%{opacity:.72}
+  100%{transform:scale(1.28);opacity:0}
+}
+@keyframes epitaphPortraitDrift{
+  from{background-position:50% 0;filter:saturate(.74) contrast(1.08) brightness(.76) sepia(.12)}
+  to{background-position:50% 3%;filter:saturate(.88) contrast(1.12) brightness(.84) sepia(.08)}
+}
+@keyframes epitaphLightSweep{
+  0%,58%{background-position:-130% 0,0 0,0 0}
+  82%,100%{background-position:330% 0,0 0,0 0}
+}
 @keyframes ravenDriftOne{
   0%,100%{transform:translate(0,2px) scale(.78);opacity:.18}
   25%{opacity:.88}
@@ -464,6 +509,7 @@
 .card[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
   opacity:1;
   background-image:url('/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta.png');
+  inset:-8%;
   animation:borderBloodBreath 4.6s ease-in-out infinite alternate;
 }
 
@@ -566,7 +612,7 @@
 
 .card[data-aura-cosmetic='procissao-almas-rubras'] .cosmeticAuraFx{
   opacity:1;
-  inset:-24%;
+  inset:-30%;
   z-index:11;
   filter:drop-shadow(0 0 9px rgba(213,37,64,.28));
 }
@@ -682,11 +728,11 @@
 
 /* Sete espíritos: profundidades, escalas e caminhos diferentes. */
 .card[data-aura-cosmetic='procissao-almas-rubras'] .soulOne{
-  left:-2%;top:19%;
+  left:2%;top:19%;
   animation:processionSoulOne 7.2s cubic-bezier(.42,0,.58,1) infinite;
 }
 .card[data-aura-cosmetic='procissao-almas-rubras'] .soulTwo{
-  right:-3%;top:34%;
+  right:2%;top:34%;
   animation:processionSoulTwo 8.1s cubic-bezier(.42,0,.58,1) .55s infinite;
 }
 .card[data-aura-cosmetic='procissao-almas-rubras'] .soulThree{
@@ -702,11 +748,11 @@
   animation:processionSoulFive 9.3s ease-in-out 2.25s infinite;
 }
 .card[data-aura-cosmetic='procissao-almas-rubras'] .soulSix{
-  left:-11%;bottom:28%;
+  left:-2%;bottom:28%;
   animation:processionSoulSix 10.1s ease-in-out 3.05s infinite;
 }
 .card[data-aura-cosmetic='procissao-almas-rubras'] .soulSeven{
-  right:-10%;top:6%;
+  right:-1%;top:6%;
   animation:processionSoulSeven 9.7s ease-in-out 3.65s infinite;
 }
 

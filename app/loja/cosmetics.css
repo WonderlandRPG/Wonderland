@@ -178,6 +178,17 @@
   border-radius:var(--wl-radius-md);
   background:var(--wl-surface-raised);
 }
+.market-page .cosmetic-compare__stage.is-after.is-aura,
+.market-page .cosmetic-compare__stage.is-after.is-border{
+  overflow:visible;
+  padding:62px;
+}
+.market-page .cosmetic-compare__stage.is-after.is-aura .cosmetic-character-demo{
+  width:min(100%,270px);
+}
+.market-page .cosmetic-compare__stage.is-after.is-border .cosmetic-character-demo{
+  width:min(100%,265px);
+}
 .market-page .cosmetic-compare__stage.is-after{
   background:
     radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--wl-blood) 24%,transparent),transparent 34%),

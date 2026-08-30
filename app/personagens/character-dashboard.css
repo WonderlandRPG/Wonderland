@@ -43,7 +43,6 @@
 .sheet-page .sheet-tabs a:nth-child(1)::before{content:"◆"}.sheet-page .sheet-tabs a:nth-child(2)::before{content:"✦"}.sheet-page .sheet-tabs a:nth-child(3)::before{content:"⚔"}
 .sheet-page .sheet-tabs a.is-active{border-color:color-mix(in srgb,var(--wl-gold) 42%,transparent);background:linear-gradient(180deg,var(--wl-accent-hover),var(--wl-accent));color:var(--wl-text-inverse)}
 .sheet-page .sheet-tabs a.is-active::before{color:var(--wl-gold-soft)}
-.sheet-page .sheet-section{border-color:var(--wl-border)!important;background:linear-gradient(145deg,var(--wl-surface),var(--wl-surface-raised))!important;box-shadow:var(--wl-shadow-soft)!important}
 .sheet-page .sheet-stat-grid{margin:0;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
 .sheet-page .sheet-stat-grid article{min-height:92px;padding:14px;border-color:var(--wl-border-soft);background:var(--wl-surface)}
 .sheet-page .sheet-stat-grid article:first-child{background:linear-gradient(145deg,var(--wl-accent-soft),var(--wl-surface))}

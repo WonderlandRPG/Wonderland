@@ -1,0 +1,47 @@
+/* Linguagem global do cliente de jogo · leitura clara, superfícies escuras e ouro como acento. */
+html{background:var(--wl-canvas)}
+body{background-color:var(--wl-canvas);color:var(--wl-text-inverse)}
+.home-landing{color:var(--wl-text-inverse)}
+.home-hero{border-color:color-mix(in srgb,var(--wl-gold) 36%,var(--wl-border));border-radius:4px;background-image:linear-gradient(90deg,color-mix(in srgb,var(--wl-surface-dark-strong) 96%,transparent),color-mix(in srgb,var(--wl-surface-dark) 84%,transparent)),url('/images/hero-background.png');box-shadow:var(--wl-shadow)}
+.home-hero__copy h1,.home-hero__copy h1 em{color:var(--wl-text-inverse);text-shadow:var(--wl-shadow-soft)}
+.home-hero__lead,.home-hero__tale p{color:var(--wl-text-inverse-muted)}
+.home-path{border-color:color-mix(in srgb,var(--wl-gold) 24%,var(--wl-border));border-radius:4px;background:linear-gradient(145deg,var(--wl-surface-dark),var(--wl-surface-dark-strong));color:var(--wl-text-inverse)}
+.home-path:nth-child(2),.home-path:nth-child(3){background:linear-gradient(145deg,var(--wl-surface-dark),var(--wl-surface-dark-strong))}
+.home-path small{color:var(--wl-gold-soft)}.home-path strong{color:var(--wl-text-inverse)}.home-path span{color:var(--wl-text-inverse-muted)}
+.auth-shell{border-color:var(--wl-border);border-radius:4px;background:var(--wl-surface-dark);box-shadow:var(--wl-shadow)}
+.auth-panel{background:linear-gradient(155deg,var(--wl-surface-dark),var(--wl-surface-dark-strong));color:var(--wl-text-inverse)}
+.auth-heading h1{color:var(--wl-text-inverse)}.auth-heading p{color:var(--wl-text-inverse-muted)}.auth-heading>span,.auth-back-link,.auth-form__switch a{color:var(--wl-gold-soft)}
+.auth-form__switch,.form-field>span,.form-field__label-row{color:var(--wl-text-inverse-muted)}
+:where(.lore-page,.kingdom-current-page,.character-page,.sheet-page,.character-public-page,.market-page,.mission-page,.arena-page,.dungeon-page,.bestiary-page,.presence-page,.guild-registry-page){min-height:100vh;color:var(--wl-text-inverse);background-color:var(--wl-canvas)}
+:where(.lore-page,.kingdom-current-page,.character-page,.sheet-page,.character-public-page,.market-page,.mission-page,.arena-page,.dungeon-page,.bestiary-page,.presence-page,.guild-registry-page) :where(h1,h2,h3,h4,strong,b){color:var(--wl-text-inverse)}
+:where(.lore-page,.kingdom-current-page,.character-page,.sheet-page,.character-public-page,.market-page,.mission-page,.arena-page,.dungeon-page,.bestiary-page,.presence-page,.guild-registry-page) :where(p,li,dd){color:var(--wl-text-inverse-muted)}
+:where(.lore-page,.kingdom-current-page,.character-page,.sheet-page,.character-public-page,.market-page,.mission-page,.arena-page,.dungeon-page,.bestiary-page,.presence-page,.guild-registry-page) :where(.eyebrow,dt,small){color:var(--wl-gold-soft)}
+
+:where(.world-lore-hero,.kingdom-current-hero,.character-page__header,.market-hero,.mission-board-hero,.pvp-history-hero,.bestiary-hero,.presence-hero,.guild-registry-cover){border:1px solid color-mix(in srgb,var(--wl-gold) 34%,var(--wl-border));border-radius:4px;background:linear-gradient(120deg,var(--wl-surface-dark-strong),var(--wl-surface-dark));color:var(--wl-text-inverse);box-shadow:var(--wl-shadow)}
+:where(.world-lore-hero,.kingdom-current-hero,.character-page__header,.market-hero,.mission-board-hero,.pvp-history-hero,.bestiary-hero,.presence-hero,.guild-registry-cover) :where(h1,h2,h3){color:var(--wl-text-inverse)}
+:where(.world-lore-hero,.kingdom-current-hero,.character-page__header,.market-hero,.mission-board-hero,.pvp-history-hero,.bestiary-hero,.presence-hero,.guild-registry-cover) p{color:var(--wl-text-inverse-muted)}
+
+:where(.world-lore-shell,.kingdom-current-shell,.character-page__inner,.sheet-page__inner,.market-shell,.mission-board-shell,.mission-management,.arena-page__inner,.dungeon-shell,.bestiary-shell,.presence-shell,.guild-registry-book){color:var(--wl-text-inverse)}
+:where(.world-lore-shell,.kingdom-current-shell,.character-page__inner,.sheet-page__inner,.market-shell,.mission-board-shell,.mission-management,.arena-page__inner,.dungeon-shell,.bestiary-shell,.presence-shell,.guild-registry-book) :where(section,article,aside){border-color:color-mix(in srgb,var(--wl-gold) 24%,var(--wl-border));}
+
+:where(input,textarea,select){border-color:var(--wl-border);background:var(--wl-surface);color:var(--wl-text)}
+:where(input,textarea)::placeholder{color:var(--wl-text-subtle)}
+:where(button,.button){font-weight:800}
+:where(a,button,input,textarea,select,summary):focus-visible{outline:3px solid var(--wl-focus-ring);outline-offset:3px}
+
+:where(.character-create-panel,.character-create-summary,.market-catalog,.market-wallet,.mission-board,.mission-card,.arena-mode-select,.arena-mode-card,.arena-mission-lock,.dungeon-card,.bestiary-entry,.presence-calendar,.presence-summary,.guild-registry-book>section){border:1px solid color-mix(in srgb,var(--wl-gold) 24%,var(--wl-border));border-radius:4px;background:linear-gradient(145deg,var(--wl-surface-dark),var(--wl-surface-dark-strong));color:var(--wl-text-inverse);box-shadow:var(--wl-shadow-soft)}
+:where(.character-create-panel,.character-create-summary,.market-catalog,.market-wallet,.mission-board,.mission-card,.arena-mode-select,.arena-mode-card,.arena-mission-lock,.dungeon-card,.bestiary-entry,.presence-calendar,.presence-summary,.guild-registry-book>section) :where(h2,h3,h4,strong,b){color:var(--wl-text-inverse)}
+:where(.character-create-panel,.character-create-summary,.market-catalog,.market-wallet,.mission-board,.mission-card,.arena-mode-select,.arena-mode-card,.arena-mission-lock,.dungeon-card,.bestiary-entry,.presence-calendar,.presence-summary,.guild-registry-book>section) :where(p,li,dd){color:var(--wl-text-inverse-muted)}
+
+.character-public-equipment>div>article{min-width:0;overflow:hidden}
+.character-public-equipment>div>article>span{min-width:0}
+.character-public-equipment>div>article :where(strong,p,small){overflow-wrap:anywhere}
+.character-public-equipment article>dl>div{background:var(--wl-gold);color:var(--wl-gold-contrast)}
+.character-public-equipment article>dl :where(dt,dd){color:var(--wl-gold-contrast)}
+.character-public-equipment article aside{border-color:var(--wl-blood-border);background:var(--wl-blood-surface);color:var(--wl-blood-text)}
+.character-public-equipment article aside :where(small,b,p){color:var(--wl-blood-text)}
+
+.admin-shell{color:var(--wl-text)}
+.admin-content :where(input,textarea,select){background:var(--wl-field-bg);color:var(--wl-field-text)}
+@media(max-width:1120px){.character-public-equipment>div{grid-template-columns:1fr}}
+@media(max-width:700px){:where(.world-lore-hero,.kingdom-current-hero,.character-page__header,.market-hero,.mission-board-hero,.pvp-history-hero,.bestiary-hero,.presence-hero,.guild-registry-cover){padding:20px}}

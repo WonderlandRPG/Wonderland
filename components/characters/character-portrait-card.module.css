@@ -59,10 +59,22 @@
 
 .cosmeticBorderFx{
   z-index:12;
-  inset:-6% -16% -7%;
-  background:center/100% 100% no-repeat;
+  inset:0;
+  overflow:visible;
   filter:drop-shadow(0 7px 10px rgba(13,2,6,.72)) drop-shadow(0 0 10px rgba(188,31,48,.32));
   transform-origin:center;
+}
+
+.borderArtwork{
+  display:none;
+  position:absolute;
+  top:-11%;
+  left:-10%;
+  width:120%;
+  height:123%;
+  max-width:none;
+  object-fit:fill;
+  pointer-events:none;
 }
 
 /* CARD ANIMADO · Epitáfio da Lua Carmesim */
@@ -508,9 +520,11 @@
 
 .card[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
   opacity:1;
-  background-image:url('/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta-v2.png');
-  inset:-11% -10% -12%;
   animation:borderBloodBreath 4.6s ease-in-out infinite alternate;
+}
+
+.card[data-border-cosmetic='portico-lua-sangrenta'] .borderArtwork{
+  display:block;
 }
 
 .card[data-border-cosmetic='portico-lua-sangrenta'] .topMeta,
@@ -550,11 +564,10 @@
   filter:drop-shadow(0 0 4px rgba(255,126,132,.95)) drop-shadow(0 0 7px rgba(209,42,63,.78));
 }
 .compact[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
-  inset:-6% -17% -7%;
   filter:drop-shadow(0 3px 4px rgba(13,2,6,.76)) drop-shadow(0 0 5px rgba(221,49,65,.55));
 }
 :global(.ranking-character-card)[data-border-cosmetic='portico-lua-sangrenta'] .cosmeticBorderFx{
-  inset:-6% -16% -7%;
+  inset:0;
 }
 
 @keyframes borderBloodBreath{

@@ -24,6 +24,7 @@ import "./contrast-guard.css";
 import "./experience-polish.css";
 import "./requested-visual-overhaul.css";
 import "./character-public-experience.css";
+import "./game-client-theme.css";
 
 export const metadata: Metadata = {
   title: {

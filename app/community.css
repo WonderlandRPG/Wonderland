@@ -81,6 +81,7 @@ body:has(.ranking-command) .world-page__intro{display:grid;grid-template-columns
 .ranking-grid__entry:has([data-card-cosmetic]),
 .ranking-grid__entry:has([data-aura-cosmetic]),
 .ranking-grid__entry:has([data-border-cosmetic]){z-index:2}
+.ranking-podium__place:hover,.ranking-podium__place:focus-within{z-index:100!important}
 
 @media(max-width:1180px){
   .ranking-grid{grid-template-columns:1fr}

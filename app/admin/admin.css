@@ -816,6 +816,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 .admin-shell .admin-title-form > .is-wide,
+.admin-shell .admin-title-form > .admin-title-preview,
 .admin-shell .admin-title-form > fieldset,
 .admin-shell .admin-title-form > button {
   grid-column: 1/-1;
@@ -828,6 +829,31 @@
 .admin-shell .admin-title-form fieldset label {
   display: grid;
   gap: 5px;
+}
+.admin-shell .admin-title-preview {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  padding: 18px;
+  border: 1px solid var(--wl-border);
+  border-radius: 14px;
+  background: var(--wl-surface-raised);
+  text-align: center;
+}
+.admin-shell .admin-title-preview small {
+  color: var(--wl-text-muted);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.admin-shell .admin-title-preview p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--wl-text-muted);
+  font-size: 0.82rem;
+}
+.admin-shell .title-identity-editor .is-wide {
+  grid-column: 1/-1;
 }
 .admin-shell .title-color-editor input[type="color"] {
   width: 100% !important;
@@ -1368,6 +1394,7 @@
   .admin-shell .admin-character-form > .admin-item-image-field,
   .admin-shell .admin-character-form > .admin-save-character,
   .admin-shell .admin-title-form > .is-wide,
+  .admin-shell .admin-title-form > .admin-title-preview,
   .admin-shell .admin-title-form > fieldset,
   .admin-shell .admin-title-form > button,
   .admin-shell .admin-theme-default,

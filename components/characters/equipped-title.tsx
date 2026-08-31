@@ -1,38 +1,45 @@
 import type { CSSProperties } from "react";
+import { defaultTitleStyle, parseTitleStyle, type TitleStyle } from "@/lib/game/title-style";
 import styles from "./equipped-title.module.css";
 
 export type EquippedTitleData = {
   name: string;
   rarity: string;
-  titleStyle: { primary: string; secondary: string; glow: string } | null;
-};
-
-const defaultStyle = {
-  primary: "#fff1b5",
-  secondary: "#1f7a4c",
-  glow: "#d7ad45",
+  titleStyle: Partial<TitleStyle> | null;
 };
 
 export function EquippedTitle({ title }: { title: EquippedTitleData | null }) {
   if (!title) return null;
-  const visual = title.titleStyle ?? defaultStyle;
+  const visual = parseTitleStyle(title.titleStyle ?? defaultTitleStyle);
 
   return (
     <span
       aria-label={`Título equipado: ${title.name}`}
       className={`${styles.title} character-equipped-title`}
       data-title={title.rarity}
+      data-frame={visual.frame}
+      data-category={visual.category}
+      data-animated={visual.animated ? "true" : "false"}
       style={
         {
           "--title-primary": visual.primary,
           "--title-secondary": visual.secondary,
           "--title-glow": visual.glow,
+          "--title-accent": visual.accent,
         } as CSSProperties
       }
-      title={`Título equipado: ${title.name}`}
+      title={`${title.name} — ${visual.acquisition}`}
     >
-      <i aria-hidden="true" className={styles.sigil}>✦</i>
+      <i aria-hidden="true" className={styles.flourish}>
+        ◆
+      </i>
+      <i aria-hidden="true" className={styles.sigil}>
+        {visual.sigil}
+      </i>
       <span className={styles.name}>{title.name}</span>
+      <i aria-hidden="true" className={styles.flourish}>
+        ◆
+      </i>
     </span>
   );
 }

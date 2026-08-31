@@ -7,6 +7,7 @@ import { PlayerRanking } from "@/components/ranking/player-ranking";
 import { RankBadge } from "@/components/characters/rank-badge";
 import type { PvpRankingEntry, RankingEntry } from "@/lib/game/player-portal";
 import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
+import { parseTitleStyle } from "@/lib/game/title-style";
 
 type PvpDisplayEntry = PvpRankingEntry & { level: number };
 
@@ -14,7 +15,7 @@ function titleData(entry: Pick<PvpRankingEntry, "title_name" | "title_style" | "
   if (!entry.title_name) return null;
   const style = entry.title_style;
   const titleStyle = style && typeof style === "object" && !Array.isArray(style)
-    ? { primary: String(style.primary ?? "#fff1b5"), secondary: String(style.secondary ?? "#1f7a4c"), glow: String(style.glow ?? "#d7ad45") }
+    ? parseTitleStyle(style)
     : null;
   return { name: entry.title_name, rarity: entry.title_rarity ?? "title", titleStyle };
 }

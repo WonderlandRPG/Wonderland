@@ -61,7 +61,7 @@ export function CharacterPortraitCard({
         <img
           alt=""
           className={styles.borderArtwork}
-          src="/cosmetics/halloween-2026/trono-rei-oco.png"
+          src="/cosmetics/halloween-2026/trono-rei-oco-v2.png"
         />
       </div>
 

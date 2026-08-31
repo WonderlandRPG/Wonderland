@@ -13,8 +13,8 @@
 .cosmeticCardFx,.cosmeticAuraFx,.cosmeticBorderFx{position:absolute;pointer-events:none;opacity:0}
 .cosmeticCardFx{z-index:7;inset:0;overflow:hidden;border-radius:inherit}
 .cosmeticAuraFx{z-index:12;inset:-22%;overflow:visible}
-.cosmeticBorderFx{z-index:16;inset:-7%;overflow:visible;transform-origin:center;filter:drop-shadow(0 8px 12px rgba(0,0,0,.72)) drop-shadow(0 0 14px rgba(30,221,203,.25))}
-.borderArtwork{display:none;position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:fill}
+.cosmeticBorderFx{z-index:60;inset:-3%;overflow:visible;transform-origin:center;filter:drop-shadow(0 8px 12px rgba(0,0,0,.72)) drop-shadow(0 0 14px rgba(30,221,203,.25))}
+.borderArtwork{display:none;position:absolute!important;z-index:61;inset:0!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:fill!important;opacity:1;mix-blend-mode:normal;filter:brightness(1.16) contrast(1.08)}
 
 /* CARD ANIMADO · Noite do Véu Partido — uma fenda legível rasga o retrato. */
 .card[data-card-cosmetic='noite-veu-partido']{border-color:#9b6933;background:#090d0d;box-shadow:0 0 0 2px #15110d,0 0 0 4px #76512b,0 18px 38px rgba(0,0,0,.62),0 0 25px rgba(56,217,204,.2);animation:hollowCardBreath 5s ease-in-out infinite}
@@ -41,9 +41,9 @@
 
 /* BORDA · Trono do Rei Oco */
 .card[data-border-cosmetic='trono-rei-oco']{overflow:visible;border-color:transparent;background:transparent;box-shadow:none}
-.card[data-border-cosmetic='trono-rei-oco'] .image{inset:4%;border-radius:17px;box-shadow:0 0 0 2px #1b1711,0 0 24px rgba(53,229,213,.26)}
-.card[data-border-cosmetic='trono-rei-oco'] .cosmeticBorderFx{opacity:1}.card[data-border-cosmetic='trono-rei-oco'] .borderArtwork{display:block}
-.card[data-border-cosmetic='trono-rei-oco'] .topMeta{left:2%;right:2%;top:3%}.card[data-border-cosmetic='trono-rei-oco'] .titleMeta{bottom:3.5%}
+.card[data-border-cosmetic='trono-rei-oco'] .image{z-index:1;inset:10% 12% 11%;border-radius:14px;box-shadow:0 0 0 2px #1b1711,0 0 24px rgba(53,229,213,.26)}
+.card[data-border-cosmetic='trono-rei-oco'] .cosmeticBorderFx{z-index:60!important;opacity:1!important;visibility:visible!important}.card[data-border-cosmetic='trono-rei-oco'] .borderArtwork{display:block!important}
+.card[data-border-cosmetic='trono-rei-oco'] .topMeta{z-index:70;left:5%;right:5%;top:5%}.card[data-border-cosmetic='trono-rei-oco'] .titleMeta{z-index:70;bottom:6%}
 .card[data-border-cosmetic='trono-rei-oco'] .levelMeta{border-color:#b8894c;background:linear-gradient(#1d1710,#090d0d);color:#fff0c8;box-shadow:0 0 0 2px rgba(25,112,106,.55),0 5px 13px rgba(0,0,0,.5)}
 
 /* Conjunto completo: borda dominante, card e aura em segundo plano. */

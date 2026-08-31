@@ -98,6 +98,8 @@ export function InventoryWorkbench({
         name: equippedTitle.name,
         rarity: equippedTitle.rarity,
         titleStyle: equippedTitle.titleStyle,
+        description: equippedTitle.description,
+        attributes: equippedTitle.attributes,
       }
     : null;
 

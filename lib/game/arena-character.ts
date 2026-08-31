@@ -33,6 +33,8 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
           name: equippedTitle.name,
           rarity: equippedTitle.rarity,
           titleStyle: equippedTitle.titleStyle,
+          description: equippedTitle.description,
+          attributes: equippedTitle.attributes,
         }
       : null,
     raceName: character.race.name,

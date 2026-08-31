@@ -12,7 +12,7 @@ type CharacterPortraitCardProps = {
   rank: string;
   level: number;
   title: EquippedTitleData | null;
-  variant?: "hero" | "standard" | "compact" | "inventory";
+  variant?: "hero" | "standard" | "compact" | "inventory" | "ranking";
   className?: string;
   children?: ReactNode;
   cosmetics: CharacterCosmeticLoadout | undefined;
@@ -44,7 +44,9 @@ export function CharacterPortraitCard({
         role="img"
         style={imageUrl ? { backgroundImage: `url(${imageUrl})` } : undefined}
       >
-        {imageUrl ? null : <span className={styles.fallback}>{name.slice(0, 2).toUpperCase()}</span>}
+        {imageUrl ? null : (
+          <span className={styles.fallback}>{name.slice(0, 2).toUpperCase()}</span>
+        )}
       </div>
 
       <RankAtmosphere rank={rank} />
@@ -85,7 +87,11 @@ export function CharacterPortraitCard({
       </div>
 
       <div className={styles.titleMeta}>
-        {title ? <EquippedTitle title={title} /> : <span className={styles.noTitle}>Sem título</span>}
+        {title ? (
+          <EquippedTitle title={title} />
+        ) : (
+          <span className={styles.noTitle}>Sem título</span>
+        )}
       </div>
 
       {children ? <div className={styles.overlay}>{children}</div> : null}

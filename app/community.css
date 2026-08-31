@@ -29,20 +29,20 @@ body:has(.ranking-command) .world-page__intro{display:grid;grid-template-columns
 /* Ranking portrait showcase: character art and equipped cosmetics are identity,
    so every entry reserves a full portrait stage instead of a thumbnail. */
 .ranking-command .ranking-podium__place{
-  grid-template-columns:158px minmax(0,1fr);
-  min-height:264px;
+  grid-template-columns:170px minmax(0,1fr);
+  min-height:276px;
   padding:16px;
 }
-.ranking-command .ranking-podium__place.is-place-1{min-height:286px}
+.ranking-command .ranking-podium__place.is-place-1{min-height:276px;transform:none!important}
 .ranking-command .ranking-podium__portrait{
-  width:154px!important;
-  height:194px!important;
+  width:166px!important;
+  height:208px!important;
   padding:12px;
   overflow:visible!important;
 }
 .ranking-command .ranking-podium__portrait>[data-character-card='official']{
-  width:146px!important;
-  min-height:183px!important;
+  width:158px!important;
+  min-height:198px!important;
 }
 .ranking-grid{gap:12px}
 .ranking-grid__entry{

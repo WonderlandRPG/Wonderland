@@ -181,13 +181,13 @@
 .market-page .cosmetic-compare__stage.is-after.is-aura,
 .market-page .cosmetic-compare__stage.is-after.is-border{
   overflow:visible;
-  padding:62px;
+  padding:34px;
 }
 .market-page .cosmetic-compare__stage.is-after.is-aura .cosmetic-character-demo{
-  width:min(100%,270px);
+  width:min(100%,315px);
 }
 .market-page .cosmetic-compare__stage.is-after.is-border .cosmetic-character-demo{
-  width:min(100%,265px);
+  width:min(100%,315px);
 }
 .market-page .cosmetic-compare__stage.is-after{
   background:

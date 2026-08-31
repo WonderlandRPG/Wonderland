@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { RankBadge } from "@/components/characters/rank-badge";
-import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
+import type { EquippedTitleData } from "@/components/characters/equipped-title";
 import { kingdomName } from "@/lib/game/kingdoms";
 import type { RankingEntry } from "@/lib/game/player-portal";
 import { parseTitleStyle } from "@/lib/game/title-style";
@@ -19,10 +19,6 @@ function titleData(entry: Pick<RankingEntry, "title_name" | "title_style" | "tit
     ? parseTitleStyle(style)
     : null;
   return { name: entry.title_name, rarity: entry.title_rarity ?? "title", titleStyle };
-}
-
-function PlayerTitle({ entry }: { entry: RankingEntry }) {
-  return <EquippedTitle title={titleData(entry)} />;
 }
 
 export function PlayerRanking({ currentCharacterId, entries }: { currentCharacterId: string; entries: RankingEntry[] }) {
@@ -98,7 +94,6 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
             <div>
               <small>{position === 1 ? "Líder da temporada" : `${position}º colocado`}</small>
               <h3>{entry.name}</h3>
-              <PlayerTitle entry={entry} />
               <p>{entry.race_name} · {entry.class_name}</p>
               <strong className="ranking-podium__score">Nível {entry.level} <small>{entry.xp.toLocaleString("pt-BR")} XP</small></strong>
             </div>
@@ -135,7 +130,7 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
                 />
               </span>
               <span className="ranking-grid__details">
-                <span className="ranking-grid__identity"><b>{entry.name}</b><PlayerTitle entry={entry} /><small>{entry.race_name} · {entry.class_name}</small><em>{kingdomName(entry.kingdom)}</em></span>
+                <span className="ranking-grid__identity"><b>{entry.name}</b><small>{entry.race_name} · {entry.class_name}</small><em>{kingdomName(entry.kingdom)}</em></span>
                 <span className="ranking-grid__metrics">
                   <span className="ranking-grid__progress"><small>Progresso</small><b>Nível {entry.level}</b><em>{entry.xp.toLocaleString("pt-BR")} XP</em></span>
                   <span className="ranking-grid__rank"><RankBadge compact rank={entry.adventure_rank} /><small>Rank {entry.adventure_rank}</small></span>

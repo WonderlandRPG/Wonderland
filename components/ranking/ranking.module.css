@@ -1,0 +1,791 @@
+.hall,
+.levelRanking,
+.pvpHall {
+  display: grid;
+  gap: 16px;
+}
+.eyebrow {
+  color: var(--wl-gold-soft);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.hall h2,
+.hall p {
+  margin: 0;
+}
+.modeSwitcher {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.55fr) minmax(520px, 1fr);
+  align-items: center;
+  gap: 24px;
+  padding: 20px 22px;
+  border-radius: var(--wl-radius);
+  box-shadow: var(--wl-shadow-soft);
+}
+.modeSwitcher h2 {
+  margin-top: 4px;
+  color: var(--wl-text-inverse);
+  font-size: 1.55rem;
+}
+.modeSwitcher nav {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.modeSwitcher button {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 9px 12px;
+  border: 1px solid var(--wl-border);
+  border-radius: var(--wl-radius-sm);
+  background: var(--wl-surface-raised);
+  color: var(--wl-text);
+  text-align: left;
+  box-shadow: none;
+}
+.modeSwitcher button > span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--wl-surface-muted);
+  font-weight: 900;
+}
+.modeSwitcher button div {
+  display: grid;
+  gap: 2px;
+}
+.modeSwitcher button small {
+  color: var(--wl-text-muted);
+  font-size: 0.57rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.modeSwitcher button strong {
+  font-size: 0.88rem;
+}
+.modeSwitcher button:hover {
+  border-color: var(--wl-gold);
+  background: var(--wl-surface);
+}
+.modeSwitcher .activeMode {
+  border-color: var(--wl-gold);
+  background: var(--wl-action-accent-bg);
+  color: var(--wl-action-accent-text);
+  box-shadow: inset 0 0 0 1px var(--wl-gold-strong);
+}
+.modeSwitcher .activeMode > span {
+  background: var(--wl-accent);
+  color: var(--wl-accent-contrast);
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(470px, 0.95fr);
+  align-items: center;
+  gap: 24px;
+  padding: 20px 22px;
+  border-radius: var(--wl-radius);
+  box-shadow: var(--wl-shadow-soft);
+}
+.summaryCopy {
+  display: grid;
+  gap: 5px;
+}
+.summaryCopy h2 {
+  color: var(--wl-text-inverse);
+  font-size: 1.7rem;
+}
+.summaryCopy p {
+  color: var(--wl-text-inverse-muted);
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.stats > div {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 76px;
+  padding: 9px;
+  border: 1px solid var(--wl-border);
+  border-radius: var(--wl-radius-sm);
+  background: var(--wl-surface);
+  color: var(--wl-text);
+  text-align: center;
+}
+.stats dt {
+  font-size: 0.55rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.stats dd {
+  margin: 3px 0 0;
+  color: var(--wl-accent);
+  font-size: 1.35rem;
+  font-weight: 900;
+}
+.stats small {
+  font-size: 0.55rem;
+}
+.stats .selfStat {
+  border-color: var(--wl-success-border);
+  background: var(--wl-success-bg);
+  color: var(--wl-success-text);
+}
+
+.podiumSection {
+  overflow: hidden;
+  padding: 18px;
+  border-radius: var(--wl-radius);
+  box-shadow: var(--wl-shadow);
+}
+.sectionHeading,
+.boardHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 20px;
+}
+.sectionHeading {
+  padding: 2px 4px 18px;
+}
+.sectionHeading h2 {
+  margin-top: 3px;
+  color: var(--wl-text-inverse);
+  font-size: 1.65rem;
+}
+.sectionHeading p {
+  color: var(--wl-text-inverse-muted);
+  font-size: 0.78rem;
+}
+.podium {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 12px;
+}
+.podiumPlace {
+  position: relative;
+  display: grid;
+  grid-template-columns: 138px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  min-height: 220px;
+  padding: 18px;
+  border: 1px solid var(--wl-border);
+  border-radius: var(--wl-radius-md);
+  background: var(--wl-surface-raised);
+  color: var(--wl-text);
+  box-shadow: var(--wl-shadow-soft);
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease;
+}
+.podiumPlace:hover {
+  border-color: var(--wl-gold);
+  transform: translateY(-3px);
+}
+.podiumPlace.place1 {
+  min-height: 246px;
+  border-color: var(--wl-gold);
+  background: linear-gradient(145deg, var(--wl-surface), var(--wl-gold-soft));
+}
+.podiumPlace.place2 {
+  background: linear-gradient(145deg, var(--wl-surface), var(--wl-surface-raised));
+}
+.podiumPlace.place3 {
+  background: linear-gradient(145deg, var(--wl-surface-raised), var(--wl-surface-muted));
+}
+.podiumPortrait {
+  display: grid;
+  place-items: center;
+  width: 132px;
+}
+.podiumDetails {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-width: 0;
+}
+.podiumDetails > small {
+  color: var(--wl-text-muted);
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.podiumDetails > strong {
+  overflow: hidden;
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.podiumDetails > span:not(.score) {
+  color: var(--wl-text-muted);
+  font-size: 0.72rem;
+}
+.medal {
+  position: absolute;
+  z-index: 20;
+  left: 10px;
+  top: 10px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 2px solid var(--wl-gold-soft);
+  border-radius: 50%;
+  background: var(--wl-accent);
+  color: var(--wl-accent-contrast);
+  font-weight: 900;
+  box-shadow: var(--wl-shadow-soft);
+}
+.crown {
+  position: absolute;
+  z-index: 30;
+  left: 82px;
+  top: -20px;
+  color: var(--wl-gold);
+  font-size: 2.7rem;
+  filter: drop-shadow(0 4px 4px var(--wl-surface-overlay));
+}
+.score {
+  display: grid;
+  gap: 2px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--wl-border-soft);
+}
+.score b {
+  color: var(--wl-accent);
+}
+.score small {
+  color: var(--wl-text-muted);
+  font-size: 0.6rem;
+}
+.current {
+  border-color: var(--wl-success-border);
+  box-shadow:
+    inset 4px 0 var(--wl-success-border),
+    var(--wl-shadow-soft);
+}
+.youBadge {
+  justify-self: start;
+  padding: 3px 7px;
+  border: 1px solid var(--wl-success-border);
+  border-radius: 999px;
+  background: var(--wl-success-bg);
+  color: var(--wl-success-text);
+  font-size: 0.55rem;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.board {
+  overflow: hidden;
+  border-radius: var(--wl-radius);
+  box-shadow: var(--wl-shadow-soft);
+}
+.boardHeader {
+  padding: 20px 22px;
+}
+.boardHeader > div {
+  display: grid;
+  gap: 2px;
+}
+.boardHeader h2 {
+  font-size: 1.75rem;
+}
+.boardHeader p {
+  color: var(--wl-text-muted);
+  font-size: 0.72rem;
+}
+.boardHeader .eyebrow {
+  color: var(--wl-gold-strong);
+}
+.search {
+  display: grid;
+  gap: 5px;
+  width: min(100%, 360px);
+}
+.search > span {
+  color: var(--wl-text-muted);
+  font-size: 0.62rem;
+  font-weight: 800;
+}
+.search input {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: var(--wl-radius-sm);
+  font: inherit;
+}
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 12px 22px;
+  border-block: 1px solid var(--wl-border);
+  background: var(--wl-surface-muted);
+}
+.filters button {
+  min-height: 34px;
+  padding: 5px 11px;
+  border: 1px solid var(--wl-border);
+  border-radius: 999px;
+  background: var(--wl-surface);
+  color: var(--wl-text);
+  box-shadow: none;
+  font-size: 0.72rem;
+}
+.filters button:hover {
+  border-color: var(--wl-accent);
+  background: var(--wl-accent-soft);
+}
+.filters .activeFilter {
+  border-color: var(--wl-accent);
+  color: var(--wl-action-text);
+  background: var(--wl-action-bg);
+}
+.listHeader {
+  display: grid;
+  grid-template-columns: 82px minmax(300px, 1fr) minmax(130px, 0.35fr) 84px;
+  gap: 14px;
+  padding: 9px 18px;
+  background: var(--wl-surface-dark);
+  color: var(--wl-text-inverse);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.rankingList {
+  display: grid;
+  padding: 8px;
+  background: var(--wl-surface-raised);
+}
+.rankingEntry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 70px minmax(300px, 1fr) minmax(130px, 0.35fr) 84px;
+  align-items: center;
+  gap: 14px;
+  min-height: 104px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--wl-radius-sm);
+  color: var(--wl-text);
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease;
+}
+.rankingEntry + .rankingEntry {
+  border-top-color: var(--wl-border-soft);
+}
+.rankingEntry:hover {
+  z-index: 2;
+  border-color: var(--wl-border);
+  background: var(--wl-surface);
+  transform: translateX(2px);
+}
+.position {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--wl-accent);
+  color: var(--wl-accent-contrast);
+  font-size: 1rem;
+}
+.playerCell {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  overflow: visible;
+}
+.identity,
+.progress,
+.rankCell {
+  display: grid;
+  min-width: 0;
+}
+.identity {
+  gap: 2px;
+}
+.identity b {
+  overflow: hidden;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.identity small,
+.identity em,
+.progress small {
+  overflow: hidden;
+  color: var(--wl-text-muted);
+  font-size: 0.65rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.identity em {
+  font-style: normal;
+}
+.progress {
+  gap: 2px;
+}
+.progress b {
+  color: var(--wl-accent);
+  font-size: 0.95rem;
+}
+.rankCell {
+  justify-items: center;
+  gap: 2px;
+}
+.rankCell small {
+  color: var(--wl-text-muted);
+  font-size: 0.52rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.rankingEntry > .youBadge {
+  position: absolute;
+  right: 102px;
+  top: 8px;
+}
+.noResults {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 42px 20px;
+  text-align: center;
+}
+.noResults strong {
+  font-size: 1.1rem;
+}
+.noResults p {
+  color: var(--wl-text-muted);
+}
+.noResults button {
+  min-height: 38px;
+  margin-top: 5px;
+  padding: 7px 14px;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: var(--wl-radius-sm);
+}
+
+.pvpChampion {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) 130px;
+  align-items: center;
+  gap: 28px;
+  padding: 24px 28px;
+  border-radius: var(--wl-radius);
+  box-shadow: var(--wl-shadow);
+}
+.pvpPortrait {
+  position: relative;
+  width: 170px;
+}
+.pvpPortrait .crown {
+  left: 50%;
+  top: -30px;
+  transform: translateX(-50%);
+}
+.championCopy {
+  display: grid;
+  gap: 4px;
+}
+.championCopy h2 {
+  color: var(--wl-text-inverse);
+  font-size: clamp(2rem, 5vw, 3.2rem);
+}
+.championCopy p,
+.championCopy small {
+  color: var(--wl-text-inverse-muted);
+}
+.championCopy > strong {
+  color: var(--wl-gold-soft);
+  font-size: 2.2rem;
+}
+.championMark {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+}
+.championMark > span {
+  display: grid;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  border: 2px solid var(--wl-gold);
+  border-radius: 50%;
+  background: var(--wl-surface-dark-strong);
+  color: var(--wl-gold-soft);
+  font-size: 2rem;
+  font-weight: 900;
+}
+.championMark small {
+  color: var(--wl-text-inverse-muted);
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.pvpColumns,
+.pvpEntry {
+  grid-template-columns: 82px minmax(260px, 0.8fr) 84px minmax(340px, 1fr);
+}
+.combatStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+}
+.combatStats > div {
+  padding: 7px;
+  border-radius: var(--wl-radius-sm);
+  background: var(--wl-surface);
+  text-align: center;
+}
+.combatStats dt {
+  color: var(--wl-text-muted);
+  font-size: 0.52rem;
+  text-transform: uppercase;
+}
+.combatStats dd {
+  margin: 2px 0 0;
+  color: var(--wl-accent);
+  font-weight: 900;
+}
+.pvpEntry > .youBadge {
+  position: absolute;
+  right: 12px;
+  top: 7px;
+}
+.empty {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 54px 22px;
+  border-radius: var(--wl-radius);
+  text-align: center;
+}
+.empty > span {
+  font-size: 2.5rem;
+}
+.empty h2 {
+  font-size: 1.6rem;
+}
+.empty p {
+  color: var(--wl-text-muted);
+}
+
+@media (max-width: 1080px) {
+  .modeSwitcher,
+  .summary {
+    grid-template-columns: 1fr;
+  }
+  .podiumPlace {
+    grid-template-columns: 110px minmax(0, 1fr);
+    padding: 14px;
+  }
+  .podiumPortrait {
+    width: 104px;
+  }
+  .crown {
+    left: 67px;
+  }
+  .pvpColumns,
+  .pvpEntry {
+    grid-template-columns: 72px minmax(240px, 0.8fr) 72px minmax(300px, 1fr);
+  }
+}
+@media (max-width: 820px) {
+  .podium {
+    grid-template-columns: 1fr;
+  }
+  .podiumPlace,
+  .podiumPlace.place1 {
+    grid-template-columns: 138px minmax(0, 1fr);
+    min-height: 0;
+  }
+  .podiumPortrait {
+    width: 132px;
+  }
+  .crown {
+    left: 82px;
+  }
+  .place1 {
+    order: -1;
+  }
+  .listHeader {
+    display: none;
+  }
+  .rankingEntry,
+  .pvpEntry {
+    grid-template-columns: 58px minmax(0, 1fr) 72px;
+    gap: 10px;
+  }
+  .progress {
+    grid-column: 2;
+  }
+  .rankCell {
+    grid-column: 3;
+    grid-row: 1/3;
+  }
+  .rankingEntry > .youBadge {
+    right: 92px;
+  }
+  .pvpEntry .combatStats {
+    grid-column: 2/4;
+  }
+  .pvpChampion {
+    grid-template-columns: 150px minmax(0, 1fr);
+  }
+  .pvpPortrait {
+    width: 140px;
+  }
+  .championMark {
+    display: none;
+  }
+}
+@media (max-width: 620px) {
+  .hall,
+  .levelRanking,
+  .pvpHall {
+    gap: 10px;
+  }
+  .modeSwitcher,
+  .summary,
+  .podiumSection,
+  .boardHeader {
+    padding: 14px;
+  }
+  .modeSwitcher nav {
+    grid-template-columns: 1fr;
+  }
+  .modeSwitcher button {
+    min-height: 54px;
+  }
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sectionHeading,
+  .boardHeader {
+    display: grid;
+    align-items: start;
+  }
+  .sectionHeading p {
+    display: none;
+  }
+  .podiumPlace,
+  .podiumPlace.place1 {
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+  .podiumPortrait {
+    width: 102px;
+  }
+  .crown {
+    left: 66px;
+    top: -16px;
+  }
+  .podiumDetails > strong {
+    font-size: 1.05rem;
+  }
+  .filters {
+    padding: 10px 14px;
+  }
+  .rankingList {
+    padding: 5px;
+  }
+  .rankingEntry,
+  .pvpEntry {
+    grid-template-columns: 42px 74px minmax(0, 1fr);
+    gap: 8px;
+    min-height: 112px;
+    padding: 8px 6px;
+  }
+  .position {
+    width: 38px;
+    height: 38px;
+    font-size: 0.82rem;
+  }
+  .playerCell {
+    display: contents;
+  }
+  .identity {
+    grid-column: 3;
+  }
+  .progress {
+    grid-column: 3;
+  }
+  .rankCell {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    display: none;
+  }
+  .rankingEntry > .youBadge,
+  .pvpEntry > .youBadge {
+    right: 8px;
+    top: 8px;
+  }
+  .pvpChampion {
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 14px;
+    padding: 22px 14px;
+  }
+  .pvpPortrait {
+    width: 104px;
+  }
+  .championCopy h2 {
+    font-size: 1.7rem;
+  }
+  .championCopy > strong {
+    font-size: 1.6rem;
+  }
+  .combatStats {
+    grid-column: 2/4;
+    grid-template-columns: repeat(4, minmax(54px, 1fr));
+    overflow-x: auto;
+  }
+  .combatStats > div {
+    padding: 5px 3px;
+  }
+  .combatStats dt {
+    font-size: 0.45rem;
+  }
+  .combatStats dd {
+    font-size: 0.75rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .podiumPlace,
+  .rankingEntry {
+    transition: none;
+  }
+}

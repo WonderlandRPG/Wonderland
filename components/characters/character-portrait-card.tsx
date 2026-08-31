@@ -50,11 +50,6 @@ export function CharacterPortraitCard({
       <RankAtmosphere rank={rank} />
 
       <div className={styles.cosmeticCardFx} aria-hidden="true">
-        <img
-          alt=""
-          className={styles.blueFlameArtwork}
-          src="/cosmetics/halloween-2026/chamas-azuis-cantos.png"
-        />
         <i className={styles.voidEclipse} />
         <i className={styles.branchVeil} />
         <i className={styles.emberField} />

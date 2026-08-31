@@ -45,8 +45,7 @@
   --wl-atmosphere-end: rgba(15, 30, 23, 0.70);
   --wl-atmosphere-glow: rgba(220, 188, 113, 0.16);
 
-  /* Evento — Cemitério da Lua Sangrenta.
-   * Tokens de coleção ficam aqui para manter contraste e identidade centralizados. */
+  /* Paleta rubra legada usada por páginas narrativas e itens existentes. */
   --wl-blood: #b52d3d;
   --wl-blood-bright: #e55b63;
   --wl-blood-deep: #4d121d;
@@ -58,6 +57,19 @@
   --wl-blood-border: #82414a;
   --wl-blood-gold: #e1b06d;
   --wl-blood-fog: color-mix(in srgb, var(--wl-blood-text) 10%, transparent);
+
+  /* Halloween 2026 — Véspera do Rei Oco. */
+  --wl-halloween-ember: #e8732b;
+  --wl-halloween-ember-bright: #ffad55;
+  --wl-halloween-spectral: #38d9cc;
+  --wl-halloween-spectral-soft: #a9fff4;
+  --wl-halloween-black: #070d0d;
+  --wl-halloween-surface: #101b1a;
+  --wl-halloween-surface-raised: #182827;
+  --wl-halloween-text: #fff0cf;
+  --wl-halloween-text-muted: #c8d5cd;
+  --wl-halloween-border: #84623d;
+  --wl-halloween-gold: #d1a25e;
 
   /* Estrutura */
   --wl-border: #9d7949;

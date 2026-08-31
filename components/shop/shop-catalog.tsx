@@ -44,36 +44,36 @@ const normalize = (value: string) =>
 
 type ShopSection = "equipment" | "cosmetics";
 
-const bloodyMoonCosmetics = [
+const halloween2026Cosmetics = [
   {
     type: "Card animado",
-    name: "Epitáfio da Lua Carmesim",
+    name: "Noite do Véu Partido",
     tag: "Lendário • Animado",
     description:
-      "Um card de perfil vivo, cercado por lápides, névoa rasteira e uma lua de sangue pulsante. Corvos atravessam o céu em intervalos raros, velas funerárias tremulam nas bordas e o nome do personagem recebe um brilho carmesim que parece respirar.",
-    highlights: ["Lua pulsante", "Névoa em movimento", "Corvos e velas", "Iluminação carmesim"],
+      "O véu entre os mundos se rompe atrás do aventureiro. Um eclipse oco pulsa em laranja-brasa, galhos negros atravessam o plano em diferentes profundidades e duas camadas de névoa reagem lentamente à presença do personagem.",
+    highlights: ["Eclipse oco pulsante", "Névoa em profundidade", "Sombras de galhos", "Brasas reativas"],
     preview: "card",
-    key: "epitafio-lua-carmesim",
+    key: "noite-veu-partido",
   },
   {
     type: "Aura animada",
-    name: "Procissão das Almas Rubras",
+    name: "Cortejo dos Fogos-Fátuos",
     tag: "Mítico • Animado",
     description:
-      "Um cortejo espectral de sete almas rubras envolve o personagem em diferentes profundidades. Cada espírito possui rosto, corpo e cauda própria, atravessa o card deixando rastros carmesim e desaparece em névoa e cinzas. Um círculo funerário pulsa ao redor do retrato como se o personagem estivesse no centro de uma procissão dos mortos.",
-    highlights: ["7 almas espectrais", "Rastros carmesim", "Círculo funerário pulsante", "Névoa e cinzas vivas"],
+      "Cinco chamas conscientes percorrem órbitas independentes ao redor do card, deixando caudas espectrais verde-azuladas e faíscas alaranjadas. Um anel arcano respira atrás do retrato sem recortar os efeitos nas bordas.",
+    highlights: ["5 fogos-fátuos", "Órbitas independentes", "Caudas espectrais", "Anel arcano responsivo"],
     preview: "aura",
-    key: "procissao-almas-rubras",
+    key: "cortejo-fogos-fatuos",
   },
   {
     type: "Borda",
-    name: "Pórtico da Lua Sangrenta",
+    name: "Trono do Rei Oco",
     tag: "Mítico • Borda",
     description:
-      "Uma estrutura funerária independente que envolve o card sem substituir sua arte: ferro negro retorcido, espinhos, correntes, rosas rubras, crânios, velas e uma lua carmesim no topo. Pode ser combinada com Card e Aura.",
-    highlights: ["Lua carmesim central", "Ferro, espinhos e correntes", "Crânios, rosas e velas", "Combina com Card + Aura"],
+      "Uma moldura régia de madeira carbonizada e ferro antigo, coroada pelo elmo quebrado do Rei Oco. Abóboras ritualísticas, lanternas espectrais e filigranas em ouro envelhecido cercam o retrato sem esconder sua arte.",
+    highlights: ["Coroa oca central", "Abóboras ritualísticas", "Chamas espectrais", "PNG transparente em alta definição"],
     preview: "border",
-    key: "portico-lua-sangrenta",
+    key: "trono-rei-oco",
   },
 ] as const;
 
@@ -188,12 +188,12 @@ export function ShopCatalog({
         <section className="cosmetics-preview" aria-label="Prévia administrativa de cosméticos">
           <header className="cosmetics-collection-hero">
             <div>
-              <span>HALLOWEEN • COLEÇÃO LIMITADA</span>
-              <h2>Cemitério da Lua Sangrenta</h2>
+              <span>HALLOWEEN 2026 • COLEÇÃO LIMITADA</span>
+              <h2>Véspera do Rei Oco</h2>
               <p>
-                Quando a lua tinge as lápides de vermelho, os mortos de Wonderland não descansam.
-                Uma coleção sombria criada para jogadores que querem transformar presença em
-                espetáculo — sem conceder qualquer vantagem de combate.
+                Na última noite de outubro, a coroa vazia volta a arder e os fogos-fátuos escolhem
+                novos nomes para conduzir pelo véu. Uma coleção criada como um conjunto visual único,
+                sem conceder qualquer vantagem de combate.
               </p>
             </div>
             <aside>
@@ -204,7 +204,7 @@ export function ShopCatalog({
           </header>
 
           <div className="cosmetics-grid">
-            {bloodyMoonCosmetics.map((cosmetic) => (
+            {halloween2026Cosmetics.map((cosmetic) => (
               <article className="cosmetic-card" data-preview={cosmetic.preview} key={cosmetic.name}>
                 <header className="cosmetic-card__heading">
                   <div>
@@ -271,7 +271,7 @@ export function ShopCatalog({
                 <footer className="cosmetic-card__footer">
                   <div>
                     <span>Parte da coleção</span>
-                    <strong>Cemitério da Lua Sangrenta</strong>
+                    <strong>Véspera do Rei Oco</strong>
                   </div>
                   <form action={setAdminCosmeticAction}>
                     <input name="slot" type="hidden" value={cosmetic.preview} />
@@ -297,11 +297,11 @@ export function ShopCatalog({
           <aside className="cosmetics-bundle">
             <div>
               <small>CONJUNTO COMPLETO</small>
-              <h3>Relíquia do Último Halloween</h3>
+              <h3>Regalia do Rei Oco</h3>
               <p>
                 Card + Aura + Borda formam a identidade completa da coleção. Os três cosméticos
                 são independentes e podem ser combinados, criando a apresentação máxima da
-                coleção Cemitério da Lua Sangrenta.
+                coleção Véspera do Rei Oco — Halloween 2026.
               </p>
             </div>
             <strong>Preço ainda não definido</strong>

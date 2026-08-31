@@ -8,9 +8,9 @@ import { isAdministrativeRole } from "@/lib/auth/roles";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const valid = new Map([
-  ["card", "epitafio-lua-carmesim"],
-  ["aura", "procissao-almas-rubras"],
-  ["border", "portico-lua-sangrenta"],
+  ["card", "noite-veu-partido"],
+  ["aura", "cortejo-fogos-fatuos"],
+  ["border", "trono-rei-oco"],
 ]);
 
 export async function setAdminCosmeticAction(formData: FormData) {

@@ -12,10 +12,10 @@ export const emptyCharacterCosmetics: CharacterCosmeticLoadout = {
   border: null,
 };
 
-export const bloodyMoonCosmeticKeys = {
-  card: "epitafio-lua-carmesim",
-  aura: "procissao-almas-rubras",
-  border: "portico-lua-sangrenta",
+export const halloween2026CosmeticKeys = {
+  card: "noite-veu-partido",
+  aura: "cortejo-fogos-fatuos",
+  border: "trono-rei-oco",
 } as const;
 
 export function parseCharacterCosmetics(value: unknown): CharacterCosmeticLoadout {

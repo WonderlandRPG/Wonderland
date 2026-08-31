@@ -17,6 +17,7 @@ import {
 import { parseRacePayload } from "@/lib/game/races";
 import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
+import { parseTitleStyle } from "@/lib/game/title-style";
 import { getClassBasicAttackRange } from "@/lib/game/class-range";
 import {
   getClassBasicAttackDamageType,
@@ -113,11 +114,7 @@ export async function getPvpTeamRoster(matchId: string) {
         specialEffects: parseItemSpecialEffects(item.special_effects),
         titleStyle:
           item.title_style && typeof item.title_style === "object" && !Array.isArray(item.title_style)
-            ? {
-                primary: String(item.title_style.primary ?? "#fff1b5"),
-                secondary: String(item.title_style.secondary ?? "#1f7a4c"),
-                glow: String(item.title_style.glow ?? "#d7ad45"),
-              }
+            ? parseTitleStyle(item.title_style)
             : null,
       }];
     });

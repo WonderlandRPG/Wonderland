@@ -20,6 +20,7 @@ import {
 import { parseRacePayload, type RacePayload } from "@/lib/game/races";
 import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
 import { parseItemSpecialEffects, type ItemSpecialEffect } from "@/lib/game/item-effects";
+import { parseTitleStyle } from "@/lib/game/title-style";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   parseCharacterCosmetics,
@@ -146,11 +147,7 @@ async function loadSheets(
               item.title_style &&
               typeof item.title_style === "object" &&
               !Array.isArray(item.title_style)
-                ? {
-                    primary: String(item.title_style.primary ?? "#fff1b5"),
-                    secondary: String(item.title_style.secondary ?? "#1f7a4c"),
-                    glow: String(item.title_style.glow ?? "#d7ad45"),
-                  }
+                ? parseTitleStyle(item.title_style)
                 : null,
             twoHanded: item.two_handed,
           },
@@ -161,7 +158,11 @@ async function loadSheets(
         attribute,
         inventory
           .filter((entry) => entry.equippedSlots.length)
-          .reduce((total, entry) => total + (entry.attributes[attribute] ?? 0) * entry.equippedSlots.length, 0),
+          .reduce(
+            (total, entry) =>
+              total + (entry.attributes[attribute] ?? 0) * entry.equippedSlots.length,
+            0,
+          ),
       ]),
     );
     return [

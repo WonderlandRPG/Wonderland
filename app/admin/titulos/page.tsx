@@ -4,17 +4,25 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { saveTitleAdminAction } from "./actions";
 import type { ItemSpecialEffect } from "@/lib/game/item-effects";
 import { DeleteTitleButton } from "@/components/admin/delete-title-button";
+import { EquippedTitle } from "@/components/characters/equipped-title";
+import {
+  defaultTitleStyle,
+  parseTitleStyle,
+  titleRarities,
+  type TitleRarity,
+  type TitleStyle,
+} from "@/lib/game/title-style";
 
 export const metadata = { title: "Títulos | Painel ADM" };
 export const dynamic = "force-dynamic";
 
-const defaults = { primary: "#fff1b5", secondary: "#1f7a4c", glow: "#d7ad45" };
 type TitleFormData = {
   id: string;
   name: string;
   description: string;
   attributes: Partial<Record<"FOR" | "DEF" | "RES" | "INI" | "INT" | "ARC", number>>;
-  style: { primary?: unknown; secondary?: unknown; glow?: unknown };
+  rarity: TitleRarity;
+  style: TitleStyle;
   effect?: ItemSpecialEffect;
 };
 
@@ -59,20 +67,30 @@ export default async function AdminTitlesPage({
             title.title_style &&
             typeof title.title_style === "object" &&
             !Array.isArray(title.title_style)
-              ? title.title_style
-              : defaults;
+              ? parseTitleStyle(title.title_style)
+              : defaultTitleStyle;
           const effect = parseItemSpecialEffects(title.special_effects)[0];
           return (
             <details className="admin-editor-card" key={title.id}>
               <summary>
                 <span>
                   <small>Título equipável</small>
-                  <strong>✦ {title.name}</strong>
+                  <EquippedTitle
+                    title={{ name: title.name, rarity: title.rarity, titleStyle: style }}
+                  />
                 </span>
                 <b>Editar</b>
               </summary>
               <TitleForm
-                title={{ ...title, attributes: parsed.success ? parsed.data : {}, style, effect }}
+                title={{
+                  ...title,
+                  rarity: titleRarities.includes(title.rarity as TitleRarity)
+                    ? (title.rarity as TitleRarity)
+                    : "awakened",
+                  attributes: parsed.success ? parsed.data : {},
+                  style,
+                  effect,
+                }}
               />
               <div className="admin-title-delete">
                 <p>A exclusão remove este Título de todos os inventários.</p>
@@ -87,11 +105,22 @@ export default async function AdminTitlesPage({
 }
 
 function TitleForm({ title }: { title?: TitleFormData }) {
-  const style = title?.style ?? defaults;
+  const style = title?.style ?? defaultTitleStyle;
   const effect = title?.effect;
   return (
     <form action={saveTitleAdminAction} className="admin-form admin-title-form">
       <input name="id" type="hidden" value={title?.id ?? ""} />
+      <div className="admin-title-preview is-wide">
+        <small>Prévia da honraria</small>
+        <EquippedTitle
+          title={{
+            name: title?.name ?? "Novo Título",
+            rarity: title?.rarity ?? "awakened",
+            titleStyle: style,
+          }}
+        />
+        <p>{style.acquisition}</p>
+      </div>
       <label>
         <span>Nome</span>
         <input name="name" defaultValue={title?.name ?? ""} required />
@@ -100,27 +129,83 @@ function TitleForm({ title }: { title?: TitleFormData }) {
         <span>Descrição</span>
         <textarea name="description" rows={3} defaultValue={title?.description ?? ""} required />
       </label>
+      <fieldset className="title-identity-editor">
+        <legend>Identidade e obtenção</legend>
+        <label>
+          <span>Categoria</span>
+          <select name="titleCategory" defaultValue={style.category}>
+            <option value="commemorative">Comemorativo</option>
+            <option value="achievement">Conquista</option>
+            <option value="competitive">Competitivo</option>
+            <option value="exploration">Exploração</option>
+            <option value="social">Social</option>
+            <option value="legendary">Lendário</option>
+            <option value="administrative">Administrativo</option>
+          </select>
+        </label>
+        <label>
+          <span>Raridade</span>
+          <select name="rarity" defaultValue={title?.rarity ?? "awakened"}>
+            <option value="common">Comum</option>
+            <option value="uncommon">Incomum</option>
+            <option value="rare">Raro</option>
+            <option value="epic">Épico</option>
+            <option value="legendary">Lendário</option>
+            <option value="mythic">Mítico</option>
+            <option value="awakened">Desperto</option>
+          </select>
+        </label>
+        <label>
+          <span>Disponibilidade</span>
+          <select name="availability" defaultValue={style.availability}>
+            <option value="permanent">Permanente</option>
+            <option value="limited">Por tempo limitado</option>
+            <option value="exclusive">Exclusivo / encerrado</option>
+          </select>
+        </label>
+        <label className="is-wide">
+          <span>Como é obtido</span>
+          <input name="acquisition" defaultValue={style.acquisition} required />
+        </label>
+      </fieldset>
       <fieldset className="title-color-editor">
-        <legend>Cores do Título</legend>
+        <legend>Aparência da insígnia</legend>
         <label>
           <span>Texto</span>
-          <input
-            name="primary"
-            type="color"
-            defaultValue={String(style.primary ?? defaults.primary)}
-          />
+          <input name="primary" type="color" defaultValue={style.primary} />
         </label>
         <label>
           <span>Fundo</span>
-          <input
-            name="secondary"
-            type="color"
-            defaultValue={String(style.secondary ?? defaults.secondary)}
-          />
+          <input name="secondary" type="color" defaultValue={style.secondary} />
         </label>
         <label>
           <span>Brilho</span>
-          <input name="glow" type="color" defaultValue={String(style.glow ?? defaults.glow)} />
+          <input name="glow" type="color" defaultValue={style.glow} />
+        </label>
+        <label>
+          <span>Ornamentos</span>
+          <input name="accent" type="color" defaultValue={style.accent} />
+        </label>
+        <label>
+          <span>Símbolo</span>
+          <input name="sigil" maxLength={4} defaultValue={style.sigil} required />
+        </label>
+        <label>
+          <span>Formato</span>
+          <select name="frame" defaultValue={style.frame}>
+            <option value="classic">Clássico</option>
+            <option value="ornate">Ornamental</option>
+            <option value="royal">Real</option>
+            <option value="arcane">Arcano</option>
+            <option value="infernal">Sombrio</option>
+          </select>
+        </label>
+        <label>
+          <span>Animação</span>
+          <select name="animated" defaultValue={style.animated ? "yes" : "no"}>
+            <option value="yes">Ativada</option>
+            <option value="no">Desativada</option>
+          </select>
         </label>
       </fieldset>
       <fieldset>

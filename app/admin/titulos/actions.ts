@@ -5,6 +5,12 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import {
+  titleAvailabilities,
+  titleCategories,
+  titleFrames,
+  titleRarities,
+} from "@/lib/game/title-style";
 
 const schema = z.object({
   id: z.union([z.literal(""), z.uuid()]),
@@ -13,6 +19,14 @@ const schema = z.object({
   primary: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   secondary: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   glow: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  accent: z.string().regex(/^#[0-9a-fA-F]{6}$/),
+  sigil: z.string().trim().min(1).max(4),
+  frame: z.enum(titleFrames),
+  titleCategory: z.enum(titleCategories),
+  availability: z.enum(titleAvailabilities),
+  acquisition: z.string().trim().min(5).max(300),
+  rarity: z.enum(titleRarities),
+  animated: z.enum(["yes", "no"]),
   FOR: z.coerce.number().int().min(0).max(999),
   DEF: z.coerce.number().int().min(0).max(999),
   RES: z.coerce.number().int().min(0).max(999),
@@ -66,9 +80,20 @@ export async function saveTitleAdminAction(formData: FormData) {
     category: "Título",
     price: 0,
     slot: "title",
-    rarity: "awakened",
+    rarity: data.rarity,
     attributes,
-    title_style: { primary: data.primary, secondary: data.secondary, glow: data.glow },
+    title_style: {
+      primary: data.primary,
+      secondary: data.secondary,
+      glow: data.glow,
+      accent: data.accent,
+      sigil: data.sigil,
+      frame: data.frame,
+      category: data.titleCategory,
+      availability: data.availability,
+      acquisition: data.acquisition,
+      animated: data.animated === "yes",
+    },
     special_effects: specialEffects,
     two_handed: false,
     active: false,
@@ -87,7 +112,14 @@ export async function saveTitleAdminAction(formData: FormData) {
     action: data.id ? "title.updated" : "title.created",
     target_type: "title",
     target_id: data.id || null,
-    details: { name: data.name, attributes, style: payload.title_style },
+    details: {
+      name: data.name,
+      rarity: data.rarity,
+      category: data.titleCategory,
+      availability: data.availability,
+      attributes,
+      style: payload.title_style,
+    },
   });
   revalidatePath("/admin/titulos");
   revalidatePath("/admin/console");

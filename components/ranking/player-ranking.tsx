@@ -7,6 +7,7 @@ import { RankBadge } from "@/components/characters/rank-badge";
 import { EquippedTitle, type EquippedTitleData } from "@/components/characters/equipped-title";
 import { kingdomName } from "@/lib/game/kingdoms";
 import type { RankingEntry } from "@/lib/game/player-portal";
+import { parseTitleStyle } from "@/lib/game/title-style";
 
 const rankOrder = ["Todos", "E", "D", "C", "B", "A", "S", "EX"] as const;
 const adventureRankOrder = ["E", "D", "C", "B", "A", "S", "EX"] as const;
@@ -15,11 +16,7 @@ function titleData(entry: Pick<RankingEntry, "title_name" | "title_style" | "tit
   if (!entry.title_name) return null;
   const style = entry.title_style;
   const titleStyle = style && typeof style === "object" && !Array.isArray(style)
-    ? {
-        primary: String(style.primary ?? "#fff1b5"),
-        secondary: String(style.secondary ?? "#1f7a4c"),
-        glow: String(style.glow ?? "#d7ad45"),
-      }
+    ? parseTitleStyle(style)
     : null;
   return { name: entry.title_name, rarity: entry.title_rarity ?? "title", titleStyle };
 }

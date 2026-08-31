@@ -1,4 +1,4 @@
-/* Loja > Cosméticos · Cemitério da Lua Sangrenta */
+/* Loja > Cosméticos · Véspera do Rei Oco — Halloween 2026 */
 .market-page .shop-departments{
   display:flex;
   gap:8px;
@@ -27,8 +27,8 @@
   margin-left:7px;
   padding:2px 5px;
   border-radius:999px;
-  background:var(--wl-blood-deep);
-  color:var(--wl-blood-text);
+  background:var(--wl-halloween-surface-raised);
+  color:var(--wl-halloween-text);
   font-size:.52rem;
 }
 
@@ -42,12 +42,12 @@
   min-height:330px;
   padding:38px;
   overflow:hidden;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:var(--wl-radius-xl);
   background:
-    radial-gradient(circle at 78% 30%,color-mix(in srgb,var(--wl-blood) 38%,transparent) 0 9%,transparent 10%),
-    linear-gradient(120deg,var(--wl-blood-black),var(--wl-blood-surface) 48%,var(--wl-blood-deep));
-  color:var(--wl-blood-text);
+    radial-gradient(circle at 78% 30%,color-mix(in srgb,var(--wl-halloween-ember) 38%,transparent) 0 9%,transparent 10%),
+    linear-gradient(120deg,var(--wl-halloween-black),var(--wl-halloween-surface) 48%,var(--wl-halloween-surface-raised));
+  color:var(--wl-halloween-text);
   box-shadow:var(--wl-shadow);
 }
 .market-page .cosmetics-collection-hero::before{
@@ -57,12 +57,12 @@
   top:-35px;
   font-size:15rem;
   line-height:1;
-  color:color-mix(in srgb,var(--wl-blood-bright) 18%,transparent);
+  color:color-mix(in srgb,var(--wl-halloween-ember-bright) 18%,transparent);
 }
 .market-page .cosmetics-collection-hero>div,
 .market-page .cosmetics-collection-hero>aside{position:relative;z-index:1}
 .market-page .cosmetics-collection-hero>div>span{
-  color:var(--wl-blood-bright);
+  color:var(--wl-halloween-ember-bright);
   font-size:.68rem;
   font-weight:900;
   letter-spacing:.16em;
@@ -70,27 +70,27 @@
 .market-page .cosmetics-collection-hero h2{
   max-width:720px;
   margin:8px 0 13px;
-  color:var(--wl-blood-text);
+  color:var(--wl-halloween-text);
   font-size:clamp(2.7rem,6vw,5.4rem);
   line-height:.92;
 }
 .market-page .cosmetics-collection-hero p{
   max-width:700px;
   margin:0;
-  color:var(--wl-blood-text-muted);
+  color:var(--wl-halloween-text-muted);
   line-height:1.65;
 }
 .market-page .cosmetics-collection-hero aside{
   display:grid;
   gap:5px;
   padding:17px;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:var(--wl-radius-md);
-  background:color-mix(in srgb,var(--wl-blood-black) 82%,transparent);
+  background:color-mix(in srgb,var(--wl-halloween-black) 82%,transparent);
 }
-.market-page .cosmetics-collection-hero aside small{color:var(--wl-blood-bright);font-weight:900}
-.market-page .cosmetics-collection-hero aside strong{color:var(--wl-blood-text);font-size:1.2rem}
-.market-page .cosmetics-collection-hero aside span{color:var(--wl-blood-text-muted);font-size:.72rem}
+.market-page .cosmetics-collection-hero aside small{color:var(--wl-halloween-ember-bright);font-weight:900}
+.market-page .cosmetics-collection-hero aside strong{color:var(--wl-halloween-text);font-size:1.2rem}
+.market-page .cosmetics-collection-hero aside span{color:var(--wl-halloween-text-muted);font-size:.72rem}
 
 .market-page .cosmetics-grid{
   display:grid;
@@ -101,10 +101,10 @@
   display:block;
   width:100%;
   overflow:hidden;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:var(--wl-radius-xl);
-  background:linear-gradient(160deg,var(--wl-blood-surface),var(--wl-blood-black));
-  color:var(--wl-blood-text);
+  background:linear-gradient(160deg,var(--wl-halloween-surface),var(--wl-halloween-black));
+  color:var(--wl-halloween-text);
   box-shadow:var(--wl-shadow-soft);
 }
 .market-page .cosmetic-card__heading{
@@ -113,11 +113,11 @@
   justify-content:space-between;
   gap:24px;
   padding:22px 26px 18px;
-  border-bottom:1px solid var(--wl-blood-border);
-  background:linear-gradient(100deg,var(--wl-blood-surface-raised),var(--wl-blood-black));
+  border-bottom:1px solid var(--wl-halloween-border);
+  background:linear-gradient(100deg,var(--wl-halloween-surface-raised),var(--wl-halloween-black));
 }
 .market-page .cosmetic-card__heading small{
-  color:var(--wl-blood-bright);
+  color:var(--wl-halloween-ember-bright);
   font-size:.65rem;
   font-weight:900;
   text-transform:uppercase;
@@ -125,17 +125,17 @@
 }
 .market-page .cosmetic-card__heading h3{
   margin:5px 0 0;
-  color:var(--wl-blood-text);
+  color:var(--wl-halloween-text);
   font-size:clamp(1.8rem,3vw,2.55rem);
   line-height:1;
 }
 .market-page .cosmetic-card__heading>b{
   flex:0 0 auto;
   padding:7px 10px;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:999px;
-  color:var(--wl-blood-gold);
-  background:var(--wl-blood-black);
+  color:var(--wl-halloween-gold);
+  background:var(--wl-halloween-black);
   font-size:.72rem;
 }
 .market-page .cosmetic-compare{
@@ -144,7 +144,7 @@
   gap:18px;
   align-items:stretch;
   padding:24px 26px 28px;
-  background:color-mix(in srgb,var(--wl-blood-black) 84%,var(--wl-surface-dark));
+  background:color-mix(in srgb,var(--wl-halloween-black) 84%,var(--wl-surface-dark));
 }
 .market-page .cosmetic-compare__side{
   display:grid;
@@ -153,17 +153,17 @@
   min-width:0;
 }
 .market-page .cosmetic-compare__side>b{
-  color:var(--wl-blood-text-muted);
+  color:var(--wl-halloween-text-muted);
   font-size:.62rem;
   text-align:center;
   text-transform:uppercase;
   letter-spacing:.12em;
 }
-.market-page .cosmetic-compare__side.is-after>b{color:var(--wl-blood-bright)}
+.market-page .cosmetic-compare__side.is-after>b{color:var(--wl-halloween-ember-bright)}
 .market-page .cosmetic-compare__arrow{
   display:grid;
   place-items:center;
-  color:var(--wl-blood-gold);
+  color:var(--wl-halloween-gold);
   font-size:2.2rem;
   font-weight:900;
 }
@@ -174,7 +174,7 @@
   min-height:500px;
   padding:34px;
   overflow:hidden;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:var(--wl-radius-md);
   background:var(--wl-surface-raised);
 }
@@ -191,8 +191,8 @@
 }
 .market-page .cosmetic-compare__stage.is-after{
   background:
-    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--wl-blood) 24%,transparent),transparent 34%),
-    linear-gradient(var(--wl-blood-surface),var(--wl-blood-black));
+    radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--wl-halloween-ember) 24%,transparent),transparent 34%),
+    linear-gradient(var(--wl-halloween-surface),var(--wl-halloween-black));
 }
 .market-page .cosmetic-compare__stage [data-character-card="official"]{
   width:min(100%,315px);
@@ -206,67 +206,18 @@
   width:min(100%,350px);
 }
 .market-page .cosmetic-character-demo.is-card [data-character-card="official"]{
-  border-color:var(--wl-blood-gold);
-  box-shadow:
-    0 0 0 2px var(--wl-blood-deep),
-    0 0 24px color-mix(in srgb,var(--wl-blood-bright) 55%,transparent),
-    var(--wl-shadow);
-  animation:bloody-card-breathe 3.8s ease-in-out infinite alternate;
+  animation:halloween-card-hover 3.8s ease-in-out infinite alternate;
 }
-.market-page .cosmetic-demo-moon{
-  position:absolute;
-  z-index:1;
-  top:-18px;
-  right:-12px;
-  width:118px;
-  height:118px;
-  border-radius:50%;
-  background:radial-gradient(circle at 36% 34%,var(--wl-blood-text),var(--wl-blood-bright) 18%,var(--wl-blood) 58%,var(--wl-blood-deep));
-  box-shadow:0 0 42px color-mix(in srgb,var(--wl-blood-bright) 62%,transparent);
-  animation:bloody-moon-pulse 4s ease-in-out infinite;
-}
-.market-page .cosmetic-demo-fog{
-  position:absolute;
-  z-index:5;
-  left:-28%;
-  bottom:6%;
-  width:156%;
-  height:48px;
-  border-radius:50%;
-  background:var(--wl-blood-fog);
-  filter:blur(12px);
-  animation:grave-fog 7s linear infinite alternate;
-  pointer-events:none;
-}
-.market-page .cosmetic-demo-fog--two{bottom:19%;animation-duration:10s;animation-direction:alternate-reverse}
-.market-page .cosmetic-character-demo.is-aura [data-character-card="official"]{
-  box-shadow:
-    0 0 24px color-mix(in srgb,var(--wl-blood-bright) 56%,transparent),
-    0 0 54px color-mix(in srgb,var(--wl-blood) 36%,transparent),
-    var(--wl-shadow-soft);
-}
-.market-page .cosmetic-demo-soul{
-  position:absolute;
-  z-index:6;
-  color:var(--wl-blood-text);
-  font-size:1.55rem;
-  text-shadow:0 0 14px var(--wl-blood-bright);
-  animation:soul-orbit 4.6s ease-in-out infinite;
-  pointer-events:none;
-}
-.market-page .soul-one{left:-2%;top:28%}
-.market-page .soul-two{right:-4%;top:48%;animation-delay:.8s}
-.market-page .soul-three{left:12%;bottom:3%;animation-delay:1.5s}
 
 .market-page .cosmetic-card__body{
   padding:20px 26px 24px;
-  border-top:1px solid var(--wl-blood-border);
-  background:var(--wl-blood-surface);
+  border-top:1px solid var(--wl-halloween-border);
+  background:var(--wl-halloween-surface);
 }
 .market-page .cosmetic-card__body p{
   max-width:1000px;
   margin:0;
-  color:var(--wl-blood-text-muted);
+  color:var(--wl-halloween-text-muted);
   font-size:.98rem;
   line-height:1.65
 }
@@ -280,9 +231,9 @@
 }
 .market-page .cosmetic-card__body li{
   padding:7px 9px;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:999px;
-  color:var(--wl-blood-text);
+  color:var(--wl-halloween-text);
   font-size:.68rem;
   text-align:center;
 }
@@ -291,11 +242,11 @@
   justify-content:space-between;
   gap:12px;
   padding:13px 22px;
-  border-top:1px solid var(--wl-blood-border);
-  background:var(--wl-blood-black);
+  border-top:1px solid var(--wl-halloween-border);
+  background:var(--wl-halloween-black);
 }
-.market-page .cosmetic-card>footer span{color:var(--wl-blood-text-muted);font-size:.58rem;text-transform:uppercase}
-.market-page .cosmetic-card>footer strong{color:var(--wl-blood-gold);font-size:.76rem}
+.market-page .cosmetic-card>footer span{color:var(--wl-halloween-text-muted);font-size:.58rem;text-transform:uppercase}
+.market-page .cosmetic-card>footer strong{color:var(--wl-halloween-gold);font-size:.76rem}
 
 .market-page .cosmetics-bundle{
   display:flex;
@@ -303,32 +254,26 @@
   gap:24px;
   align-items:center;
   padding:22px 26px;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:var(--wl-radius-lg);
-  background:linear-gradient(100deg,var(--wl-blood-surface-raised),var(--wl-blood-black));
-  color:var(--wl-blood-text);
+  background:linear-gradient(100deg,var(--wl-halloween-surface-raised),var(--wl-halloween-black));
+  color:var(--wl-halloween-text);
 }
-.market-page .cosmetics-bundle small{color:var(--wl-blood-bright);font-weight:900}
-.market-page .cosmetics-bundle h3{margin:4px 0;color:var(--wl-blood-text);font-size:1.7rem}
-.market-page .cosmetics-bundle p{max-width:760px;margin:0;color:var(--wl-blood-text-muted)}
+.market-page .cosmetics-bundle small{color:var(--wl-halloween-ember-bright);font-weight:900}
+.market-page .cosmetics-bundle h3{margin:4px 0;color:var(--wl-halloween-text);font-size:1.7rem}
+.market-page .cosmetics-bundle p{max-width:760px;margin:0;color:var(--wl-halloween-text-muted)}
 .market-page .cosmetics-bundle>strong{
   flex:0 0 auto;
   padding:11px 14px;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:999px;
-  color:var(--wl-blood-gold);
-  background:var(--wl-blood-black);
+  color:var(--wl-halloween-gold);
+  background:var(--wl-halloween-black);
 }
 
-@keyframes bloody-moon-pulse{50%{transform:scale(1.055);filter:brightness(1.12)}}
-@keyframes grave-fog{50%{transform:translateX(11%)}}
-@keyframes bloody-card-breathe{to{transform:translateY(-2px);filter:brightness(1.05)}}
-@keyframes soul-orbit{0%,100%{transform:translate(0,8px) scale(.8);opacity:.45}50%{transform:translate(8px,-18px) scale(1.08);opacity:1}}
+@keyframes halloween-card-hover{to{transform:translateY(-2px);filter:brightness(1.05)}}
 
 @media(prefers-reduced-motion:reduce){
-  .market-page .cosmetic-demo-moon,
-  .market-page .cosmetic-demo-fog,
-  .market-page .cosmetic-demo-soul,
   .market-page .cosmetic-character-demo.is-card [data-character-card="official"]{animation:none}
 }
 @media(max-width:900px){
@@ -363,22 +308,39 @@
 .market-page .cosmetic-equip{
   min-height:42px;
   padding:9px 14px;
-  border:1px solid var(--wl-blood-border);
+  border:1px solid var(--wl-halloween-border);
   border-radius:var(--wl-radius-sm);
-  background:var(--wl-blood);
-  color:var(--wl-blood-text);
+  background:var(--wl-halloween-ember);
+  color:var(--wl-halloween-text);
   font-weight:900;
   box-shadow:var(--wl-shadow-soft);
 }
 .market-page .cosmetic-equip:hover{
-  background:var(--wl-blood-bright);
-  color:var(--wl-blood-black);
+  background:var(--wl-halloween-ember-bright);
+  color:var(--wl-halloween-black);
 }
 .market-page .cosmetic-equip.is-equipped{
   background:var(--wl-accent);
   color:var(--wl-accent-contrast);
   border-color:var(--wl-accent);
 }
+
+/* Direção Halloween 2026: carvão, brasa e fogo espectral. */
+.market-page .cosmetics-collection-hero{border-color:var(--wl-halloween-border);background:radial-gradient(circle at 78% 28%,color-mix(in srgb,var(--wl-halloween-ember) 30%,transparent),transparent 17%),linear-gradient(120deg,var(--wl-halloween-black),var(--wl-halloween-surface-raised) 52%,var(--wl-halloween-surface));color:var(--wl-halloween-text)}
+.market-page .cosmetics-collection-hero::before{content:"♛";color:color-mix(in srgb,var(--wl-halloween-spectral) 16%,transparent)}
+.market-page .cosmetics-collection-hero>div>span,.market-page .cosmetics-collection-hero aside small{color:var(--wl-halloween-ember-bright)}
+.market-page .cosmetics-collection-hero h2,.market-page .cosmetics-collection-hero aside strong{color:var(--wl-halloween-text)}
+.market-page .cosmetics-collection-hero p,.market-page .cosmetics-collection-hero aside span{color:var(--wl-halloween-text-muted)}
+.market-page .cosmetics-collection-hero aside{border-color:var(--wl-halloween-border);background:color-mix(in srgb,var(--wl-halloween-black) 84%,transparent)}
+.market-page .cosmetic-card{border-color:var(--wl-halloween-border);background:linear-gradient(160deg,var(--wl-halloween-surface-raised),var(--wl-halloween-black));color:var(--wl-halloween-text)}
+.market-page .cosmetic-card__heading{border-color:var(--wl-halloween-border);background:linear-gradient(100deg,var(--wl-halloween-surface-raised),var(--wl-halloween-black))}
+.market-page .cosmetic-card__heading small{color:var(--wl-halloween-spectral)}.market-page .cosmetic-card__heading h3{color:var(--wl-halloween-text)}.market-page .cosmetic-card__heading>b{border-color:var(--wl-halloween-border);background:var(--wl-halloween-black);color:var(--wl-halloween-gold)}
+.market-page .cosmetic-compare{background:var(--wl-halloween-black)}.market-page .cosmetic-compare__side.is-after>b{color:var(--wl-halloween-spectral)}.market-page .cosmetic-compare__arrow{color:var(--wl-halloween-ember-bright)}
+.market-page .cosmetic-compare__stage.is-after{background:radial-gradient(circle at 50% 28%,color-mix(in srgb,var(--wl-halloween-spectral) 18%,transparent),transparent 36%),linear-gradient(var(--wl-halloween-surface),var(--wl-halloween-black))}
+.market-page .cosmetic-card__body{border-color:var(--wl-halloween-border);background:var(--wl-halloween-surface)}.market-page .cosmetic-card__body p{color:var(--wl-halloween-text-muted)}.market-page .cosmetic-card__body li{border-color:var(--wl-halloween-border);color:var(--wl-halloween-text)}
+.market-page .cosmetic-card>footer,.market-page .cosmetics-bundle{border-color:var(--wl-halloween-border);background:var(--wl-halloween-black)}.market-page .cosmetic-card>footer strong,.market-page .cosmetics-bundle>strong{color:var(--wl-halloween-gold)}
+.market-page .cosmetics-bundle small{color:var(--wl-halloween-spectral)}.market-page .cosmetics-bundle h3{color:var(--wl-halloween-text)}.market-page .cosmetics-bundle p{color:var(--wl-halloween-text-muted)}
+.market-page .cosmetic-equip{border-color:var(--wl-halloween-border);background:var(--wl-halloween-ember);color:var(--wl-halloween-black)}.market-page .cosmetic-equip:hover{background:var(--wl-halloween-spectral);color:var(--wl-halloween-black)}
 @media(max-width:650px){
   .market-page .cosmetic-card__footer{
     align-items:stretch;

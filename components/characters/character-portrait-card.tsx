@@ -50,33 +50,28 @@ export function CharacterPortraitCard({
       <RankAtmosphere rank={rank} />
 
       <div className={styles.cosmeticCardFx} aria-hidden="true">
-        <i className={styles.bloodMoon} />
-        <i className={styles.graveyard} />
-        <i className={styles.ravenOne} />
-        <i className={styles.ravenTwo} />
-        <i className={styles.candleOne} />
-        <i className={styles.candleTwo} />
-        <i className={styles.cardFogOne} />
-        <i className={styles.cardFogTwo} />
+        <i className={styles.voidEclipse} />
+        <i className={styles.branchVeil} />
+        <i className={styles.emberField} />
+        <i className={styles.cardMistOne} />
+        <i className={styles.cardMistTwo} />
       </div>
 
       <div className={styles.cosmeticBorderFx} aria-hidden="true">
         <img
           alt=""
           className={styles.borderArtwork}
-          src="/cosmetics/cemiterio-lua-sangrenta/portico-lua-sangrenta-v3.png"
+          src="/cosmetics/halloween-2026/trono-rei-oco.png"
         />
       </div>
 
       <div className={styles.cosmeticAuraFx} aria-hidden="true">
-        <i className={[styles.soul, styles.soulOne].join(" ")} />
-        <i className={[styles.soul, styles.soulTwo].join(" ")} />
-        <i className={[styles.soul, styles.soulThree].join(" ")} />
-        <i className={[styles.soul, styles.soulFour].join(" ")} />
-        <i className={[styles.soul, styles.soulFive].join(" ")} />
-        <i className={[styles.soul, styles.soulSix].join(" ")} />
-        <i className={[styles.soul, styles.soulSeven].join(" ")} />
-        <i className={styles.ashField} />
+        <i className={[styles.wisp, styles.wispOne].join(" ")} />
+        <i className={[styles.wisp, styles.wispTwo].join(" ")} />
+        <i className={[styles.wisp, styles.wispThree].join(" ")} />
+        <i className={[styles.wisp, styles.wispFour].join(" ")} />
+        <i className={[styles.wisp, styles.wispFive].join(" ")} />
+        <i className={styles.spectralRing} />
       </div>
 
       <div className={styles.topMeta}>

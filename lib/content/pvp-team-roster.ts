@@ -144,7 +144,7 @@ export async function getPvpTeamRoster(matchId: string) {
       imageUrl: raw.image_url ?? "",
       cosmetics: parseCharacterCosmetics(raw.cosmetics),
       equippedTitle: equippedTitle
-        ? { name: equippedTitle.name, rarity: equippedTitle.rarity, titleStyle: equippedTitle.titleStyle }
+        ? { name: equippedTitle.name, rarity: equippedTitle.rarity, titleStyle: equippedTitle.titleStyle, description: equippedTitle.description, attributes: equippedTitle.attributes }
         : null,
       raceName: raceRow.name,
       className: classRow.name,

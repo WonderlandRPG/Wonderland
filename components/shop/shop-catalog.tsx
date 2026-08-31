@@ -50,8 +50,8 @@ const halloween2026Cosmetics = [
     name: "Noite do Véu Partido",
     tag: "Lendário • Animado",
     description:
-      "Uma fenda vertical rasga o retrato de cima a baixo. As duas metades do véu escuro respiram para os lados, revelando luz espectral, bordas em brasa, um selo arcano central e partículas que ascendem pela ruptura.",
-    highlights: ["Ruptura vertical legível", "Véu respirando", "Selo arcano central", "Luz espectral e brasas"],
+      "Duas cortinas espectrais rasgadas respiram nas laterais do retrato, como se o personagem estivesse atravessando o véu entre os mundos. Luz fria, brasas discretas e névoa baixa criam profundidade sem cobrir o rosto.",
+    highlights: ["Véus laterais rasgados", "Retrato preservado", "Luz espectral", "Névoa e brasas discretas"],
     preview: "card",
     key: "noite-veu-partido",
   },

@@ -50,8 +50,8 @@ const halloween2026Cosmetics = [
     name: "Noite do Véu Partido",
     tag: "Lendário • Animado",
     description:
-      "O véu entre os mundos se rompe atrás do aventureiro. Um eclipse oco pulsa em laranja-brasa, galhos negros atravessam o plano em diferentes profundidades e duas camadas de névoa reagem lentamente à presença do personagem.",
-    highlights: ["Eclipse oco pulsante", "Névoa em profundidade", "Sombras de galhos", "Brasas reativas"],
+      "Uma fenda vertical rasga o retrato de cima a baixo. As duas metades do véu escuro respiram para os lados, revelando luz espectral, bordas em brasa, um selo arcano central e partículas que ascendem pela ruptura.",
+    highlights: ["Ruptura vertical legível", "Véu respirando", "Selo arcano central", "Luz espectral e brasas"],
     preview: "card",
     key: "noite-veu-partido",
   },
@@ -60,8 +60,8 @@ const halloween2026Cosmetics = [
     name: "Cortejo dos Fogos-Fátuos",
     tag: "Mítico • Animado",
     description:
-      "Cinco chamas conscientes percorrem órbitas independentes ao redor do card, deixando caudas espectrais verde-azuladas e faíscas alaranjadas. Um anel arcano respira atrás do retrato sem recortar os efeitos nas bordas.",
-    highlights: ["5 fogos-fátuos", "Órbitas independentes", "Caudas espectrais", "Anel arcano responsivo"],
+      "Cinco pequenos espíritos, com rostos, corpos e caudas reconhecíveis, formam uma procissão dentro do retrato. Eles percorrem um circuito lento e coordenado sem escapar das bordas nem cobrir permanentemente o personagem.",
+    highlights: ["5 fantasmas reconhecíveis", "Procissão interna", "Movimento coordenado", "Sem efeitos recortados"],
     preview: "aura",
     key: "cortejo-fogos-fatuos",
   },

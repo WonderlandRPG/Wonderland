@@ -126,6 +126,9 @@ export async function saveTitleAdminAction(formData: FormData) {
   revalidatePath("/admin/eventos");
   revalidatePath("/presenca");
   revalidatePath("/personagens/[id]", "page");
+  revalidatePath("/jogadores/[id]", "page");
+  revalidatePath("/perfil");
+  revalidatePath("/ranking");
   revalidatePath("/arena");
   redirect("/admin/titulos?status=salvo");
 }

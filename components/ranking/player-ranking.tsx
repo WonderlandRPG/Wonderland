@@ -38,8 +38,10 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
     "E",
   );
   const normalized = query.trim().toLocaleLowerCase("pt-BR");
+  const podiumIds = new Set(leaders.map((entry) => entry.id));
   const visible = entries.filter(
     (entry) =>
+      !podiumIds.has(entry.id) &&
       (rank === "Todos" || entry.adventure_rank === rank) &&
       (!normalized ||
         `${entry.name} ${entry.race_name} ${entry.class_name} ${kingdomName(entry.kingdom)}`

@@ -5,6 +5,7 @@ import { saveTitleAdminAction } from "./actions";
 import type { ItemSpecialEffect } from "@/lib/game/item-effects";
 import { DeleteTitleButton } from "@/components/admin/delete-title-button";
 import { EquippedTitle } from "@/components/characters/equipped-title";
+import { TitleAppearanceEditor } from "@/components/admin/title-appearance-editor";
 import {
   defaultTitleStyle,
   parseTitleStyle,
@@ -110,17 +111,11 @@ function TitleForm({ title }: { title?: TitleFormData }) {
   return (
     <form action={saveTitleAdminAction} className="admin-form admin-title-form">
       <input name="id" type="hidden" value={title?.id ?? ""} />
-      <div className="admin-title-preview is-wide">
-        <small>Prévia da honraria</small>
-        <EquippedTitle
-          title={{
-            name: title?.name ?? "Novo Título",
-            rarity: title?.rarity ?? "awakened",
-            titleStyle: style,
-          }}
-        />
-        <p>{style.acquisition}</p>
-      </div>
+      <TitleAppearanceEditor
+        name={title?.name ?? "Novo Título"}
+        rarity={title?.rarity ?? "awakened"}
+        initialStyle={style}
+      />
       <label>
         <span>Nome</span>
         <input name="name" defaultValue={title?.name ?? ""} required />
@@ -166,46 +161,6 @@ function TitleForm({ title }: { title?: TitleFormData }) {
         <label className="is-wide">
           <span>Como é obtido</span>
           <input name="acquisition" defaultValue={style.acquisition} required />
-        </label>
-      </fieldset>
-      <fieldset className="title-color-editor">
-        <legend>Aparência da insígnia</legend>
-        <label>
-          <span>Texto</span>
-          <input name="primary" type="color" defaultValue={style.primary} />
-        </label>
-        <label>
-          <span>Fundo</span>
-          <input name="secondary" type="color" defaultValue={style.secondary} />
-        </label>
-        <label>
-          <span>Brilho</span>
-          <input name="glow" type="color" defaultValue={style.glow} />
-        </label>
-        <label>
-          <span>Ornamentos</span>
-          <input name="accent" type="color" defaultValue={style.accent} />
-        </label>
-        <label>
-          <span>Símbolo</span>
-          <input name="sigil" maxLength={4} defaultValue={style.sigil} required />
-        </label>
-        <label>
-          <span>Formato</span>
-          <select name="frame" defaultValue={style.frame}>
-            <option value="classic">Clássico</option>
-            <option value="ornate">Ornamental</option>
-            <option value="royal">Real</option>
-            <option value="arcane">Arcano</option>
-            <option value="infernal">Sombrio</option>
-          </select>
-        </label>
-        <label>
-          <span>Animação</span>
-          <select name="animated" defaultValue={style.animated ? "yes" : "no"}>
-            <option value="yes">Ativada</option>
-            <option value="no">Desativada</option>
-          </select>
         </label>
       </fieldset>
       <fieldset>

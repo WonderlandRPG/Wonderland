@@ -136,7 +136,9 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
     return <section className={styles.empty}>Nenhum personagem disponível para o laboratório.</section>;
   }
 
-  const defeated = enemyCombat.hp <= 0;
+  const activePlayer: CombatantState = playerCombat;
+  const activeEnemy: CombatantState = enemyCombat;
+  const defeated = activeEnemy.hp <= 0;
 
   function pushLog(text: string) {
     setLog((current) => [text, ...current].slice(0, 8));
@@ -159,7 +161,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
     if (action.kind === "basic" && usedBasic) return setMessage("O ataque básico já foi usado neste turno.");
     if (action.kind === "skill") {
       if (usedSkill) return setMessage("Uma habilidade já foi usada neste turno.");
-      const cooldown = playerCombat.cooldowns[action.skill.key] ?? 0;
+      const cooldown = activePlayer.cooldowns[action.skill.key] ?? 0;
       if (cooldown > 0) return setMessage(`${action.skill.name} está em cooldown por ${cooldown} turno(s).`);
     }
     setSelectedAction(action);
@@ -170,7 +172,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
 
   function applyBasicAttack() {
     if (usedBasic) return setMessage("O ataque básico já foi usado neste turno.");
-    const result = resolveBasicAttack(playerCombat, enemyCombat);
+    const result = resolveBasicAttack(activePlayer, activeEnemy);
     setPlayerCombat(result.actor);
     setEnemyCombat(result.target);
     setUsedBasic(true);
@@ -185,16 +187,16 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
     let result;
 
     if (selfTarget) {
-      result = resolveJrpgSkill(playerCombat, playerCombat, action.skill);
+      result = resolveJrpgSkill(activePlayer, activePlayer, action.skill);
       if (result.event.kind === "error") return setMessage(result.event.message);
-      setPlayerCombat(result.target.id === playerCombat.id ? result.target : result.actor);
+      setPlayerCombat(result.target.id === activePlayer.id ? result.target : result.actor);
     } else if (action.area > 0) {
       const affected = getTacticalAreaCells({ center, radius: action.area, grid: GRID });
       if (!affected.has(tacticalPositionKey(enemyPosition))) {
         setMessage(`${action.name}: a área selecionada não atingiu a Sentinela Rúnica.`);
         return;
       }
-      const areaResult = resolveJrpgAreaSkill(playerCombat, [enemyCombat], action.skill);
+      const areaResult = resolveJrpgAreaSkill(activePlayer, [activeEnemy], action.skill);
       const target = areaResult.targets[0];
       const event = areaResult.events[0];
       if (!target || !event) return;
@@ -203,7 +205,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
       setEnemyCombat(target);
       result = { actor: areaResult.actor, target, event };
     } else {
-      result = resolveJrpgSkill(playerCombat, enemyCombat, action.skill);
+      result = resolveJrpgSkill(activePlayer, activeEnemy, action.skill);
       if (result.event.kind === "error") return setMessage(result.event.message);
       setPlayerCombat(result.actor);
       setEnemyCombat(result.target);
@@ -264,7 +266,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
   }
 
   function endTurn() {
-    setPlayerCombat((current) => current ? tickCooldowns(current) : current);
+    setPlayerCombat(tickCooldowns(activePlayer));
     setRemainingMove(MOVE_LIMIT);
     setUsedBasic(false);
     setUsedSkill(false);
@@ -316,7 +318,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
         <div className={styles.characterSummary}>
           <strong>{character.name}</strong>
           <span>{character.raceName} · {character.className} · Rank {character.rank}</span>
-          <span>HP {playerCombat.hp}/{playerCombat.maxHp} · Mana {playerCombat.mana}/{playerCombat.maxMana}</span>
+          <span>HP {activePlayer.hp}/{activePlayer.maxHp} · Mana {activePlayer.mana}/{activePlayer.maxMana}</span>
         </div>
         <div className={styles.attributes}>
           {Object.entries(character.attributes).map(([key, value]) => <span key={key}><small>{key}</small><strong>{value}</strong></span>)}
@@ -325,17 +327,17 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
 
       <section className={styles.combatHud}>
         <article>
-          <small>AVENTUREIRO</small><strong>{playerCombat.name}</strong>
-          <div className={styles.bar}><i style={{ width: `${percent(playerCombat.hp, playerCombat.maxHp)}%` }} /></div>
-          <span>HP {playerCombat.hp} / {playerCombat.maxHp}</span>
-          {playerCombat.maxMana > 0 ? <span>Mana {playerCombat.mana} / {playerCombat.maxMana}</span> : null}
-          {playerCombat.maxClassResource > 0 ? <span>{playerCombat.classResourceName}: {playerCombat.classResource}/{playerCombat.maxClassResource}</span> : null}
-          {playerCombat.maxRaceResource > 0 ? <span>{playerCombat.raceResourceName}: {playerCombat.raceResource}/{playerCombat.maxRaceResource}</span> : null}
+          <small>AVENTUREIRO</small><strong>{activePlayer.name}</strong>
+          <div className={styles.bar}><i style={{ width: `${percent(activePlayer.hp, activePlayer.maxHp)}%` }} /></div>
+          <span>HP {activePlayer.hp} / {activePlayer.maxHp}</span>
+          {activePlayer.maxMana > 0 ? <span>Mana {activePlayer.mana} / {activePlayer.maxMana}</span> : null}
+          {activePlayer.maxClassResource > 0 ? <span>{activePlayer.classResourceName}: {activePlayer.classResource}/{activePlayer.maxClassResource}</span> : null}
+          {activePlayer.maxRaceResource > 0 ? <span>{activePlayer.raceResourceName}: {activePlayer.raceResource}/{activePlayer.maxRaceResource}</span> : null}
         </article>
         <article data-enemy="true">
           <small>ALVO DE TESTE</small><strong>Sentinela Rúnica</strong>
-          <div className={styles.bar}><i style={{ width: `${percent(enemyCombat.hp, enemyCombat.maxHp)}%` }} /></div>
-          <span>HP {enemyCombat.hp} / {enemyCombat.maxHp}</span>
+          <div className={styles.bar}><i style={{ width: `${percent(activeEnemy.hp, activeEnemy.maxHp)}%` }} /></div>
+          <span>HP {activeEnemy.hp} / {activeEnemy.maxHp}</span>
           <span>{defeated ? "DERROTADA" : "Ativa"}</span>
         </article>
       </section>
@@ -350,7 +352,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
 
       <div className={styles.skillBar} data-wl-surface="raised" aria-label="Habilidades reais do personagem">
         {character.skills.map(({ source, skill }) => {
-          const cooldown = playerCombat.cooldowns[skill.key] ?? 0;
+          const cooldown = activePlayer.cooldowns[skill.key] ?? 0;
           return (
             <button key={`${source}-${skill.key}`} type="button" disabled={usedSkill || cooldown > 0 || defeated} data-selected={selectedAction?.kind === "skill" && selectedAction.skill.key === skill.key ? "true" : "false"} onClick={() => selectAction({ kind: "skill", name: skill.name, range: skill.range, area: skill.area, source, skill })} title={skill.playerDescription}>
               <strong>{skill.name}</strong>

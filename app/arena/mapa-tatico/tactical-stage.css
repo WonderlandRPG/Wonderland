@@ -1,3 +1,5 @@
+.tactical-lab-stage:has([data-combat-mode="battle"])>.arena-mode-back{display:none}
+
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"],
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]{
   overflow:visible;

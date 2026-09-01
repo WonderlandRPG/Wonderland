@@ -5,9 +5,11 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { requireAdministrativeAccount } from "@/lib/auth/account";
+import type { Database, Json } from "@/lib/db/types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-const damageTypeSchema = z.enum(["physical", "magic", "true"]);
+const skillDamageTypeSchema = z.enum(["physical", "magic", "true"]);
+const basicDamageTypeSchema = z.enum(["physical", "magic"]);
 const effectSchema = z.enum(["none", "root", "stun", "push"]);
 const aiProfileSchema = z.enum(["aggressive", "ranged", "controller"]);
 
@@ -16,7 +18,7 @@ const schema = z.object({
   hp: z.coerce.number().int().min(1).max(999999),
   movement: z.coerce.number().int().min(0).max(20),
   basicAttackRange: z.coerce.number().int().min(1).max(20),
-  basicAttackDamageType: damageTypeSchema,
+  basicAttackDamageType: basicDamageTypeSchema,
   aiProfile: aiProfileSchema,
   FOR: z.coerce.number().int().min(0).max(9999),
   DEF: z.coerce.number().int().min(0).max(9999),
@@ -29,7 +31,7 @@ const schema = z.object({
 
 const skillSchema = z.object({
   name: z.string().trim().max(100),
-  damageType: damageTypeSchema,
+  damageType: skillDamageTypeSchema,
   base: z.coerce.number().min(0).max(99999),
   range: z.coerce.number().int().min(1).max(20),
   cooldown: z.coerce.number().int().min(0).max(20),
@@ -69,21 +71,23 @@ function parseSkill(formData: FormData, index: number, creatureId: string) {
   if (!parsed.success || !parsed.data.name) return null;
 
   const data = parsed.data;
-  const operationDamage = {
-    operation: "DAMAGE" as const,
-    target: "enemy" as const,
-    base: data.base,
-    scaling: [],
-    damageType: data.damageType,
-    status: "",
-    duration: 0,
-    chance: 100,
-    stacks: 0,
-    maxStacks: 0,
-    distance: 0,
-    modifiers: [],
-  };
-  const operations: Array<Record<string, unknown>> = [operationDamage];
+  const operations: Array<Record<string, unknown>> = [
+    {
+      operation: "DAMAGE",
+      target: "enemy",
+      base: data.base,
+      scaling: [],
+      damageType: data.damageType,
+      status: "",
+      duration: 0,
+      chance: 100,
+      stacks: 0,
+      maxStacks: 0,
+      distance: 0,
+      modifiers: [],
+    },
+  ];
+
   if (data.effect === "root" || data.effect === "stun") {
     operations.push({
       operation: data.effect === "root" ? "ROOT" : "STUN",
@@ -100,6 +104,7 @@ function parseSkill(formData: FormData, index: number, creatureId: string) {
       modifiers: [],
     });
   }
+
   if (data.effect === "push") {
     operations.push({
       operation: "PUSH",
@@ -195,9 +200,14 @@ export async function updateCreatureCombatProfileAdminAction(formData: FormData)
     skills,
   };
 
+  const updatePayload = {
+    combat_profile: combatProfile as unknown as Json,
+    updated_at: new Date().toISOString(),
+  } as Database["public"]["Tables"]["v2_creatures"]["Update"] & { combat_profile: Json };
+
   const { data: creature, error } = await client
     .from("v2_creatures")
-    .update({ combat_profile: combatProfile, updated_at: new Date().toISOString() })
+    .update(updatePayload)
     .eq("id", parsed.data.id)
     .select("name, rank")
     .single();

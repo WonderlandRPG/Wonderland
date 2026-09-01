@@ -29,6 +29,12 @@
   --wl-gold-soft: #e1c37b;
   --wl-gold-contrast: #2b2119;
 
+  /* Campanhas de conscientização */
+  --wl-awareness-bg: #f4cf3f;
+  --wl-awareness-bg-strong: #d6a91f;
+  --wl-awareness-text: #2b2119;
+  --wl-awareness-border: #765018;
+
   /* Superfícies */
   --wl-canvas: #14241c;
   --wl-surface: #fff3d2;

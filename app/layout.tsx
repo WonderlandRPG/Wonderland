@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AudioProvider } from "@/components/audio/audio-provider";
 import { getCurrentAccount } from "@/lib/auth/account";
 import { PlayerPresence } from "@/components/player-presence";
+import { SeptemberYellowRibbon } from "@/components/awareness/september-yellow-ribbon";
 
 /*
  * Sistema visual do Wonderland:
@@ -42,7 +43,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="pt-BR">
       <body>
         {account ? <PlayerPresence /> : null}
-        <AudioProvider>{children}</AudioProvider>
+        <AudioProvider>
+          {children}
+          <SeptemberYellowRibbon />
+        </AudioProvider>
       </body>
     </html>
   );

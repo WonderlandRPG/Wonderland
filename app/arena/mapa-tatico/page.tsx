@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { TacticalLabV4 } from "@/components/arena/tactical-lab-v4";
+import { TacticalLabV5 } from "@/components/arena/tactical-lab-v5";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheets } from "@/lib/content/characters";
+import { getCreatureImageUrl, parseTextList } from "@/lib/game/bestiary";
 import {
   getClassBasicAttackDamageType,
   prepareClassCombatSkills,
   prepareRaceCombatSkills,
 } from "@/lib/game/class-combat-profile";
 import { getClassBasicAttackRange } from "@/lib/game/class-range";
+import { parseCreatureCombatProfile } from "@/lib/game/creature-tactical-combat";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Laboratório do Mapa Tático" };
 export const dynamic = "force-dynamic";
@@ -22,7 +25,33 @@ export default async function TacticalMapLabPage() {
     redirect("/arena");
   }
 
-  const sheets = await getCharacterSheets(account.id);
+  const [sheets, client] = await Promise.all([
+    getCharacterSheets(account.id),
+    createServerSupabaseClient(),
+  ]);
+
+  const { data: creatureRows } = client
+    ? await client
+        .from("v2_creatures")
+        .select("id,slug,name,category,rank,behavior,weaknesses,description,combat_profile")
+        .eq("active", true)
+        .order("rank")
+        .order("name")
+    : { data: [] };
+
+  const creatures = (creatureRows ?? []).map((entry) => ({
+    id: entry.id,
+    slug: entry.slug,
+    name: entry.name,
+    category: entry.category,
+    rank: entry.rank,
+    behavior: entry.behavior,
+    weaknesses: parseTextList(entry.weaknesses),
+    description: entry.description,
+    imageUrl: getCreatureImageUrl(entry.slug),
+    combatProfile: parseCreatureCombatProfile(entry.rank, entry.combat_profile),
+  }));
+
   const characters = sheets.map((character) => {
     const rawClassSkills = character.unlockedClassSkills.filter((skill) => !/passiva/i.test(skill.type));
     const rawRaceSkills = character.unlockedRaceAbilities.filter((skill) => !/passiva/i.test(skill.type));
@@ -88,7 +117,7 @@ export default async function TacticalMapLabPage() {
         <Link className="arena-mode-back" href="/arena">
           ← Voltar para Arena
         </Link>
-        <TacticalLabV4 characters={characters} />
+        <TacticalLabV5 characters={characters} creatures={creatures} />
       </div>
     </main>
   );

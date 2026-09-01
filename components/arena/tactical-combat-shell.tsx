@@ -5,6 +5,7 @@ import { useState, type ComponentProps } from "react";
 import { TacticalActionCategories } from "@/components/arena/tactical-action-categories";
 import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
 import { TacticalLabV9 } from "@/components/arena/tactical-lab-v9";
+import { TacticalPresentationBridge } from "@/components/arena/tactical-presentation-bridge";
 import styles from "./tactical-combat-shell.module.css";
 
 type LabProps = ComponentProps<typeof TacticalLabV9>;
@@ -57,6 +58,7 @@ export function TacticalCombatShell({
       </div>
 
       <TacticalActionCategories active={started} />
+      <TacticalPresentationBridge active={started} />
 
       {!started ? (
         <div className={styles.startArea}>

@@ -5,6 +5,7 @@ import { TacticalLab } from "@/components/arena/tactical-lab";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheets } from "@/lib/content/characters";
+import { getClassBasicAttackRange } from "@/lib/game/class-range";
 
 export const metadata = { title: "Laboratório do Mapa Tático" };
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export default async function TacticalMapLabPage() {
     maxHp: character.stats.maxHp,
     maxMana: character.stats.maxMana,
     attributes: character.stats.attributes,
-    basicAttackRange: Math.max(1, Number(character.characterClass.payload.basicAttackRange ?? 1)),
+    basicAttackRange: getClassBasicAttackRange(character.characterClass.name),
     skills: character.unlockedClassSkills
       .filter((skill) => !/passiva/i.test(skill.type))
       .map((skill) => ({

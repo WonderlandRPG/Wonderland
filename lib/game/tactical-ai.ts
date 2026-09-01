@@ -28,9 +28,12 @@ export function chooseTacticalAiDestination(input: {
   skillRange: number;
   skillAvailable: boolean;
 }): TacticalAiDecision {
+  const movementBlocked = new Set(input.blocked);
+  movementBlocked.add(tacticalPositionKey(input.target));
+
   const reachable = getReachableTacticalCells({
     start: input.start,
-    blocked: input.blocked,
+    blocked: movementBlocked,
     movement: input.movement,
     grid: input.grid,
   });

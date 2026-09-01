@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { requireAdministrativeAccount } from "@/lib/auth/account";
-import type { Database, Json } from "@/lib/db/types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const skillDamageTypeSchema = z.enum(["physical", "magic", "true"]);
@@ -200,14 +199,12 @@ export async function updateCreatureCombatProfileAdminAction(formData: FormData)
     skills,
   };
 
-  const updatePayload = {
-    combat_profile: combatProfile as unknown as Json,
-    updated_at: new Date().toISOString(),
-  } as Database["public"]["Tables"]["v2_creatures"]["Update"] & { combat_profile: Json };
-
   const { data: creature, error } = await client
     .from("v2_creatures")
-    .update(updatePayload)
+    .update({
+      combat_profile: combatProfile,
+      updated_at: new Date().toISOString(),
+    } as never)
     .eq("id", parsed.data.id)
     .select("name, rank")
     .single();

@@ -12,6 +12,7 @@ import {
   type CombatantState,
 } from "@/lib/game/combat";
 import { applyOffensiveItemEffects, getItemCooldownReduction } from "@/lib/game/item-effects";
+import { applyTacticalRacialReaction } from "@/lib/game/tactical-race-reactions";
 
 function operationReceiver(
   actor: CombatantState,
@@ -153,6 +154,7 @@ export function resolveTacticalSkill(
   let nextActor = paid.actor;
   let nextTarget = paid.target;
   const messages: string[] = [];
+  const successfulOperationTypes = new Set<string>();
   let totalAmount = 0;
   let eventKind: CombatEvent["kind"] = "utility";
   let damageType: CombatEvent["damageType"];
@@ -193,6 +195,7 @@ export function resolveTacticalSkill(
       totalAmount += dealt;
       eventKind = "damage";
       damageType = type;
+      if (dealt > 0) successfulOperationTypes.add("DAMAGE");
       continue;
     }
 
@@ -205,6 +208,7 @@ export function resolveTacticalSkill(
       messages.push(`${skill.name} recuperou ${healed} de HP de ${receiver.name}.`);
       totalAmount += healed;
       if (eventKind !== "damage") eventKind = "heal";
+      if (healed > 0) successfulOperationTypes.add("HEAL");
       continue;
     }
 
@@ -216,6 +220,7 @@ export function resolveTacticalSkill(
       messages.push(`${skill.name} concedeu ${amount} de escudo a ${receiver.name}.`);
       totalAmount += amount;
       if (eventKind !== "damage" && eventKind !== "heal") eventKind = "shield";
+      successfulOperationTypes.add("SHIELD");
       continue;
     }
 
@@ -230,6 +235,7 @@ export function resolveTacticalSkill(
       nextActor = replaced.actor;
       nextTarget = replaced.target;
       messages.push(removableKey ? `${skill.name} removeu um efeito negativo de ${receiver.name}.` : `${skill.name} não encontrou efeito negativo para remover.`);
+      if (removableKey) successfulOperationTypes.add("REMOVE_STATUS");
       continue;
     }
 
@@ -250,11 +256,13 @@ export function resolveTacticalSkill(
       nextActor = replaced.actor;
       nextTarget = replaced.target;
       messages.push(`${skill.name} ${sign > 0 ? "gerou" : "consumiu"} ${amount} de ${race ? receiver.raceResourceName : receiver.classResourceName}.`);
+      if (amount > 0) successfulOperationTypes.add(operation.operation);
       continue;
     }
 
     if (["MOVE", "TELEPORT", "PUSH"].includes(operation.operation)) {
       messages.push(`${skill.name}: ${operation.operation} reservado ao tabuleiro tático.`);
+      successfulOperationTypes.add(operation.operation);
       continue;
     }
 
@@ -287,12 +295,44 @@ export function resolveTacticalSkill(
     const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, statuses: nextStatuses });
     nextActor = replaced.actor;
     nextTarget = replaced.target;
+    successfulOperationTypes.add(operation.operation);
     messages.push(
       operation.operation === "SUMMON"
         ? `${skill.name} invocou ${operation.status || "uma entidade"}; ${receiver.name} recebeu seus bônus por ${duration} turno(s).`
         : `${skill.name} aplicou ${operation.status || operation.operation.toLowerCase()} em ${receiver.name} por ${duration} turno(s).`,
     );
   }
+
+  const damageToTarget = Math.max(
+    0,
+    target.hp + target.shield - (nextTarget.hp + nextTarget.shield),
+  );
+  const reactionSkill: ClassSkill = {
+    ...skill,
+    operations: skill.operations.filter((operation) => successfulOperationTypes.has(operation.operation)),
+  };
+
+  const actorReaction = applyTacticalRacialReaction(
+    nextActor,
+    nextActor.raceResourceName,
+    {
+      dealtDamage: damageToTarget,
+      damageType,
+      targetHpBefore: target.hp,
+      targetMaxHp: target.maxHp,
+      skill: reactionSkill,
+    },
+  );
+  nextActor = actorReaction.combatant;
+  if (actorReaction.message) messages.push(actorReaction.message);
+
+  const targetReaction = applyTacticalRacialReaction(
+    nextTarget,
+    nextTarget.raceResourceName,
+    { tookDamage: damageToTarget },
+  );
+  nextTarget = targetReaction.combatant;
+  if (targetReaction.message) messages.push(`${nextTarget.name}: ${targetReaction.message}`);
 
   if (!messages.length) messages.push(`${skill.name} foi usada, mas nenhuma operação produziu efeito.`);
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { TacticalLabV7 } from "@/components/arena/tactical-lab-v7";
+import { TacticalLabV8 } from "@/components/arena/tactical-lab-v8";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheets } from "@/lib/content/characters";
@@ -120,6 +120,7 @@ export default async function TacticalMapLabPage() {
       rank: character.adventure_rank,
       raceName: character.race.name,
       className: character.characterClass.name,
+      classPathKey: character.class_path_key,
       baseHp: character.race.payload.baseHp,
       baseMana: character.race.payload.baseMana,
       attributes: character.stats.attributes,
@@ -141,7 +142,7 @@ export default async function TacticalMapLabPage() {
       <PlayerNav />
       <div className="page-container arena-page__inner">
         <Link className="arena-mode-back" href="/arena">← Voltar para Arena</Link>
-        <TacticalLabV7 characters={characters} creatures={creatures} />
+        <TacticalLabV8 characters={characters} creatures={creatures} />
       </div>
     </main>
   );

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { TacticalLabV5 } from "@/components/arena/tactical-lab-v5";
+import { TacticalLabV6 } from "@/components/arena/tactical-lab-v6";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheets } from "@/lib/content/characters";
@@ -58,8 +58,6 @@ export default async function TacticalMapLabPage() {
   });
 
   const characters = sheets.map((character) => {
-    // Passivas e Reações nunca são botões. Elas são disparadas pelo motor quando
-    // seus gatilhos acontecem. A barra tática recebe somente ações ativas.
     const rawClassSkills = character.unlockedClassSkills.filter((skill) => /ativa/i.test(skill.type));
     const rawRaceSkills = character.unlockedRaceAbilities.filter((skill) => /ativa/i.test(skill.type));
     const originalSkills = new Map(
@@ -113,11 +111,7 @@ export default async function TacticalMapLabPage() {
     const usesMana = skills.some(({ skill }) => skill.resource === "mana");
     const items = character.inventory
       .filter((item) => /consum|poção|pocao/i.test(item.category))
-      .map((item) => ({
-        id: item.id,
-        name: item.name,
-        description: item.description,
-      }));
+      .map((item) => ({ id: item.id, name: item.name, description: item.description }));
 
     return {
       id: character.id,
@@ -146,10 +140,8 @@ export default async function TacticalMapLabPage() {
     <main className="arena-page">
       <PlayerNav />
       <div className="page-container arena-page__inner">
-        <Link className="arena-mode-back" href="/arena">
-          ← Voltar para Arena
-        </Link>
-        <TacticalLabV5 characters={characters} creatures={creatures} />
+        <Link className="arena-mode-back" href="/arena">← Voltar para Arena</Link>
+        <TacticalLabV6 characters={characters} creatures={creatures} />
       </div>
     </main>
   );

@@ -29,6 +29,39 @@ export function getTacticalStunTurns(combatant: CombatantState) {
   );
 }
 
+export function getTacticalSilenceTurns(combatant: CombatantState) {
+  return longestMatchingStatus(combatant, (text) =>
+    /\bsilence\b|silencio|silenciad/.test(text),
+  );
+}
+
+export function getTacticalFearTurns(combatant: CombatantState) {
+  return longestMatchingStatus(combatant, (text) =>
+    /\bfear\b|\bmedo\b|amedront/.test(text),
+  );
+}
+
+export function getTacticalTaunt(combatant: CombatantState) {
+  let best: { turns: number; targetId: string } | null = null;
+  for (const [key, status] of Object.entries(combatant.statuses)) {
+    if (!status.forcedTargetId) continue;
+    const text = normalizedStatusText(key, status.name);
+    if (!/\btaunt\b|provoc/.test(text)) continue;
+    if (!best || status.duration > best.turns) {
+      best = { turns: status.duration, targetId: status.forcedTargetId };
+    }
+  }
+  return best;
+}
+
 export function isTacticalTurnDisabled(combatant: CombatantState) {
   return getTacticalStunTurns(combatant) > 0;
+}
+
+export function canUseTacticalSkills(combatant: CombatantState) {
+  return !isTacticalTurnDisabled(combatant) && getTacticalSilenceTurns(combatant) <= 0;
+}
+
+export function canUseTacticalOffense(combatant: CombatantState) {
+  return !isTacticalTurnDisabled(combatant) && getTacticalFearTurns(combatant) <= 0;
 }

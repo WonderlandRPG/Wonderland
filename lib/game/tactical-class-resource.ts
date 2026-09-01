@@ -28,6 +28,7 @@ export type TacticalClassResourceContext = {
   shieldAbsorbed?: number;
   affectedTargets?: number;
   targetId?: string;
+  targetMaxHp?: number;
   targetHasActed?: boolean;
   targetMarked?: boolean;
 };
@@ -139,10 +140,9 @@ export function applyTacticalClassResourceGeneration({
     requested = 1;
     reason = "ataque básico da rodada";
   } else if (classKey === "necromante") {
-    const largeLoss =
-      (context.targetId && dealt > 0 && context.dealtDamage !== undefined) || took > 0;
-    const referenceMax = context.targetId === combatant.id ? combatant.maxHp : 0;
-    if (largeLoss && referenceMax > 0 && Math.max(dealt, took) >= referenceMax * 0.2) {
+    const loss = Math.max(dealt, took);
+    const referenceMax = took > 0 ? combatant.maxHp : Math.max(0, context.targetMaxHp ?? 0);
+    if (loss > 0 && referenceMax > 0 && loss >= referenceMax * 0.2) {
       requested = 5;
       reason = "unidade perdeu 20%+ do HP em uma ação";
     }
@@ -158,10 +158,11 @@ export function applyTacticalClassResourceGeneration({
   }
 
   const { combatant: nextCombatant, gained } = addResource(combatant, requested);
+  const shouldRememberAction = context.action !== "incoming";
   const nextTracker: TacticalClassResourceTracker = {
     ...tracker,
-    lastCategory: category ?? tracker.lastCategory,
-    lastTargetId: targetId ?? tracker.lastTargetId,
+    lastCategory: shouldRememberAction && category ? category : tracker.lastCategory,
+    lastTargetId: shouldRememberAction && targetId ? targetId : tracker.lastTargetId,
     generatedThisRound: tracker.generatedThisRound + gained,
     movedThisTurn: tracker.movedThisTurn,
   };

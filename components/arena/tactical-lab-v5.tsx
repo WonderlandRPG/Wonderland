@@ -12,6 +12,10 @@ import {
 } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
 import {
+  chooseCreatureTacticalSkill,
+  getCreaturePlanningSkillRange,
+} from "@/lib/game/creature-tactical-ai";
+import {
   applyCreatureWeaknessBonus,
   createDefaultCreatureSkill,
   type TacticalBestiaryCreature,
@@ -40,8 +44,18 @@ type TacticalCharacter = {
   baseHp: number;
   baseMana: number;
   attributes: CombatAttributes;
-  classResource: { name: string; initial: number; maximum: number; generationEvents?: Array<{ trigger: string; amount: number }> };
-  raceResource: { name: string; initial: number; maximum: number; generationEvents?: Array<{ trigger: string; amount: number }> } | null;
+  classResource: {
+    name: string;
+    initial: number;
+    maximum: number;
+    generationEvents?: Array<{ trigger: string; amount: number }>;
+  };
+  raceResource: {
+    name: string;
+    initial: number;
+    maximum: number;
+    generationEvents?: Array<{ trigger: string; amount: number }>;
+  } | null;
   usesMana: boolean;
   basicAttackRange: number;
   basicAttackDamageType: "physical" | "magic";
@@ -51,7 +65,14 @@ type TacticalCharacter = {
 
 type PlayerAction =
   | { kind: "basic"; name: string; range: number; area: 0 }
-  | { kind: "skill"; name: string; range: number; area: number; source: SkillSource; skill: ClassSkill };
+  | {
+      kind: "skill";
+      name: string;
+      range: number;
+      area: number;
+      source: SkillSource;
+      skill: ClassSkill;
+    };
 
 const GRID = { width: 10, height: 8 } as const;
 const PLAYER_MOVE = 4;
@@ -88,7 +109,9 @@ function makeCreature(creature: TacticalBestiaryCreature) {
 function rootTurns(combatant: CombatantState) {
   return Object.entries(combatant.statuses).reduce((max, [key, status]) => {
     const text = `${key} ${status.name}`.toLowerCase();
-    return /root|enraiz|imobil|prisao|controle/.test(text) ? Math.max(max, status.duration) : max;
+    return /root|enraiz|imobil|prisao|controle/.test(text)
+      ? Math.max(max, status.duration)
+      : max;
   }, 0);
 }
 
@@ -97,7 +120,9 @@ function percent(current: number, maximum: number) {
 }
 
 function affectsEnemy(skill: ClassSkill) {
-  return skill.operations.some((operation) => operation.target === "enemy" || operation.target === "area");
+  return skill.operations.some(
+    (operation) => operation.target === "enemy" || operation.target === "area",
+  );
 }
 
 export function TacticalLabV5({
@@ -108,15 +133,20 @@ export function TacticalLabV5({
   creatures: TacticalBestiaryCreature[];
 }) {
   const firstCharacter = characters[0];
-  const firstCreature = creatures.find((creature) => creature.rank === firstCharacter?.rank) ?? creatures[0];
+  const firstCreature =
+    creatures.find((creature) => creature.rank === firstCharacter?.rank) ?? creatures[0];
   const [characterId, setCharacterId] = useState(firstCharacter?.id ?? "");
   const [creatureId, setCreatureId] = useState(firstCreature?.id ?? "");
   const character = characters.find((entry) => entry.id === characterId) ?? firstCharacter;
   const creature = creatures.find((entry) => entry.id === creatureId) ?? firstCreature;
   const [playerPosition, setPlayerPosition] = useState<TacticalPosition>(START_PLAYER);
   const [enemyPosition, setEnemyPosition] = useState<TacticalPosition>(START_ENEMY);
-  const [playerState, setPlayerState] = useState<CombatantState | null>(() => firstCharacter ? makePlayer(firstCharacter) : null);
-  const [enemyState, setEnemyState] = useState<CombatantState | null>(() => firstCreature ? makeCreature(firstCreature) : null);
+  const [playerState, setPlayerState] = useState<CombatantState | null>(() =>
+    firstCharacter ? makePlayer(firstCharacter) : null,
+  );
+  const [enemyState, setEnemyState] = useState<CombatantState | null>(() =>
+    firstCreature ? makeCreature(firstCreature) : null,
+  );
   const [movement, setMovement] = useState(PLAYER_MOVE);
   const [action, setAction] = useState<PlayerAction | null>(null);
   const [areaCenter, setAreaCenter] = useState<TacticalPosition | null>(null);
@@ -125,31 +155,53 @@ export function TacticalLabV5({
   const [usedRace, setUsedRace] = useState(false);
   const [usedItem, setUsedItem] = useState(false);
   const [round, setRound] = useState(1);
-  const [message, setMessage] = useState("V5 pronta: criatura real do Bestiário carregada.");
-  const [log, setLog] = useState<string[]>(["V5: Bestiário real + perfis de combate + fraquezas."]);
+  const [message, setMessage] = useState(
+    "V5 pronta: criatura real do Bestiário carregada.",
+  );
+  const [log, setLog] = useState<string[]>([
+    "V5: Bestiário real + perfis de combate + fraquezas.",
+  ]);
 
-  const reachable = useMemo(() => getReachableTacticalCells({
-    start: playerPosition,
-    blocked: new Set([...obstacles, tacticalPositionKey(enemyPosition)]),
-    movement,
-    grid: GRID,
-  }), [playerPosition, enemyPosition, movement]);
-  const areaCells = useMemo(() => action && areaCenter
-    ? getTacticalAreaCells({ center: areaCenter, radius: action.area, grid: GRID })
-    : new Set<string>(), [action, areaCenter]);
-  const cells = useMemo(() => Array.from({ length: GRID.width * GRID.height }, (_, index) => ({
-    x: index % GRID.width,
-    y: Math.floor(index / GRID.width),
-  })), []);
+  const reachable = useMemo(
+    () =>
+      getReachableTacticalCells({
+        start: playerPosition,
+        blocked: new Set([...obstacles, tacticalPositionKey(enemyPosition)]),
+        movement,
+        grid: GRID,
+      }),
+    [playerPosition, enemyPosition, movement],
+  );
+  const areaCells = useMemo(
+    () =>
+      action && areaCenter
+        ? getTacticalAreaCells({ center: areaCenter, radius: action.area, grid: GRID })
+        : new Set<string>(),
+    [action, areaCenter],
+  );
+  const cells = useMemo(
+    () =>
+      Array.from({ length: GRID.width * GRID.height }, (_, index) => ({
+        x: index % GRID.width,
+        y: Math.floor(index / GRID.width),
+      })),
+    [],
+  );
 
   if (!character || !creature || !playerState || !enemyState) {
-    return <section className={styles.empty}>É necessário ter personagem e criatura disponíveis para o laboratório.</section>;
+    return (
+      <section className={styles.empty}>
+        É necessário ter personagem e criatura disponíveis para o laboratório.
+      </section>
+    );
   }
 
   const player = playerState;
   const enemy = enemyState;
   const profile = creature.combatProfile;
-  const enemyAbility = profile.skills[0] ?? createDefaultCreatureSkill(creature);
+  const creatureSkills = profile.skills.length
+    ? profile.skills
+    : [createDefaultCreatureSkill(creature)];
   const playerRoot = rootTurns(player);
   const enemyRoot = rootTurns(enemy);
   const finished = player.hp <= 0 || enemy.hp <= 0;
@@ -206,21 +258,34 @@ export function TacticalLabV5({
 
   function selectAction(next: PlayerAction) {
     if (finished) return setMessage("O combate terminou. Reinicie o mapa.");
-    if (next.kind === "basic" && usedBasic) return setMessage("Ataque Básico já usado neste turno.");
+    if (next.kind === "basic" && usedBasic) {
+      return setMessage("Ataque Básico já usado neste turno.");
+    }
     if (next.kind === "skill") {
-      if (sourceUsed(next.source)) return setMessage(`Habilidade de ${next.source === "class" ? "Classe" : "Raça"} já usada neste turno.`);
+      if (sourceUsed(next.source)) {
+        return setMessage(
+          `Habilidade de ${next.source === "class" ? "Classe" : "Raça"} já usada neste turno.`,
+        );
+      }
       const cooldown = player.cooldowns[next.skill.key] ?? 0;
-      if (cooldown > 0) return setMessage(`${next.name} está em cooldown por ${cooldown} turno(s).`);
+      if (cooldown > 0) {
+        return setMessage(`${next.name} está em cooldown por ${cooldown} turno(s).`);
+      }
     }
     setAction(next);
     setAreaCenter(null);
     setMessage(`${next.name} selecionado.`);
   }
 
-  function executePlayerSkill(selected: Extract<PlayerAction, { kind: "skill" }>, center: TacticalPosition) {
+  function executePlayerSkill(
+    selected: Extract<PlayerAction, { kind: "skill" }>,
+    center: TacticalPosition,
+  ) {
     if (selected.area > 0 && affectsEnemy(selected.skill)) {
       const affected = getTacticalAreaCells({ center, radius: selected.area, grid: GRID });
-      if (!affected.has(tacticalPositionKey(enemyPosition))) return setMessage(`A área não atingiu ${creature.name}.`);
+      if (!affected.has(tacticalPositionKey(enemyPosition))) {
+        return setMessage(`A área não atingiu ${creature.name}.`);
+      }
     }
 
     const beforeEnemy = enemy;
@@ -233,14 +298,17 @@ export function TacticalLabV5({
       skill: selected.skill,
       weaknesses: creature.weaknesses,
     });
-    let nextEnemyState = weaknessResult.target;
+    const nextEnemyState = weaknessResult.target;
     let nextPlayerPosition = playerPosition;
     let nextEnemyPosition = enemyPosition;
     const spatial: string[] = [];
 
     for (const operation of selected.skill.operations) {
       const distance = Math.max(1, operation.distance || 1);
-      if (operation.operation === "PUSH" && (operation.target === "enemy" || operation.target === "area")) {
+      if (
+        operation.operation === "PUSH" &&
+        (operation.target === "enemy" || operation.target === "area")
+      ) {
         const forced = getForcedMovementDestination({
           source: nextPlayerPosition,
           target: nextEnemyPosition,
@@ -251,9 +319,16 @@ export function TacticalLabV5({
         nextEnemyPosition = forced.position;
         spatial.push(forced.moved ? `Push: ${forced.moved} casa(s).` : "Push bloqueado.");
       }
-      if ((operation.operation === "MOVE" || operation.operation === "TELEPORT") && (operation.target === "self" || operation.target === "source")) {
+      if (
+        (operation.operation === "MOVE" || operation.operation === "TELEPORT") &&
+        (operation.target === "self" || operation.target === "source")
+      ) {
         const destinationKey = tacticalPositionKey(center);
-        if (!obstacles.has(destinationKey) && destinationKey !== tacticalPositionKey(nextEnemyPosition) && getTacticalDistance(playerPosition, center) <= distance) {
+        if (
+          !obstacles.has(destinationKey) &&
+          destinationKey !== tacticalPositionKey(nextEnemyPosition) &&
+          getTacticalDistance(playerPosition, center) <= distance
+        ) {
           nextPlayerPosition = center;
           spatial.push(`${operation.operation}: casa ${center.x + 1},${center.y + 1}.`);
         }
@@ -264,7 +339,8 @@ export function TacticalLabV5({
     setEnemyState(nextEnemyState);
     setPlayerPosition(nextPlayerPosition);
     setEnemyPosition(nextEnemyPosition);
-    if (selected.source === "class") setUsedClass(true); else setUsedRace(true);
+    if (selected.source === "class") setUsedClass(true);
+    else setUsedRace(true);
 
     const weaknessText = weaknessResult.weakness
       ? ` FRAQUEZA ATIVADA (${weaknessResult.weakness}): +${weaknessResult.bonusDamage} de dano (+25%).`
@@ -278,7 +354,9 @@ export function TacticalLabV5({
   function clickCell(position: TacticalPosition) {
     const key = tacticalPositionKey(position);
     if (!action) {
-      if (playerRoot > 0) return setMessage(`Você está imobilizado por ${playerRoot} turno(s).`);
+      if (playerRoot > 0) {
+        return setMessage(`Você está imobilizado por ${playerRoot} turno(s).`);
+      }
       if (!reachable.has(key)) return;
       const cost = reachable.get(key) ?? 0;
       setPlayerPosition(position);
@@ -289,11 +367,23 @@ export function TacticalLabV5({
 
     if (obstacles.has(key)) return setMessage("Essa casa está bloqueada.");
     const distance = getTacticalDistance(playerPosition, position);
-    if (distance > action.range) return setMessage(`${action.name}: fora do alcance (${distance}/${action.range}).`);
+    if (distance > action.range) {
+      return setMessage(`${action.name}: fora do alcance (${distance}/${action.range}).`);
+    }
 
     if (action.kind === "basic") {
-      if (key !== tacticalPositionKey(enemyPosition)) return setMessage(`Selecione ${creature.name}.`);
-      if (!hasTacticalLineOfSight({ from: playerPosition, to: enemyPosition, blocked: obstacles })) return setMessage("Linha de visão bloqueada.");
+      if (key !== tacticalPositionKey(enemyPosition)) {
+        return setMessage(`Selecione ${creature.name}.`);
+      }
+      if (
+        !hasTacticalLineOfSight({
+          from: playerPosition,
+          to: enemyPosition,
+          blocked: obstacles,
+        })
+      ) {
+        return setMessage("Linha de visão bloqueada.");
+      }
       const result = resolveBasicAttack(player, enemy);
       setPlayerState(result.actor);
       setEnemyState(result.target);
@@ -305,14 +395,32 @@ export function TacticalLabV5({
     }
 
     const targetsEnemy = affectsEnemy(action.skill);
-    if (targetsEnemy && action.area <= 0 && key !== tacticalPositionKey(enemyPosition)) return setMessage(`Selecione ${creature.name}.`);
-    if (targetsEnemy && !hasTacticalLineOfSight({ from: playerPosition, to: position, blocked: obstacles })) return setMessage(`${action.name}: linha de visão bloqueada.`);
+    if (
+      targetsEnemy &&
+      action.area <= 0 &&
+      key !== tacticalPositionKey(enemyPosition)
+    ) {
+      return setMessage(`Selecione ${creature.name}.`);
+    }
+    if (
+      targetsEnemy &&
+      !hasTacticalLineOfSight({
+        from: playerPosition,
+        to: position,
+        blocked: obstacles,
+      })
+    ) {
+      return setMessage(`${action.name}: linha de visão bloqueada.`);
+    }
     executePlayerSkill(action, position);
   }
 
   function useItem(item: TacticalItem) {
     if (usedItem || finished) return;
-    const healed = Math.min(Math.max(25, Math.round(player.maxHp * 0.25)), player.maxHp - player.hp);
+    const healed = Math.min(
+      Math.max(25, Math.round(player.maxHp * 0.25)),
+      player.maxHp - player.hp,
+    );
     setPlayerState({ ...player, hp: player.hp + healed });
     setUsedItem(true);
     const text = `${player.name} usou ${item.name} e recuperou ${healed} HP. Item real preservado.`;
@@ -322,12 +430,22 @@ export function TacticalLabV5({
 
   function executeEnemyTurn() {
     if (finished) return;
+
     let nextEnemy = enemy;
     let nextPlayer = player;
     let nextEnemyPosition = enemyPosition;
     let nextPlayerPosition = playerPosition;
     const notes = [`Rodada ${round}: ${creature.name} (${profile.aiProfile}).`];
-    const skillAvailable = (nextEnemy.cooldowns[enemyAbility.key] ?? 0) <= 0;
+
+    const planningRange = getCreaturePlanningSkillRange({
+      skills: creatureSkills,
+      cooldowns: nextEnemy.cooldowns,
+      profile: profile.aiProfile,
+      fallbackRange: profile.basicAttackRange,
+    });
+    const hasReadySkill = creatureSkills.some(
+      (skill) => (nextEnemy.cooldowns[skill.key] ?? 0) <= 0,
+    );
 
     if (enemyRoot > 0) {
       notes.push(`Imobilizado por ${enemyRoot} turno(s).`);
@@ -341,23 +459,42 @@ export function TacticalLabV5({
         blocked: obstacles,
         sightBlocked: obstacles,
         basicRange: profile.basicAttackRange,
-        skillRange: enemyAbility.range,
-        skillAvailable,
+        skillRange: planningRange,
+        skillAvailable: hasReadySkill,
       });
       nextEnemyPosition = decision.position;
-      notes.push(decision.movementCost > 0
-        ? `Moveu ${decision.movementCost} casa(s): ${decision.reason}.`
-        : `Manteve posição: ${decision.reason}.`);
+      notes.push(
+        decision.movementCost > 0
+          ? `Moveu ${decision.movementCost} casa(s): ${decision.reason}.`
+          : `Manteve posição: ${decision.reason}.`,
+      );
     }
 
     const distance = getTacticalDistance(nextEnemyPosition, nextPlayerPosition);
-    const sight = hasTacticalLineOfSight({ from: nextEnemyPosition, to: nextPlayerPosition, blocked: obstacles });
-    if (skillAvailable && distance <= enemyAbility.range && sight) {
-      const result = resolveTacticalSkill(nextEnemy, nextPlayer, enemyAbility);
+    const sight = hasTacticalLineOfSight({
+      from: nextEnemyPosition,
+      to: nextPlayerPosition,
+      blocked: obstacles,
+    });
+    const selectedEnemySkill = sight
+      ? chooseCreatureTacticalSkill({
+          skills: creatureSkills,
+          cooldowns: nextEnemy.cooldowns,
+          distance,
+          profile: profile.aiProfile,
+        })
+      : null;
+
+    if (selectedEnemySkill) {
+      notes.push(`IA escolheu ${selectedEnemySkill.name}.`);
+      const result = resolveTacticalSkill(nextEnemy, nextPlayer, selectedEnemySkill);
       nextEnemy = result.actor;
       nextPlayer = result.target;
       notes.push(result.event.message);
-      const push = enemyAbility.operations.find((operation) => operation.operation === "PUSH");
+
+      const push = selectedEnemySkill.operations.find(
+        (operation) => operation.operation === "PUSH",
+      );
       if (push) {
         const forced = getForcedMovementDestination({
           source: nextEnemyPosition,
@@ -373,6 +510,7 @@ export function TacticalLabV5({
       const result = resolveBasicAttack(nextEnemy, nextPlayer);
       nextEnemy = result.actor;
       nextPlayer = result.target;
+      notes.push("Nenhuma habilidade própria válida; IA usou Ataque Básico.");
       notes.push(result.event.message);
     } else {
       notes.push(`Sem ação ofensiva válida. Distância ${distance}.`);
@@ -387,7 +525,11 @@ export function TacticalLabV5({
     resetTurnActions();
     setRound((value) => value + 1);
     notes.forEach(addLog);
-    setMessage(nextPlayer.hp <= 0 ? `${nextPlayer.name} foi derrotado.` : `${notes.join(" ")} Seu turno.`);
+    setMessage(
+      nextPlayer.hp <= 0
+        ? `${nextPlayer.name} foi derrotado.`
+        : `${notes.join(" ")} Seu turno.`,
+    );
   }
 
   return (
@@ -396,55 +538,257 @@ export function TacticalLabV5({
         <div>
           <span className={styles.eyebrow}>Somente ADM · motor tático V5</span>
           <h1>Laboratório do Mapa Tático</h1>
-          <p>Criaturas reais do Bestiário, perfis de IA persistidos e fraquezas com +25% de dano quando a afinidade realmente corresponde.</p>
+          <p>
+            Criaturas reais do Bestiário, múltiplas habilidades próprias, perfis de IA persistidos e
+            fraquezas com +25% de dano quando a afinidade realmente corresponde.
+          </p>
         </div>
-        <div className={styles.status}><small>Protótipo</small><strong>V5 · Rodada {round}</strong></div>
+        <div className={styles.status}>
+          <small>Protótipo</small>
+          <strong>V5 · Rodada {round}</strong>
+        </div>
       </header>
 
       <section className={styles.characterPanel} data-wl-surface="raised">
-        <label><span>Personagem</span><select value={character.id} onChange={(event) => changeCharacter(event.target.value)}>{characters.map((entry) => <option key={entry.id} value={entry.id}>{entry.name} · Rank {entry.rank} · {entry.className}</option>)}</select></label>
-        <label><span>Criatura do Bestiário</span><select value={creature.id} onChange={(event) => changeCreature(event.target.value)}>{creatures.map((entry) => <option key={entry.id} value={entry.id}>{entry.name} · Rank {entry.rank} · {entry.combatProfile.aiProfile}</option>)}</select></label>
-        <div className={styles.characterSummary}><strong>{character.name}</strong><span>{character.raceName} · {character.className} · Rank {character.rank}</span><span>{rankMismatch ? `TESTE FORA DO RANK: criatura Rank ${creature.rank}` : `Pareamento de Rank válido: ${creature.rank}`}</span></div>
+        <label>
+          <span>Personagem</span>
+          <select value={character.id} onChange={(event) => changeCharacter(event.target.value)}>
+            {characters.map((entry) => (
+              <option key={entry.id} value={entry.id}>
+                {entry.name} · Rank {entry.rank} · {entry.className}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          <span>Criatura do Bestiário</span>
+          <select value={creature.id} onChange={(event) => changeCreature(event.target.value)}>
+            {creatures.map((entry) => (
+              <option key={entry.id} value={entry.id}>
+                {entry.name} · Rank {entry.rank} · {entry.combatProfile.aiProfile}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className={styles.characterSummary}>
+          <strong>{character.name}</strong>
+          <span>
+            {character.raceName} · {character.className} · Rank {character.rank}
+          </span>
+          <span>
+            {rankMismatch
+              ? `TESTE FORA DO RANK: criatura Rank ${creature.rank}`
+              : `Pareamento de Rank válido: ${creature.rank}`}
+          </span>
+        </div>
       </section>
 
       <section className={styles.combatHud}>
-        <article><small>AVENTUREIRO</small><strong>{player.name}</strong><div className={styles.bar}><i style={{ width: `${percent(player.hp, player.maxHp)}%` }} /></div><span>HP {player.hp}/{player.maxHp}</span>{player.maxMana > 0 ? <span>Mana {player.mana}/{player.maxMana}</span> : null}{playerRoot > 0 ? <span>ROOT: {playerRoot}</span> : null}</article>
-        <article data-enemy="true"><small>BESTIÁRIO · RANK {creature.rank}</small><strong>{creature.name}</strong><div className={styles.bar}><i style={{ width: `${percent(enemy.hp, enemy.maxHp)}%` }} /></div><span>HP {enemy.hp}/{enemy.maxHp}</span><span>IA {profile.aiProfile} · Movimento {profile.movement} · Alcance básico {profile.basicAttackRange}</span><span>Fraquezas: {creature.weaknesses.length ? creature.weaknesses.join(" · ") : "nenhuma catalogada"}</span>{enemyRoot > 0 ? <span>ROOT: {enemyRoot}</span> : null}</article>
+        <article>
+          <small>AVENTUREIRO</small>
+          <strong>{player.name}</strong>
+          <div className={styles.bar}>
+            <i style={{ width: `${percent(player.hp, player.maxHp)}%` }} />
+          </div>
+          <span>
+            HP {player.hp}/{player.maxHp}
+          </span>
+          {player.maxMana > 0 ? (
+            <span>
+              Mana {player.mana}/{player.maxMana}
+            </span>
+          ) : null}
+          {playerRoot > 0 ? <span>ROOT: {playerRoot}</span> : null}
+        </article>
+        <article data-enemy="true">
+          <small>BESTIÁRIO · RANK {creature.rank}</small>
+          <strong>{creature.name}</strong>
+          <div className={styles.bar}>
+            <i style={{ width: `${percent(enemy.hp, enemy.maxHp)}%` }} />
+          </div>
+          <span>
+            HP {enemy.hp}/{enemy.maxHp}
+          </span>
+          <span>
+            IA {profile.aiProfile} · Movimento {profile.movement} · Alcance básico {profile.basicAttackRange}
+          </span>
+          <span>
+            Fraquezas: {creature.weaknesses.length ? creature.weaknesses.join(" · ") : "nenhuma catalogada"}
+          </span>
+          {enemyRoot > 0 ? <span>ROOT: {enemyRoot}</span> : null}
+        </article>
       </section>
 
       <div className={styles.toolbar} data-wl-surface="raised">
-        <button type="button" disabled={playerRoot > 0 || finished} onClick={() => { clearAction(); setMessage(`Movimento: ${movement}/${PLAYER_MOVE}.`); }}>Movimento · {movement}/{PLAYER_MOVE}</button>
-        <button type="button" disabled={usedBasic || finished} data-wl-action={action?.kind === "basic" ? "primary" : undefined} onClick={() => selectAction({ kind: "basic", name: "Ataque Básico", range: character.basicAttackRange, area: 0 })}>Ataque · {usedBasic ? "USADO" : "DISPONÍVEL"}</button>
-        <button type="button" disabled={finished} onClick={executeEnemyTurn}>Encerrar turno → IA</button>
-        <button type="button" onClick={() => resetBoard()}>Reiniciar</button>
+        <button
+          type="button"
+          disabled={playerRoot > 0 || finished}
+          onClick={() => {
+            clearAction();
+            setMessage(`Movimento: ${movement}/${PLAYER_MOVE}.`);
+          }}
+        >
+          Movimento · {movement}/{PLAYER_MOVE}
+        </button>
+        <button
+          type="button"
+          disabled={usedBasic || finished}
+          data-wl-action={action?.kind === "basic" ? "primary" : undefined}
+          onClick={() =>
+            selectAction({
+              kind: "basic",
+              name: "Ataque Básico",
+              range: character.basicAttackRange,
+              area: 0,
+            })
+          }
+        >
+          Ataque · {usedBasic ? "USADO" : "DISPONÍVEL"}
+        </button>
+        <button type="button" disabled={finished} onClick={executeEnemyTurn}>
+          Encerrar turno → IA
+        </button>
+        <button type="button" onClick={() => resetBoard()}>
+          Reiniciar
+        </button>
       </div>
 
       <div className={styles.skillBar} data-wl-surface="raised">
         {character.skills.map(({ source, skill }) => {
           const isUsed = sourceUsed(source);
           const cooldown = player.cooldowns[skill.key] ?? 0;
-          return <button key={`${source}-${skill.key}`} type="button" disabled={isUsed || cooldown > 0 || finished} data-selected={action?.kind === "skill" && action.skill.key === skill.key ? "true" : "false"} onClick={() => selectAction({ kind: "skill", name: skill.name, range: skill.range, area: skill.area, source, skill })}><strong>{skill.name}</strong><span>{source === "class" ? "Classe" : "Raça"} · Alcance {skill.range} · Área {skill.area}</span><small>{cooldown > 0 ? `Cooldown ${cooldown}` : skill.cost ? `${skill.cost} ${skill.resource}` : "Sem custo"}</small><small>{skill.operations.map((operation) => `${operation.operation}:${operation.target}`).join(" → ")}</small></button>;
+          return (
+            <button
+              key={`${source}-${skill.key}`}
+              type="button"
+              disabled={isUsed || cooldown > 0 || finished}
+              data-selected={
+                action?.kind === "skill" && action.skill.key === skill.key ? "true" : "false"
+              }
+              onClick={() =>
+                selectAction({
+                  kind: "skill",
+                  name: skill.name,
+                  range: skill.range,
+                  area: skill.area,
+                  source,
+                  skill,
+                })
+              }
+            >
+              <strong>{skill.name}</strong>
+              <span>
+                {source === "class" ? "Classe" : "Raça"} · Alcance {skill.range} · Área {skill.area}
+              </span>
+              <small>
+                {cooldown > 0
+                  ? `Cooldown ${cooldown}`
+                  : skill.cost
+                    ? `${skill.cost} ${skill.resource}`
+                    : "Sem custo"}
+              </small>
+              <small>
+                {skill.operations
+                  .map((operation) => `${operation.operation}:${operation.target}`)
+                  .join(" → ")}
+              </small>
+            </button>
+          );
         })}
-        {character.items.map((item) => <button key={item.id} type="button" disabled={usedItem || finished} onClick={() => useItem(item)}><strong>{item.name}</strong><span>Item ativo · 1 por turno</span><small>{usedItem ? "USADO" : "DISPONÍVEL"}</small></button>)}
+        {character.items.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            disabled={usedItem || finished}
+            onClick={() => useItem(item)}
+          >
+            <strong>{item.name}</strong>
+            <span>Item ativo · 1 por turno</span>
+            <small>{usedItem ? "USADO" : "DISPONÍVEL"}</small>
+          </button>
+        ))}
       </div>
 
       <div className={styles.workspace}>
-        <div className={styles.boardShell} data-wl-surface="dark"><div className={styles.board} style={{ gridTemplateColumns: `repeat(${GRID.width}, minmax(0, 1fr))` }}>{cells.map((position) => {
-          const key = tacticalPositionKey(position);
-          const isPlayer = key === tacticalPositionKey(playerPosition);
-          const isEnemy = key === tacticalPositionKey(enemyPosition);
-          const isObstacle = obstacles.has(key);
-          const isReachable = !action && reachable.has(key);
-          const inRange = Boolean(action && getTacticalDistance(playerPosition, position) <= action.range);
-          const isArea = areaCells.has(key);
-          const state = isPlayer ? "player" : isEnemy ? "enemy" : isObstacle ? "obstacle" : isArea ? "area" : isReachable ? "reachable" : inRange ? "range" : "empty";
-          return <button key={key} type="button" className={styles.cell} data-state={state} onClick={() => clickCell(position)} aria-label={isPlayer ? player.name : isEnemy ? creature.name : isObstacle ? "Obstáculo" : `Casa ${position.x + 1}, ${position.y + 1}`}>{isPlayer ? <span className={styles.unit}>♞</span> : null}{isEnemy ? <span className={styles.unit}>♜</span> : null}{isObstacle ? <span className={styles.obstacle}>◆</span> : null}</button>;
-        })}</div></div>
+        <div className={styles.boardShell} data-wl-surface="dark">
+          <div
+            className={styles.board}
+            style={{ gridTemplateColumns: `repeat(${GRID.width}, minmax(0, 1fr))` }}
+          >
+            {cells.map((position) => {
+              const key = tacticalPositionKey(position);
+              const isPlayer = key === tacticalPositionKey(playerPosition);
+              const isEnemy = key === tacticalPositionKey(enemyPosition);
+              const isObstacle = obstacles.has(key);
+              const isReachable = !action && reachable.has(key);
+              const inRange = Boolean(
+                action && getTacticalDistance(playerPosition, position) <= action.range,
+              );
+              const isArea = areaCells.has(key);
+              const state = isPlayer
+                ? "player"
+                : isEnemy
+                  ? "enemy"
+                  : isObstacle
+                    ? "obstacle"
+                    : isArea
+                      ? "area"
+                      : isReachable
+                        ? "reachable"
+                        : inRange
+                          ? "range"
+                          : "empty";
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  className={styles.cell}
+                  data-state={state}
+                  onClick={() => clickCell(position)}
+                  aria-label={
+                    isPlayer
+                      ? player.name
+                      : isEnemy
+                        ? creature.name
+                        : isObstacle
+                          ? "Obstáculo"
+                          : `Casa ${position.x + 1}, ${position.y + 1}`
+                  }
+                >
+                  {isPlayer ? <span className={styles.unit}>♞</span> : null}
+                  {isEnemy ? <span className={styles.unit}>♜</span> : null}
+                  {isObstacle ? <span className={styles.obstacle}>◆</span> : null}
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <aside className={styles.sidePanel} data-wl-surface="raised">
-          <div><span className={styles.eyebrow}>Economia do turno</span><h2>1 + 1 + 1 + 1</h2></div>
-          <ul><li>Ataque Básico: {usedBasic ? "usado" : "disponível"}</li><li>Classe: {usedClass ? "usada" : "disponível"}</li><li>Raça: {usedRace ? "usada" : "disponível"}</li><li>Item: {character.items.length ? usedItem ? "usado" : "disponível" : "nenhum"}</li><li>IA: {profile.aiProfile}</li><li>Skill da criatura: {enemyAbility.name}</li></ul>
-          <p className={styles.message} role="status">{message}</p>
-          <div className={styles.combatLog}><small>LOG</small>{log.map((entry, index) => <p key={`${index}-${entry}`}>{entry}</p>)}</div>
+          <div>
+            <span className={styles.eyebrow}>Economia do turno</span>
+            <h2>1 + 1 + 1 + 1</h2>
+          </div>
+          <ul>
+            <li>Ataque Básico: {usedBasic ? "usado" : "disponível"}</li>
+            <li>Classe: {usedClass ? "usada" : "disponível"}</li>
+            <li>Raça: {usedRace ? "usada" : "disponível"}</li>
+            <li>
+              Item: {character.items.length ? (usedItem ? "usado" : "disponível") : "nenhum"}
+            </li>
+            <li>IA: {profile.aiProfile}</li>
+            <li>
+              Skills da criatura: {creatureSkills.map((skill) => skill.name).join(" · ")}
+            </li>
+          </ul>
+          <p className={styles.message} role="status">
+            {message}
+          </p>
+          <div className={styles.combatLog}>
+            <small>LOG</small>
+            {log.map((entry, index) => (
+              <p key={`${index}-${entry}`}>{entry}</p>
+            ))}
+          </div>
         </aside>
       </div>
     </section>

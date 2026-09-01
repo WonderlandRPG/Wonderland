@@ -80,8 +80,10 @@ function isDefeated(combatant: CombatantState) {
   return combatant.hp <= 0;
 }
 
-function targetsOpponent(operation: ClassSkill["operations"][number]) {
-  return operation.target === "enemy" || operation.target === "area";
+function hasOpponentOperation(skill: ClassSkill) {
+  return skill.operations.some(
+    (operation) => operation.target === "enemy" || operation.target === "area",
+  );
 }
 
 export function hasTacticalMechanicalEffect(skill: ClassSkill) {
@@ -109,7 +111,7 @@ function validateAndPay(
   if (isDefeated(actor)) {
     return errorResolution(actor, target, `${actor.name} está derrotado e não pode usar ${skill.name}.`);
   }
-  if (isDefeated(target) && skill.operations.some(targetsOpponent)) {
+  if (isDefeated(target) && hasOpponentOperation(skill)) {
     return errorResolution(actor, target, `${target.name} já está derrotado.`);
   }
   if (!hasTacticalMechanicalEffect(skill)) {
@@ -178,11 +180,6 @@ export function resolveTacticalSkill(
   let damageType: CombatEvent["damageType"];
 
   for (const [operationIndex, operation] of skill.operations.entries()) {
-    if (targetsOpponent(operation) && isDefeated(nextTarget)) {
-      messages.push(`${skill.name}: ${nextTarget.name} já foi derrotado; efeitos restantes no alvo foram encerrados.`);
-      break;
-    }
-
     if (operation.chance < 100 && Math.random() * 100 >= operation.chance) {
       messages.push(`${skill.name}: ${operation.operation} falhou.`);
       continue;
@@ -207,7 +204,7 @@ export function resolveTacticalSkill(
       nextActor = replaced.actor;
       nextTarget = replaced.target;
 
-      if (receiver.id !== nextActor.id && !isDefeated(nextTarget)) {
+      if (receiver.id !== nextActor.id) {
         const itemResolution = applyOffensiveItemEffects(nextActor, nextTarget, dealt);
         nextActor = itemResolution.actor;
         nextTarget = itemResolution.target;
@@ -366,15 +363,13 @@ export function resolveTacticalSkill(
   nextActor = actorReaction.combatant;
   if (actorReaction.message) messages.push(actorReaction.message);
 
-  if (!isDefeated(nextTarget)) {
-    const targetReaction = applyTacticalRacialReaction(
-      nextTarget,
-      nextTarget.raceResourceName,
-      { tookDamage: damageToTarget },
-    );
-    nextTarget = targetReaction.combatant;
-    if (targetReaction.message) messages.push(`${nextTarget.name}: ${targetReaction.message}`);
-  }
+  const targetReaction = applyTacticalRacialReaction(
+    nextTarget,
+    nextTarget.raceResourceName,
+    { tookDamage: damageToTarget },
+  );
+  nextTarget = targetReaction.combatant;
+  if (targetReaction.message) messages.push(`${nextTarget.name}: ${targetReaction.message}`);
 
   if (!messages.length) messages.push(`${skill.name} foi usada, mas nenhuma operação produziu efeito.`);
 

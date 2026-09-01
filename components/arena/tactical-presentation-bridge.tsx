@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 
 type HpSnapshot = { player: number | null; enemy: number | null };
+type CharacterVisual = { id: string; level: number; rank: string; title?: { name?: string | null } | null };
+type CreatureVisual = { id: string; rank: string };
 
 function findLab() {
   return document.querySelector<HTMLElement>('[aria-label="Laboratório do mapa tático V8"]');
@@ -17,7 +19,32 @@ function findHp(article: HTMLElement | null) {
   return value ? Number(value[1]) : null;
 }
 
-function addPresentationClasses(lab: HTMLElement) {
+function classifyStatus(span: HTMLElement) {
+  const text = span.textContent ?? "";
+  if (/ROOT|STUN|SILENCE|FEAR|TAUNT/i.test(text)) span.dataset.combatStatus = "control";
+  else if (/Fraquezas/i.test(text)) span.dataset.combatStatus = "weakness";
+  else if (/Resistências/i.test(text)) span.dataset.combatStatus = "resistance";
+  else if (/Mana|Ímpeto|Bravura|Fúria|Ki|Sangue|Alma|Carga/i.test(text)) span.dataset.combatStatus = "resource";
+  else if (/HP\s+\d+/i.test(text)) span.dataset.combatStatus = "hp";
+}
+
+function syncMeta(article: HTMLElement | null, text: string) {
+  if (!article) return;
+  let meta = article.querySelector<HTMLElement>(":scope > .tactical-hud-meta");
+  if (!meta) {
+    meta = document.createElement("div");
+    meta.className = "tactical-hud-meta";
+    const strong = article.querySelector(":scope > strong");
+    strong?.insertAdjacentElement("afterend", meta);
+  }
+  meta.textContent = text;
+}
+
+function addPresentationClasses(
+  lab: HTMLElement,
+  characters: CharacterVisual[],
+  creatures: CreatureVisual[],
+) {
   lab.classList.add("tactical-premium-lab");
 
   const shell = lab.closest<HTMLElement>('[data-combat-mode="battle"]');
@@ -34,16 +61,28 @@ function addPresentationClasses(lab: HTMLElement) {
   const roundText = hiddenHeader?.textContent?.match(/Rodada\s+(\d+)/i)?.[1];
   if (roundText) lab.dataset.round = roundText;
 
+  const selects = Array.from(lab.querySelectorAll<HTMLSelectElement>("select"));
+  const selectedCharacter = characters.find((entry) => entry.id === selects[0]?.value) ?? characters[0];
+  const selectedCreature = creatures.find((entry) => entry.id === selects[1]?.value) ?? creatures[0];
+
   const hud = direct.find(
     (entry) => entry.tagName === "SECTION" && entry.querySelectorAll(":scope > article").length === 2,
   );
   hud?.classList.add("combatHud");
-  hud?.querySelectorAll<HTMLElement>("article").forEach((article, index) => {
+  const articles = hud ? Array.from(hud.querySelectorAll<HTMLElement>(":scope > article")) : [];
+  articles.forEach((article, index) => {
     article.classList.add(index === 0 ? "tactical-player-hud" : "tactical-enemy-hud");
     article.querySelectorAll<HTMLElement>("div").forEach((div) => {
       if (div.querySelector(":scope > i")) div.classList.add("bar");
     });
+    article.querySelectorAll<HTMLElement>(":scope > span").forEach(classifyStatus);
   });
+
+  if (selectedCharacter) {
+    const title = selectedCharacter.title?.name ? ` · ${selectedCharacter.title.name}` : "";
+    syncMeta(articles[0] ?? null, `Nível ${selectedCharacter.level} · Rank ${selectedCharacter.rank}${title}`);
+  }
+  if (selectedCreature) syncMeta(articles[1] ?? null, `Bestiário · Rank ${selectedCreature.rank}`);
 
   const toolbar = direct.find((entry) =>
     Array.from(entry.querySelectorAll("button")).some((button) => button.textContent?.includes("Movimento")),
@@ -115,7 +154,15 @@ function spawnFloat(kind: "damage" | "heal", amount: number, target: "player" | 
   }, 950);
 }
 
-export function TacticalPresentationBridge({ active }: { active: boolean }) {
+export function TacticalPresentationBridge({
+  active,
+  characters,
+  creatures,
+}: {
+  active: boolean;
+  characters: CharacterVisual[];
+  creatures: CreatureVisual[];
+}) {
   const previousHp = useRef<HpSnapshot>({ player: null, enemy: null });
 
   useEffect(() => {
@@ -128,7 +175,7 @@ export function TacticalPresentationBridge({ active }: { active: boolean }) {
     if (!lab) return;
 
     const sync = () => {
-      addPresentationClasses(lab);
+      addPresentationClasses(lab, characters, creatures);
       const articles = lab.querySelectorAll<HTMLElement>(".combatHud > article, section > article");
       const playerArticle = articles[0] ?? null;
       const enemyArticle = articles[1] ?? null;
@@ -148,7 +195,7 @@ export function TacticalPresentationBridge({ active }: { active: boolean }) {
     const observer = new MutationObserver(sync);
     observer.observe(lab, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["data-state", "disabled"] });
     return () => observer.disconnect();
-  }, [active]);
+  }, [active, characters, creatures]);
 
   return null;
 }

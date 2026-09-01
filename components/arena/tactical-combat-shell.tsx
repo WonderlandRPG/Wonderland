@@ -2,6 +2,7 @@
 
 import { useState, type ComponentProps } from "react";
 
+import { TacticalActionCategories } from "@/components/arena/tactical-action-categories";
 import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
 import { TacticalLabV8 } from "@/components/arena/tactical-lab-v8";
 import styles from "./tactical-combat-shell.module.css";
@@ -54,6 +55,8 @@ export function TacticalCombatShell({
       <div className={styles.labWrap}>
         <TacticalLabV8 characters={characters} creatures={creatures} />
       </div>
+
+      <TacticalActionCategories active={started} />
 
       {!started ? (
         <div className={styles.startArea}>

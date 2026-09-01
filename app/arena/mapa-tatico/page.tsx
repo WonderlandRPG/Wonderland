@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import "./tactical-stage.css";
 import { TacticalLabV8 } from "@/components/arena/tactical-lab-v8";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
@@ -148,7 +149,7 @@ export default async function TacticalMapLabPage() {
       }}
     >
       <PlayerNav />
-      <div className="page-container arena-page__inner">
+      <div className="page-container arena-page__inner tactical-lab-stage">
         <Link className="arena-mode-back" href="/arena">← Voltar para Arena</Link>
         <TacticalLabV8 characters={characters} creatures={creatures} />
       </div>

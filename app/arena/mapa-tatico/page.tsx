@@ -13,6 +13,7 @@ import {
 } from "@/lib/game/class-combat-profile";
 import { getClassBasicAttackRange } from "@/lib/game/class-range";
 import { parseCreatureCombatProfile } from "@/lib/game/creature-tactical-combat";
+import { repairTacticalInertSkill } from "@/lib/game/tactical-skill-repair";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Laboratório do Mapa Tático" };
@@ -69,7 +70,7 @@ export default async function TacticalMapLabPage() {
     const raceSkills = prepareRaceCombatSkills(rawRaceSkills);
     const skills = [
       ...classSkills.map((skill) => ({ source: "class" as const, skill })),
-      ...raceSkills.map((skill) => ({ source: "race" as const, skill })),
+      ...raceSkills.map((skill) => ({ source: "race" as const, skill: repairTacticalInertSkill(skill) })),
     ].map(({ source, skill }) => {
       const original = originalSkills.get(skill.key);
       const tacticalRange = Math.max(0, original?.range ?? skill.range ?? 0);

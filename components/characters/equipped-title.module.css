@@ -20,12 +20,14 @@
 /* Ornamental: asas laterais e medalhão central. */
 .title[data-frame="ornate"] .flourish{display:block}
 
-/* Real: brasão largo, coroa sugerida e dupla moldura. */
-.title[data-frame="royal"]{grid-template-columns:32px minmax(96px,auto) 32px}
-.title[data-frame="royal"]::before{clip-path:polygon(0 75%,20% 20%,45% 48%,65% 0,100% 55%,72% 100%,30% 86%)}
-.title[data-frame="royal"]::after{clip-path:polygon(100% 75%,80% 20%,55% 48%,35% 0,0 55%,28% 100%,70% 86%)}
-.title[data-frame="royal"] .name{padding-inline:27px;border-block-width:2px;clip-path:polygon(15px 0,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,15px 100%,0 50%);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--title-accent) 18%,transparent),0 0 16px color-mix(in srgb,var(--title-glow) 38%,transparent)}
-.title[data-frame="royal"] .sigil{top:-14px;width:24px;height:24px}
+/* Real: brasão compacto, com ponteiras e medalhão de coroa. */
+.title[data-frame="royal"]{grid-template-columns:18px minmax(96px,auto) 18px}
+.title[data-frame="royal"]::before,.title[data-frame="royal"]::after{width:27px;height:20px;background:linear-gradient(145deg,color-mix(in srgb,var(--title-secondary) 76%,var(--title-accent) 24%),var(--title-secondary));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--title-primary) 18%,transparent),0 0 7px color-mix(in srgb,var(--title-glow) 34%,transparent)}
+.title[data-frame="royal"]::before{left:2px;clip-path:polygon(0 50%,35% 8%,100% 22%,76% 50%,100% 78%,35% 92%)}
+.title[data-frame="royal"]::after{right:2px;clip-path:polygon(100% 50%,65% 8%,0 22%,24% 50%,0 78%,65% 92%)}
+.title[data-frame="royal"] .name{padding-inline:21px;border-block-width:2px;clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,11px 100%,0 50%);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--title-accent) 24%,transparent),0 0 13px color-mix(in srgb,var(--title-glow) 34%,transparent)}
+.title[data-frame="royal"] .sigil{top:-12px;width:22px;height:22px}
+.title[data-frame="royal"] .flourish{font-size:.42rem}
 
 /* Arcano: selo oval com órbita luminosa. */
 .title[data-frame="arcane"]{grid-template-columns:18px minmax(92px,auto) 18px}

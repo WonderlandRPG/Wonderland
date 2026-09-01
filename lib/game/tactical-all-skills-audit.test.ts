@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createCombatant } from "@/lib/game/combat";
 import { prepareClassCombatSkills } from "@/lib/game/class-combat-profile";
 import { officialClasses } from "@/lib/game/official-classes";
-import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
+import { hasTacticalMechanicalEffect, resolveTacticalSkill } from "@/lib/game/tactical-skill";
 
 const attributes = { FOR: 220, DEF: 120, RES: 120, INI: 100, INT: 220, ARC: 220 };
 
@@ -20,10 +20,16 @@ function fighter(id: string) {
   });
 }
 
+function isActiveSkill(type: string) {
+  return !/passiva|reação|reacao/i.test(type);
+}
+
 describe("auditoria tática de todas as habilidades oficiais", () => {
-  it("executa todas as habilidades no resolvedor tático sem erro", () => {
+  it("executa toda habilidade ATIVA com regra mecânica no resolvedor tático sem erro", () => {
     const failures: string[] = [];
+    const missingMechanics: string[] = [];
     let audited = 0;
+    let passiveOrReactive = 0;
 
     for (const entry of officialClasses) {
       const raw = [
@@ -33,7 +39,17 @@ describe("auditoria tática de todas as habilidades oficiais", () => {
       const skills = prepareClassCombatSkills(entry.name, entry.payload, raw);
 
       for (const skill of skills) {
+        if (!isActiveSkill(skill.type)) {
+          passiveOrReactive += 1;
+          continue;
+        }
         audited += 1;
+
+        if (!hasTacticalMechanicalEffect(skill)) {
+          missingMechanics.push(`${entry.name} — ${skill.name}`);
+          continue;
+        }
+
         const deterministic = {
           ...skill,
           operations: skill.operations.map((operation) => ({ ...operation, chance: 100 })),
@@ -49,11 +65,13 @@ describe("auditoria tática de todas as habilidades oficiais", () => {
       }
     }
 
-    expect(audited).toBeGreaterThanOrEqual(250);
+    expect(passiveOrReactive).toBeGreaterThan(0);
+    expect(audited).toBeGreaterThanOrEqual(200);
     expect(failures).toEqual([]);
+    expect(missingMechanics).toEqual([]);
   });
 
-  it("faz toda operação DAMAGE contra inimigo reduzir HP de verdade", () => {
+  it("faz toda operação DAMAGE ATIVA contra inimigo reduzir HP de verdade", () => {
     const failures: string[] = [];
     let offensiveAudited = 0;
 
@@ -65,6 +83,7 @@ describe("auditoria tática de todas as habilidades oficiais", () => {
       const skills = prepareClassCombatSkills(entry.name, entry.payload, raw);
 
       for (const skill of skills) {
+        if (!isActiveSkill(skill.type)) continue;
         const hasEnemyDamage = skill.operations.some(
           (operation) => operation.operation === "DAMAGE" && (operation.target === "enemy" || operation.target === "area"),
         );

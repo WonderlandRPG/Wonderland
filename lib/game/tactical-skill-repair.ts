@@ -67,10 +67,7 @@ export function repairTacticalInertSkill(skill: ClassSkill): ClassSkill {
     const modifiers = tacticalTransformationModifiers[operation.status];
     if (!modifiers) return operation;
     repaired = true;
-    return {
-      ...operation,
-      modifiers,
-    };
+    return { ...operation, modifiers };
   });
 
   if (!repaired) return skill;
@@ -83,7 +80,7 @@ export function repairTacticalInertSkill(skill: ClassSkill): ClassSkill {
   return {
     ...skill,
     operations,
-    systemRule: `${skill.systemRule} Regra tática provisória de transformação: ${repairedEffects}.`,
+    systemRule: `${skill.systemRule} Regra tática de transformação: ${repairedEffects}.`,
     playerDescription: `${skill.playerDescription} No mapa tático: ${repairedEffects}.`,
   };
 }

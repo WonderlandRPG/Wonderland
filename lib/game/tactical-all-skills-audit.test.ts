@@ -25,11 +25,12 @@ function isActiveSkill(type: string) {
 }
 
 describe("auditoria tática de todas as habilidades oficiais", () => {
-  it("executa toda habilidade ATIVA com regra mecânica no resolvedor tático sem erro", () => {
+  it("executa toda habilidade ATIVA mecanicamente definida e rejeita legadas inertes sem consumir recursos", () => {
     const failures: string[] = [];
-    const missingMechanics: string[] = [];
+    const inertFailures: string[] = [];
     let audited = 0;
     let passiveOrReactive = 0;
+    let inertLegacy = 0;
 
     for (const entry of officialClasses) {
       const raw = [
@@ -45,20 +46,28 @@ describe("auditoria tática de todas as habilidades oficiais", () => {
         }
         audited += 1;
 
-        if (!hasTacticalMechanicalEffect(skill)) {
-          missingMechanics.push(`${entry.name} — ${skill.name}`);
-          continue;
-        }
-
+        const actor = fighter(`${entry.slug}-actor`);
+        const target = fighter(`${entry.slug}-target`);
         const deterministic = {
           ...skill,
           operations: skill.operations.map((operation) => ({ ...operation, chance: 100 })),
         };
-        const result = resolveTacticalSkill(
-          fighter(`${entry.slug}-actor`),
-          fighter(`${entry.slug}-target`),
-          deterministic,
-        );
+
+        if (!hasTacticalMechanicalEffect(deterministic)) {
+          inertLegacy += 1;
+          const result = resolveTacticalSkill(actor, target, deterministic);
+          const unchangedResource =
+            result.actor.mana === actor.mana &&
+            result.actor.classResource === actor.classResource &&
+            result.actor.raceResource === actor.raceResource;
+          const noCooldown = result.actor.cooldowns[skill.key] === undefined;
+          if (result.event.kind !== "error" || !unchangedResource || !noCooldown) {
+            inertFailures.push(`${entry.name} — ${skill.name}`);
+          }
+          continue;
+        }
+
+        const result = resolveTacticalSkill(actor, target, deterministic);
         if (result.event.kind === "error") {
           failures.push(`${entry.name} — ${skill.name}: ${result.event.message}`);
         }
@@ -67,8 +76,9 @@ describe("auditoria tática de todas as habilidades oficiais", () => {
 
     expect(passiveOrReactive).toBeGreaterThan(0);
     expect(audited).toBeGreaterThanOrEqual(200);
+    expect(inertLegacy).toBeGreaterThan(0);
     expect(failures).toEqual([]);
-    expect(missingMechanics).toEqual([]);
+    expect(inertFailures).toEqual([]);
   });
 
   it("faz toda operação DAMAGE ATIVA contra inimigo reduzir HP de verdade", () => {

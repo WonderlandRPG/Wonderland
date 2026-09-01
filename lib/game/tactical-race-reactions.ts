@@ -25,6 +25,11 @@ function normalize(value: string) {
     .toLowerCase();
 }
 
+function matchesIdentity(identity: string, ...values: string[]) {
+  const normalized = normalize(identity);
+  return values.some((value) => normalized === normalize(value));
+}
+
 function hasOperation(skill: ClassSkill | undefined, operations: string[]) {
   return Boolean(skill?.operations.some((operation) => operations.includes(operation.operation)));
 }
@@ -46,11 +51,10 @@ function didControl(skill: ClassSkill | undefined) {
 }
 
 function shouldTrigger(
-  raceName: string,
+  raceOrResourceName: string,
   combatant: CombatantState,
   context: TacticalRaceReactionContext,
 ) {
-  const race = normalize(raceName);
   const dealtDamage = Math.max(0, context.dealtDamage ?? 0);
   const tookDamage = Math.max(0, context.tookDamage ?? 0);
   const targetWasInjured =
@@ -62,28 +66,48 @@ function shouldTrigger(
     typeof context.targetMaxHp === "number" &&
     context.targetHpBefore < context.targetMaxHp * 0.5;
 
-  if (race === "aengel") return hasOperation(context.skill, ["HEAL", "SHIELD"]);
-  if (race === "draconato") return tookDamage >= combatant.maxHp * 0.1;
-  if (race === "elfo") return dealtDamage > 0 && (context.distance ?? 0) >= 3;
-  if (race === "fada") {
+  if (matchesIdentity(raceOrResourceName, "Aengel", "Radiância", "Radiancia")) {
+    return hasOperation(context.skill, ["HEAL", "SHIELD"]);
+  }
+  if (matchesIdentity(raceOrResourceName, "Draconato", "Carga Dracônica", "Carga Draconica")) {
+    return tookDamage >= combatant.maxHp * 0.1;
+  }
+  if (matchesIdentity(raceOrResourceName, "Elfo", "Foco Ancestral")) {
+    return dealtDamage > 0 && (context.distance ?? 0) >= 3;
+  }
+  if (matchesIdentity(raceOrResourceName, "Fada", "Pó Feérico", "Po Feerico")) {
     return hasOperation(context.skill, ["HEAL", "SHIELD"]) || didControl(context.skill);
   }
-  if (race === "humano") return context.firstSuccessfulActionThisRound === true;
-  if (race === "kitsune") return appliedNegativeStatus(context.skill);
-  if (race === "leonis") return hasOperation(context.skill, ["SHIELD", "TAUNT"]);
-  if (race === "lobisomem") return dealtDamage > 0 && targetWasBelowHalf;
-  if (race === "orc") return tookDamage > 0;
-  if (race === "tiefling") return dealtDamage > 0 && context.damageType === "magic";
-  if (race === "vampiro") return dealtDamage > 0 && targetWasInjured;
+  if (matchesIdentity(raceOrResourceName, "Humano", "Determinação", "Determinacao")) {
+    return context.firstSuccessfulActionThisRound === true;
+  }
+  if (matchesIdentity(raceOrResourceName, "Kitsune", "Cauda Mística", "Cauda Mistica")) {
+    return appliedNegativeStatus(context.skill);
+  }
+  if (matchesIdentity(raceOrResourceName, "Leonis", "Bravura")) {
+    return hasOperation(context.skill, ["SHIELD", "TAUNT"]);
+  }
+  if (matchesIdentity(raceOrResourceName, "Lobisomem", "Faro de Sangue")) {
+    return dealtDamage > 0 && targetWasBelowHalf;
+  }
+  if (matchesIdentity(raceOrResourceName, "Orc", "Ímpeto de Guerra", "Impeto de Guerra")) {
+    return tookDamage > 0;
+  }
+  if (matchesIdentity(raceOrResourceName, "Tiefling", "Marca Infernal")) {
+    return dealtDamage > 0 && context.damageType === "magic";
+  }
+  if (matchesIdentity(raceOrResourceName, "Vampiro", "Sangue")) {
+    return dealtDamage > 0 && targetWasInjured;
+  }
   return false;
 }
 
 export function applyTacticalRacialReaction(
   combatant: CombatantState,
-  raceName: string,
+  raceOrResourceName: string,
   context: TacticalRaceReactionContext,
 ): TacticalRaceReactionResult {
-  if (!shouldTrigger(raceName, combatant, context) || combatant.maxRaceResource <= 0) {
+  if (!shouldTrigger(raceOrResourceName, combatant, context) || combatant.maxRaceResource <= 0) {
     return { combatant, triggered: false, message: null };
   }
 

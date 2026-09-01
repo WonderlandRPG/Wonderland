@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import "./tactical-stage.css";
+import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
 import { TacticalLabV8 } from "@/components/arena/tactical-lab-v8";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
@@ -113,10 +114,14 @@ export default async function TacticalMapLabPage() {
     const items = character.inventory
       .filter((item) => /consum|poção|pocao/i.test(item.category))
       .map((item) => ({ id: item.id, name: item.name, description: item.description }));
+    const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
 
     return {
       id: character.id,
       name: character.name,
+      imageUrl: character.image_url,
+      title: equippedTitle,
+      cosmetics: character.cosmetics,
       level: character.level,
       rank: character.adventure_rank,
       raceName: character.race.name,
@@ -151,6 +156,7 @@ export default async function TacticalMapLabPage() {
       <PlayerNav />
       <div className="page-container arena-page__inner tactical-lab-stage">
         <Link className="arena-mode-back" href="/arena">← Voltar para Arena</Link>
+        <TacticalCombatIdentity characters={characters} creatures={creatures} />
         <TacticalLabV8 characters={characters} creatures={creatures} />
       </div>
     </main>

@@ -35,6 +35,29 @@ export function resolveBasicAttack(
   target: CombatantState,
   rules: CombatRules = defaultCombatRules,
 ): CombatResolution {
+  if (actor.hp <= 0) {
+    return {
+      actor,
+      target,
+      event: {
+        kind: "error",
+        amount: 0,
+        message: `${actor.name} está derrotado e não pode atacar.`,
+      },
+    };
+  }
+  if (target.hp <= 0) {
+    return {
+      actor,
+      target,
+      event: {
+        kind: "error",
+        amount: 0,
+        message: `${target.name} já está derrotado.`,
+      },
+    };
+  }
+
   const actorAttributes = getEffectiveAttributes(actor);
   const targetAttributes = getEffectiveAttributes(target);
   const affinity = (actor as CombatantWithAffinity).basicAttackDamageType;
@@ -44,21 +67,21 @@ export function resolveBasicAttack(
   const amount = calculateDamage(raw, damageType, targetAttributes, rules);
   const damagedTarget = applyDamage(target, amount);
   const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
-  const itemResolution = applyOffensiveItemEffects(
-    {
-      ...actor,
-      classResource: Math.min(
-        actor.maxClassResource,
-        actor.classResource + actor.resourceGainOnBasicAttack,
-      ),
-      raceResource: Math.min(
-        actor.maxRaceResource,
-        actor.raceResource + actor.raceResourceGainOnBasicAttack,
-      ),
-    },
-    damagedTarget,
-    damageDealt,
-  );
+  const actorAfterAttack = {
+    ...actor,
+    classResource: Math.min(
+      actor.maxClassResource,
+      actor.classResource + actor.resourceGainOnBasicAttack,
+    ),
+    raceResource: Math.min(
+      actor.maxRaceResource,
+      actor.raceResource + actor.raceResourceGainOnBasicAttack,
+    ),
+  };
+  const itemResolution = damagedTarget.hp <= 0
+    ? { actor: actorAfterAttack, target: damagedTarget, messages: [] as string[] }
+    : applyOffensiveItemEffects(actorAfterAttack, damagedTarget, damageDealt);
+
   return {
     actor: itemResolution.actor,
     target: itemResolution.target,

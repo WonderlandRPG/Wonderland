@@ -1,6 +1,8 @@
 import type { ClassSkill } from "@/lib/game/classes";
 import type { CombatantState } from "@/lib/game/combat";
 
+const HUMAN_ACTION_MARKER = "tactical-human-first-action-used";
+
 export type TacticalRaceReactionContext = {
   dealtDamage?: number;
   tookDamage?: number;
@@ -30,6 +32,10 @@ function matchesIdentity(identity: string, ...values: string[]) {
   return values.some((value) => normalized === normalize(value));
 }
 
+function isHumanIdentity(identity: string) {
+  return matchesIdentity(identity, "Humano", "Determinação", "Determinacao");
+}
+
 function hasOperation(skill: ClassSkill | undefined, operations: string[]) {
   return Boolean(skill?.operations.some((operation) => operations.includes(operation.operation)));
 }
@@ -48,6 +54,12 @@ function appliedNegativeStatus(skill: ClassSkill | undefined) {
 
 function didControl(skill: ClassSkill | undefined) {
   return hasOperation(skill, ["STUN", "ROOT", "SILENCE", "FEAR", "TAUNT"]);
+}
+
+function hasSuccessfulAction(context: TacticalRaceReactionContext) {
+  if ((context.dealtDamage ?? 0) > 0) return true;
+  if (context.skill) return true;
+  return context.firstSuccessfulActionThisRound === true;
 }
 
 function shouldTrigger(
@@ -78,8 +90,10 @@ function shouldTrigger(
   if (matchesIdentity(raceOrResourceName, "Fada", "Pó Feérico", "Po Feerico")) {
     return hasOperation(context.skill, ["HEAL", "SHIELD"]) || didControl(context.skill);
   }
-  if (matchesIdentity(raceOrResourceName, "Humano", "Determinação", "Determinacao")) {
-    return context.firstSuccessfulActionThisRound === true;
+  if (isHumanIdentity(raceOrResourceName)) {
+    const explicit = context.firstSuccessfulActionThisRound;
+    const markerMissing = !combatant.statuses[HUMAN_ACTION_MARKER];
+    return (explicit ?? markerMissing) && markerMissing && hasSuccessfulAction(context);
   }
   if (matchesIdentity(raceOrResourceName, "Kitsune", "Cauda Mística", "Cauda Mistica")) {
     return appliedNegativeStatus(context.skill);
@@ -117,8 +131,25 @@ export function applyTacticalRacialReaction(
   }
 
   const resourceName = combatant.raceResourceName || "Recurso Racial";
+  const nextCombatant = isHumanIdentity(raceOrResourceName)
+    ? {
+        ...combatant,
+        raceResource: nextValue,
+        statuses: {
+          ...combatant.statuses,
+          [HUMAN_ACTION_MARKER]: {
+            name: "Adaptabilidade usada nesta rodada",
+            duration: 1,
+            stacks: 1,
+            modifiers: {},
+            beneficial: true,
+          },
+        },
+      }
+    : { ...combatant, raceResource: nextValue };
+
   return {
-    combatant: { ...combatant, raceResource: nextValue },
+    combatant: nextCombatant,
     triggered: true,
     message: `REAÇÃO RACIAL: +1 ${resourceName}.`,
   };

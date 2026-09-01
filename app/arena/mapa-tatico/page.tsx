@@ -50,6 +50,13 @@ export default async function TacticalMapLabPage() {
       };
     });
     const usesMana = skills.some(({ skill }) => skill.resource === "mana");
+    const items = character.inventory
+      .filter((item) => /consum|poção|pocao/i.test(item.category))
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+      }));
 
     return {
       id: character.id,
@@ -70,6 +77,7 @@ export default async function TacticalMapLabPage() {
         character.characterClass.payload,
       ),
       skills,
+      items,
     };
   });
 

@@ -59,9 +59,33 @@ describe("tactical class resource generation", () => {
     expect(run("Arqueiro", { action: "basic", dealtDamage: 20, distance: 3 }).gained).toBe(10);
   });
 
+  it("Assassino gains Sombra when attacking before the target acts", () => {
+    expect(run("Assassino", { action: "skill", dealtDamage: 20, targetHasActed: false }).gained).toBe(15);
+    expect(run("Assassino", { action: "skill", dealtDamage: 20, targetHasActed: true }).gained).toBe(0);
+  });
+
   it("Bárbaro generates on dealing and receiving damage", () => {
     expect(run("Bárbaro", { action: "skill", dealtDamage: 20 }).gained).toBe(10);
     expect(run("Bárbaro", { action: "incoming", tookDamage: 20 }).gained).toBe(5);
+  });
+
+  it("Bardo generates when a successful skill changes target", () => {
+    const first = run("Bardo", { action: "skill", skill: skill("DAMAGE"), successfulOperationIndexes: [0], targetId: "enemy" });
+    expect(first.gained).toBe(0);
+    const second = run("Bardo", { action: "skill", skill: skill("SHIELD"), successfulOperationIndexes: [0], targetId: "self" }, first.tracker);
+    expect(second.gained).toBe(1);
+  });
+
+  it("Bruxo and Ladino generate from successful negative status operations", () => {
+    const debuff = skill("DEBUFF");
+    expect(run("Bruxo", { action: "skill", skill: debuff, successfulOperationIndexes: [0] }).gained).toBe(1);
+    expect(run("Ladino", { action: "skill", skill: debuff, successfulOperationIndexes: [0] }).gained).toBe(1);
+  });
+
+  it("Cavaleiro gains Guarda from damage and successful TAUNT", () => {
+    expect(run("Cavaleiro", { action: "incoming", tookDamage: 20 }).gained).toBe(10);
+    const taunt = skill("TAUNT");
+    expect(run("Cavaleiro", { action: "skill", skill: taunt, successfulOperationIndexes: [0] }).gained).toBe(15);
   });
 
   it("Clérigo generates from effective heal or shield", () => {
@@ -69,10 +93,9 @@ describe("tactical class resource generation", () => {
     expect(run("Clérigo", { action: "skill", skill: skill("SHIELD"), shieldGranted: 30 }).gained).toBe(10);
   });
 
-  it("Bruxo and Ladino generate from successful negative status operations", () => {
-    const debuff = skill("DEBUFF");
-    expect(run("Bruxo", { action: "skill", skill: debuff, successfulOperationIndexes: [0] }).gained).toBe(1);
-    expect(run("Ladino", { action: "skill", skill: debuff, successfulOperationIndexes: [0] }).gained).toBe(1);
+  it("Druida only gains Essência when at least two targets are affected", () => {
+    expect(run("Druida", { action: "skill", skill: skill("DAMAGE"), affectedTargets: 1 }).gained).toBe(0);
+    expect(run("Druida", { action: "skill", skill: skill("DAMAGE"), affectedTargets: 2 }).gained).toBe(10);
   });
 
   it("Feiticeiro generates 15 from magic damage", () => {

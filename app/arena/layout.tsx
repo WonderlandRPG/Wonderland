@@ -24,7 +24,7 @@ export default function ArenaLayout({ children }: Readonly<{ children: React.Rea
       <ArenaImageRepair />
       <BattleFormationEnhancer />
       <CombatVisualEnhancer />
-      <AdminTacticalAccess />
+      <AdminTacticalAccess variant="inline" />
       {children}
     </>
   );

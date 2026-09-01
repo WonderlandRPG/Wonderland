@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { TacticalLab } from "@/components/arena/tactical-lab";
+import { TacticalLabV2 } from "@/components/arena/tactical-lab-v2";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheets } from "@/lib/content/characters";
@@ -88,7 +88,7 @@ export default async function TacticalMapLabPage() {
         <Link className="arena-mode-back" href="/arena">
           ← Voltar para Arena
         </Link>
-        <TacticalLab characters={characters} />
+        <TacticalLabV2 characters={characters} />
       </div>
     </main>
   );

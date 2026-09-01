@@ -20,7 +20,11 @@ export function EquippedTitle({ title }: { title: EquippedTitleData | null }) {
   const tooltipId = `title-${title.name.normalize("NFD").replace(/[^a-zA-Z0-9]/g, "-")}`;
 
   return (
-    <span aria-describedby={tooltipId} className={styles.root} tabIndex={0}>
+    <span
+      aria-describedby={tooltipId}
+      className={`${styles.root} character-equipped-title-root`}
+      tabIndex={0}
+    >
       <span
         aria-label={`Título equipado: ${title.name}`}
         className={`${styles.title} character-equipped-title`}

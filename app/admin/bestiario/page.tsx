@@ -79,20 +79,21 @@ export default async function AdminBestiaryPage({
 
       <section className="admin-editor-list">
         {(data ?? []).map((creature) => {
-          const profile = parseCreatureCombatProfile(creature.rank, creature.combat_profile);
+          const row = creature as typeof creature & { combat_profile?: unknown };
+          const profile = parseCreatureCombatProfile(row.rank, row.combat_profile);
           return (
-            <details className="admin-editor-card" key={creature.id}>
+            <details className="admin-editor-card" key={row.id}>
               <summary>
                 <span>
-                  <small>Rank {creature.rank} · {creature.category} · IA {profile.aiProfile}</small>
-                  <strong>{creature.name}</strong>
+                  <small>Rank {row.rank} · {row.category} · IA {profile.aiProfile}</small>
+                  <strong>{row.name}</strong>
                   <small>HP {profile.hp} · Movimento {profile.movement} · {profile.skills.length} habilidade(s) própria(s)</small>
                 </span>
-                <b>{creature.active ? "Ativa" : "Oculta"}</b>
+                <b>{row.active ? "Ativa" : "Oculta"}</b>
               </summary>
 
               <form action={updateCreatureCombatProfileAdminAction} className="admin-form admin-item-form">
-                <input type="hidden" name="id" value={creature.id} />
+                <input type="hidden" name="id" value={row.id} />
 
                 <fieldset>
                   <legend>Perfil tático</legend>
@@ -113,7 +114,6 @@ export default async function AdminBestiaryPage({
                     <select name="basicAttackDamageType" defaultValue={profile.basicAttackDamageType}>
                       <option value="physical">Físico</option>
                       <option value="magic">Mágico</option>
-                      <option value="true">Verdadeiro</option>
                     </select>
                   </label>
                   <label>

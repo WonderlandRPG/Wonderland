@@ -16,7 +16,9 @@ import {
   getCreaturePlanningSkillRange,
 } from "@/lib/game/creature-tactical-ai";
 import {
-  applyCreatureWeaknessBonus,
+  applyCreatureBasicAttackResistance,
+  applyCreatureControlResistances,
+  applyCreatureDamageTraits,
   createDefaultCreatureSkill,
   type TacticalBestiaryCreature,
 } from "@/lib/game/creature-tactical-combat";
@@ -154,7 +156,7 @@ export function TacticalLabV5({
     "V5 pronta: criatura real do Bestiário carregada.",
   );
   const [log, setLog] = useState<string[]>([
-    "V5: Bestiário real + perfis de combate + fraquezas.",
+    "V5: Bestiário real + perfis de combate + fraquezas + resistências.",
   ]);
 
   const reachable = useMemo(
@@ -295,13 +297,20 @@ export function TacticalLabV5({
     const result = resolveTacticalSkill(player, enemy, selected.skill);
     if (result.event.kind === "error") return setMessage(result.event.message);
 
-    const weaknessResult = applyCreatureWeaknessBonus({
+    const controlResult = applyCreatureControlResistances({
       before: beforeEnemy,
       after: result.target,
       skill: selected.skill,
-      weaknesses: creature.weaknesses,
+      resistances: profile.resistances,
     });
-    const nextEnemyState = weaknessResult.target;
+    const damageTraits = applyCreatureDamageTraits({
+      before: beforeEnemy,
+      after: controlResult.target,
+      skill: selected.skill,
+      weaknesses: creature.weaknesses,
+      resistances: profile.resistances,
+    });
+    const nextEnemyState = damageTraits.target;
     let nextPlayerPosition = playerPosition;
     let nextEnemyPosition = enemyPosition;
     const spatial: string[] = [];
@@ -345,10 +354,19 @@ export function TacticalLabV5({
     if (selected.source === "class") setUsedClass(true);
     else setUsedRace(true);
 
-    const weaknessText = weaknessResult.weakness
-      ? ` FRAQUEZA ATIVADA (${weaknessResult.weakness}): +${weaknessResult.bonusDamage} de dano (+25%).`
+    const traitText = damageTraits.neutralized
+      ? ` FRAQUEZA/RESISTÊNCIA ANULADAS (${damageTraits.weakness} × ${damageTraits.resistance}).`
+      : `${damageTraits.weakness ? ` FRAQUEZA ATIVADA (${damageTraits.weakness}): +${damageTraits.bonusDamage} de dano (+25%).` : ""}${damageTraits.resistance ? ` RESISTÊNCIA ATIVADA (${damageTraits.resistance}): -${damageTraits.reducedDamage} de dano (-25%).` : ""}`;
+    const controlText = controlResult.resisted.length
+      ? ` ${controlResult.resisted
+          .map((entry) =>
+            entry.reducedTurns > 0
+              ? `RESISTÊNCIA A ${entry.operation} (${entry.resistance}): -${entry.reducedTurns} turno.`
+              : `RESISTÊNCIA A ${entry.operation} (${entry.resistance}).`,
+          )
+          .join(" ")}`
       : "";
-    const text = `${result.event.message}${weaknessText}${spatial.length ? ` ${spatial.join(" ")}` : ""}`;
+    const text = `${result.event.message}${traitText}${controlText}${spatial.length ? ` ${spatial.join(" ")}` : ""}`;
     setMessage(text);
     addLog(text);
     clearAction();
@@ -394,11 +412,21 @@ export function TacticalLabV5({
         return setMessage("Linha de visão bloqueada.");
       }
       const result = resolveBasicAttack(player, enemy);
+      const resistanceResult = applyCreatureBasicAttackResistance({
+        before: enemy,
+        after: result.target,
+        damageType: character.basicAttackDamageType,
+        resistances: profile.resistances,
+      });
+      const resistanceText = resistanceResult.resistance
+        ? ` RESISTÊNCIA ATIVADA (${resistanceResult.resistance}): -${resistanceResult.reducedDamage} de dano (-25%).`
+        : "";
+      const text = `${result.event.message}${resistanceText}`;
       setPlayerState(result.actor);
-      setEnemyState(result.target);
+      setEnemyState(resistanceResult.target);
       setUsedBasic(true);
-      setMessage(result.event.message);
-      addLog(result.event.message);
+      setMessage(text);
+      addLog(text);
       clearAction();
       return;
     }
@@ -559,7 +587,7 @@ export function TacticalLabV5({
           <h1>Laboratório do Mapa Tático</h1>
           <p>
             Criaturas reais do Bestiário, múltiplas habilidades próprias, perfis de IA persistidos,
-            controles táticos e fraquezas com +25% de dano quando a afinidade realmente corresponde.
+            fraquezas, resistências e controles táticos executados pelo mesmo motor.
           </p>
         </div>
         <div className={styles.status}>
@@ -609,14 +637,8 @@ export function TacticalLabV5({
           <div className={styles.bar}>
             <i style={{ width: `${percent(player.hp, player.maxHp)}%` }} />
           </div>
-          <span>
-            HP {player.hp}/{player.maxHp}
-          </span>
-          {player.maxMana > 0 ? (
-            <span>
-              Mana {player.mana}/{player.maxMana}
-            </span>
-          ) : null}
+          <span>HP {player.hp}/{player.maxHp}</span>
+          {player.maxMana > 0 ? <span>Mana {player.mana}/{player.maxMana}</span> : null}
           {playerRoot > 0 ? <span>ROOT: {playerRoot}</span> : null}
           {playerStun > 0 ? <span>STUN: {playerStun}</span> : null}
         </article>
@@ -626,52 +648,20 @@ export function TacticalLabV5({
           <div className={styles.bar}>
             <i style={{ width: `${percent(enemy.hp, enemy.maxHp)}%` }} />
           </div>
-          <span>
-            HP {enemy.hp}/{enemy.maxHp}
-          </span>
-          <span>
-            IA {profile.aiProfile} · Movimento {profile.movement} · Alcance básico {profile.basicAttackRange}
-          </span>
-          <span>
-            Fraquezas: {creature.weaknesses.length ? creature.weaknesses.join(" · ") : "nenhuma catalogada"}
-          </span>
+          <span>HP {enemy.hp}/{enemy.maxHp}</span>
+          <span>IA {profile.aiProfile} · Movimento {profile.movement} · Alcance básico {profile.basicAttackRange}</span>
+          <span>Fraquezas: {creature.weaknesses.length ? creature.weaknesses.join(" · ") : "nenhuma catalogada"}</span>
+          <span>Resistências: {profile.resistances.length ? profile.resistances.join(" · ") : "nenhuma configurada"}</span>
           {enemyRoot > 0 ? <span>ROOT: {enemyRoot}</span> : null}
           {enemyStun > 0 ? <span>STUN: {enemyStun}</span> : null}
         </article>
       </section>
 
       <div className={styles.toolbar} data-wl-surface="raised">
-        <button
-          type="button"
-          disabled={playerRoot > 0 || playerStun > 0 || finished}
-          onClick={() => {
-            clearAction();
-            setMessage(`Movimento: ${movement}/${PLAYER_MOVE}.`);
-          }}
-        >
-          Movimento · {movement}/{PLAYER_MOVE}
-        </button>
-        <button
-          type="button"
-          disabled={usedBasic || playerStun > 0 || finished}
-          data-wl-action={action?.kind === "basic" ? "primary" : undefined}
-          onClick={() =>
-            selectAction({
-              kind: "basic",
-              name: "Ataque Básico",
-              range: character.basicAttackRange,
-              area: 0,
-            })
-          }
-        >
-          Ataque · {usedBasic ? "USADO" : "DISPONÍVEL"}
-        </button>
-        <button type="button" disabled={finished} onClick={executeEnemyTurn}>
-          Encerrar turno → IA
-        </button>
-        <button type="button" onClick={() => resetBoard()}>
-          Reiniciar
-        </button>
+        <button type="button" disabled={playerRoot > 0 || playerStun > 0 || finished} onClick={() => { clearAction(); setMessage(`Movimento: ${movement}/${PLAYER_MOVE}.`); }}>Movimento · {movement}/{PLAYER_MOVE}</button>
+        <button type="button" disabled={usedBasic || playerStun > 0 || finished} data-wl-action={action?.kind === "basic" ? "primary" : undefined} onClick={() => selectAction({ kind: "basic", name: "Ataque Básico", range: character.basicAttackRange, area: 0 })}>Ataque · {usedBasic ? "USADO" : "DISPONÍVEL"}</button>
+        <button type="button" disabled={finished} onClick={executeEnemyTurn}>Encerrar turno → IA</button>
+        <button type="button" onClick={() => resetBoard()}>Reiniciar</button>
       </div>
 
       <div className={styles.skillBar} data-wl-surface="raised">
@@ -679,50 +669,16 @@ export function TacticalLabV5({
           const isUsed = sourceUsed(source);
           const cooldown = player.cooldowns[skill.key] ?? 0;
           return (
-            <button
-              key={`${source}-${skill.key}`}
-              type="button"
-              disabled={isUsed || cooldown > 0 || playerStun > 0 || finished}
-              data-selected={
-                action?.kind === "skill" && action.skill.key === skill.key ? "true" : "false"
-              }
-              onClick={() =>
-                selectAction({
-                  kind: "skill",
-                  name: skill.name,
-                  range: skill.range,
-                  area: skill.area,
-                  source,
-                  skill,
-                })
-              }
-            >
+            <button key={`${source}-${skill.key}`} type="button" disabled={isUsed || cooldown > 0 || playerStun > 0 || finished} data-selected={action?.kind === "skill" && action.skill.key === skill.key ? "true" : "false"} onClick={() => selectAction({ kind: "skill", name: skill.name, range: skill.range, area: skill.area, source, skill })}>
               <strong>{skill.name}</strong>
-              <span>
-                {source === "class" ? "Classe" : "Raça"} · Alcance {skill.range} · Área {skill.area}
-              </span>
-              <small>
-                {cooldown > 0
-                  ? `Cooldown ${cooldown}`
-                  : skill.cost
-                    ? `${skill.cost} ${skill.resource}`
-                    : "Sem custo"}
-              </small>
-              <small>
-                {skill.operations
-                  .map((operation) => `${operation.operation}:${operation.target}`)
-                  .join(" → ")}
-              </small>
+              <span>{source === "class" ? "Classe" : "Raça"} · Alcance {skill.range} · Área {skill.area}</span>
+              <small>{cooldown > 0 ? `Cooldown ${cooldown}` : skill.cost ? `${skill.cost} ${skill.resource}` : "Sem custo"}</small>
+              <small>{skill.operations.map((operation) => `${operation.operation}:${operation.target}`).join(" → ")}</small>
             </button>
           );
         })}
         {character.items.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            disabled={usedItem || playerStun > 0 || finished}
-            onClick={() => useItem(item)}
-          >
+          <button key={item.id} type="button" disabled={usedItem || playerStun > 0 || finished} onClick={() => useItem(item)}>
             <strong>{item.name}</strong>
             <span>Item ativo · 1 por turno</span>
             <small>{usedItem ? "USADO" : "DISPONÍVEL"}</small>
@@ -732,50 +688,18 @@ export function TacticalLabV5({
 
       <div className={styles.workspace}>
         <div className={styles.boardShell} data-wl-surface="dark">
-          <div
-            className={styles.board}
-            style={{ gridTemplateColumns: `repeat(${GRID.width}, minmax(0, 1fr))` }}
-          >
+          <div className={styles.board} style={{ gridTemplateColumns: `repeat(${GRID.width}, minmax(0, 1fr))` }}>
             {cells.map((position) => {
               const key = tacticalPositionKey(position);
               const isPlayer = key === tacticalPositionKey(playerPosition);
               const isEnemy = key === tacticalPositionKey(enemyPosition);
               const isObstacle = obstacles.has(key);
               const isReachable = !action && playerStun <= 0 && reachable.has(key);
-              const inRange = Boolean(
-                action && playerStun <= 0 && getTacticalDistance(playerPosition, position) <= action.range,
-              );
+              const inRange = Boolean(action && playerStun <= 0 && getTacticalDistance(playerPosition, position) <= action.range);
               const isArea = areaCells.has(key);
-              const state = isPlayer
-                ? "player"
-                : isEnemy
-                  ? "enemy"
-                  : isObstacle
-                    ? "obstacle"
-                    : isArea
-                      ? "area"
-                      : isReachable
-                        ? "reachable"
-                        : inRange
-                          ? "range"
-                          : "empty";
+              const state = isPlayer ? "player" : isEnemy ? "enemy" : isObstacle ? "obstacle" : isArea ? "area" : isReachable ? "reachable" : inRange ? "range" : "empty";
               return (
-                <button
-                  key={key}
-                  type="button"
-                  className={styles.cell}
-                  data-state={state}
-                  onClick={() => clickCell(position)}
-                  aria-label={
-                    isPlayer
-                      ? player.name
-                      : isEnemy
-                        ? creature.name
-                        : isObstacle
-                          ? "Obstáculo"
-                          : `Casa ${position.x + 1}, ${position.y + 1}`
-                  }
-                >
+                <button key={key} type="button" className={styles.cell} data-state={state} onClick={() => clickCell(position)} aria-label={isPlayer ? player.name : isEnemy ? creature.name : isObstacle ? "Obstáculo" : `Casa ${position.x + 1}, ${position.y + 1}`}>
                   {isPlayer ? <span className={styles.unit}>♞</span> : null}
                   {isEnemy ? <span className={styles.unit}>♜</span> : null}
                   {isObstacle ? <span className={styles.obstacle}>◆</span> : null}
@@ -785,31 +709,17 @@ export function TacticalLabV5({
           </div>
         </div>
         <aside className={styles.sidePanel} data-wl-surface="raised">
-          <div>
-            <span className={styles.eyebrow}>Economia do turno</span>
-            <h2>1 + 1 + 1 + 1</h2>
-          </div>
+          <div><span className={styles.eyebrow}>Economia do turno</span><h2>1 + 1 + 1 + 1</h2></div>
           <ul>
             <li>Ataque Básico: {playerStun > 0 ? "bloqueado por STUN" : usedBasic ? "usado" : "disponível"}</li>
             <li>Classe: {playerStun > 0 ? "bloqueada por STUN" : usedClass ? "usada" : "disponível"}</li>
             <li>Raça: {playerStun > 0 ? "bloqueada por STUN" : usedRace ? "usada" : "disponível"}</li>
-            <li>
-              Item: {character.items.length ? (playerStun > 0 ? "bloqueado por STUN" : usedItem ? "usado" : "disponível") : "nenhum"}
-            </li>
+            <li>Item: {character.items.length ? (playerStun > 0 ? "bloqueado por STUN" : usedItem ? "usado" : "disponível") : "nenhum"}</li>
             <li>IA: {profile.aiProfile}</li>
-            <li>
-              Skills da criatura: {creatureSkills.map((skill) => skill.name).join(" · ")}
-            </li>
+            <li>Skills da criatura: {creatureSkills.map((skill) => skill.name).join(" · ")}</li>
           </ul>
-          <p className={styles.message} role="status">
-            {message}
-          </p>
-          <div className={styles.combatLog}>
-            <small>LOG</small>
-            {log.map((entry, index) => (
-              <p key={`${index}-${entry}`}>{entry}</p>
-            ))}
-          </div>
+          <p className={styles.message} role="status">{message}</p>
+          <div className={styles.combatLog}><small>LOG</small>{log.map((entry, index) => <p key={`${index}-${entry}`}>{entry}</p>)}</div>
         </aside>
       </div>
     </section>

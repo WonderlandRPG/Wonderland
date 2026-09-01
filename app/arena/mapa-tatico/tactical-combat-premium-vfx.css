@@ -1,0 +1,44 @@
+/* Final premium interaction and VFX layer. */
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-board-shell::before{content:attr(data-round-label)}
+
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-cell[data-state="enemy"]::after{content:"";position:absolute;z-index:5;inset:20%;border:2px solid var(--wl-danger-border);border-radius:50%;box-shadow:0 0 0 1px color-mix(in srgb,var(--wl-danger-border) 30%,transparent),0 0 18px color-mix(in srgb,var(--wl-danger-border) 44%,transparent);animation:tactical-target-lock 1.15s ease-in-out infinite}
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-cell[data-state="enemy"]::before{opacity:.68;box-shadow:inset 0 0 24px color-mix(in srgb,var(--wl-danger-border) 24%,transparent)}
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-cell[data-state="player"]::after{content:"";position:absolute;z-index:0;inset:10%;border:1px solid color-mix(in srgb,var(--wl-accent) 72%,transparent);border-radius:50%;box-shadow:0 0 22px color-mix(in srgb,var(--wl-accent) 38%,transparent),inset 0 0 20px color-mix(in srgb,var(--wl-accent) 24%,transparent);animation:tactical-player-aura 1.7s ease-in-out infinite alternate}
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-unit{z-index:3}
+
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="basic"],
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="end"]{font-size:0}
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="basic"]::before,
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="end"]::before{display:block;margin-bottom:4px;color:var(--wl-gold-strong);font-size:1.2rem;line-height:1}
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="basic"]::before{content:"⚔"}
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="end"]::before{content:"⌛"}
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="basic"]::after,
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="end"]::after{content:attr(data-action-label);display:block;color:var(--wl-text-inverse);font-size:.78rem;font-weight:900;letter-spacing:.02em}
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="end"]{border-color:color-mix(in srgb,var(--wl-gold) 55%,var(--wl-border-strong));background:linear-gradient(180deg,color-mix(in srgb,var(--wl-gold-soft) 28%,var(--wl-surface-raised)),var(--wl-surface-dark-strong))}
+.tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="movement"]{font-size:.65rem;letter-spacing:.04em}
+
+.tactical-lab-stage [data-combat-mode="battle"] button[data-category] span{font-size:1.18rem;line-height:1;color:var(--wl-gold-strong);text-shadow:0 0 12px color-mix(in srgb,var(--wl-gold) 26%,transparent)}
+.tactical-lab-stage [data-combat-mode="battle"] button[data-category] strong{font-size:.78rem;letter-spacing:.02em}
+.tactical-lab-stage [data-combat-mode="battle"] button[data-category][data-active="true"] span{color:var(--wl-accent);text-shadow:0 0 15px color-mix(in srgb,var(--wl-accent) 42%,transparent)}
+.tactical-lab-stage [data-combat-mode="battle"] button[data-category][data-used="true"]{filter:saturate(.25) brightness(.62);box-shadow:inset 0 0 18px color-mix(in srgb,var(--wl-surface-dark-strong) 48%,transparent)}
+
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-contextbar::before{content:"HABILIDADES";position:sticky;left:0;align-self:center;flex:0 0 auto;padding:0 7px;color:var(--wl-gold-strong);font-size:.58rem;font-weight:900;letter-spacing:.13em;writing-mode:vertical-rl;transform:rotate(180deg)}
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-contextbar button strong{font-size:.78rem;line-height:1.15}
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-contextbar button span{opacity:.8}
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-contextbar button:disabled{filter:saturate(.28) brightness(.64)}
+
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-player-hud::after{transition:filter .2s ease,transform .2s ease}
+.tactical-lab-stage [data-combat-mode="battle"] .tactical-enemy-hud::after{transition:filter .2s ease,transform .2s ease}
+
+@keyframes tactical-target-lock{0%,100%{opacity:.55;transform:scale(.86)}50%{opacity:1;transform:scale(1.04)}}
+@keyframes tactical-player-aura{from{opacity:.4;transform:scale(.92)}to{opacity:.9;transform:scale(1.05)}}
+
+@media(max-width:900px){
+  .tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="basic"]::before,
+  .tactical-lab-stage [data-combat-mode="battle"] [data-combat-action="end"]::before{font-size:1rem}
+  .tactical-lab-stage [data-combat-mode="battle"] .tactical-contextbar::before{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .tactical-lab-stage [data-combat-mode="battle"] .tactical-cell[data-state="enemy"]::after,
+  .tactical-lab-stage [data-combat-mode="battle"] .tactical-cell[data-state="player"]::after{animation-duration:.001ms;animation-iteration-count:1}
+}

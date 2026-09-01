@@ -1,37 +1,67 @@
-.root{position:relative;display:inline-grid;justify-items:center;max-width:min(100%,420px);outline:none}
-.title{--title-primary:#fff1b5;--title-secondary:#1f7a4c;--title-glow:#d7ad45;--title-accent:#f6d765;position:relative;isolation:isolate;display:grid;grid-template-columns:22px minmax(72px,auto) 22px;align-items:center;width:max-content;max-width:100%;min-height:34px;color:var(--title-primary);filter:drop-shadow(0 5px 5px color-mix(in srgb,var(--title-secondary) 45%,transparent));font-family:Georgia,"Times New Roman",serif;font-size:.7rem;font-weight:900;letter-spacing:.065em;line-height:1.05;text-align:center;text-transform:uppercase}
-.title::before,.title::after{content:"";position:absolute;top:50%;z-index:-2;width:34px;height:24px;border:1px solid color-mix(in srgb,var(--title-accent) 72%,var(--title-secondary));background:linear-gradient(135deg,color-mix(in srgb,var(--title-secondary) 82%,var(--title-accent) 18%),color-mix(in srgb,var(--title-secondary) 78%,#000 22%));box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--title-primary) 12%,transparent),0 0 9px color-mix(in srgb,var(--title-glow) 34%,transparent)}
-.title::before{left:1px;transform:translateY(-50%) rotate(45deg);clip-path:polygon(0 50%,42% 0,100% 18%,72% 50%,100% 82%,42% 100%)}
-.title::after{right:1px;transform:translateY(-50%) rotate(-45deg);clip-path:polygon(100% 50%,58% 0,0 18%,28% 50%,0 82%,58% 100%)}
-.name{position:relative;z-index:1;display:block;min-width:0;padding:9px 22px 8px;overflow-wrap:break-word;border-block:1px solid color-mix(in srgb,var(--title-accent) 78%,var(--title-secondary));background:radial-gradient(circle at 50% 0,color-mix(in srgb,var(--title-glow) 26%,transparent),transparent 58%),linear-gradient(180deg,color-mix(in srgb,var(--title-secondary) 88%,#fff 12%),color-mix(in srgb,var(--title-secondary) 80%,#000 20%));box-shadow:inset 0 1px color-mix(in srgb,var(--title-primary) 25%,transparent),inset 0 -1px color-mix(in srgb,var(--title-accent) 22%,transparent),0 0 15px color-mix(in srgb,var(--title-glow) 26%,transparent);clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,10px 100%,0 50%);text-shadow:0 1px color-mix(in srgb,var(--title-secondary) 65%,#000),0 0 7px color-mix(in srgb,var(--title-glow) 78%,transparent)}
-.sigil{position:absolute;left:50%;top:-10px;z-index:3;display:grid;place-items:center;width:20px;height:20px;border:1px solid var(--title-accent);background:var(--title-secondary);color:var(--title-primary);box-shadow:0 0 9px var(--title-glow),inset 0 0 5px color-mix(in srgb,var(--title-glow) 38%,transparent);font-size:.72rem;line-height:1;transform:translateX(-50%) rotate(45deg)}
+.root{position:relative;display:inline-grid;justify-items:center;max-width:min(100%,440px);outline:none}
+.title{--title-primary:#fff1b5;--title-secondary:#1f7a4c;--title-glow:#d7ad45;--title-accent:#f6d765;position:relative;isolation:isolate;display:grid;grid-template-columns:26px minmax(88px,auto) 26px;align-items:center;width:max-content;max-width:100%;min-height:36px;color:var(--title-primary);font-family:Georgia,"Times New Roman",serif;font-size:.68rem;font-weight:900;letter-spacing:.07em;line-height:1;text-align:center;text-transform:uppercase;filter:drop-shadow(0 5px 6px color-mix(in srgb,var(--wl-shadow) 64%,transparent))}
+.name{position:relative;z-index:2;display:block;min-width:0;padding:10px 22px 9px;overflow:hidden;border-block:1px solid var(--title-accent);background:radial-gradient(circle at 50% -30%,color-mix(in srgb,var(--title-glow) 38%,transparent),transparent 62%),linear-gradient(180deg,color-mix(in srgb,var(--title-secondary) 82%,var(--wl-surface-raised) 18%),color-mix(in srgb,var(--title-secondary) 84%,var(--wl-surface-dark-strong) 16%));box-shadow:inset 0 1px color-mix(in srgb,var(--title-primary) 34%,transparent),inset 0 -2px color-mix(in srgb,var(--title-accent) 24%,transparent),0 0 14px color-mix(in srgb,var(--title-glow) 28%,transparent);clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,11px 100%,0 50%);text-shadow:0 1px color-mix(in srgb,var(--wl-shadow) 78%,transparent),0 0 7px color-mix(in srgb,var(--title-glow) 72%,transparent)}
+.name::after{content:"";position:absolute;inset:-70% auto -70% -42%;width:28%;z-index:-1;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--title-primary) 46%,transparent),transparent);transform:skewX(-18deg);opacity:0}
+.title::before,.title::after{content:"";position:absolute;top:50%;z-index:0;width:39px;height:27px;border:1px solid color-mix(in srgb,var(--title-accent) 82%,var(--title-secondary));background:linear-gradient(145deg,color-mix(in srgb,var(--title-secondary) 72%,var(--title-accent) 28%),color-mix(in srgb,var(--title-secondary) 82%,var(--wl-surface-dark-strong) 18%));box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--title-primary) 12%,transparent),0 0 10px color-mix(in srgb,var(--title-glow) 36%,transparent)}
+.title::before{left:0;transform:translateY(-50%);clip-path:polygon(0 50%,38% 0,100% 18%,72% 50%,100% 82%,38% 100%)}
+.title::after{right:0;transform:translateY(-50%);clip-path:polygon(100% 50%,62% 0,0 18%,28% 50%,0 82%,62% 100%)}
+.aura{position:absolute;z-index:-2;inset:-9px 10px;border-radius:50%;background:radial-gradient(ellipse,color-mix(in srgb,var(--title-glow) 32%,transparent),transparent 68%);opacity:.55;filter:blur(5px)}
+.sigil{position:absolute;left:50%;top:-11px;z-index:4;display:grid;place-items:center;width:21px;height:21px;border:1px solid var(--title-accent);background:color-mix(in srgb,var(--title-secondary) 76%,var(--wl-surface-dark-strong) 24%);color:var(--title-primary);box-shadow:0 0 9px var(--title-glow),inset 0 0 5px color-mix(in srgb,var(--title-glow) 38%,transparent);font-size:.7rem;line-height:1;transform:translateX(-50%) rotate(45deg)}
 .sigilGlyph{transform:rotate(-45deg)}
-.flourish{position:relative;z-index:2;color:var(--title-accent);font-size:.52rem;filter:drop-shadow(0 0 4px var(--title-glow))}
-.tooltip{position:absolute;left:50%;top:calc(100% + 12px);z-index:1000;isolation:isolate;display:grid;gap:0;width:min(310px,calc(100vw - 28px));padding:14px;visibility:hidden;border:1px solid var(--title-accent);border-radius:4px;background:var(--wl-surface-dark-strong);color:var(--wl-text-inverse);box-shadow:var(--wl-shadow),inset 0 0 0 2px color-mix(in srgb,var(--title-accent) 16%,transparent);opacity:0;pointer-events:none;text-align:left;transform:translate(-50%,-5px);transition:opacity .16s ease,transform .16s ease,visibility .16s}
-.tooltip::before{content:"";position:absolute;left:50%;top:-6px;width:10px;height:10px;border-left:1px solid var(--title-accent);border-top:1px solid var(--title-accent);background:var(--wl-surface-dark);transform:translateX(-50%) rotate(45deg)}
+.flourish{position:relative;z-index:3;color:var(--title-accent);font-size:.52rem;filter:drop-shadow(0 0 4px var(--title-glow))}
+
+/* Clássico: placa sóbria e reta. */
+.title[data-frame="classic"]{display:flex;min-height:30px;padding-left:17px;border:1px solid var(--title-accent);border-radius:3px;background:var(--title-secondary)}
+.title[data-frame="classic"]::before{left:5px;top:5px;bottom:5px;width:1px;height:auto;border:0;background:var(--title-accent);box-shadow:none;clip-path:none;transform:none}
+.title[data-frame="classic"]::after,.title[data-frame="classic"] .flourish{display:none}
+.title[data-frame="classic"] .name{padding:7px 12px 6px;border:0;background:none;box-shadow:none;clip-path:none}
+.title[data-frame="classic"] .sigil{left:-7px;top:50%;width:16px;height:16px;font-size:.5rem;transform:translateY(-50%) rotate(45deg)}
+
+/* Ornamental: asas laterais e medalhão central. */
+.title[data-frame="ornate"] .flourish{display:block}
+
+/* Real: brasão largo, coroa sugerida e dupla moldura. */
+.title[data-frame="royal"]{grid-template-columns:32px minmax(96px,auto) 32px}
+.title[data-frame="royal"]::before{clip-path:polygon(0 75%,20% 20%,45% 48%,65% 0,100% 55%,72% 100%,30% 86%)}
+.title[data-frame="royal"]::after{clip-path:polygon(100% 75%,80% 20%,55% 48%,35% 0,0 55%,28% 100%,70% 86%)}
+.title[data-frame="royal"] .name{padding-inline:27px;border-block-width:2px;clip-path:polygon(15px 0,calc(100% - 15px) 0,100% 50%,calc(100% - 15px) 100%,15px 100%,0 50%);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--title-accent) 18%,transparent),0 0 16px color-mix(in srgb,var(--title-glow) 38%,transparent)}
+.title[data-frame="royal"] .sigil{top:-14px;width:24px;height:24px}
+
+/* Arcano: selo oval com órbita luminosa. */
+.title[data-frame="arcane"]{grid-template-columns:18px minmax(92px,auto) 18px}
+.title[data-frame="arcane"]::before,.title[data-frame="arcane"]::after{width:30px;height:30px;border-radius:50%;clip-path:none;background:radial-gradient(circle,transparent 30%,color-mix(in srgb,var(--title-secondary) 65%,var(--title-accent) 35%) 34% 48%,transparent 52%)}
+.title[data-frame="arcane"] .name{padding-inline:25px;border:1px solid var(--title-accent);border-radius:999px;clip-path:none}
+.title[data-frame="arcane"] .sigil{border-radius:50%;transform:translateX(-50%)}
+.title[data-frame="arcane"] .sigilGlyph{transform:none}
+
+/* Sombrio: pontas agressivas e corte irregular. */
+.title[data-frame="infernal"]{grid-template-columns:31px minmax(92px,auto) 31px}
+.title[data-frame="infernal"]::before{clip-path:polygon(0 0,100% 26%,58% 50%,100% 74%,0 100%,24% 50%)}
+.title[data-frame="infernal"]::after{clip-path:polygon(100% 0,0 26%,42% 50%,0 74%,100% 100%,76% 50%)}
+.title[data-frame="infernal"] .name{padding-inline:25px;clip-path:polygon(14px 0,calc(100% - 8px) 0,100% 28%,calc(100% - 14px) 100%,8px 100%,0 72%)}
+.title[data-frame="infernal"] .sigil{clip-path:polygon(50% 0,100% 34%,82% 100%,18% 100%,0 34%);transform:translateX(-50%)}
+.title[data-frame="infernal"] .sigilGlyph{transform:none}
+
+/* A animação depende apenas do seletor do ADM, não da raridade. */
+.title[data-animated="true"]{animation:titleFloat 2.8s ease-in-out infinite}
+.title[data-animated="true"] .name::after{animation:titleShine 2.5s ease-in-out infinite}
+.title[data-animated="true"] .sigil{animation:titleSigil 1.8s ease-in-out infinite}
+.title[data-animated="true"] .aura{animation:titleAura 2.2s ease-in-out infinite}
+.title[data-animated="true"][data-frame="arcane"]::before{animation:titleOrbit 5s linear infinite}
+.title[data-animated="true"][data-frame="arcane"]::after{animation:titleOrbit 5s linear infinite reverse}
+.title[data-animated="false"],.title[data-animated="false"] *{animation:none}
+@keyframes titleFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes titleShine{0%,38%{left:-42%;opacity:0}48%{opacity:.8}62%,100%{left:114%;opacity:0}}
+@keyframes titleSigil{0%,100%{filter:brightness(.94);box-shadow:0 0 7px var(--title-glow)}50%{filter:brightness(1.3);box-shadow:0 0 17px var(--title-glow)}}
+@keyframes titleAura{0%,100%{opacity:.35;transform:scale(.94)}50%{opacity:.78;transform:scale(1.08)}}
+@keyframes titleOrbit{to{transform:translateY(-50%) rotate(360deg)}}
+
+.tooltip{position:absolute;left:50%;bottom:calc(100% + 14px);z-index:1000;isolation:isolate;display:grid;gap:0;width:min(310px,calc(100vw - 28px));padding:14px;visibility:hidden;border:1px solid var(--title-accent);border-radius:6px;background:var(--wl-surface-dark-strong);color:var(--wl-text-inverse);box-shadow:var(--wl-shadow),inset 0 0 0 2px color-mix(in srgb,var(--title-accent) 16%,transparent);opacity:0;pointer-events:none;text-align:left;transform:translate(-50%,5px);transition:opacity .16s ease,transform .16s ease,visibility .16s}
+.tooltip::before{content:"";position:absolute;left:50%;bottom:-6px;width:10px;height:10px;border-right:1px solid var(--title-accent);border-bottom:1px solid var(--title-accent);background:var(--wl-surface-dark-strong);transform:translateX(-50%) rotate(45deg)}
 .root:hover .tooltip,.root:focus-visible .tooltip,.root:focus-within .tooltip{visibility:visible;opacity:1;transform:translate(-50%,0)}
 .tooltipHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:9px;border-bottom:1px solid color-mix(in srgb,var(--title-accent) 30%,transparent)}
 .tooltipHeader strong{color:var(--title-primary);font-family:Georgia,"Times New Roman",serif;font-size:.9rem}.tooltipHeader span{color:var(--title-accent);font-size:.6rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
 .description,.acquisition{margin:9px 0 0;font-size:.72rem;line-height:1.45}.description{color:var(--wl-text-inverse)}.acquisition{color:var(--wl-text-inverse-muted)}.acquisition b{color:var(--title-accent)}
 .attributes{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0 0;padding:0;list-style:none}.attributes li{padding:3px 6px;border:1px solid color-mix(in srgb,var(--title-accent) 38%,transparent);background:color-mix(in srgb,var(--title-secondary) 35%,transparent);color:var(--title-primary);font-size:.62rem;font-weight:900}
-.title[data-frame="classic"]{grid-template-columns:8px minmax(72px,auto) 8px}.title[data-frame="classic"]::before,.title[data-frame="classic"]::after,.title[data-frame="classic"] .flourish{display:none}.title[data-frame="classic"] .name{clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 50%,calc(100% - 5px) 100%,5px 100%,0 50%)}
-.title[data-frame="royal"] .name{border-block-width:2px;clip-path:polygon(16px 0,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,16px 100%,0 50%)}
-.title[data-frame="arcane"]::before,.title[data-frame="arcane"]::after{border-radius:50%;clip-path:none}.title[data-frame="arcane"] .name{clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 7px,100% calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,0 calc(100% - 7px),0 7px)}
-.title[data-frame="infernal"]::before,.title[data-frame="infernal"]::after{clip-path:polygon(0 0,100% 30%,60% 50%,100% 70%,0 100%,28% 50%)}.title[data-frame="infernal"] .name{clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 7px,calc(100% - 5px) 100%,5px 100%,0 7px)}
-.title[data-title="legendary"],.title[data-title="mythic"],.title[data-title="awakened"]{animation:titlePulse 3.2s ease-in-out infinite}.title[data-title="mythic"] .sigil,.title[data-title="awakened"] .sigil{animation:titleSigil 1.9s ease-in-out infinite}.title[data-animated="false"],.title[data-animated="false"] .sigil{animation:none}
-@keyframes titleSigil{0%,100%{filter:brightness(.92);box-shadow:0 0 7px var(--title-glow)}50%{filter:brightness(1.2);box-shadow:0 0 15px var(--title-glow)}}@keyframes titlePulse{0%,100%{filter:drop-shadow(0 5px 5px color-mix(in srgb,var(--title-secondary) 45%,transparent)) brightness(.98)}50%{filter:drop-shadow(0 5px 8px color-mix(in srgb,var(--title-glow) 48%,transparent)) brightness(1.12)}}
-@media(max-width:620px){.title{grid-template-columns:18px minmax(62px,auto) 18px;font-size:.62rem;letter-spacing:.035em}.name{padding:8px 15px 7px}.tooltip{width:min(280px,calc(100vw - 22px))}}@media(prefers-reduced-motion:reduce){.title,.sigil,.tooltip{animation:none;transition:none}}
-.tooltip{top:auto;bottom:calc(100% + 12px)}.tooltip::before{top:auto;bottom:-6px;transform:translateX(-50%) rotate(225deg)}
-
-/* Placa equipada: compacta como identificação, sem aparência de banner. */
-.title{display:flex;grid-template-columns:none;min-height:25px;padding:0 10px 0 17px;border:1px solid var(--title-accent);border-radius:3px;background:linear-gradient(180deg,color-mix(in srgb,var(--title-secondary) 84%,#fff 16%),color-mix(in srgb,var(--title-secondary) 88%,#000 12%));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--title-primary) 18%,transparent),0 3px 9px color-mix(in srgb,var(--wl-shadow) 56%,transparent),0 0 10px color-mix(in srgb,var(--title-glow) 48%,transparent);filter:none;font-family:Georgia,"Times New Roman",serif;font-size:.62rem;letter-spacing:.055em;clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0 calc(100% - 5px),0 5px)}
-.title::before{left:4px;top:4px;bottom:4px;width:1px;height:auto;border:0;background:linear-gradient(transparent,var(--title-accent),transparent);box-shadow:none;clip-path:none;transform:none}
-.title::after{left:28%;right:28%;top:auto;bottom:2px;width:auto;height:1px;border:0;background:linear-gradient(90deg,transparent,var(--title-glow),transparent);box-shadow:none;clip-path:none;transform:none;opacity:.62}
-.name{padding:6px 5px 5px;border:0;background:none;box-shadow:none;clip-path:none;text-shadow:0 1px color-mix(in srgb,var(--wl-shadow) 78%,transparent),0 0 5px color-mix(in srgb,var(--title-glow) 42%,transparent)}
-.sigil{left:-7px;top:50%;width:16px;height:16px;border-color:var(--title-accent);background:color-mix(in srgb,var(--wl-surface-dark) 86%,var(--title-secondary) 14%);font-size:.52rem;transform:translateY(-50%) rotate(45deg);box-shadow:0 0 5px color-mix(in srgb,var(--title-glow) 45%,transparent)}
-.flourish{display:none}
-.title[data-frame="classic"],.title[data-frame="royal"],.title[data-frame="arcane"],.title[data-frame="infernal"]{display:flex;grid-template-columns:none}
-.title[data-frame="classic"] .name,.title[data-frame="royal"] .name,.title[data-frame="arcane"] .name,.title[data-frame="infernal"] .name{clip-path:none}
-.title[data-frame="royal"]{border-width:1px;border-color:var(--title-accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--title-accent) 18%,transparent),0 3px 10px color-mix(in srgb,var(--wl-shadow) 62%,transparent)}
-.title[data-frame="arcane"]{border-radius:10px;background:radial-gradient(circle at 50% 0,color-mix(in srgb,var(--title-glow) 34%,transparent),transparent 70%),linear-gradient(180deg,color-mix(in srgb,var(--title-secondary) 84%,#fff 16%),color-mix(in srgb,var(--title-secondary) 88%,#000 12%))}
-.title[data-frame="infernal"]{border-radius:2px;clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,7px 100%,0 50%)}
+@media(max-width:620px){.title{grid-template-columns:20px minmax(70px,auto) 20px;font-size:.6rem;letter-spacing:.04em}.name{padding:8px 15px 7px}.tooltip{width:min(280px,calc(100vw - 22px))}}
+@media(prefers-reduced-motion:reduce){.title,.title *,.tooltip{animation:none;transition:none}}

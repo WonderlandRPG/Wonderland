@@ -35,6 +35,7 @@ export function EquippedTitle({ title }: { title: EquippedTitleData | null }) {
           "--title-accent": visual.accent,
         } as CSSProperties}
       >
+        <i aria-hidden="true" className={styles.aura} />
         <i aria-hidden="true" className={styles.flourish}>◆</i>
         <i aria-hidden="true" className={styles.sigil}><span className={styles.sigilGlyph}>{visual.sigil}</span></i>
         <span className={styles.name}>{title.name}</span>

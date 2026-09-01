@@ -4,6 +4,14 @@ import { useState } from "react";
 import { EquippedTitle } from "@/components/characters/equipped-title";
 import type { TitleStyle, TitleRarity } from "@/lib/game/title-style";
 
+const frameLabels: Record<TitleStyle["frame"], string> = {
+  classic: "Clássico",
+  ornate: "Ornamental",
+  royal: "Real",
+  arcane: "Arcano",
+  infernal: "Sombrio",
+};
+
 export function TitleAppearanceEditor({
   name,
   rarity,
@@ -22,7 +30,11 @@ export function TitleAppearanceEditor({
       <div className="admin-title-preview is-wide">
         <small>Prévia ao vivo</small>
         <EquippedTitle title={{ name, rarity, titleStyle: style }} />
-        <p>As alterações de aparência aparecem aqui antes de salvar.</p>
+        <p>
+          Formato <strong>{frameLabels[style.frame]}</strong>
+          <span aria-hidden="true"> · </span>
+          Animação <strong>{style.animated ? "ativa" : "desativada"}</strong>
+        </p>
       </div>
       <fieldset className="title-color-editor">
         <legend>Aparência da placa</legend>

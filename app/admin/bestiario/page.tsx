@@ -6,16 +6,20 @@ export const metadata = { title: "Bestiário | Painel ADM" };
 export const dynamic = "force-dynamic";
 
 const ranks = ["E", "D", "C", "B", "A", "S", "EX"];
+const controlOperations = ["ROOT", "STUN", "SILENCE", "FEAR", "TAUNT"] as const;
 
 function skillEffect(skill: ReturnType<typeof parseCreatureCombatProfile>["skills"][number]) {
-  if (skill.operations.some((operation) => operation.operation === "ROOT")) return "root";
-  if (skill.operations.some((operation) => operation.operation === "STUN")) return "stun";
+  for (const operation of controlOperations) {
+    if (skill.operations.some((entry) => entry.operation === operation)) return operation.toLowerCase();
+  }
   if (skill.operations.some((operation) => operation.operation === "PUSH")) return "push";
   return "none";
 }
 
 function effectDuration(skill: ReturnType<typeof parseCreatureCombatProfile>["skills"][number]) {
-  return skill.operations.find((operation) => operation.operation === "ROOT" || operation.operation === "STUN")?.duration ?? 0;
+  return skill.operations.find((operation) =>
+    controlOperations.includes(operation.operation as (typeof controlOperations)[number]),
+  )?.duration ?? 0;
 }
 
 function effectDistance(skill: ReturnType<typeof parseCreatureCombatProfile>["skills"][number]) {
@@ -97,18 +101,9 @@ export default async function AdminBestiaryPage({
 
                 <fieldset>
                   <legend>Perfil tático</legend>
-                  <label>
-                    <span>HP</span>
-                    <input name="hp" type="number" min="1" max="999999" defaultValue={profile.hp} required />
-                  </label>
-                  <label>
-                    <span>Movimento por turno</span>
-                    <input name="movement" type="number" min="0" max="20" defaultValue={profile.movement} required />
-                  </label>
-                  <label>
-                    <span>Alcance do Ataque Básico</span>
-                    <input name="basicAttackRange" type="number" min="1" max="20" defaultValue={profile.basicAttackRange} required />
-                  </label>
+                  <label><span>HP</span><input name="hp" type="number" min="1" max="999999" defaultValue={profile.hp} required /></label>
+                  <label><span>Movimento por turno</span><input name="movement" type="number" min="0" max="20" defaultValue={profile.movement} required /></label>
+                  <label><span>Alcance do Ataque Básico</span><input name="basicAttackRange" type="number" min="1" max="20" defaultValue={profile.basicAttackRange} required /></label>
                   <label>
                     <span>Tipo do Ataque Básico</span>
                     <select name="basicAttackDamageType" defaultValue={profile.basicAttackDamageType}>
@@ -126,12 +121,8 @@ export default async function AdminBestiaryPage({
                   </label>
                   <label>
                     <span>Resistências</span>
-                    <textarea
-                      name="resistances"
-                      rows={3}
-                      defaultValue={profile.resistances.join(", ")}
-                      placeholder="Ex.: fogo, veneno, medo"
-                    />
+                    <textarea name="resistances" rows={3} defaultValue={profile.resistances.join(", ")} placeholder="Ex.: fogo, dano mágico, veneno, medo, stun" />
+                    <small>Dano/afinidade reduz 25%. Resistência a controle reduz sua duração em 1 turno.</small>
                   </label>
                 </fieldset>
 
@@ -140,14 +131,7 @@ export default async function AdminBestiaryPage({
                   {(["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const).map((attribute) => (
                     <label key={attribute}>
                       <span>{attribute}</span>
-                      <input
-                        name={attribute}
-                        type="number"
-                        min="0"
-                        max="9999"
-                        defaultValue={profile.attributes[attribute]}
-                        required
-                      />
+                      <input name={attribute} type="number" min="0" max="9999" defaultValue={profile.attributes[attribute]} required />
                     </label>
                   ))}
                 </fieldset>
@@ -158,14 +142,8 @@ export default async function AdminBestiaryPage({
                   return (
                     <fieldset key={index}>
                       <legend>Habilidade {index}</legend>
-                      <label>
-                        <span>Nome</span>
-                        <input name={`skill${index}Name`} defaultValue={skill?.name ?? ""} placeholder="Deixe vazio para não usar este slot" />
-                      </label>
-                      <label>
-                        <span>Dano base</span>
-                        <input name={`skill${index}Base`} type="number" min="0" max="99999" defaultValue={skill ? damageBase(skill) : 0} />
-                      </label>
+                      <label><span>Nome</span><input name={`skill${index}Name`} defaultValue={skill?.name ?? ""} placeholder="Deixe vazio para não usar este slot" /></label>
+                      <label><span>Dano base</span><input name={`skill${index}Base`} type="number" min="0" max="99999" defaultValue={skill ? damageBase(skill) : 0} /></label>
                       <label>
                         <span>Tipo de dano</span>
                         <select name={`skill${index}DamageType`} defaultValue={skill?.damageType === "true" ? "true" : skill?.damageType === "magic" ? "magic" : "physical"}>
@@ -174,31 +152,22 @@ export default async function AdminBestiaryPage({
                           <option value="true">Verdadeiro</option>
                         </select>
                       </label>
-                      <label>
-                        <span>Alcance</span>
-                        <input name={`skill${index}Range`} type="number" min="1" max="20" defaultValue={skill?.range ?? 1} />
-                      </label>
-                      <label>
-                        <span>Cooldown</span>
-                        <input name={`skill${index}Cooldown`} type="number" min="0" max="20" defaultValue={skill?.cooldown ?? 0} />
-                      </label>
+                      <label><span>Alcance</span><input name={`skill${index}Range`} type="number" min="1" max="20" defaultValue={skill?.range ?? 1} /></label>
+                      <label><span>Cooldown</span><input name={`skill${index}Cooldown`} type="number" min="0" max="20" defaultValue={skill?.cooldown ?? 0} /></label>
                       <label>
                         <span>Efeito secundário</span>
                         <select name={`skill${index}Effect`} defaultValue={skill ? skillEffect(skill) : "none"}>
                           <option value="none">Nenhum</option>
-                          <option value="root">Root</option>
-                          <option value="stun">Stun</option>
-                          <option value="push">Push</option>
+                          <option value="root">Root — bloqueia movimento</option>
+                          <option value="stun">Stun — perde o turno</option>
+                          <option value="silence">Silence — bloqueia habilidades</option>
+                          <option value="fear">Fear — bloqueia ações ofensivas</option>
+                          <option value="taunt">Taunt — força o alvo</option>
+                          <option value="push">Push — empurra no mapa</option>
                         </select>
                       </label>
-                      <label>
-                        <span>Duração do controle</span>
-                        <input name={`skill${index}Duration`} type="number" min="0" max="20" defaultValue={skill ? effectDuration(skill) : 0} />
-                      </label>
-                      <label>
-                        <span>Distância do Push</span>
-                        <input name={`skill${index}Distance`} type="number" min="0" max="20" defaultValue={skill ? effectDistance(skill) : 0} />
-                      </label>
+                      <label><span>Duração do controle</span><input name={`skill${index}Duration`} type="number" min="0" max="20" defaultValue={skill ? effectDuration(skill) : 0} /></label>
+                      <label><span>Distância do Push</span><input name={`skill${index}Distance`} type="number" min="0" max="20" defaultValue={skill ? effectDistance(skill) : 0} /></label>
                     </fieldset>
                   );
                 })}

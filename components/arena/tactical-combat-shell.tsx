@@ -58,7 +58,7 @@ export function TacticalCombatShell({
       </div>
 
       <TacticalActionCategories active={started} />
-      <TacticalPresentationBridge active={started} />
+      <TacticalPresentationBridge active={started} characters={characters} creatures={creatures} />
 
       {!started ? (
         <div className={styles.startArea}>

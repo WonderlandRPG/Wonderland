@@ -2,8 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import "./tactical-stage.css";
-import "./tactical-combat-premium.css";
-import "./tactical-combat-premium-vfx.css";
 import { TacticalCombatShell } from "@/components/arena/tactical-combat-shell";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";

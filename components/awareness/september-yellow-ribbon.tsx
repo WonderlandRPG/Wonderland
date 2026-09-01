@@ -1,8 +1,21 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { isSeptemberYellowActive } from "@/lib/awareness/september-yellow";
 import styles from "./september-yellow-ribbon.module.css";
+
+function RibbonMark({ large = false }: { large?: boolean }) {
+  return (
+    <Image
+      alt=""
+      className={large ? styles.largeRibbon : styles.ribbon}
+      height={320}
+      src="/images/september-yellow-ribbon.webp"
+      width={172}
+    />
+  );
+}
 
 export function SeptemberYellowRibbon() {
   const [active] = useState(() => isSeptemberYellowActive());
@@ -21,8 +34,8 @@ export function SeptemberYellowRibbon() {
         onClick={openDialog}
         type="button"
       >
-        <span aria-hidden="true" className={styles.ribbon} />
-        <span>Setembro Amarelo</span>
+        <RibbonMark />
+        <span className={styles.triggerLabel}>Setembro Amarelo</span>
       </button>
 
       <dialog
@@ -41,7 +54,7 @@ export function SeptemberYellowRibbon() {
         >
           ×
         </button>
-        <span aria-hidden="true" className={styles.largeRibbon} />
+        <RibbonMark large />
         <small>Setembro Amarelo</small>
         <h2 id="september-yellow-title">Você não precisa enfrentar tudo sozinho.</h2>
         <p>

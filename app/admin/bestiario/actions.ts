@@ -9,7 +9,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const skillDamageTypeSchema = z.enum(["physical", "magic", "true"]);
 const basicDamageTypeSchema = z.enum(["physical", "magic"]);
-const effectSchema = z.enum(["none", "root", "stun", "push"]);
+const effectSchema = z.enum(["none", "root", "stun", "silence", "fear", "taunt", "push"]);
 const aiProfileSchema = z.enum(["aggressive", "ranged", "controller"]);
 
 const schema = z.object({
@@ -87,9 +87,10 @@ function parseSkill(formData: FormData, index: number, creatureId: string) {
     },
   ];
 
-  if (data.effect === "root" || data.effect === "stun") {
+  const controlEffects = ["root", "stun", "silence", "fear", "taunt"] as const;
+  if ((controlEffects as readonly string[]).includes(data.effect)) {
     operations.push({
-      operation: data.effect === "root" ? "ROOT" : "STUN",
+      operation: data.effect.toUpperCase(),
       target: "enemy",
       base: 0,
       scaling: [],
@@ -121,6 +122,8 @@ function parseSkill(formData: FormData, index: number, creatureId: string) {
     });
   }
 
+  const isControl = controlEffects.includes(data.effect as (typeof controlEffects)[number]);
+
   return {
     key: `criatura-${creatureId.slice(0, 8)}-${index}-${slugify(data.name)}`,
     name: data.name,
@@ -137,7 +140,7 @@ function parseSkill(formData: FormData, index: number, creatureId: string) {
     cooldown: data.cooldown,
     range: data.range,
     area: 0,
-    duration: data.effect === "root" || data.effect === "stun" ? Math.max(1, data.duration) : 0,
+    duration: isControl ? Math.max(1, data.duration) : 0,
     scaling: [],
     reachText: `${data.range} casa(s)`,
     conditions: [],
@@ -181,7 +184,7 @@ export async function updateCreatureCombatProfileAdminAction(formData: FormData)
     .filter((skill): skill is NonNullable<typeof skill> => Boolean(skill));
 
   const combatProfile = {
-    version: 2,
+    version: 3,
     hp: parsed.data.hp,
     attributes: {
       FOR: parsed.data.FOR,

@@ -20,6 +20,10 @@ import {
   createDefaultCreatureSkill,
   type TacticalBestiaryCreature,
 } from "@/lib/game/creature-tactical-combat";
+import {
+  getTacticalRootTurns,
+  getTacticalStunTurns,
+} from "@/lib/game/tactical-control";
 import { chooseTacticalProfileDestination } from "@/lib/game/tactical-ai-profiles";
 import {
   getForcedMovementDestination,
@@ -104,15 +108,6 @@ function makeCreature(creature: TacticalBestiaryCreature) {
     usesMana: false,
     basicAttackDamageType: creature.combatProfile.basicAttackDamageType,
   });
-}
-
-function rootTurns(combatant: CombatantState) {
-  return Object.entries(combatant.statuses).reduce((max, [key, status]) => {
-    const text = `${key} ${status.name}`.toLowerCase();
-    return /root|enraiz|imobil|prisao|controle/.test(text)
-      ? Math.max(max, status.duration)
-      : max;
-  }, 0);
 }
 
 function percent(current: number, maximum: number) {
@@ -202,8 +197,10 @@ export function TacticalLabV5({
   const creatureSkills = profile.skills.length
     ? profile.skills
     : [createDefaultCreatureSkill(creature)];
-  const playerRoot = rootTurns(player);
-  const enemyRoot = rootTurns(enemy);
+  const playerRoot = getTacticalRootTurns(player);
+  const enemyRoot = getTacticalRootTurns(enemy);
+  const playerStun = getTacticalStunTurns(player);
+  const enemyStun = getTacticalStunTurns(enemy);
   const finished = player.hp <= 0 || enemy.hp <= 0;
   const rankMismatch = character.rank !== creature.rank;
 
@@ -258,6 +255,9 @@ export function TacticalLabV5({
 
   function selectAction(next: PlayerAction) {
     if (finished) return setMessage("O combate terminou. Reinicie o mapa.");
+    if (playerStun > 0) {
+      return setMessage(`Você está atordoado por ${playerStun} turno(s) e não pode agir.`);
+    }
     if (next.kind === "basic" && usedBasic) {
       return setMessage("Ataque Básico já usado neste turno.");
     }
@@ -281,6 +281,9 @@ export function TacticalLabV5({
     selected: Extract<PlayerAction, { kind: "skill" }>,
     center: TacticalPosition,
   ) {
+    if (playerStun > 0) {
+      return setMessage(`Você está atordoado por ${playerStun} turno(s) e não pode agir.`);
+    }
     if (selected.area > 0 && affectsEnemy(selected.skill)) {
       const affected = getTacticalAreaCells({ center, radius: selected.area, grid: GRID });
       if (!affected.has(tacticalPositionKey(enemyPosition))) {
@@ -354,6 +357,9 @@ export function TacticalLabV5({
   function clickCell(position: TacticalPosition) {
     const key = tacticalPositionKey(position);
     if (!action) {
+      if (playerStun > 0) {
+        return setMessage(`Você está atordoado por ${playerStun} turno(s) e não pode agir.`);
+      }
       if (playerRoot > 0) {
         return setMessage(`Você está imobilizado por ${playerRoot} turno(s).`);
       }
@@ -365,6 +371,9 @@ export function TacticalLabV5({
       return;
     }
 
+    if (playerStun > 0) {
+      return setMessage(`Você está atordoado por ${playerStun} turno(s) e não pode agir.`);
+    }
     if (obstacles.has(key)) return setMessage("Essa casa está bloqueada.");
     const distance = getTacticalDistance(playerPosition, position);
     if (distance > action.range) {
@@ -417,6 +426,9 @@ export function TacticalLabV5({
 
   function useItem(item: TacticalItem) {
     if (usedItem || finished) return;
+    if (playerStun > 0) {
+      return setMessage(`Você está atordoado por ${playerStun} turno(s) e não pode usar itens.`);
+    }
     const healed = Math.min(
       Math.max(25, Math.round(player.maxHp * 0.25)),
       player.maxHp - player.hp,
@@ -432,91 +444,98 @@ export function TacticalLabV5({
     if (finished) return;
 
     let nextEnemy = enemy;
-    let nextPlayer = player;
+    let nextPlayer = tickCooldowns(player);
     let nextEnemyPosition = enemyPosition;
     let nextPlayerPosition = playerPosition;
     const notes = [`Rodada ${round}: ${creature.name} (${profile.aiProfile}).`];
 
-    const planningRange = getCreaturePlanningSkillRange({
-      skills: creatureSkills,
-      cooldowns: nextEnemy.cooldowns,
-      profile: profile.aiProfile,
-      fallbackRange: profile.basicAttackRange,
-    });
-    const hasReadySkill = creatureSkills.some(
-      (skill) => (nextEnemy.cooldowns[skill.key] ?? 0) <= 0,
-    );
+    if (playerStun > 0) {
+      notes.push(`${player.name} encerrou o turno atordoado.`);
+    }
 
-    if (enemyRoot > 0) {
-      notes.push(`Imobilizado por ${enemyRoot} turno(s).`);
+    if (enemyStun > 0) {
+      notes.push(`${creature.name} está atordoado por ${enemyStun} turno(s) e perdeu a ação.`);
     } else {
-      const decision = chooseTacticalProfileDestination({
+      const planningRange = getCreaturePlanningSkillRange({
+        skills: creatureSkills,
+        cooldowns: nextEnemy.cooldowns,
         profile: profile.aiProfile,
-        start: enemyPosition,
-        target: playerPosition,
-        movement: profile.movement,
-        grid: GRID,
-        blocked: obstacles,
-        sightBlocked: obstacles,
-        basicRange: profile.basicAttackRange,
-        skillRange: planningRange,
-        skillAvailable: hasReadySkill,
+        fallbackRange: profile.basicAttackRange,
       });
-      nextEnemyPosition = decision.position;
-      notes.push(
-        decision.movementCost > 0
-          ? `Moveu ${decision.movementCost} casa(s): ${decision.reason}.`
-          : `Manteve posição: ${decision.reason}.`,
+      const hasReadySkill = creatureSkills.some(
+        (skill) => (nextEnemy.cooldowns[skill.key] ?? 0) <= 0,
       );
-    }
 
-    const distance = getTacticalDistance(nextEnemyPosition, nextPlayerPosition);
-    const sight = hasTacticalLineOfSight({
-      from: nextEnemyPosition,
-      to: nextPlayerPosition,
-      blocked: obstacles,
-    });
-    const selectedEnemySkill = sight
-      ? chooseCreatureTacticalSkill({
-          skills: creatureSkills,
-          cooldowns: nextEnemy.cooldowns,
-          distance,
+      if (enemyRoot > 0) {
+        notes.push(`Imobilizado por ${enemyRoot} turno(s): não pode se mover.`);
+      } else {
+        const decision = chooseTacticalProfileDestination({
           profile: profile.aiProfile,
-        })
-      : null;
-
-    if (selectedEnemySkill) {
-      notes.push(`IA escolheu ${selectedEnemySkill.name}.`);
-      const result = resolveTacticalSkill(nextEnemy, nextPlayer, selectedEnemySkill);
-      nextEnemy = result.actor;
-      nextPlayer = result.target;
-      notes.push(result.event.message);
-
-      const push = selectedEnemySkill.operations.find(
-        (operation) => operation.operation === "PUSH",
-      );
-      if (push) {
-        const forced = getForcedMovementDestination({
-          source: nextEnemyPosition,
-          target: nextPlayerPosition,
-          distance: Math.max(1, push.distance || 1),
-          blocked: new Set([...obstacles, tacticalPositionKey(nextEnemyPosition)]),
+          start: enemyPosition,
+          target: playerPosition,
+          movement: profile.movement,
           grid: GRID,
+          blocked: obstacles,
+          sightBlocked: obstacles,
+          basicRange: profile.basicAttackRange,
+          skillRange: planningRange,
+          skillAvailable: hasReadySkill,
         });
-        nextPlayerPosition = forced.position;
-        if (forced.moved) notes.push(`Jogador empurrado ${forced.moved} casa(s).`);
+        nextEnemyPosition = decision.position;
+        notes.push(
+          decision.movementCost > 0
+            ? `Moveu ${decision.movementCost} casa(s): ${decision.reason}.`
+            : `Manteve posição: ${decision.reason}.`,
+        );
       }
-    } else if (distance <= profile.basicAttackRange && sight) {
-      const result = resolveBasicAttack(nextEnemy, nextPlayer);
-      nextEnemy = result.actor;
-      nextPlayer = result.target;
-      notes.push("Nenhuma habilidade própria válida; IA usou Ataque Básico.");
-      notes.push(result.event.message);
-    } else {
-      notes.push(`Sem ação ofensiva válida. Distância ${distance}.`);
+
+      const distance = getTacticalDistance(nextEnemyPosition, nextPlayerPosition);
+      const sight = hasTacticalLineOfSight({
+        from: nextEnemyPosition,
+        to: nextPlayerPosition,
+        blocked: obstacles,
+      });
+      const selectedEnemySkill = sight
+        ? chooseCreatureTacticalSkill({
+            skills: creatureSkills,
+            cooldowns: nextEnemy.cooldowns,
+            distance,
+            profile: profile.aiProfile,
+          })
+        : null;
+
+      if (selectedEnemySkill) {
+        notes.push(`IA escolheu ${selectedEnemySkill.name}.`);
+        const result = resolveTacticalSkill(nextEnemy, nextPlayer, selectedEnemySkill);
+        nextEnemy = result.actor;
+        nextPlayer = result.target;
+        notes.push(result.event.message);
+
+        const push = selectedEnemySkill.operations.find(
+          (operation) => operation.operation === "PUSH",
+        );
+        if (push) {
+          const forced = getForcedMovementDestination({
+            source: nextEnemyPosition,
+            target: nextPlayerPosition,
+            distance: Math.max(1, push.distance || 1),
+            blocked: new Set([...obstacles, tacticalPositionKey(nextEnemyPosition)]),
+            grid: GRID,
+          });
+          nextPlayerPosition = forced.position;
+          if (forced.moved) notes.push(`Jogador empurrado ${forced.moved} casa(s).`);
+        }
+      } else if (distance <= profile.basicAttackRange && sight) {
+        const result = resolveBasicAttack(nextEnemy, nextPlayer);
+        nextEnemy = result.actor;
+        nextPlayer = result.target;
+        notes.push("Nenhuma habilidade própria válida; IA usou Ataque Básico.");
+        notes.push(result.event.message);
+      } else {
+        notes.push(`Sem ação ofensiva válida. Distância ${distance}.`);
+      }
     }
 
-    nextPlayer = tickCooldowns(nextPlayer);
     nextEnemy = tickCooldowns(nextEnemy);
     setEnemyPosition(nextEnemyPosition);
     setPlayerPosition(nextPlayerPosition);
@@ -539,8 +558,8 @@ export function TacticalLabV5({
           <span className={styles.eyebrow}>Somente ADM · motor tático V5</span>
           <h1>Laboratório do Mapa Tático</h1>
           <p>
-            Criaturas reais do Bestiário, múltiplas habilidades próprias, perfis de IA persistidos e
-            fraquezas com +25% de dano quando a afinidade realmente corresponde.
+            Criaturas reais do Bestiário, múltiplas habilidades próprias, perfis de IA persistidos,
+            controles táticos e fraquezas com +25% de dano quando a afinidade realmente corresponde.
           </p>
         </div>
         <div className={styles.status}>
@@ -599,6 +618,7 @@ export function TacticalLabV5({
             </span>
           ) : null}
           {playerRoot > 0 ? <span>ROOT: {playerRoot}</span> : null}
+          {playerStun > 0 ? <span>STUN: {playerStun}</span> : null}
         </article>
         <article data-enemy="true">
           <small>BESTIÁRIO · RANK {creature.rank}</small>
@@ -616,13 +636,14 @@ export function TacticalLabV5({
             Fraquezas: {creature.weaknesses.length ? creature.weaknesses.join(" · ") : "nenhuma catalogada"}
           </span>
           {enemyRoot > 0 ? <span>ROOT: {enemyRoot}</span> : null}
+          {enemyStun > 0 ? <span>STUN: {enemyStun}</span> : null}
         </article>
       </section>
 
       <div className={styles.toolbar} data-wl-surface="raised">
         <button
           type="button"
-          disabled={playerRoot > 0 || finished}
+          disabled={playerRoot > 0 || playerStun > 0 || finished}
           onClick={() => {
             clearAction();
             setMessage(`Movimento: ${movement}/${PLAYER_MOVE}.`);
@@ -632,7 +653,7 @@ export function TacticalLabV5({
         </button>
         <button
           type="button"
-          disabled={usedBasic || finished}
+          disabled={usedBasic || playerStun > 0 || finished}
           data-wl-action={action?.kind === "basic" ? "primary" : undefined}
           onClick={() =>
             selectAction({
@@ -661,7 +682,7 @@ export function TacticalLabV5({
             <button
               key={`${source}-${skill.key}`}
               type="button"
-              disabled={isUsed || cooldown > 0 || finished}
+              disabled={isUsed || cooldown > 0 || playerStun > 0 || finished}
               data-selected={
                 action?.kind === "skill" && action.skill.key === skill.key ? "true" : "false"
               }
@@ -699,7 +720,7 @@ export function TacticalLabV5({
           <button
             key={item.id}
             type="button"
-            disabled={usedItem || finished}
+            disabled={usedItem || playerStun > 0 || finished}
             onClick={() => useItem(item)}
           >
             <strong>{item.name}</strong>
@@ -720,9 +741,9 @@ export function TacticalLabV5({
               const isPlayer = key === tacticalPositionKey(playerPosition);
               const isEnemy = key === tacticalPositionKey(enemyPosition);
               const isObstacle = obstacles.has(key);
-              const isReachable = !action && reachable.has(key);
+              const isReachable = !action && playerStun <= 0 && reachable.has(key);
               const inRange = Boolean(
-                action && getTacticalDistance(playerPosition, position) <= action.range,
+                action && playerStun <= 0 && getTacticalDistance(playerPosition, position) <= action.range,
               );
               const isArea = areaCells.has(key);
               const state = isPlayer
@@ -769,11 +790,11 @@ export function TacticalLabV5({
             <h2>1 + 1 + 1 + 1</h2>
           </div>
           <ul>
-            <li>Ataque Básico: {usedBasic ? "usado" : "disponível"}</li>
-            <li>Classe: {usedClass ? "usada" : "disponível"}</li>
-            <li>Raça: {usedRace ? "usada" : "disponível"}</li>
+            <li>Ataque Básico: {playerStun > 0 ? "bloqueado por STUN" : usedBasic ? "usado" : "disponível"}</li>
+            <li>Classe: {playerStun > 0 ? "bloqueada por STUN" : usedClass ? "usada" : "disponível"}</li>
+            <li>Raça: {playerStun > 0 ? "bloqueada por STUN" : usedRace ? "usada" : "disponível"}</li>
             <li>
-              Item: {character.items.length ? (usedItem ? "usado" : "disponível") : "nenhum"}
+              Item: {character.items.length ? (playerStun > 0 ? "bloqueado por STUN" : usedItem ? "usado" : "disponível") : "nenhum"}
             </li>
             <li>IA: {profile.aiProfile}</li>
             <li>

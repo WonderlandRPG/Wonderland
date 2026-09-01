@@ -68,8 +68,14 @@ describe("tactical racial reactions", () => {
   });
 
   it("requires Draconato to take at least 10% max HP in one action", () => {
-    expect(applyTacticalRacialReaction(fighter(), "Draconato", { tookDamage: 49 }).triggered).toBe(false);
-    expect(applyTacticalRacialReaction(fighter(), "Draconato", { tookDamage: 50 }).triggered).toBe(true);
+    const combatant = fighter();
+    const threshold = combatant.maxHp * 0.1;
+    expect(
+      applyTacticalRacialReaction(combatant, "Draconato", { tookDamage: threshold - 1 }).triggered,
+    ).toBe(false);
+    expect(
+      applyTacticalRacialReaction(combatant, "Draconato", { tookDamage: threshold }).triggered,
+    ).toBe(true);
   });
 
   it("gives Elfo resource for a hit from at least three cells", () => {

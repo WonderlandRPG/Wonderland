@@ -74,11 +74,75 @@ export function getTacticalAreaCells({
   for (let y = 0; y < grid.height; y += 1) {
     for (let x = 0; x < grid.width; x += 1) {
       const position = { x, y };
-      if (getTacticalDistance(center, position) <= radius) {
-        cells.add(tacticalPositionKey(position));
-      }
+      if (getTacticalDistance(center, position) <= radius) cells.add(tacticalPositionKey(position));
     }
   }
 
   return cells;
+}
+
+export function hasTacticalLineOfSight({
+  from,
+  to,
+  blocked,
+}: {
+  from: TacticalPosition;
+  to: TacticalPosition;
+  blocked: ReadonlySet<string>;
+}) {
+  let x0 = from.x;
+  let y0 = from.y;
+  const x1 = to.x;
+  const y1 = to.y;
+  const dx = Math.abs(x1 - x0);
+  const dy = Math.abs(y1 - y0);
+  const sx = x0 < x1 ? 1 : -1;
+  const sy = y0 < y1 ? 1 : -1;
+  let error = dx - dy;
+
+  while (x0 !== x1 || y0 !== y1) {
+    const doubled = error * 2;
+    if (doubled > -dy) {
+      error -= dy;
+      x0 += sx;
+    }
+    if (doubled < dx) {
+      error += dx;
+      y0 += sy;
+    }
+    if (x0 === x1 && y0 === y1) return true;
+    if (blocked.has(tacticalPositionKey({ x: x0, y: y0 }))) return false;
+  }
+  return true;
+}
+
+export function getForcedMovementDestination({
+  source,
+  target,
+  distance,
+  blocked,
+  grid,
+}: {
+  source: TacticalPosition;
+  target: TacticalPosition;
+  distance: number;
+  blocked: ReadonlySet<string>;
+  grid: TacticalGridSize;
+}) {
+  const deltaX = target.x - source.x;
+  const deltaY = target.y - source.y;
+  const step = Math.abs(deltaX) >= Math.abs(deltaY)
+    ? { x: Math.sign(deltaX), y: 0 }
+    : { x: 0, y: Math.sign(deltaY) };
+  let current = target;
+  let moved = 0;
+
+  while (moved < distance) {
+    const next = { x: current.x + step.x, y: current.y + step.y };
+    if (!isTacticalPositionInside(next, grid) || blocked.has(tacticalPositionKey(next))) break;
+    current = next;
+    moved += 1;
+  }
+
+  return { position: current, moved };
 }

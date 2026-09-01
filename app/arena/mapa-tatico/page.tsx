@@ -33,24 +33,27 @@ export default async function TacticalMapLabPage() {
   const { data: creatureRows } = client
     ? await client
         .from("v2_creatures")
-        .select("id,slug,name,category,rank,behavior,weaknesses,description,combat_profile")
+        .select("*")
         .eq("active", true)
         .order("rank")
         .order("name")
     : { data: [] };
 
-  const creatures = (creatureRows ?? []).map((entry) => ({
-    id: entry.id,
-    slug: entry.slug,
-    name: entry.name,
-    category: entry.category,
-    rank: entry.rank,
-    behavior: entry.behavior,
-    weaknesses: parseTextList(entry.weaknesses),
-    description: entry.description,
-    imageUrl: getCreatureImageUrl(entry.slug),
-    combatProfile: parseCreatureCombatProfile(entry.rank, entry.combat_profile),
-  }));
+  const creatures = (creatureRows ?? []).map((entry) => {
+    const row = entry as typeof entry & { combat_profile?: unknown };
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      category: row.category,
+      rank: row.rank,
+      behavior: row.behavior,
+      weaknesses: parseTextList(row.weaknesses),
+      description: row.description,
+      imageUrl: getCreatureImageUrl(row.slug),
+      combatProfile: parseCreatureCombatProfile(row.rank, row.combat_profile),
+    };
+  });
 
   const characters = sheets.map((character) => {
     const rawClassSkills = character.unlockedClassSkills.filter((skill) => !/passiva/i.test(skill.type));

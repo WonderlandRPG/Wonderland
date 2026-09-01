@@ -2,8 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { createCombatant } from "@/lib/game/combat";
 import {
+  canUseTacticalOffense,
+  canUseTacticalSkills,
+  getTacticalFearTurns,
   getTacticalRootTurns,
+  getTacticalSilenceTurns,
   getTacticalStunTurns,
+  getTacticalTaunt,
   isTacticalTurnDisabled,
 } from "@/lib/game/tactical-control";
 
@@ -44,9 +49,54 @@ describe("tactical control status helpers", () => {
       beneficial: false,
     };
 
-    expect(getTacticalRootTurns(combatant)).toBe(0);
     expect(getTacticalStunTurns(combatant)).toBe(1);
     expect(isTacticalTurnDisabled(combatant)).toBe(true);
+    expect(canUseTacticalSkills(combatant)).toBe(false);
+    expect(canUseTacticalOffense(combatant)).toBe(false);
+  });
+
+  it("silence blocks skills but not basic offense", () => {
+    const combatant = fighter();
+    combatant.statuses["silence-arcano"] = {
+      name: "Silenciado",
+      duration: 2,
+      stacks: 1,
+      modifiers: {},
+      beneficial: false,
+    };
+
+    expect(getTacticalSilenceTurns(combatant)).toBe(2);
+    expect(canUseTacticalSkills(combatant)).toBe(false);
+    expect(canUseTacticalOffense(combatant)).toBe(true);
+  });
+
+  it("fear blocks offensive actions without becoming stun", () => {
+    const combatant = fighter();
+    combatant.statuses["fear-terror"] = {
+      name: "Medo",
+      duration: 1,
+      stacks: 1,
+      modifiers: {},
+      beneficial: false,
+    };
+
+    expect(getTacticalFearTurns(combatant)).toBe(1);
+    expect(isTacticalTurnDisabled(combatant)).toBe(false);
+    expect(canUseTacticalOffense(combatant)).toBe(false);
+  });
+
+  it("reads the forced target from taunt", () => {
+    const combatant = fighter();
+    combatant.statuses["taunt-guardiao"] = {
+      name: "Provocado",
+      duration: 2,
+      stacks: 1,
+      modifiers: {},
+      beneficial: false,
+      forcedTargetId: "guardiao",
+    };
+
+    expect(getTacticalTaunt(combatant)).toEqual({ turns: 2, targetId: "guardiao" });
   });
 
   it("uses the longest matching duration when multiple controls exist", () => {

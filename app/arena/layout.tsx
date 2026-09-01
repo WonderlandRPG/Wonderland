@@ -1,3 +1,4 @@
+import { AdminTacticalAccess } from "@/components/arena/admin-tactical-access";
 import { ArenaEntryNavigation } from "@/components/arena/arena-entry-navigation";
 import { ArenaImageRepair } from "@/components/arena/arena-image-repair";
 import { BattleFormationEnhancer } from "@/components/arena/battle-formation-enhancer";
@@ -23,6 +24,7 @@ export default function ArenaLayout({ children }: Readonly<{ children: React.Rea
       <ArenaImageRepair />
       <BattleFormationEnhancer />
       <CombatVisualEnhancer />
+      <AdminTacticalAccess />
       {children}
     </>
   );

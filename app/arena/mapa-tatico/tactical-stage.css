@@ -1,249 +1,149 @@
 .tactical-lab-stage:has([data-combat-mode="battle"])>.arena-mode-back{display:none}
 
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"],
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]{
-  overflow:visible;
+.tactical-lab-stage [data-scene-picker]{
+  display:grid;
+  min-width:min(320px,100%);
+  gap:6px;
+  padding:12px 14px;
+  border:1px solid color-mix(in srgb,var(--wl-gold) 28%,var(--wl-border));
+  border-radius:12px;
+  background:color-mix(in srgb,var(--wl-surface-dark) 82%,var(--wl-surface-raised));
 }
+.tactical-lab-stage [data-scene-picker]>span{color:var(--wl-gold-strong);font-size:.68rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+.tactical-lab-stage [data-scene-picker]>select{min-height:40px;padding:0 10px;border:1px solid var(--wl-border-strong);border-radius:8px;background:var(--wl-field-bg);color:var(--wl-field-text);font:inherit;font-weight:750}
+.tactical-lab-stage [data-scene-picker]>small{color:var(--wl-text-muted);font-size:.7rem;line-height:1.35}
+
+.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"],
+.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]{overflow:visible}
 
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]>span:first-child,
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child{
-  position:absolute;
-  inset:8% 9% 20%;
-  display:block;
-  width:auto;
-  height:auto;
-  margin:0;
-  overflow:hidden;
-  border:1px solid color-mix(in srgb,var(--wl-border-strong) 76%,transparent);
-  border-radius:12%;
-  background:color-mix(in srgb,var(--wl-surface-dark-strong) 92%,transparent);
-  font-size:0;
-  transform:none;
-  box-shadow:0 7px 16px color-mix(in srgb,var(--wl-surface-dark-strong) 58%,transparent);
+  position:absolute;inset:8% 9% 20%;display:block;width:auto;height:auto;margin:0;overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--wl-border-strong) 76%,transparent);border-radius:12%;
+  background:color-mix(in srgb,var(--wl-surface-dark-strong) 92%,transparent);font-size:0;transform:none;
+  box-shadow:0 7px 16px color-mix(in srgb,var(--wl-surface-dark-strong) 58%,transparent)
 }
-
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]>span:first-child::before,
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  display:block;
-  width:auto;
-  height:auto;
-  border-radius:inherit;
-  background-position:center;
-  background-repeat:no-repeat;
+  content:"";position:absolute;inset:0;display:block;width:auto;height:auto;border-radius:inherit;background-position:center;background-repeat:no-repeat
 }
-
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]>span:first-child{
-  border-color:color-mix(in srgb,var(--wl-gold) 78%,var(--wl-border));
-}
-
+.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]>span:first-child{border-color:color-mix(in srgb,var(--wl-gold) 78%,var(--wl-border))}
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]>span:first-child::before{
-  background-color:color-mix(in srgb,var(--wl-gold-soft) 24%,var(--wl-surface-dark-strong));
-  background-image:var(--tactical-player-image);
-  background-size:cover;
+  background-color:color-mix(in srgb,var(--wl-gold-soft) 24%,var(--wl-surface-dark-strong));background-image:var(--tactical-player-image);background-size:cover
 }
-
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child{
-  border-color:color-mix(in srgb,var(--wl-danger-border) 82%,var(--wl-border));
-}
-
+.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child{border-color:color-mix(in srgb,var(--wl-danger-border) 82%,var(--wl-border))}
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child::before{
-  background-color:color-mix(in srgb,var(--wl-danger-bg) 30%,var(--wl-surface-dark-strong));
-  background-image:var(--tactical-creature-image);
-  background-size:contain;
+  background-color:color-mix(in srgb,var(--wl-danger-bg) 30%,var(--wl-surface-dark-strong));background-image:var(--tactical-creature-image);background-size:contain
 }
-
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]::after,
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]::after{
-  content:attr(aria-label);
-  position:absolute;
-  z-index:5;
-  right:4%;
-  bottom:3%;
-  left:4%;
-  overflow:hidden;
-  padding:3px 5px;
-  border:1px solid color-mix(in srgb,var(--wl-border-strong) 72%,transparent);
-  border-radius:5px;
-  background:color-mix(in srgb,var(--wl-surface-dark-strong) 94%,transparent);
-  color:var(--wl-text-inverse);
-  font-size:clamp(.48rem,.88vw,.65rem);
-  font-weight:850;
-  line-height:1.1;
-  letter-spacing:.025em;
-  text-align:center;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  box-shadow:0 3px 9px color-mix(in srgb,var(--wl-surface-dark-strong) 58%,transparent);
+  content:attr(aria-label);position:absolute;z-index:5;right:4%;bottom:3%;left:4%;overflow:hidden;padding:3px 5px;
+  border:1px solid color-mix(in srgb,var(--wl-border-strong) 72%,transparent);border-radius:5px;
+  background:color-mix(in srgb,var(--wl-surface-dark-strong) 94%,transparent);color:var(--wl-text-inverse);
+  font-size:clamp(.48rem,.88vw,.65rem);font-weight:850;line-height:1.1;letter-spacing:.025em;text-align:center;text-overflow:ellipsis;white-space:nowrap;
+  box-shadow:0 3px 9px color-mix(in srgb,var(--wl-surface-dark-strong) 58%,transparent)
 }
-
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]::after{
-  border-color:color-mix(in srgb,var(--wl-gold) 72%,var(--wl-border));
-}
-
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]::after{
-  border-color:color-mix(in srgb,var(--wl-danger-border) 78%,var(--wl-border));
-}
-
+.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]::after{border-color:color-mix(in srgb,var(--wl-gold) 72%,var(--wl-border))}
+.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]::after{border-color:color-mix(in srgb,var(--wl-danger-border) 78%,var(--wl-border))}
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]:hover>span:first-child,
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]:hover>span:first-child{
-  transform:scale(1.035);
-}
+.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]:hover>span:first-child{transform:scale(1.035)}
 
-/* Arena visual: a arte gerada é o próprio chão. */
+/* A arte é o próprio chão do tabuleiro; não há mais um tabuleiro pequeno dentro do painel. */
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] div:has(> div:has(> [data-state])){
-  min-height:0;
-  padding:0;
-  overflow:hidden;
-  border:1px solid color-mix(in srgb,var(--wl-gold) 42%,var(--wl-border-strong));
-  border-radius:18px;
+  min-height:0;padding:0;overflow:hidden;border:1px solid color-mix(in srgb,var(--wl-gold) 42%,var(--wl-border-strong));border-radius:18px;
   background:color-mix(in srgb,var(--wl-surface-dark-strong) 94%,transparent);
-  box-shadow:0 18px 48px color-mix(in srgb,var(--wl-surface-dark-strong) 46%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--wl-gold) 10%,transparent);
+  box-shadow:0 18px 48px color-mix(in srgb,var(--wl-surface-dark-strong) 46%,transparent),inset 0 0 0 1px color-mix(in srgb,var(--wl-gold) 10%,transparent)
 }
-
-.tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] div:has(> div:has(> [data-state]))::before{
-  display:none;
-}
-
+.tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] div:has(> div:has(> [data-state]))::before{display:none}
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] div:has(> [data-state]){
-  position:relative;
-  display:grid;
-  width:100%;
-  max-width:none;
-  min-width:0;
-  height:100%;
-  min-height:0;
-  margin:0;
-  grid-template-rows:repeat(8,minmax(0,1fr));
-  overflow:hidden;
-  border:0;
-  border-radius:17px;
+  position:relative;display:grid;width:100%;max-width:none;min-width:0;height:100%;min-height:0;margin:0;
+  grid-template-rows:repeat(8,minmax(0,1fr));overflow:hidden;border:0;border-radius:17px;
   background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-surface-dark-strong) 8%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 26%,transparent)),url("/tactical/maps/forest.webp");
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:cover;
-  box-shadow:inset 0 0 42px color-mix(in srgb,var(--wl-surface-dark-strong) 42%,transparent);
+  background-position:center;background-repeat:no-repeat;background-size:cover;
+  box-shadow:inset 0 0 42px color-mix(in srgb,var(--wl-surface-dark-strong) 42%,transparent)
+}
+.tactical-lab-stage [data-map-scene="ruins"] [aria-label="Laboratório do mapa tático V8"] div:has(> [data-state]){
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-surface-dark-strong) 5%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 22%,transparent)),url("/tactical/maps/ruins.webp")
+}
+.tactical-lab-stage [data-map-scene="veil"] [aria-label="Laboratório do mapa tático V8"] div:has(> [data-state]){
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-surface-dark-strong) 4%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 18%,transparent)),url("/tactical/maps/veil.webp")
 }
 
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state]{
-  min-width:0;
-  min-height:0;
-  aspect-ratio:auto;
-  border-color:color-mix(in srgb,var(--wl-border-soft) 34%,transparent);
+  min-width:0;min-height:0;aspect-ratio:auto;border-color:color-mix(in srgb,var(--wl-border-soft) 34%,transparent);
   background:color-mix(in srgb,var(--wl-surface-dark-strong) 7%,transparent);
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wl-text-inverse) 2%,transparent);
-  backdrop-filter:none;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wl-text-inverse) 2%,transparent);backdrop-filter:none
 }
-
-.tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state]:nth-child(even){
-  background:color-mix(in srgb,var(--wl-surface-dark-strong) 13%,transparent);
-}
-
+.tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state]:nth-child(even){background:color-mix(in srgb,var(--wl-surface-dark-strong) 13%,transparent)}
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state="reachable"]{
   background:color-mix(in srgb,var(--wl-success-bg) 42%,transparent);
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wl-success-border) 72%,transparent),inset 0 0 22px color-mix(in srgb,var(--wl-success-bg) 34%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wl-success-border) 72%,transparent),inset 0 0 22px color-mix(in srgb,var(--wl-success-bg) 34%,transparent)
 }
-
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state="range"]{
   background:color-mix(in srgb,var(--wl-accent-soft) 36%,transparent);
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wl-accent) 66%,transparent),inset 0 0 22px color-mix(in srgb,var(--wl-accent-soft) 30%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wl-accent) 66%,transparent),inset 0 0 22px color-mix(in srgb,var(--wl-accent-soft) 30%,transparent)
 }
-
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state="area"]{
   background:color-mix(in srgb,var(--wl-danger-bg) 42%,transparent);
-  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wl-danger-border) 72%,transparent),inset 0 0 24px color-mix(in srgb,var(--wl-danger-bg) 36%,transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--wl-danger-border) 72%,transparent),inset 0 0 24px color-mix(in srgb,var(--wl-danger-bg) 36%,transparent)
 }
-
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state="player"],
-.tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]{
-  background:color-mix(in srgb,var(--wl-surface-dark-strong) 16%,transparent);
-}
+.tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]{background:color-mix(in srgb,var(--wl-surface-dark-strong) 16%,transparent)}
 
-/* Obstáculos reais gerados para o campo. */
+/* Obstáculos gerados: a colisão continua vindo exatamente das mesmas casas do motor. */
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]{
-  --tactical-obstacle-image:url("/tactical/obstacles/rune.webp");
-  overflow:visible;
-  background:color-mix(in srgb,var(--wl-surface-dark-strong) 10%,transparent);
+  --tactical-obstacle-image:url("/tactical/obstacles/rune.webp");overflow:visible;background:color-mix(in srgb,var(--wl-surface-dark-strong) 10%,transparent)
 }
-
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]>span{
-  display:block;
-  position:absolute;
-  z-index:3;
-  inset:-10%;
-  width:auto;
-  height:auto;
-  margin:0;
-  border:0;
-  border-radius:0;
-  background-color:transparent;
-  background-image:var(--tactical-obstacle-image);
-  background-position:center;
-  background-repeat:no-repeat;
-  background-size:contain;
-  color:transparent;
-  font-size:0;
-  filter:drop-shadow(0 8px 8px color-mix(in srgb,var(--wl-surface-dark-strong) 66%,transparent));
-  transform:translateY(-3%);
-  box-shadow:none;
-  pointer-events:none;
+  display:block;position:absolute;z-index:3;inset:-10%;width:auto;height:auto;margin:0;border:0;border-radius:0;background-color:transparent;
+  background-image:var(--tactical-obstacle-image);background-position:center;background-repeat:no-repeat;background-size:contain;
+  color:transparent;font-size:0;filter:drop-shadow(0 8px 8px color-mix(in srgb,var(--wl-surface-dark-strong) 66%,transparent));
+  transform:translateY(-3%);box-shadow:none;pointer-events:none
 }
+/* Bosque: troncos e espinheiros dominam o campo. */
+.tactical-lab-stage [data-map-scene="forest"] [data-state="obstacle"]:nth-child(23),
+.tactical-lab-stage [data-map-scene="forest"] [data-state="obstacle"]:nth-child(36),
+.tactical-lab-stage [data-map-scene="forest"] [data-state="obstacle"]:nth-child(58){--tactical-obstacle-image:url("/tactical/obstacles/log.webp")}
+.tactical-lab-stage [data-map-scene="forest"] [data-state="obstacle"]:nth-child(35),
+.tactical-lab-stage [data-map-scene="forest"] [data-state="obstacle"]:nth-child(68){--tactical-obstacle-image:url("/tactical/obstacles/bramble.webp")}
+.tactical-lab-stage [data-map-scene="forest"] [data-state="obstacle"]:nth-child(25){--tactical-obstacle-image:url("/tactical/obstacles/pillar.webp")}
+/* Ruínas: pilares e pedestais antigos. */
+.tactical-lab-stage [data-map-scene="ruins"] [data-state="obstacle"]{--tactical-obstacle-image:url("/tactical/obstacles/rune.webp")}
+.tactical-lab-stage [data-map-scene="ruins"] [data-state="obstacle"]:nth-child(23),
+.tactical-lab-stage [data-map-scene="ruins"] [data-state="obstacle"]:nth-child(25),
+.tactical-lab-stage [data-map-scene="ruins"] [data-state="obstacle"]:nth-child(36),
+.tactical-lab-stage [data-map-scene="ruins"] [data-state="obstacle"]:nth-child(58){--tactical-obstacle-image:url("/tactical/obstacles/pillar.webp")}
+/* Véu: vegetação mágica hostil com ruínas isoladas. */
+.tactical-lab-stage [data-map-scene="veil"] [data-state="obstacle"]{--tactical-obstacle-image:url("/tactical/obstacles/bramble.webp")}
+.tactical-lab-stage [data-map-scene="veil"] [data-state="obstacle"]:nth-child(23),
+.tactical-lab-stage [data-map-scene="veil"] [data-state="obstacle"]:nth-child(58){--tactical-obstacle-image:url("/tactical/obstacles/log.webp")}
+.tactical-lab-stage [data-map-scene="veil"] [data-state="obstacle"]:nth-child(25){--tactical-obstacle-image:url("/tactical/obstacles/pillar.webp")}
 
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]:nth-child(23),
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]:nth-child(36){
-  --tactical-obstacle-image:url("/tactical/obstacles/log.webp");
-}
-
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]:nth-child(25),
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]:nth-child(58){
-  --tactical-obstacle-image:url("/tactical/obstacles/pillar.webp");
-}
-
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]:nth-child(35),
-.tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]:nth-child(68){
-  --tactical-obstacle-image:url("/tactical/obstacles/bramble.webp");
-}
-
-/* HUDs laterais: menos painel administrativo, mais moldura de combate. */
+/* HUD lateral com moldura de combate. */
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] > section:nth-of-type(2) article{
   border-color:color-mix(in srgb,var(--wl-gold) 30%,var(--wl-border-strong));
   background:linear-gradient(180deg,color-mix(in srgb,var(--wl-surface-dark-strong) 94%,transparent),color-mix(in srgb,var(--wl-surface-dark) 86%,transparent));
-  box-shadow:0 18px 42px color-mix(in srgb,var(--wl-surface-dark-strong) 38%,transparent),inset 0 1px 0 color-mix(in srgb,var(--wl-gold) 10%,transparent);
+  box-shadow:0 18px 42px color-mix(in srgb,var(--wl-surface-dark-strong) 38%,transparent),inset 0 1px 0 color-mix(in srgb,var(--wl-gold) 10%,transparent)
 }
+.tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] > section:nth-of-type(2) article[data-enemy="true"]{border-color:color-mix(in srgb,var(--wl-danger-border) 54%,var(--wl-border-strong))}
 
-.tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] > section:nth-of-type(2) article[data-enemy="true"]{
-  border-color:color-mix(in srgb,var(--wl-danger-border) 54%,var(--wl-border-strong));
-}
-
-/* Botões nativos: acabamento de hotbar, não aparência de formulário. */
+/* Hotbar escura e legível. */
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(1) > button:not(:first-child){
   border-color:color-mix(in srgb,var(--wl-gold) 28%,var(--wl-border-strong));
   background:linear-gradient(180deg,color-mix(in srgb,var(--wl-surface-raised) 24%,var(--wl-surface-dark)),var(--wl-surface-dark-strong));
-  color:var(--wl-text-inverse);
-  box-shadow:inset 0 1px 0 color-mix(in srgb,var(--wl-gold) 10%,transparent),0 8px 20px color-mix(in srgb,var(--wl-surface-dark-strong) 28%,transparent);
+  color:var(--wl-text-inverse);box-shadow:inset 0 1px 0 color-mix(in srgb,var(--wl-gold) 10%,transparent),0 8px 20px color-mix(in srgb,var(--wl-surface-dark-strong) 28%,transparent)
 }
-
 .tactical-lab-stage:has([data-combat-mode="battle"]) [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(1) > button:not(:first-child):not(:disabled):hover{
-  border-color:var(--wl-gold);
-  transform:translateY(-1px);
-  box-shadow:0 0 0 1px color-mix(in srgb,var(--wl-gold) 16%,transparent),0 10px 24px color-mix(in srgb,var(--wl-gold) 10%,transparent);
+  border-color:var(--wl-gold);transform:translateY(-1px);box-shadow:0 0 0 1px color-mix(in srgb,var(--wl-gold) 16%,transparent),0 10px 24px color-mix(in srgb,var(--wl-gold) 10%,transparent)
 }
 
+@media(max-width:800px){
+  .tactical-lab-stage [data-scene-picker]{min-width:0;width:100%}
+}
 @media(max-width:700px){
   .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]>span:first-child,
-  .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child{
-    inset:7% 7% 22%;
-  }
-
+  .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child{inset:7% 7% 22%}
   .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]::after,
-  .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]::after{
-    padding:2px 3px;
-    font-size:.46rem;
-  }
-
-  .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]>span{
-    inset:-4%;
-  }
+  .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]::after{padding:2px 3px;font-size:.46rem}
+  .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="obstacle"]>span{inset:-4%}
 }

@@ -30,6 +30,10 @@ function addPresentationClasses(lab: HTMLElement) {
   }
 
   const direct = Array.from(lab.children) as HTMLElement[];
+  const hiddenHeader = direct.find((entry) => entry.tagName === "HEADER");
+  const roundText = hiddenHeader?.textContent?.match(/Rodada\s+(\d+)/i)?.[1];
+  if (roundText) lab.dataset.round = roundText;
+
   const hud = direct.find(
     (entry) => entry.tagName === "SECTION" && entry.querySelectorAll(":scope > article").length === 2,
   );
@@ -45,7 +49,23 @@ function addPresentationClasses(lab: HTMLElement) {
     Array.from(entry.querySelectorAll("button")).some((button) => button.textContent?.includes("Movimento")),
   );
   toolbar?.classList.add("toolbar", "tactical-actionbar");
-  toolbar?.querySelectorAll<HTMLElement>("button[data-category]").forEach((button) => button.classList.add("category"));
+  if (toolbar) {
+    const buttons = Array.from(toolbar.querySelectorAll<HTMLButtonElement>(":scope > button"));
+    const movement = buttons.find((button) => button.textContent?.includes("Movimento"));
+    const basic = buttons.find((button) => button.textContent?.includes("Ataque"));
+    const end = buttons.find((button) => button.textContent?.includes("Encerrar turno"));
+    const reset = buttons.find((button) => button.textContent?.includes("Reiniciar"));
+    if (movement) movement.dataset.combatAction = "movement";
+    if (basic) {
+      basic.dataset.combatAction = "basic";
+      basic.dataset.actionLabel = "Ataque Básico";
+    }
+    if (end) {
+      end.dataset.combatAction = "end";
+      end.dataset.actionLabel = "Encerrar Turno";
+    }
+    if (reset) reset.dataset.combatAction = "reset";
+  }
 
   const skillBar = direct.find((entry) =>
     Array.from(entry.querySelectorAll("button")).some((button) => /Classe · Alcance|Raça · Alcance|Item ativo/.test(button.textContent ?? "")),
@@ -57,6 +77,7 @@ function addPresentationClasses(lab: HTMLElement) {
     workspace.classList.add("workspace", "tactical-workspace");
     const boardShell = workspace.firstElementChild as HTMLElement | null;
     boardShell?.classList.add("boardShell", "tactical-board-shell");
+    if (boardShell && roundText) boardShell.dataset.roundLabel = `RODADA ${roundText}`;
     const board = boardShell?.querySelector<HTMLElement>(":scope > div");
     board?.classList.add("board", "tactical-board");
     board?.querySelectorAll<HTMLElement>(":scope > button").forEach((cell) => {

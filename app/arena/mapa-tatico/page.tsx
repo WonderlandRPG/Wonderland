@@ -2,8 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import "./tactical-stage.css";
-import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
-import { TacticalLabV8 } from "@/components/arena/tactical-lab-v8";
+import { TacticalCombatShell } from "@/components/arena/tactical-combat-shell";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheets } from "@/lib/content/characters";
@@ -19,7 +18,7 @@ import { getTacticalSkillRange } from "@/lib/game/tactical-skill-range";
 import { repairTacticalInertSkill } from "@/lib/game/tactical-skill-repair";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export const metadata = { title: "Laboratório do Mapa Tático" };
+export const metadata = { title: "Combate Tático" };
 export const dynamic = "force-dynamic";
 
 export default async function TacticalMapLabPage() {
@@ -156,8 +155,7 @@ export default async function TacticalMapLabPage() {
       <PlayerNav />
       <div className="page-container arena-page__inner tactical-lab-stage">
         <Link className="arena-mode-back" href="/arena">← Voltar para Arena</Link>
-        <TacticalCombatIdentity characters={characters} creatures={creatures} />
-        <TacticalLabV8 characters={characters} creatures={creatures} />
+        <TacticalCombatShell characters={characters} creatures={creatures} />
       </div>
     </main>
   );

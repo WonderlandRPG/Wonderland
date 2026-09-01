@@ -13,9 +13,11 @@ import {
 import type { ClassSkill } from "@/lib/game/classes";
 import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import {
+  getForcedMovementDestination,
   getReachableTacticalCells,
   getTacticalAreaCells,
   getTacticalDistance,
+  hasTacticalLineOfSight,
   tacticalPositionKey,
   type TacticalPosition,
 } from "@/lib/game/tactical-grid";
@@ -91,12 +93,27 @@ function percent(current: number, maximum: number) {
   return Math.max(0, Math.min(100, (current / maximum) * 100));
 }
 
+function hasSpatialSelfMovement(skill: ClassSkill) {
+  return skill.operations.some(
+    (operation) =>
+      (operation.operation === "MOVE" || operation.operation === "TELEPORT") &&
+      (operation.target === "self" || operation.target === "source"),
+  );
+}
+
+function rootTurns(combatant: CombatantState) {
+  return Object.entries(combatant.statuses).reduce((maximum, [key, status]) => {
+    const text = `${key} ${status.name}`.toLowerCase();
+    return /root|enraiz|imobil/.test(text) ? Math.max(maximum, status.duration) : maximum;
+  }, 0);
+}
+
 export function TacticalLab({ characters }: { characters: TacticalCharacter[] }) {
   const first = characters[0];
   const [selectedCharacterId, setSelectedCharacterId] = useState(first?.id ?? "");
   const character = characters.find((entry) => entry.id === selectedCharacterId) ?? first;
   const [playerPosition, setPlayerPosition] = useState<TacticalPosition>(START_PLAYER);
-  const [enemyPosition] = useState<TacticalPosition>(START_ENEMY);
+  const [enemyPosition, setEnemyPosition] = useState<TacticalPosition>(START_ENEMY);
   const [overlay, setOverlay] = useState<OverlayMode>("movement");
   const [remainingMove, setRemainingMove] = useState(MOVE_LIMIT);
   const [selectedAction, setSelectedAction] = useState<SelectedAction | null>(null);
@@ -139,6 +156,8 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
   const activePlayer: CombatantState = playerCombat;
   const activeEnemy: CombatantState = enemyCombat;
   const defeated = activeEnemy.hp <= 0;
+  const playerRooted = rootTurns(activePlayer);
+  const enemyRooted = rootTurns(activeEnemy);
 
   function pushLog(text: string) {
     setLog((current) => [text, ...current].slice(0, 8));
@@ -151,6 +170,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
 
   function beginMovement() {
     if (defeated) return setMessage("Reinicie o mapa para continuar os testes.");
+    if (playerRooted > 0) return setMessage(`${activePlayer.name} está imobilizado por ${playerRooted} turno(s).`);
     clearSelection();
     setOverlay("movement");
     setMessage(remainingMove > 0 ? `Restam ${remainingMove} ponto(s) de movimento.` : "Sem movimento restante neste turno.");
@@ -181,12 +201,39 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
     if (result.target.hp <= 0) pushLog("Sentinela Rúnica derrotada no laboratório.");
   }
 
+  function applySpatialOperations(skill: ClassSkill, center: TacticalPosition) {
+    const notes: string[] = [];
+    for (const operation of skill.operations) {
+      const distance = Math.max(1, operation.distance || skill.range || 1);
+      if (operation.operation === "PUSH" && (operation.target === "enemy" || operation.target === "area")) {
+        const forced = getForcedMovementDestination({
+          source: playerPosition,
+          target: enemyPosition,
+          distance,
+          blocked: new Set([...obstacleKeys, tacticalPositionKey(playerPosition)]),
+          grid: GRID,
+        });
+        setEnemyPosition(forced.position);
+        notes.push(forced.moved > 0 ? `Sentinela empurrada ${forced.moved} casa(s).` : "Empurrão bloqueado pelo terreno.");
+      }
+      if ((operation.operation === "MOVE" || operation.operation === "TELEPORT") && (operation.target === "self" || operation.target === "source")) {
+        if (!obstacleKeys.has(tacticalPositionKey(center)) && tacticalPositionKey(center) !== tacticalPositionKey(enemyPosition)) {
+          setPlayerPosition(center);
+          notes.push(`${operation.operation === "TELEPORT" ? "Teleporte" : "Movimento especial"}: ${center.x + 1},${center.y + 1}.`);
+        }
+      }
+    }
+    notes.forEach(pushLog);
+    return notes;
+  }
+
   function applySkill(action: Extract<SelectedAction, { kind: "skill" }>, center: TacticalPosition) {
     if (usedSkill) return setMessage("Uma habilidade já foi usada neste turno.");
-    const selfTarget = action.skill.target === "self" || action.skill.target === "ally";
+    const spatialSelf = hasSpatialSelfMovement(action.skill);
+    const selfTarget = !spatialSelf && (action.skill.target === "self" || action.skill.target === "ally");
     let result;
 
-    if (selfTarget) {
+    if (selfTarget || spatialSelf) {
       result = resolveJrpgSkill(activePlayer, activePlayer, action.skill);
       if (result.event.kind === "error") return setMessage(result.event.message);
       setPlayerCombat(result.target.id === activePlayer.id ? result.target : result.actor);
@@ -211,16 +258,19 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
       setEnemyCombat(result.target);
     }
 
+    const spatialNotes = applySpatialOperations(action.skill, center);
     setUsedSkill(true);
-    setMessage(result.event.message);
+    const text = `${result.event.message}${spatialNotes.length ? ` ${spatialNotes.join(" ")}` : ""}`;
+    setMessage(text);
     pushLog(result.event.message);
-    if (!selfTarget && result.target.hp <= 0) pushLog("Sentinela Rúnica derrotada no laboratório.");
+    if (!selfTarget && !spatialSelf && result.target.hp <= 0) pushLog("Sentinela Rúnica derrotada no laboratório.");
   }
 
   function handleCellClick(position: TacticalPosition) {
     const cellKey = tacticalPositionKey(position);
 
     if (overlay === "movement" && reachable.has(cellKey)) {
+      if (playerRooted > 0) return setMessage(`${activePlayer.name} está imobilizado e não pode se mover.`);
       const cost = reachable.get(cellKey) ?? 0;
       setPlayerPosition(position);
       setRemainingMove((current) => Math.max(0, current - cost));
@@ -231,7 +281,8 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
     if (obstacleKeys.has(cellKey)) return setMessage("Ação bloqueada: existe um obstáculo nessa casa.");
 
     if (overlay === "range" && selectedAction) {
-      const selfTarget = selectedAction.kind === "skill" && (selectedAction.skill.target === "self" || selectedAction.skill.target === "ally");
+      const spatialSelf = selectedAction.kind === "skill" && hasSpatialSelfMovement(selectedAction.skill);
+      const selfTarget = selectedAction.kind === "skill" && !spatialSelf && (selectedAction.skill.target === "self" || selectedAction.skill.target === "ally");
       if (selfTarget) {
         if (cellKey !== tacticalPositionKey(playerPosition)) return setMessage("Essa habilidade deve ser usada no próprio personagem.");
         setAreaCenter(playerPosition);
@@ -245,10 +296,21 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
         return setMessage(`${selectedAction.name}: fora do alcance (${distance}/${selectedAction.range}).`);
       }
 
+      if (!spatialSelf && !hasTacticalLineOfSight({ from: playerPosition, to: position, blocked: obstacleKeys })) {
+        setAreaCenter(null);
+        return setMessage(`${selectedAction.name}: linha de visão bloqueada por um obstáculo.`);
+      }
+
       setAreaCenter(position);
       if (selectedAction.kind === "basic") {
         if (cellKey !== tacticalPositionKey(enemyPosition)) return setMessage("Ataque básico precisa selecionar a criatura.");
         applyBasicAttack();
+        return;
+      }
+
+      if (spatialSelf) {
+        if (cellKey === tacticalPositionKey(enemyPosition)) return setMessage("O destino está ocupado pela Sentinela.");
+        applySkill(selectedAction, position);
         return;
       }
 
@@ -267,17 +329,19 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
 
   function endTurn() {
     setPlayerCombat(tickCooldowns(activePlayer));
+    setEnemyCombat(tickCooldowns(activeEnemy));
     setRemainingMove(MOVE_LIMIT);
     setUsedBasic(false);
     setUsedSkill(false);
     clearSelection();
     setOverlay("movement");
     setMessage(`Novo turno de teste iniciado. ${MOVE_LIMIT} pontos de movimento restaurados.`);
-    pushLog("Turno encerrado: cooldowns reduziram em 1.");
+    pushLog("Turno encerrado: cooldowns e status avançaram.");
   }
 
   function resetBoard(nextCharacter = character) {
     setPlayerPosition(START_PLAYER);
+    setEnemyPosition(START_ENEMY);
     setRemainingMove(MOVE_LIMIT);
     setUsedBasic(false);
     setUsedSkill(false);
@@ -303,9 +367,9 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
         <div>
           <span className={styles.eyebrow}>Somente administradores · protótipo isolado</span>
           <h1>Laboratório do Mapa Tático</h1>
-          <p>Combate real em memória: dano, recursos e cooldown funcionam aqui sem salvar recompensa, progresso ou sessão.</p>
+          <p>Combate real em memória: dano, recursos, cooldown e efeitos espaciais funcionam aqui sem salvar recompensa, progresso ou sessão.</p>
         </div>
-        <div className={styles.status}><small>Estado do protótipo</small><strong>Combate espacial ativo</strong></div>
+        <div className={styles.status}><small>Estado do protótipo</small><strong>Combate + espaço ativos</strong></div>
       </header>
 
       <section className={styles.characterPanel} data-wl-surface="raised">
@@ -333,17 +397,18 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
           {activePlayer.maxMana > 0 ? <span>Mana {activePlayer.mana} / {activePlayer.maxMana}</span> : null}
           {activePlayer.maxClassResource > 0 ? <span>{activePlayer.classResourceName}: {activePlayer.classResource}/{activePlayer.maxClassResource}</span> : null}
           {activePlayer.maxRaceResource > 0 ? <span>{activePlayer.raceResourceName}: {activePlayer.raceResource}/{activePlayer.maxRaceResource}</span> : null}
+          {playerRooted > 0 ? <span>Imobilizado: {playerRooted} turno(s)</span> : null}
         </article>
         <article data-enemy="true">
           <small>ALVO DE TESTE</small><strong>Sentinela Rúnica</strong>
           <div className={styles.bar}><i style={{ width: `${percent(activeEnemy.hp, activeEnemy.maxHp)}%` }} /></div>
           <span>HP {activeEnemy.hp} / {activeEnemy.maxHp}</span>
-          <span>{defeated ? "DERROTADA" : "Ativa"}</span>
+          <span>{defeated ? "DERROTADA" : enemyRooted > 0 ? `Imobilizada: ${enemyRooted}` : "Ativa"}</span>
         </article>
       </section>
 
       <div className={styles.toolbar} data-wl-surface="raised">
-        <button type="button" data-wl-action={overlay === "movement" ? "primary" : undefined} onClick={beginMovement}>Movimento · {remainingMove}/{MOVE_LIMIT}</button>
+        <button type="button" disabled={playerRooted > 0} data-wl-action={overlay === "movement" ? "primary" : undefined} onClick={beginMovement}>Movimento · {remainingMove}/{MOVE_LIMIT}</button>
         <button type="button" disabled={usedBasic || defeated} data-wl-action={selectedAction?.kind === "basic" ? "primary" : undefined} onClick={() => selectAction({ kind: "basic", name: "Ataque básico", range: character.basicAttackRange, area: 0 })}>Ataque básico · alcance {character.basicAttackRange}</button>
         <button type="button" onClick={endTurn}>Encerrar turno</button>
         <button type="button" onClick={() => { setOverlay("none"); clearSelection(); }}>Limpar marcações</button>
@@ -353,11 +418,13 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
       <div className={styles.skillBar} data-wl-surface="raised" aria-label="Habilidades reais do personagem">
         {character.skills.map(({ source, skill }) => {
           const cooldown = activePlayer.cooldowns[skill.key] ?? 0;
+          const spatial = skill.operations.filter((operation) => ["ROOT", "PUSH", "MOVE", "TELEPORT"].includes(operation.operation));
           return (
             <button key={`${source}-${skill.key}`} type="button" disabled={usedSkill || cooldown > 0 || defeated} data-selected={selectedAction?.kind === "skill" && selectedAction.skill.key === skill.key ? "true" : "false"} onClick={() => selectAction({ kind: "skill", name: skill.name, range: skill.range, area: skill.area, source, skill })} title={skill.playerDescription}>
               <strong>{skill.name}</strong>
               <span>{source === "class" ? "Classe" : "Raça"} · Alcance {skill.range} · Área {skill.area}</span>
               <small>{cooldown > 0 ? `Cooldown: ${cooldown}` : skill.cost > 0 ? `${skill.cost} ${skill.resource}` : "Sem custo"}</small>
+              {spatial.length ? <small>Espacial: {spatial.map((operation) => operation.operation).join(" + ")}</small> : null}
             </button>
           );
         })}
@@ -372,7 +439,8 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
               const isEnemy = cellKey === tacticalPositionKey(enemyPosition);
               const isObstacle = obstacleKeys.has(cellKey);
               const isReachable = overlay === "movement" && reachable.has(cellKey);
-              const selfTarget = selectedAction?.kind === "skill" && (selectedAction.skill.target === "self" || selectedAction.skill.target === "ally");
+              const spatialSelf = selectedAction?.kind === "skill" && hasSpatialSelfMovement(selectedAction.skill);
+              const selfTarget = selectedAction?.kind === "skill" && !spatialSelf && (selectedAction.skill.target === "self" || selectedAction.skill.target === "ally");
               const isInRange = overlay === "range" && selectedAction && !isObstacle && (selfTarget ? isPlayer : getTacticalDistance(playerPosition, position) <= selectedAction.range);
               const isArea = areaCells.has(cellKey);
               const state = isPlayer ? "player" : isEnemy ? "enemy" : isObstacle ? "obstacle" : isArea ? "area" : isReachable ? "reachable" : isInRange ? "range" : "empty";
@@ -393,8 +461,8 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
             <li>Movimento: {remainingMove}/{MOVE_LIMIT}.</li>
             <li>Ataque básico: {usedBasic ? "usado" : "disponível"}.</li>
             <li>Habilidade: {usedSkill ? "usada" : "disponível"}.</li>
-            <li>Dano e defesa usam o motor real do Wonderland.</li>
-            <li>Mana, recursos, status e cooldown são aplicados em memória.</li>
+            <li>Linha de visão é bloqueada pelos obstáculos.</li>
+            <li>Push, Move, Teleport e Root usam as casas reais do mapa.</li>
           </ul>
           {selectedAction ? <div className={styles.actionDetails}><small>Ação selecionada</small><strong>{selectedAction.name}</strong><span>Alcance {selectedAction.range} · Área {selectedAction.area}</span></div> : null}
           <p className={styles.message} role="status">{message}</p>

@@ -20,14 +20,13 @@
 /* Ornamental: asas laterais e medalhão central. */
 .title[data-frame="ornate"] .flourish{display:block}
 
-/* Real: brasão compacto, com ponteiras e medalhão de coroa. */
-.title[data-frame="royal"]{grid-template-columns:18px minmax(96px,auto) 18px}
-.title[data-frame="royal"]::before,.title[data-frame="royal"]::after{width:27px;height:20px;background:linear-gradient(145deg,color-mix(in srgb,var(--title-secondary) 76%,var(--title-accent) 24%),var(--title-secondary));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--title-primary) 18%,transparent),0 0 7px color-mix(in srgb,var(--title-glow) 34%,transparent)}
-.title[data-frame="royal"]::before{left:2px;clip-path:polygon(0 50%,35% 8%,100% 22%,76% 50%,100% 78%,35% 92%)}
-.title[data-frame="royal"]::after{right:2px;clip-path:polygon(100% 50%,65% 8%,0 22%,24% 50%,0 78%,65% 92%)}
-.title[data-frame="royal"] .name{padding-inline:21px;border-block-width:2px;clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,11px 100%,0 50%);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--title-accent) 24%,transparent),0 0 13px color-mix(in srgb,var(--title-glow) 34%,transparent)}
-.title[data-frame="royal"] .sigil{top:-12px;width:22px;height:22px}
-.title[data-frame="royal"] .flourish{font-size:.42rem}
+/* Real: placa régia sólida, sem as asas do Ornamental. */
+.title[data-frame="royal"]{display:flex;min-height:39px;padding:3px 7px;border:2px solid var(--title-accent);background:linear-gradient(180deg,color-mix(in srgb,var(--title-accent) 32%,var(--title-secondary)),var(--title-secondary) 30%,color-mix(in srgb,var(--title-secondary) 78%,var(--wl-surface-dark-strong) 22%));box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--title-primary) 18%,transparent),inset 0 0 0 4px color-mix(in srgb,var(--title-accent) 18%,transparent),0 0 15px color-mix(in srgb,var(--title-glow) 36%,transparent);clip-path:polygon(8px 0,calc(50% - 18px) 0,50% 5px,calc(50% + 18px) 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(50% + 9px) calc(100% - 8px),50% 100%,calc(50% - 9px) calc(100% - 8px),0 calc(100% - 8px),0 8px)}
+.title[data-frame="royal"]::before{content:"♛";left:50%;top:-17px;z-index:5;width:auto;height:auto;border:0;background:none;color:var(--title-accent);box-shadow:none;clip-path:none;font-size:1rem;line-height:1;text-shadow:0 0 7px var(--title-glow);transform:translateX(-50%)}
+.title[data-frame="royal"]::after{left:20%;right:20%;top:auto;bottom:5px;width:auto;height:1px;border:0;background:linear-gradient(90deg,transparent,var(--title-accent),transparent);box-shadow:none;clip-path:none;transform:none}
+.title[data-frame="royal"] .name{padding:8px 18px 9px;border:0;background:none;box-shadow:none;clip-path:none}
+.title[data-frame="royal"] .sigil{left:11px;top:50%;width:17px;height:17px;font-size:.5rem;transform:translateY(-50%) rotate(45deg)}
+.title[data-frame="royal"] .flourish{display:none}
 
 /* Arcano: selo oval com órbita luminosa. */
 .title[data-frame="arcane"]{grid-template-columns:18px minmax(92px,auto) 18px}
@@ -36,13 +35,15 @@
 .title[data-frame="arcane"] .sigil{border-radius:50%;transform:translateX(-50%)}
 .title[data-frame="arcane"] .sigilGlyph{transform:none}
 
-/* Sombrio: pontas agressivas e corte irregular. */
-.title[data-frame="infernal"]{grid-template-columns:31px minmax(92px,auto) 31px}
-.title[data-frame="infernal"]::before{clip-path:polygon(0 0,100% 26%,58% 50%,100% 74%,0 100%,24% 50%)}
-.title[data-frame="infernal"]::after{clip-path:polygon(100% 0,0 26%,42% 50%,0 74%,100% 100%,76% 50%)}
-.title[data-frame="infernal"] .name{padding-inline:25px;clip-path:polygon(14px 0,calc(100% - 8px) 0,100% 28%,calc(100% - 14px) 100%,8px 100%,0 72%)}
-.title[data-frame="infernal"] .sigil{clip-path:polygon(50% 0,100% 34%,82% 100%,18% 100%,0 34%);transform:translateX(-50%)}
+/* Sombrio: insígnia gótica limpa, com arco e ponteiras de ferro. */
+.title[data-frame="infernal"]{grid-template-columns:20px minmax(94px,auto) 20px;min-height:38px}
+.title[data-frame="infernal"]::before,.title[data-frame="infernal"]::after{top:50%;width:31px;height:25px;border:1px solid var(--title-accent);background:linear-gradient(180deg,color-mix(in srgb,var(--title-secondary) 68%,var(--wl-surface-dark-strong) 32%),color-mix(in srgb,var(--title-secondary) 46%,var(--wl-surface-dark-strong) 54%));box-shadow:inset 0 0 7px color-mix(in srgb,var(--title-glow) 24%,transparent),0 0 6px color-mix(in srgb,var(--title-glow) 26%,transparent)}
+.title[data-frame="infernal"]::before{left:1px;clip-path:polygon(0 50%,38% 8%,100% 0,72% 50%,100% 100%,38% 92%)}
+.title[data-frame="infernal"]::after{right:1px;clip-path:polygon(100% 50%,62% 8%,0 0,28% 50%,0 100%,62% 92%)}
+.title[data-frame="infernal"] .name{padding:11px 23px 8px;border:1px solid var(--title-accent);background:linear-gradient(180deg,color-mix(in srgb,var(--title-secondary) 60%,var(--wl-surface-dark-strong) 40%),color-mix(in srgb,var(--title-secondary) 38%,var(--wl-surface-dark-strong) 62%));clip-path:polygon(50% 0,calc(100% - 9px) 7px,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%,9px 7px);box-shadow:inset 0 -6px 12px color-mix(in srgb,var(--wl-surface-dark-strong) 52%,transparent),0 0 13px color-mix(in srgb,var(--title-glow) 28%,transparent)}
+.title[data-frame="infernal"] .sigil{top:-9px;width:19px;height:22px;border-radius:50% 50% 4px 4px;clip-path:polygon(50% 0,100% 32%,82% 100%,18% 100%,0 32%);transform:translateX(-50%)}
 .title[data-frame="infernal"] .sigilGlyph{transform:none}
+.title[data-frame="infernal"] .flourish{font-size:.38rem;opacity:.75}
 
 /* A animação depende apenas do seletor do ADM, não da raridade. */
 .title[data-animated="true"]{animation:titleFloat 2.8s ease-in-out infinite}

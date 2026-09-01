@@ -49,7 +49,7 @@ export function TacticalCombatIdentity({
   );
 
   useEffect(() => {
-    const stage = document.querySelector<HTMLElement>(".tactical-stage");
+    const stage = document.querySelector<HTMLElement>(".tactical-lab-stage");
     const lab = stage?.querySelector<HTMLElement>('[aria-label="Laboratório do mapa tático V8"]');
     if (!stage || !lab) return;
 
@@ -73,7 +73,7 @@ export function TacticalCombatIdentity({
   }, []);
 
   useEffect(() => {
-    const stage = document.querySelector<HTMLElement>(".tactical-stage");
+    const stage = document.querySelector<HTMLElement>(".tactical-lab-stage");
     if (!stage) return;
     stage.style.setProperty("--tactical-player-image", cssImage(character?.imageUrl ?? null));
     stage.style.setProperty("--tactical-creature-image", cssImage(creature?.imageUrl ?? null));

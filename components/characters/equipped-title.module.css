@@ -20,12 +20,12 @@
 /* Ornamental: asas laterais e medalhão central. */
 .title[data-frame="ornate"] .flourish{display:block}
 
-/* Real: placa régia sólida, sem as asas do Ornamental. */
-.title[data-frame="royal"]{display:flex;min-height:39px;padding:3px 7px;border:2px solid var(--title-accent);background:linear-gradient(180deg,color-mix(in srgb,var(--title-accent) 32%,var(--title-secondary)),var(--title-secondary) 30%,color-mix(in srgb,var(--title-secondary) 78%,var(--wl-surface-dark-strong) 22%));box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--title-primary) 18%,transparent),inset 0 0 0 4px color-mix(in srgb,var(--title-accent) 18%,transparent),0 0 15px color-mix(in srgb,var(--title-glow) 36%,transparent);clip-path:polygon(8px 0,calc(50% - 18px) 0,50% 5px,calc(50% + 18px) 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(50% + 9px) calc(100% - 8px),50% 100%,calc(50% - 9px) calc(100% - 8px),0 calc(100% - 8px),0 8px)}
-.title[data-frame="royal"]::before{content:"♛";left:50%;top:-17px;z-index:5;width:auto;height:auto;border:0;background:none;color:var(--title-accent);box-shadow:none;clip-path:none;font-size:1rem;line-height:1;text-shadow:0 0 7px var(--title-glow);transform:translateX(-50%)}
-.title[data-frame="royal"]::after{left:20%;right:20%;top:auto;bottom:5px;width:auto;height:1px;border:0;background:linear-gradient(90deg,transparent,var(--title-accent),transparent);box-shadow:none;clip-path:none;transform:none}
-.title[data-frame="royal"] .name{padding:8px 18px 9px;border:0;background:none;box-shadow:none;clip-path:none}
-.title[data-frame="royal"] .sigil{left:11px;top:50%;width:17px;height:17px;font-size:.5rem;transform:translateY(-50%) rotate(45deg)}
+/* Real: placa régia sólida e inteira, sem recortar os próprios ornamentos. */
+.title[data-frame="royal"]{display:flex;min-height:38px;padding:3px 8px;border:2px solid var(--title-accent);border-radius:5px;background:linear-gradient(180deg,color-mix(in srgb,var(--title-accent) 30%,var(--title-secondary)),var(--title-secondary) 34%,color-mix(in srgb,var(--title-secondary) 78%,var(--wl-surface-dark-strong) 22%));box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--title-primary) 16%,transparent),inset 0 -3px color-mix(in srgb,var(--title-accent) 24%,transparent),0 0 15px color-mix(in srgb,var(--title-glow) 36%,transparent);clip-path:none}
+.title[data-frame="royal"]::before{content:"";left:4px;right:4px;top:4px;z-index:1;width:auto;height:calc(100% - 8px);border:1px solid color-mix(in srgb,var(--title-accent) 62%,transparent);border-radius:2px;background:none;box-shadow:none;clip-path:none;transform:none}
+.title[data-frame="royal"]::after{left:50%;top:auto;bottom:-4px;z-index:3;width:8px;height:8px;border:1px solid var(--title-accent);background:var(--title-secondary);box-shadow:0 0 6px var(--title-glow);clip-path:none;transform:translateX(-50%) rotate(45deg)}
+.title[data-frame="royal"] .name{padding:8px 20px 9px;border:0;background:none;box-shadow:none;clip-path:none}
+.title[data-frame="royal"] .sigil{left:50%;top:-11px;width:21px;height:21px;font-size:.65rem;transform:translateX(-50%) rotate(45deg)}
 .title[data-frame="royal"] .flourish{display:none}
 
 /* Arcano: selo oval com órbita luminosa. */

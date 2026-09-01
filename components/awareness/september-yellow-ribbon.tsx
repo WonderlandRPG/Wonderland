@@ -1,23 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { isSeptemberYellowActive } from "@/lib/awareness/september-yellow";
 import styles from "./september-yellow-ribbon.module.css";
 
-const CAMPAIGN_YEAR = 2026;
-
-function isCampaignActive(date = new Date()) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/Sao_Paulo",
-    year: "numeric",
-    month: "2-digit",
-  }).formatToParts(date);
-  const year = Number(parts.find((part) => part.type === "year")?.value);
-  const month = Number(parts.find((part) => part.type === "month")?.value);
-  return year === CAMPAIGN_YEAR && month === 9;
-}
-
 export function SeptemberYellowRibbon() {
-  const [active] = useState(() => isCampaignActive());
+  const [active] = useState(() => isSeptemberYellowActive());
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   if (!active) return null;

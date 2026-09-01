@@ -237,6 +237,16 @@ export default async function ArenaPage({
                 <b>Ver fila →</b>
               </Link>
               {isAdministrativeRole(account.role) ? (
+                <Link className="arena-mode-card" href="/arena/mapa-tatico">
+                  <span className="arena-mode-card__sigil">棋</span>
+                  <i>ADM</i>
+                  <small>Laboratório administrativo</small>
+                  <strong>Mapa Tático</strong>
+                  <p>Reconstrua e valide o novo tabuleiro sem alterar os modos ativos.</p>
+                  <b>Abrir laboratório →</b>
+                </Link>
+              ) : null}
+              {isAdministrativeRole(account.role) ? (
                 <Link className="arena-mode-card is-dungeon" href="/arena/dungeons">
                   <span className="arena-mode-card__sigil">門</span>
                   <i>04</i>

@@ -138,7 +138,15 @@ export default async function TacticalMapLabPage() {
   });
 
   return (
-    <main className="arena-page">
+    <main
+      className="arena-page"
+      style={{
+        backgroundImage: "url('/backgrounds/arena.svg')",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+      }}
+    >
       <PlayerNav />
       <div className="page-container arena-page__inner">
         <Link className="arena-mode-back" href="/arena">← Voltar para Arena</Link>

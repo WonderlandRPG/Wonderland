@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createCombatant } from "@/lib/game/combat";
+import { createCombatant, tickCooldowns } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
 import { applyTacticalRacialReaction } from "@/lib/game/tactical-race-reactions";
 
@@ -87,9 +87,29 @@ describe("tactical racial reactions", () => {
     expect(applyTacticalRacialReaction(fighter(), "Fada", { skill: skill("ROOT") }).triggered).toBe(true);
   });
 
-  it("gives Humano resource on the first successful action of a round", () => {
-    expect(applyTacticalRacialReaction(fighter(), "Humano", { firstSuccessfulActionThisRound: true }).triggered).toBe(true);
-    expect(applyTacticalRacialReaction(fighter(), "Humano", { firstSuccessfulActionThisRound: false }).triggered).toBe(false);
+  it("gives Humano resource only once until the round marker expires", () => {
+    const humano = { ...fighter(), raceResourceName: "Determinação" };
+    const first = applyTacticalRacialReaction(humano, "Humano", { skill: skill("HEAL") });
+    expect(first.triggered).toBe(true);
+    expect(first.combatant.raceResource).toBe(1);
+
+    const second = applyTacticalRacialReaction(first.combatant, "Humano", { skill: skill("SHIELD") });
+    expect(second.triggered).toBe(false);
+    expect(second.combatant.raceResource).toBe(1);
+
+    const nextRound = tickCooldowns(first.combatant);
+    const third = applyTacticalRacialReaction(nextRound, "Humano", { skill: skill("HEAL") });
+    expect(third.triggered).toBe(true);
+    expect(third.combatant.raceResource).toBe(2);
+  });
+
+  it("respects an explicit false first-action flag for Humano", () => {
+    expect(
+      applyTacticalRacialReaction(fighter(), "Humano", {
+        skill: skill("HEAL"),
+        firstSuccessfulActionThisRound: false,
+      }).triggered,
+    ).toBe(false);
   });
 
   it("gives Kitsune resource after applying a negative status", () => {

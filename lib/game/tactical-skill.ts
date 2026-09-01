@@ -31,10 +31,43 @@ function replaceReceiver(
 
 function statusKey(operation: ClassSkill["operations"][number], skill: ClassSkill) {
   if (operation.status) return operation.status;
-  if (["ROOT", "STUN", "SILENCE", "FEAR", "TAUNT"].includes(operation.operation)) {
+  if (["ROOT", "STUN", "SILENCE", "FEAR", "TAUNT", "SUMMON"].includes(operation.operation)) {
     return `${operation.operation.toLowerCase()}-${skill.key}`;
   }
   return skill.key;
+}
+
+function operationHasMechanicalEffect(operation: ClassSkill["operations"][number]) {
+  if (
+    [
+      "DAMAGE",
+      "HEAL",
+      "SHIELD",
+      "STUN",
+      "ROOT",
+      "SILENCE",
+      "FEAR",
+      "PUSH",
+      "MOVE",
+      "TELEPORT",
+      "REMOVE_STATUS",
+      "RESOURCE_GAIN",
+      "RESOURCE_COST",
+      "TAUNT",
+    ].includes(operation.operation)
+  ) {
+    return true;
+  }
+
+  if (["BUFF", "DEBUFF", "APPLY_STATUS", "SUMMON"].includes(operation.operation)) {
+    return operation.modifiers.length > 0;
+  }
+
+  return false;
+}
+
+export function hasTacticalMechanicalEffect(skill: ClassSkill) {
+  return skill.operations.some(operationHasMechanicalEffect);
 }
 
 function validateAndPay(
@@ -42,6 +75,17 @@ function validateAndPay(
   target: CombatantState,
   skill: ClassSkill,
 ): CombatResolution | { actor: CombatantState; target: CombatantState } {
+  if (!hasTacticalMechanicalEffect(skill)) {
+    return {
+      actor,
+      target,
+      event: {
+        kind: "error",
+        amount: 0,
+        message: `${skill.name} ainda não possui uma regra mecânica executável no mapa tático. Nenhum recurso ou cooldown foi consumido.`,
+      },
+    };
+  }
   if ((actor.cooldowns[skill.key] ?? 0) > 0) {
     return {
       actor,
@@ -116,6 +160,11 @@ export function resolveTacticalSkill(
   for (const operation of skill.operations) {
     if (operation.chance < 100 && Math.random() * 100 >= operation.chance) {
       messages.push(`${skill.name}: ${operation.operation} falhou.`);
+      continue;
+    }
+
+    if (operation.operation === "REACTION") {
+      messages.push(`${skill.name}: reação passiva aguardando o gatilho automático.`);
       continue;
     }
 
@@ -209,6 +258,14 @@ export function resolveTacticalSkill(
       continue;
     }
 
+    if (
+      ["BUFF", "DEBUFF", "APPLY_STATUS", "SUMMON"].includes(operation.operation) &&
+      operation.modifiers.length === 0
+    ) {
+      messages.push(`${skill.name}: ${operation.operation} não possui modificadores mecânicos cadastrados.`);
+      continue;
+    }
+
     const duration = Math.max(1, operation.duration || skill.duration || 1);
     const key = statusKey(operation, skill);
     const stacks = Math.max(1, operation.stacks || 1);
@@ -230,7 +287,11 @@ export function resolveTacticalSkill(
     const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, statuses: nextStatuses });
     nextActor = replaced.actor;
     nextTarget = replaced.target;
-    messages.push(`${skill.name} aplicou ${operation.status || operation.operation.toLowerCase()} em ${receiver.name} por ${duration} turno(s).`);
+    messages.push(
+      operation.operation === "SUMMON"
+        ? `${skill.name} invocou ${operation.status || "uma entidade"}; ${receiver.name} recebeu seus bônus por ${duration} turno(s).`
+        : `${skill.name} aplicou ${operation.status || operation.operation.toLowerCase()} em ${receiver.name} por ${duration} turno(s).`,
+    );
   }
 
   if (!messages.length) messages.push(`${skill.name} foi usada, mas nenhuma operação produziu efeito.`);

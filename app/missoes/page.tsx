@@ -210,8 +210,8 @@ export default async function MissionBoardPage({
                   </dl>
                   <form action={acceptMissionAction}>
                     <input name="missionId" type="hidden" value={mission.id} />
-                    <button type="submit">
-                      Aceitar missão <span>→</span>
+                    <button className="button button--primary mission-accept-button" type="submit">
+                      Aceitar missão <span aria-hidden="true">→</span>
                     </button>
                   </form>
                 </article>

@@ -8,7 +8,6 @@ import {
   shouldStartNextTacticalRound,
 } from "@/lib/game/tactical-combat-outcome";
 import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
-import { applyTacticalSpatialSkill } from "@/lib/game/tactical-spatial-skill";
 
 const attrs = { FOR: 200, DEF: 20, RES: 20, INI: 20, INT: 20, ARC: 40 };
 
@@ -71,7 +70,7 @@ function skill(operations: ClassSkill["operations"]): ClassSkill {
 }
 
 describe("tactical combat lifecycle integration", () => {
-  it("does not execute PUSH after the target dies earlier in the same skill", () => {
+  it("keeps spatial operations pending until final creature mitigation is known", () => {
     const actor = fighter("actor");
     const target = { ...fighter("target"), hp: 10 };
     const ability = skill([
@@ -80,37 +79,26 @@ describe("tactical combat lifecycle integration", () => {
     ]);
 
     const resolved = resolveTacticalSkill(actor, target, ability);
+
     expect(resolved.target.hp).toBe(0);
-    expect(resolved.successfulOperationIndexes).toEqual([0]);
-
-    const spatial = applyTacticalSpatialSkill({
-      skill: ability,
-      successfulOperationIndexes: resolved.successfulOperationIndexes,
-      playerPosition: { x: 1, y: 1 },
-      enemyPosition: { x: 2, y: 1 },
-      selectedPosition: { x: 2, y: 1 },
-      obstacles: new Set<string>(),
-      grid: { width: 8, height: 8 },
-    });
-
-    expect(spatial.enemyPosition).toEqual({ x: 2, y: 1 });
+    expect(resolved.successfulOperationIndexes).toEqual([0, 1]);
   });
 
-  it("does not leave control statuses on a target defeated by the same skill", () => {
+  it("keeps control operations available for a target that external resistance may save", () => {
     const actor = fighter("actor");
     const target = { ...fighter("target"), hp: 10 };
     const ability = skill([
       operation({ operation: "DAMAGE", base: 9999 }),
-      operation({ operation: "STUN", status: "stun-pos-morte", duration: 3, damageType: "none" }),
+      operation({ operation: "STUN", status: "stun-da-skill", duration: 3, damageType: "none" }),
     ]);
 
     const resolved = resolveTacticalSkill(actor, target, ability);
 
     expect(resolved.target.hp).toBe(0);
-    expect(resolved.target.statuses["stun-pos-morte"]).toBeUndefined();
+    expect(resolved.target.statuses["stun-da-skill"]?.duration).toBe(3);
   });
 
-  it("still resolves a self operation after a lethal enemy hit", () => {
+  it("still resolves a self operation after a lethal raw enemy hit", () => {
     const actor = fighter("actor");
     const target = { ...fighter("target"), hp: 10 };
     const ability = skill([
@@ -131,7 +119,7 @@ describe("tactical combat lifecycle integration", () => {
     expect(resolved.actor.statuses["impeto-final"]?.duration).toBe(2);
   });
 
-  it("ends the combat immediately after lethal resolution and forbids another round", () => {
+  it("ends the combat only from the final vital state and forbids another round", () => {
     const player = fighter("player");
     const enemy = { ...fighter("enemy"), hp: 0 };
     const outcome = getTacticalCombatOutcome(player, enemy);

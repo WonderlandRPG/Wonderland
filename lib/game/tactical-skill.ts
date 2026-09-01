@@ -14,6 +14,15 @@ import {
 import { applyOffensiveItemEffects, getItemCooldownReduction } from "@/lib/game/item-effects";
 import { applyTacticalRacialReaction } from "@/lib/game/tactical-race-reactions";
 
+export type TacticalSkillContext = {
+  distance?: number;
+  firstSuccessfulActionThisRound?: boolean;
+};
+
+export type TacticalSkillResolution = CombatResolution & {
+  successfulOperationIndexes: number[];
+};
+
 function operationReceiver(
   actor: CombatantState,
   target: CombatantState,
@@ -71,53 +80,46 @@ export function hasTacticalMechanicalEffect(skill: ClassSkill) {
   return skill.operations.some(operationHasMechanicalEffect);
 }
 
+function errorResolution(
+  actor: CombatantState,
+  target: CombatantState,
+  message: string,
+): TacticalSkillResolution {
+  return {
+    actor,
+    target,
+    successfulOperationIndexes: [],
+    event: { kind: "error", amount: 0, message },
+  };
+}
+
 function validateAndPay(
   actor: CombatantState,
   target: CombatantState,
   skill: ClassSkill,
-): CombatResolution | { actor: CombatantState; target: CombatantState } {
+): TacticalSkillResolution | { actor: CombatantState; target: CombatantState } {
   if (!hasTacticalMechanicalEffect(skill)) {
-    return {
+    return errorResolution(
       actor,
       target,
-      event: {
-        kind: "error",
-        amount: 0,
-        message: `${skill.name} ainda não possui uma regra mecânica executável no mapa tático. Nenhum recurso ou cooldown foi consumido.`,
-      },
-    };
+      `${skill.name} ainda não possui uma regra mecânica executável no mapa tático. Nenhum recurso ou cooldown foi consumido.`,
+    );
   }
   if ((actor.cooldowns[skill.key] ?? 0) > 0) {
-    return {
-      actor,
-      target,
-      event: { kind: "error", amount: 0, message: `${skill.name} ainda está em recarga.` },
-    };
+    return errorResolution(actor, target, `${skill.name} ainda está em recarga.`);
   }
   if (skill.resource === "mana" && actor.mana < skill.cost) {
-    return {
-      actor,
-      target,
-      event: { kind: "error", amount: 0, message: `Mana insuficiente para usar ${skill.name}.` },
-    };
+    return errorResolution(actor, target, `Mana insuficiente para usar ${skill.name}.`);
   }
   if (skill.resource === "life" && actor.hp <= skill.cost) {
-    return {
-      actor,
-      target,
-      event: { kind: "error", amount: 0, message: `HP insuficiente para usar ${skill.name}.` },
-    };
+    return errorResolution(actor, target, `HP insuficiente para usar ${skill.name}.`);
   }
 
   const usesRaceResource = skill.resource === "special" && skill.resourceKey === "race";
   const available = usesRaceResource ? actor.raceResource : actor.classResource;
   const resourceName = usesRaceResource ? actor.raceResourceName : actor.classResourceName;
   if (skill.resource === "special" && available < skill.cost) {
-    return {
-      actor,
-      target,
-      event: { kind: "error", amount: 0, message: `${resourceName} insuficiente para usar ${skill.name}.` },
-    };
+    return errorResolution(actor, target, `${resourceName} insuficiente para usar ${skill.name}.`);
   }
 
   return {
@@ -147,7 +149,8 @@ export function resolveTacticalSkill(
   target: CombatantState,
   skill: ClassSkill,
   rules: CombatRules = defaultCombatRules,
-): CombatResolution {
+  context: TacticalSkillContext = {},
+): TacticalSkillResolution {
   const paid = validateAndPay(actor, target, skill);
   if ("event" in paid) return paid;
 
@@ -155,11 +158,12 @@ export function resolveTacticalSkill(
   let nextTarget = paid.target;
   const messages: string[] = [];
   const successfulOperationTypes = new Set<string>();
+  const successfulOperationIndexes: number[] = [];
   let totalAmount = 0;
   let eventKind: CombatEvent["kind"] = "utility";
   let damageType: CombatEvent["damageType"];
 
-  for (const operation of skill.operations) {
+  for (const [operationIndex, operation] of skill.operations.entries()) {
     if (operation.chance < 100 && Math.random() * 100 >= operation.chance) {
       messages.push(`${skill.name}: ${operation.operation} falhou.`);
       continue;
@@ -195,7 +199,10 @@ export function resolveTacticalSkill(
       totalAmount += dealt;
       eventKind = "damage";
       damageType = type;
-      if (dealt > 0) successfulOperationTypes.add("DAMAGE");
+      if (dealt > 0) {
+        successfulOperationTypes.add("DAMAGE");
+        successfulOperationIndexes.push(operationIndex);
+      }
       continue;
     }
 
@@ -208,7 +215,10 @@ export function resolveTacticalSkill(
       messages.push(`${skill.name} recuperou ${healed} de HP de ${receiver.name}.`);
       totalAmount += healed;
       if (eventKind !== "damage") eventKind = "heal";
-      if (healed > 0) successfulOperationTypes.add("HEAL");
+      if (healed > 0) {
+        successfulOperationTypes.add("HEAL");
+        successfulOperationIndexes.push(operationIndex);
+      }
       continue;
     }
 
@@ -221,6 +231,7 @@ export function resolveTacticalSkill(
       totalAmount += amount;
       if (eventKind !== "damage" && eventKind !== "heal") eventKind = "shield";
       successfulOperationTypes.add("SHIELD");
+      successfulOperationIndexes.push(operationIndex);
       continue;
     }
 
@@ -235,7 +246,10 @@ export function resolveTacticalSkill(
       nextActor = replaced.actor;
       nextTarget = replaced.target;
       messages.push(removableKey ? `${skill.name} removeu um efeito negativo de ${receiver.name}.` : `${skill.name} não encontrou efeito negativo para remover.`);
-      if (removableKey) successfulOperationTypes.add("REMOVE_STATUS");
+      if (removableKey) {
+        successfulOperationTypes.add("REMOVE_STATUS");
+        successfulOperationIndexes.push(operationIndex);
+      }
       continue;
     }
 
@@ -256,13 +270,17 @@ export function resolveTacticalSkill(
       nextActor = replaced.actor;
       nextTarget = replaced.target;
       messages.push(`${skill.name} ${sign > 0 ? "gerou" : "consumiu"} ${amount} de ${race ? receiver.raceResourceName : receiver.classResourceName}.`);
-      if (amount > 0) successfulOperationTypes.add(operation.operation);
+      if (amount > 0) {
+        successfulOperationTypes.add(operation.operation);
+        successfulOperationIndexes.push(operationIndex);
+      }
       continue;
     }
 
     if (["MOVE", "TELEPORT", "PUSH"].includes(operation.operation)) {
       messages.push(`${skill.name}: ${operation.operation} reservado ao tabuleiro tático.`);
       successfulOperationTypes.add(operation.operation);
+      successfulOperationIndexes.push(operationIndex);
       continue;
     }
 
@@ -296,6 +314,7 @@ export function resolveTacticalSkill(
     nextActor = replaced.actor;
     nextTarget = replaced.target;
     successfulOperationTypes.add(operation.operation);
+    successfulOperationIndexes.push(operationIndex);
     messages.push(
       operation.operation === "SUMMON"
         ? `${skill.name} invocou ${operation.status || "uma entidade"}; ${receiver.name} recebeu seus bônus por ${duration} turno(s).`
@@ -318,9 +337,11 @@ export function resolveTacticalSkill(
     {
       dealtDamage: damageToTarget,
       damageType,
+      distance: context.distance,
       targetHpBefore: target.hp,
       targetMaxHp: target.maxHp,
       skill: reactionSkill,
+      firstSuccessfulActionThisRound: context.firstSuccessfulActionThisRound,
     },
   );
   nextActor = actorReaction.combatant;
@@ -339,6 +360,7 @@ export function resolveTacticalSkill(
   return {
     actor: nextActor,
     target: nextTarget,
+    successfulOperationIndexes,
     event: {
       kind: eventKind,
       amount: totalAmount,

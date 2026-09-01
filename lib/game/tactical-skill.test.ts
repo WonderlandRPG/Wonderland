@@ -195,4 +195,53 @@ describe("tactical skill resolver", () => {
     expect(result.actor.statuses["servo-espectral"]?.modifiers).toEqual({ INT: 13, DEF: 8 });
     expect(result.event.message).toContain("invocou servo-espectral");
   });
+
+  it("refuses an offensive skill when the target is already defeated", () => {
+    const actor = fighter("actor");
+    const target = { ...fighter("target"), hp: 0 };
+    const ability = skill([operation({ operation: "DAMAGE", target: "enemy", base: 50 })]);
+
+    const result = resolveTacticalSkill(actor, target, ability);
+
+    expect(result.event.kind).toBe("error");
+    expect(result.actor.mana).toBe(actor.mana);
+    expect(result.actor.cooldowns[ability.key]).toBeUndefined();
+  });
+
+  it("refuses every skill when the actor is already defeated", () => {
+    const actor = { ...fighter("actor"), hp: 0 };
+    const target = fighter("target");
+    const ability = skill(
+      [operation({ operation: "HEAL", target: "self", base: 100, damageType: "none" })],
+      { kind: "utility", target: "self", damageType: "none" },
+    );
+
+    const result = resolveTacticalSkill(actor, target, ability);
+
+    expect(result.event.kind).toBe("error");
+    expect(result.actor.hp).toBe(0);
+    expect(result.actor.mana).toBe(actor.mana);
+  });
+
+  it("stops remaining enemy effects after lethal damage", () => {
+    const actor = fighter("actor");
+    const target = { ...fighter("target"), hp: 20 };
+    const ability = skill([
+      operation({ operation: "DAMAGE", target: "enemy", base: 1000, scaling: [] }),
+      operation({
+        operation: "ROOT",
+        target: "enemy",
+        status: "nao-deve-aplicar",
+        duration: 4,
+        damageType: "none",
+      }),
+    ]);
+
+    const result = resolveTacticalSkill(actor, target, ability);
+
+    expect(result.target.hp).toBe(0);
+    expect(result.target.statuses["nao-deve-aplicar"]).toBeUndefined();
+    expect(result.successfulOperationIndexes).toEqual([0]);
+    expect(result.event.message).toContain("efeitos restantes no alvo foram encerrados");
+  });
 });

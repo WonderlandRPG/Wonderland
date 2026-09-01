@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { createCombatant } from "@/lib/game/combat";
 import type { ClassSkill } from "@/lib/game/classes";
-import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
+import { hasTacticalMechanicalEffect, resolveTacticalSkill } from "@/lib/game/tactical-skill";
 
 const attrs = { FOR: 100, DEF: 20, RES: 20, INI: 20, INT: 80, ARC: 60 };
 
@@ -126,5 +126,73 @@ describe("tactical skill resolver", () => {
     expect(result.actor.mana).toBe(actor.mana - 10);
     expect(result.actor.cooldowns[ability.key]).toBe(3);
     expect(result.target.hp).toBeLessThan(target.hp);
+  });
+
+  it("does not consume resources for a status-only skill with no mechanical rule", () => {
+    const actor = fighter("actor");
+    const target = fighter("target");
+    const ability = skill(
+      [
+        operation({
+          operation: "APPLY_STATUS",
+          target: "self",
+          status: "forma-sem-regra",
+          duration: 3,
+          damageType: "none",
+        }),
+      ],
+      { kind: "utility", damageType: "none", target: "self" },
+    );
+
+    expect(hasTacticalMechanicalEffect(ability)).toBe(false);
+    const result = resolveTacticalSkill(actor, target, ability);
+
+    expect(result.event.kind).toBe("error");
+    expect(result.actor.mana).toBe(actor.mana);
+    expect(result.actor.cooldowns[ability.key]).toBeUndefined();
+    expect(result.actor.statuses["forma-sem-regra"]).toBeUndefined();
+  });
+
+  it("treats REACTION-only skills as passive instead of clickable actions", () => {
+    const actor = fighter("actor");
+    const target = fighter("target");
+    const ability = skill(
+      [operation({ operation: "REACTION", target: "self", damageType: "none" })],
+      { kind: "utility", damageType: "none", target: "self", resource: "none", cost: 0 },
+    );
+
+    expect(hasTacticalMechanicalEffect(ability)).toBe(false);
+    const result = resolveTacticalSkill(actor, target, ability);
+
+    expect(result.event.kind).toBe("error");
+    expect(result.actor).toEqual(actor);
+  });
+
+  it("applies summon bonuses as a real temporary status", () => {
+    const actor = fighter("actor");
+    const target = fighter("target");
+    const ability = skill(
+      [
+        operation({
+          operation: "SUMMON",
+          target: "self",
+          status: "servo-espectral",
+          duration: 3,
+          damageType: "none",
+          modifiers: [
+            { attribute: "INT", value: 13 },
+            { attribute: "DEF", value: 8 },
+          ],
+        }),
+      ],
+      { kind: "utility", damageType: "none", target: "self" },
+    );
+
+    expect(hasTacticalMechanicalEffect(ability)).toBe(true);
+    const result = resolveTacticalSkill(actor, target, ability);
+
+    expect(result.actor.statuses["servo-espectral"]?.duration).toBe(3);
+    expect(result.actor.statuses["servo-espectral"]?.modifiers).toEqual({ INT: 13, DEF: 8 });
+    expect(result.event.message).toContain("invocou servo-espectral");
   });
 });

@@ -25,6 +25,12 @@ import {
 type OverlayMode = "movement" | "range" | "none";
 type SkillSource = "class" | "race";
 
+type TacticalItem = {
+  id: string;
+  name: string;
+  description: string;
+};
+
 type TacticalCharacter = {
   id: string;
   name: string;
@@ -51,6 +57,7 @@ type TacticalCharacter = {
   basicAttackRange: number;
   basicAttackDamageType: "physical" | "magic";
   skills: Array<{ source: SkillSource; skill: ClassSkill }>;
+  items: TacticalItem[];
 };
 
 type SelectedAction =
@@ -59,6 +66,8 @@ type SelectedAction =
 
 const GRID = { width: 10, height: 8 } as const;
 const MOVE_LIMIT = 4;
+const ENEMY_MOVE_LIMIT = 3;
+const ENEMY_ATTACK_RANGE = 1;
 const START_PLAYER: TacticalPosition = { x: 2, y: 5 };
 const START_ENEMY: TacticalPosition = { x: 7, y: 2 };
 const obstacleKeys = new Set(["4,1", "4,2", "4,3", "5,3", "6,3", "2,2", "7,5", "7,6"]);
@@ -108,6 +117,32 @@ function rootTurns(combatant: CombatantState) {
   }, 0);
 }
 
+function chooseEnemyDestination(enemy: TacticalPosition, player: TacticalPosition) {
+  const blocked = new Set([...obstacleKeys, tacticalPositionKey(player)]);
+  const reachable = getReachableTacticalCells({
+    start: enemy,
+    blocked,
+    movement: ENEMY_MOVE_LIMIT,
+    grid: GRID,
+  });
+  const candidates: Array<{ position: TacticalPosition; cost: number }> = [
+    { position: enemy, cost: 0 },
+    ...Array.from(reachable.entries()).map(([key, cost]) => {
+      const [x, y] = key.split(",").map(Number);
+      return { position: { x, y }, cost };
+    }),
+  ];
+
+  candidates.sort((a, b) => {
+    const distanceA = getTacticalDistance(a.position, player);
+    const distanceB = getTacticalDistance(b.position, player);
+    if (distanceA !== distanceB) return distanceA - distanceB;
+    return a.cost - b.cost;
+  });
+
+  return candidates[0] ?? { position: enemy, cost: 0 };
+}
+
 export function TacticalLab({ characters }: { characters: TacticalCharacter[] }) {
   const first = characters[0];
   const [selectedCharacterId, setSelectedCharacterId] = useState(first?.id ?? "");
@@ -121,7 +156,10 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
   const [playerCombat, setPlayerCombat] = useState<CombatantState | null>(() => first ? makePlayer(first) : null);
   const [enemyCombat, setEnemyCombat] = useState<CombatantState | null>(() => first ? makeEnemy(first) : null);
   const [usedBasic, setUsedBasic] = useState(false);
-  const [usedSkill, setUsedSkill] = useState(false);
+  const [usedClass, setUsedClass] = useState(false);
+  const [usedRace, setUsedRace] = useState(false);
+  const [usedItem, setUsedItem] = useState(false);
+  const [round, setRound] = useState(1);
   const [message, setMessage] = useState("Selecione uma casa verde para mover o aventureiro.");
   const [log, setLog] = useState<string[]>(["Laboratório iniciado. Nenhum progresso real será salvo."]);
 
@@ -156,11 +194,12 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
   const activePlayer: CombatantState = playerCombat;
   const activeEnemy: CombatantState = enemyCombat;
   const defeated = activeEnemy.hp <= 0;
+  const playerDefeated = activePlayer.hp <= 0;
   const playerRooted = rootTurns(activePlayer);
   const enemyRooted = rootTurns(activeEnemy);
 
   function pushLog(text: string) {
-    setLog((current) => [text, ...current].slice(0, 8));
+    setLog((current) => [text, ...current].slice(0, 10));
   }
 
   function clearSelection() {
@@ -169,18 +208,24 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
   }
 
   function beginMovement() {
-    if (defeated) return setMessage("Reinicie o mapa para continuar os testes.");
+    if (defeated || playerDefeated) return setMessage("Reinicie o mapa para continuar os testes.");
     if (playerRooted > 0) return setMessage(`${activePlayer.name} está imobilizado por ${playerRooted} turno(s).`);
     clearSelection();
     setOverlay("movement");
     setMessage(remainingMove > 0 ? `Restam ${remainingMove} ponto(s) de movimento.` : "Sem movimento restante neste turno.");
   }
 
+  function actionUsed(source: SkillSource) {
+    return source === "class" ? usedClass : usedRace;
+  }
+
   function selectAction(action: SelectedAction) {
-    if (defeated) return setMessage("A Sentinela Rúnica já foi derrotada. Reinicie o mapa.");
-    if (action.kind === "basic" && usedBasic) return setMessage("O ataque básico já foi usado neste turno.");
+    if (defeated || playerDefeated) return setMessage("O combate terminou. Reinicie o mapa.");
+    if (action.kind === "basic" && usedBasic) return setMessage("O Ataque Básico já foi usado neste turno.");
     if (action.kind === "skill") {
-      if (usedSkill) return setMessage("Uma habilidade já foi usada neste turno.");
+      if (actionUsed(action.source)) {
+        return setMessage(`A habilidade de ${action.source === "class" ? "Classe" : "Raça"} já foi usada neste turno.`);
+      }
       const cooldown = activePlayer.cooldowns[action.skill.key] ?? 0;
       if (cooldown > 0) return setMessage(`${action.skill.name} está em cooldown por ${cooldown} turno(s).`);
     }
@@ -191,7 +236,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
   }
 
   function applyBasicAttack() {
-    if (usedBasic) return setMessage("O ataque básico já foi usado neste turno.");
+    if (usedBasic) return setMessage("O Ataque Básico já foi usado neste turno.");
     const result = resolveBasicAttack(activePlayer, activeEnemy);
     setPlayerCombat(result.actor);
     setEnemyCombat(result.target);
@@ -228,7 +273,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
   }
 
   function applySkill(action: Extract<SelectedAction, { kind: "skill" }>, center: TacticalPosition) {
-    if (usedSkill) return setMessage("Uma habilidade já foi usada neste turno.");
+    if (actionUsed(action.source)) return setMessage(`A ação de ${action.source === "class" ? "Classe" : "Raça"} já foi usada.`);
     const spatialSelf = hasSpatialSelfMovement(action.skill);
     const selfTarget = !spatialSelf && (action.skill.target === "self" || action.skill.target === "ally");
     let result;
@@ -259,11 +304,23 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
     }
 
     const spatialNotes = applySpatialOperations(action.skill, center);
-    setUsedSkill(true);
+    if (action.source === "class") setUsedClass(true);
+    else setUsedRace(true);
     const text = `${result.event.message}${spatialNotes.length ? ` ${spatialNotes.join(" ")}` : ""}`;
     setMessage(text);
     pushLog(result.event.message);
     if (!selfTarget && !spatialSelf && result.target.hp <= 0) pushLog("Sentinela Rúnica derrotada no laboratório.");
+  }
+
+  function useItem(item: TacticalItem) {
+    if (usedItem) return setMessage("O Item já foi usado neste turno.");
+    if (defeated || playerDefeated) return setMessage("O combate terminou. Reinicie o mapa.");
+    const amount = Math.min(Math.max(25, Math.round(activePlayer.maxHp * 0.25)), activePlayer.maxHp - activePlayer.hp);
+    setPlayerCombat({ ...activePlayer, hp: activePlayer.hp + amount });
+    setUsedItem(true);
+    const text = `${activePlayer.name} usou ${item.name} e recuperou ${amount} de HP.`;
+    setMessage(text);
+    pushLog(text);
   }
 
   function handleCellClick(position: TacticalPosition) {
@@ -303,7 +360,7 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
 
       setAreaCenter(position);
       if (selectedAction.kind === "basic") {
-        if (cellKey !== tacticalPositionKey(enemyPosition)) return setMessage("Ataque básico precisa selecionar a criatura.");
+        if (cellKey !== tacticalPositionKey(enemyPosition)) return setMessage("Ataque Básico precisa selecionar a criatura.");
         applyBasicAttack();
         return;
       }
@@ -327,16 +384,62 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
     if (cellKey === tacticalPositionKey(playerPosition)) beginMovement();
   }
 
-  function endTurn() {
-    setPlayerCombat(tickCooldowns(activePlayer));
-    setEnemyCombat(tickCooldowns(activeEnemy));
+  function executeEnemyTurn() {
+    let nextEnemy = activeEnemy;
+    let nextPlayer = activePlayer;
+    let nextPosition = enemyPosition;
+    const notes: string[] = [`Rodada ${round}: turno da Sentinela Rúnica.`];
+
+    if (activeEnemy.hp <= 0) return;
+
+    if (enemyRooted > 0) {
+      notes.push(`Sentinela está imobilizada e não se move (${enemyRooted} turno(s)).`);
+    } else {
+      const destination = chooseEnemyDestination(enemyPosition, playerPosition);
+      nextPosition = destination.position;
+      if (destination.cost > 0) {
+        notes.push(`Sentinela avançou ${destination.cost} casa(s) em direção a ${activePlayer.name}.`);
+      } else {
+        notes.push("Sentinela manteve sua posição.");
+      }
+    }
+
+    const distance = getTacticalDistance(nextPosition, playerPosition);
+    const hasSight = hasTacticalLineOfSight({ from: nextPosition, to: playerPosition, blocked: obstacleKeys });
+    if (distance <= ENEMY_ATTACK_RANGE && hasSight) {
+      const result = resolveBasicAttack(nextEnemy, nextPlayer);
+      nextEnemy = result.actor;
+      nextPlayer = result.target;
+      notes.push(result.event.message);
+    } else {
+      notes.push(`Sentinela terminou fora do alcance de ataque (${distance}/${ENEMY_ATTACK_RANGE}).`);
+    }
+
+    nextPlayer = tickCooldowns(nextPlayer);
+    nextEnemy = tickCooldowns(nextEnemy);
+    setEnemyPosition(nextPosition);
+    setPlayerCombat(nextPlayer);
+    setEnemyCombat(nextEnemy);
     setRemainingMove(MOVE_LIMIT);
     setUsedBasic(false);
-    setUsedSkill(false);
+    setUsedClass(false);
+    setUsedRace(false);
+    setUsedItem(false);
+    setRound((value) => value + 1);
     clearSelection();
     setOverlay("movement");
-    setMessage(`Novo turno de teste iniciado. ${MOVE_LIMIT} pontos de movimento restaurados.`);
-    pushLog("Turno encerrado: cooldowns e status avançaram.");
+    notes.forEach(pushLog);
+
+    if (nextPlayer.hp <= 0) {
+      setMessage(`${notes.join(" ")} ${activePlayer.name} foi derrotado.`);
+      return;
+    }
+    setMessage(`${notes.join(" ")} Novo turno do jogador iniciado.`);
+  }
+
+  function endTurn() {
+    if (defeated || playerDefeated) return setMessage("O combate terminou. Reinicie o mapa.");
+    executeEnemyTurn();
   }
 
   function resetBoard(nextCharacter = character) {
@@ -344,7 +447,10 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
     setEnemyPosition(START_ENEMY);
     setRemainingMove(MOVE_LIMIT);
     setUsedBasic(false);
-    setUsedSkill(false);
+    setUsedClass(false);
+    setUsedRace(false);
+    setUsedItem(false);
+    setRound(1);
     setPlayerCombat(makePlayer(nextCharacter));
     setEnemyCombat(makeEnemy(nextCharacter));
     clearSelection();
@@ -367,9 +473,9 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
         <div>
           <span className={styles.eyebrow}>Somente administradores · protótipo isolado</span>
           <h1>Laboratório do Mapa Tático</h1>
-          <p>Combate real em memória: dano, recursos, cooldown e efeitos espaciais funcionam aqui sem salvar recompensa, progresso ou sessão.</p>
+          <p>Turnos táticos em memória: jogador e IA se movem no mesmo tabuleiro sem salvar recompensa, progresso ou sessão.</p>
         </div>
-        <div className={styles.status}><small>Estado do protótipo</small><strong>Combate + espaço ativos</strong></div>
+        <div className={styles.status}><small>Estado do protótipo</small><strong>IA tática ativa · Rodada {round}</strong></div>
       </header>
 
       <section className={styles.characterPanel} data-wl-surface="raised">
@@ -400,17 +506,17 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
           {playerRooted > 0 ? <span>Imobilizado: {playerRooted} turno(s)</span> : null}
         </article>
         <article data-enemy="true">
-          <small>ALVO DE TESTE</small><strong>Sentinela Rúnica</strong>
+          <small>IA · ALVO DE TESTE</small><strong>Sentinela Rúnica</strong>
           <div className={styles.bar}><i style={{ width: `${percent(activeEnemy.hp, activeEnemy.maxHp)}%` }} /></div>
           <span>HP {activeEnemy.hp} / {activeEnemy.maxHp}</span>
-          <span>{defeated ? "DERROTADA" : enemyRooted > 0 ? `Imobilizada: ${enemyRooted}` : "Ativa"}</span>
+          <span>{defeated ? "DERROTADA" : enemyRooted > 0 ? `Imobilizada: ${enemyRooted}` : `Movimento ${ENEMY_MOVE_LIMIT} · Ataque ${ENEMY_ATTACK_RANGE}`}</span>
         </article>
       </section>
 
       <div className={styles.toolbar} data-wl-surface="raised">
-        <button type="button" disabled={playerRooted > 0} data-wl-action={overlay === "movement" ? "primary" : undefined} onClick={beginMovement}>Movimento · {remainingMove}/{MOVE_LIMIT}</button>
-        <button type="button" disabled={usedBasic || defeated} data-wl-action={selectedAction?.kind === "basic" ? "primary" : undefined} onClick={() => selectAction({ kind: "basic", name: "Ataque básico", range: character.basicAttackRange, area: 0 })}>Ataque básico · alcance {character.basicAttackRange}</button>
-        <button type="button" onClick={endTurn}>Encerrar turno</button>
+        <button type="button" disabled={playerRooted > 0 || playerDefeated} data-wl-action={overlay === "movement" ? "primary" : undefined} onClick={beginMovement}>Movimento · {remainingMove}/{MOVE_LIMIT}</button>
+        <button type="button" disabled={usedBasic || defeated || playerDefeated} data-wl-action={selectedAction?.kind === "basic" ? "primary" : undefined} onClick={() => selectAction({ kind: "basic", name: "Ataque básico", range: character.basicAttackRange, area: 0 })}>Ataque Básico · {usedBasic ? "USADO" : "DISPONÍVEL"}</button>
+        <button type="button" disabled={defeated || playerDefeated} onClick={endTurn}>Encerrar turno → IA</button>
         <button type="button" onClick={() => { setOverlay("none"); clearSelection(); }}>Limpar marcações</button>
         <button type="button" onClick={() => resetBoard()}>Reiniciar mapa</button>
       </div>
@@ -418,17 +524,31 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
       <div className={styles.skillBar} data-wl-surface="raised" aria-label="Habilidades reais do personagem">
         {character.skills.map(({ source, skill }) => {
           const cooldown = activePlayer.cooldowns[skill.key] ?? 0;
+          const used = source === "class" ? usedClass : usedRace;
           const spatial = skill.operations.filter((operation) => ["ROOT", "PUSH", "MOVE", "TELEPORT"].includes(operation.operation));
           return (
-            <button key={`${source}-${skill.key}`} type="button" disabled={usedSkill || cooldown > 0 || defeated} data-selected={selectedAction?.kind === "skill" && selectedAction.skill.key === skill.key ? "true" : "false"} onClick={() => selectAction({ kind: "skill", name: skill.name, range: skill.range, area: skill.area, source, skill })} title={skill.playerDescription}>
+            <button key={`${source}-${skill.key}`} type="button" disabled={used || cooldown > 0 || defeated || playerDefeated} data-selected={selectedAction?.kind === "skill" && selectedAction.skill.key === skill.key ? "true" : "false"} onClick={() => selectAction({ kind: "skill", name: skill.name, range: skill.range, area: skill.area, source, skill })} title={skill.playerDescription}>
               <strong>{skill.name}</strong>
-              <span>{source === "class" ? "Classe" : "Raça"} · Alcance {skill.range} · Área {skill.area}</span>
+              <span>{source === "class" ? `Classe · ${usedClass ? "AÇÃO USADA" : "AÇÃO DISPONÍVEL"}` : `Raça · ${usedRace ? "AÇÃO USADA" : "AÇÃO DISPONÍVEL"}`}</span>
+              <span>Alcance {skill.range} · Área {skill.area}</span>
               <small>{cooldown > 0 ? `Cooldown: ${cooldown}` : skill.cost > 0 ? `${skill.cost} ${skill.resource}` : "Sem custo"}</small>
               {spatial.length ? <small>Espacial: {spatial.map((operation) => operation.operation).join(" + ")}</small> : null}
             </button>
           );
         })}
       </div>
+
+      {character.items.length > 0 ? (
+        <div className={styles.skillBar} data-wl-surface="raised" aria-label="Itens ativos do personagem">
+          {character.items.map((item) => (
+            <button key={item.id} type="button" disabled={usedItem || defeated || playerDefeated} onClick={() => useItem(item)} title={item.description}>
+              <strong>{item.name}</strong>
+              <span>Item ativo · {usedItem ? "AÇÃO USADA" : "AÇÃO DISPONÍVEL"}</span>
+              <small>Uso de laboratório: recupera 25% do HP máximo.</small>
+            </button>
+          ))}
+        </div>
+      ) : null}
 
       <div className={styles.workspace}>
         <div className={styles.boardShell} data-wl-surface="dark">
@@ -456,13 +576,14 @@ export function TacticalLab({ characters }: { characters: TacticalCharacter[] })
         </div>
 
         <aside className={styles.sidePanel} data-wl-surface="raised">
-          <div><span className={styles.eyebrow}>Combate tático</span><h2>Estado do turno</h2></div>
+          <div><span className={styles.eyebrow}>Combate tático · Rodada {round}</span><h2>Economia do turno</h2></div>
           <ul>
+            <li>Ataque Básico: {usedBasic ? "usado" : "disponível"}.</li>
+            <li>Habilidade de Classe: {usedClass ? "usada" : "disponível"}.</li>
+            <li>Habilidade de Raça: {usedRace ? "usada" : "disponível"}.</li>
+            <li>Item: {character.items.length === 0 ? "nenhum item ativo" : usedItem ? "usado" : "disponível"}.</li>
             <li>Movimento: {remainingMove}/{MOVE_LIMIT}.</li>
-            <li>Ataque básico: {usedBasic ? "usado" : "disponível"}.</li>
-            <li>Habilidade: {usedSkill ? "usada" : "disponível"}.</li>
-            <li>Linha de visão é bloqueada pelos obstáculos.</li>
-            <li>Push, Move, Teleport e Root usam as casas reais do mapa.</li>
+            <li>Ao encerrar: a IA move até {ENEMY_MOVE_LIMIT} casas e ataca somente em alcance.</li>
           </ul>
           {selectedAction ? <div className={styles.actionDetails}><small>Ação selecionada</small><strong>{selectedAction.name}</strong><span>Alcance {selectedAction.range} · Área {selectedAction.area}</span></div> : null}
           <p className={styles.message} role="status">{message}</p>

@@ -13,6 +13,7 @@ import {
 } from "@/lib/game/class-combat-profile";
 import { getClassBasicAttackRange } from "@/lib/game/class-range";
 import { parseCreatureCombatProfile } from "@/lib/game/creature-tactical-combat";
+import { getTacticalSkillRange } from "@/lib/game/tactical-skill-range";
 import { repairTacticalInertSkill } from "@/lib/game/tactical-skill-repair";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -57,11 +58,14 @@ export default async function TacticalMapLabPage() {
   });
 
   const characters = sheets.map((character) => {
-    const rawClassSkills = character.unlockedClassSkills.filter((skill) => !/passiva/i.test(skill.type));
-    const rawRaceSkills = character.unlockedRaceAbilities.filter((skill) => !/passiva/i.test(skill.type));
+    // Passivas e Reações nunca são botões. Elas são disparadas pelo motor quando
+    // seus gatilhos acontecem. A barra tática recebe somente ações ativas.
+    const rawClassSkills = character.unlockedClassSkills.filter((skill) => /ativa/i.test(skill.type));
+    const rawRaceSkills = character.unlockedRaceAbilities.filter((skill) => /ativa/i.test(skill.type));
     const originalSkills = new Map(
       [...rawClassSkills, ...rawRaceSkills].map((skill) => [skill.key, skill]),
     );
+    const classBasicAttackRange = getClassBasicAttackRange(character.characterClass.name);
     const classSkills = prepareClassCombatSkills(
       character.characterClass.name,
       character.characterClass.payload,
@@ -73,29 +77,36 @@ export default async function TacticalMapLabPage() {
       ...raceSkills.map((skill) => ({ source: "race" as const, skill: repairTacticalInertSkill(skill) })),
     ].map(({ source, skill }) => {
       const original = originalSkills.get(skill.key);
-      const tacticalRange = Math.max(0, original?.range ?? skill.range ?? 0);
+      const configuredRange = Math.max(0, original?.range ?? skill.range ?? 0);
       const originalOperations = new Map(
         (original?.operations ?? []).map((operation, index) => [index, operation]),
       );
+      const restoredSkill = {
+        ...skill,
+        range: configuredRange,
+        area: Math.max(0, original?.area ?? skill.area ?? 0),
+        operations: skill.operations.map((operation, index) => {
+          const rawOperation = originalOperations.get(index);
+          return {
+            ...operation,
+            distance: Math.max(0, rawOperation?.distance ?? operation.distance ?? 0),
+          };
+        }),
+      };
+      const tacticalRange = getTacticalSkillRange(restoredSkill, classBasicAttackRange);
       return {
         source,
         skill: {
-          ...skill,
+          ...restoredSkill,
           range: tacticalRange,
-          area: Math.max(0, original?.area ?? skill.area ?? 0),
-          operations: skill.operations.map((operation, index) => {
-            const rawOperation = originalOperations.get(index);
-            const rawDistance = Math.max(0, rawOperation?.distance ?? operation.distance ?? 0);
-            const spatialFallback =
+          operations: restoredSkill.operations.map((operation) => ({
+            ...operation,
+            distance:
               (operation.operation === "MOVE" || operation.operation === "TELEPORT") &&
-              rawDistance === 0
+              operation.distance === 0
                 ? tacticalRange
-                : rawDistance;
-            return {
-              ...operation,
-              distance: spatialFallback,
-            };
-          }),
+                : operation.distance,
+          })),
         },
       };
     });
@@ -121,7 +132,7 @@ export default async function TacticalMapLabPage() {
       classResource: character.characterClass.payload.resource,
       raceResource: character.race.payload.resource,
       usesMana,
-      basicAttackRange: getClassBasicAttackRange(character.characterClass.name),
+      basicAttackRange: classBasicAttackRange,
       basicAttackDamageType: getClassBasicAttackDamageType(
         character.characterClass.name,
         character.characterClass.payload,

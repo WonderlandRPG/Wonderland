@@ -78,9 +78,7 @@ export function resolveBasicAttack(
       actor.raceResource + actor.raceResourceGainOnBasicAttack,
     ),
   };
-  const itemResolution = damagedTarget.hp <= 0
-    ? { actor: actorAfterAttack, target: damagedTarget, messages: [] as string[] }
-    : applyOffensiveItemEffects(actorAfterAttack, damagedTarget, damageDealt);
+  const itemResolution = applyOffensiveItemEffects(actorAfterAttack, damagedTarget, damageDealt);
 
   return {
     actor: itemResolution.actor,

@@ -72,12 +72,29 @@ export default async function TacticalMapLabPage() {
       ...raceSkills.map((skill) => ({ source: "race" as const, skill })),
     ].map(({ source, skill }) => {
       const original = originalSkills.get(skill.key);
+      const tacticalRange = Math.max(0, original?.range ?? skill.range ?? 0);
+      const originalOperations = new Map(
+        (original?.operations ?? []).map((operation, index) => [index, operation]),
+      );
       return {
         source,
         skill: {
           ...skill,
-          range: Math.max(0, original?.range ?? skill.range ?? 0),
+          range: tacticalRange,
           area: Math.max(0, original?.area ?? skill.area ?? 0),
+          operations: skill.operations.map((operation, index) => {
+            const rawOperation = originalOperations.get(index);
+            const rawDistance = Math.max(0, rawOperation?.distance ?? operation.distance ?? 0);
+            const spatialFallback =
+              (operation.operation === "MOVE" || operation.operation === "TELEPORT") &&
+              rawDistance === 0
+                ? tacticalRange
+                : rawDistance;
+            return {
+              ...operation,
+              distance: spatialFallback,
+            };
+          }),
         },
       };
     });

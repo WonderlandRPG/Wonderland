@@ -4,10 +4,10 @@ import { useState, type ComponentProps } from "react";
 
 import { TacticalActionCategories } from "@/components/arena/tactical-action-categories";
 import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
-import { TacticalLabV8 } from "@/components/arena/tactical-lab-v8";
+import { TacticalLabV9 } from "@/components/arena/tactical-lab-v9";
 import styles from "./tactical-combat-shell.module.css";
 
-type LabProps = ComponentProps<typeof TacticalLabV8>;
+type LabProps = ComponentProps<typeof TacticalLabV9>;
 type IdentityProps = ComponentProps<typeof TacticalCombatIdentity>;
 type Character = LabProps["characters"][number] & IdentityProps["characters"][number];
 type Creature = LabProps["creatures"][number] & IdentityProps["creatures"][number];
@@ -53,7 +53,7 @@ export function TacticalCombatShell({
       </div>
 
       <div className={styles.labWrap}>
-        <TacticalLabV8 characters={characters} creatures={creatures} />
+        <TacticalLabV9 characters={characters} creatures={creatures} />
       </div>
 
       <TacticalActionCategories active={started} />

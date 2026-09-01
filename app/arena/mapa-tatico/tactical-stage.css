@@ -5,8 +5,9 @@
 
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]>span:first-child,
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child{
-  width:62%;
-  height:62%;
+  width:68%;
+  height:68%;
+  overflow:hidden;
   font-size:0;
   transform:translateY(-5%);
 }
@@ -18,6 +19,9 @@
   height:100%;
   place-items:center;
   border-radius:50%;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:cover;
   font-size:clamp(1.15rem,2.6vw,2rem);
   font-weight:900;
   line-height:1;
@@ -25,14 +29,14 @@
 
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="player"]>span:first-child::before{
   content:"✦";
-  background:radial-gradient(circle,color-mix(in srgb,var(--wl-gold) 24%,transparent),transparent 72%);
+  background-image:var(--tactical-player-image),radial-gradient(circle,color-mix(in srgb,var(--wl-gold) 24%,transparent),transparent 72%);
   color:var(--wl-gold);
   text-shadow:0 0 12px color-mix(in srgb,var(--wl-gold) 45%,transparent);
 }
 
 .tactical-lab-stage [aria-label="Laboratório do mapa tático V8"] [data-state="enemy"]>span:first-child::before{
   content:"◆";
-  background:radial-gradient(circle,color-mix(in srgb,var(--wl-danger-border) 20%,transparent),transparent 72%);
+  background-image:var(--tactical-creature-image),radial-gradient(circle,color-mix(in srgb,var(--wl-danger-border) 20%,transparent),transparent 72%);
   color:var(--wl-danger-border);
   text-shadow:0 0 12px color-mix(in srgb,var(--wl-danger-border) 42%,transparent);
 }

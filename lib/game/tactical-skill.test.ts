@@ -223,7 +223,7 @@ describe("tactical skill resolver", () => {
     expect(result.actor.mana).toBe(actor.mana);
   });
 
-  it("stops remaining enemy effects after lethal damage", () => {
+  it("resolves the full cast before external creature mitigation finalizes defeat", () => {
     const actor = fighter("actor");
     const target = { ...fighter("target"), hp: 20 };
     const ability = skill([
@@ -231,7 +231,7 @@ describe("tactical skill resolver", () => {
       operation({
         operation: "ROOT",
         target: "enemy",
-        status: "nao-deve-aplicar",
+        status: "controle-da-mesma-skill",
         duration: 4,
         damageType: "none",
       }),
@@ -240,8 +240,7 @@ describe("tactical skill resolver", () => {
     const result = resolveTacticalSkill(actor, target, ability);
 
     expect(result.target.hp).toBe(0);
-    expect(result.target.statuses["nao-deve-aplicar"]).toBeUndefined();
-    expect(result.successfulOperationIndexes).toEqual([0]);
-    expect(result.event.message).toContain("efeitos restantes no alvo foram encerrados");
+    expect(result.target.statuses["controle-da-mesma-skill"]?.duration).toBe(4);
+    expect(result.successfulOperationIndexes).toEqual([0, 1]);
   });
 });

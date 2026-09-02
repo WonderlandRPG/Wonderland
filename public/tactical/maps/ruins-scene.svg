@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Ruínas de Verdantia">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#16251f"/><stop offset=".48" stop-color="#27382c"/><stop offset="1" stop-color="#1b251f"/></linearGradient>
+  <linearGradient id="stone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6a705d"/><stop offset="1" stop-color="#343b31"/></linearGradient>
+  <filter id="mist"><feGaussianBlur stdDeviation="22"/></filter>
+  <pattern id="cracks" width="180" height="160" patternUnits="userSpaceOnUse"><path d="M20 40l42 18 26 48 49 12M94 0l-8 55 33 23M150 80l-21 34 17 46" fill="none" stroke="#1d261f" stroke-width="4" opacity=".35"/></pattern>
+</defs>
+<rect width="1600" height="1000" fill="url(#bg)"/>
+<rect y="420" width="1600" height="580" fill="#2c3b2e"/>
+<path d="M120 1000V315l150-112 118 47v210h82V156l145-73 115 61v258h132V188l144-81 126 68v250h96V271l165-84 107 74v739z" fill="#263229" opacity=".88"/>
+<g fill="url(#stone)" stroke="#252a25" stroke-width="12">
+  <path d="M135 704l165-35 92 51-31 113-184 29-73-68z"/>
+  <path d="M1188 650l133-68 139 65-20 120-151 54-112-72z"/>
+  <path d="M567 515l95-121 126 14 45 105-82 96-139-22z"/>
+  <path d="M902 755l124-62 104 51-21 105-144 37-88-64z"/>
+</g>
+<g fill="#59624f" stroke="#2d332b" stroke-width="10"><rect x="85" y="338" width="125" height="278" rx="8"/><rect x="1390" y="330" width="118" height="302" rx="8"/><rect x="316" y="205" width="84" height="240" rx="6"/><rect x="1182" y="210" width="86" height="235" rx="6"/></g>
+<g fill="#73806a"><path d="M65 338h165l-18-48H86z"/><path d="M1365 330h165l-16-51h-132z"/><path d="M296 205h124l-12-42h-100z"/><path d="M1162 210h126l-10-43h-105z"/></g>
+<path d="M0 735c238-94 394-22 540-72 147-51 238-91 380-20 130 66 351 14 680 81v276H0z" fill="#334635" opacity=".82"/>
+<rect y="420" width="1600" height="580" fill="url(#cracks)" opacity=".6"/>
+<g fill="none" stroke="#41643e" stroke-width="18" stroke-linecap="round"><path d="M172 385c58 70 34 162 96 229s87 123 72 219"/><path d="M1450 360c-68 88-24 151-93 221-50 51-68 122-49 220"/><path d="M555 229c58 59 32 116 80 177"/></g>
+<g fill="#6e8a58"><circle cx="245" cy="555" r="10"/><circle cx="357" cy="650" r="13"/><circle cx="1300" cy="568" r="11"/><circle cx="1210" cy="630" r="13"/><circle cx="650" cy="355" r="9"/></g>
+<g fill="#dce7d3" opacity=".12" filter="url(#mist)"><ellipse cx="460" cy="515" rx="330" ry="54"/><ellipse cx="1120" cy="545" rx="360" ry="58"/><ellipse cx="800" cy="865" rx="650" ry="58"/></g>
+</svg>

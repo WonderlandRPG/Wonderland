@@ -62,7 +62,12 @@ export function TacticalActionCategories({ active }: { active: boolean }) {
 
   if (!active || !toolbar) return null;
 
-  const categoryButton = (key: Exclude<Panel, null>, label: string, symbol: string) => (
+  const categoryButton = (
+    key: Exclude<Panel, null>,
+    label: string,
+    symbol: string,
+    hint: string,
+  ) => (
     <button
       type="button"
       className={styles.category}
@@ -72,16 +77,19 @@ export function TacticalActionCategories({ active }: { active: boolean }) {
       disabled={!availability[key]}
       onClick={() => setPanel((current) => current === key ? null : key)}
     >
-      <span aria-hidden="true">{symbol}</span>
-      <strong>{label}</strong>
+      <span className={styles.icon} aria-hidden="true">{symbol}</span>
+      <span className={styles.copy}>
+        <strong>{label}</strong>
+        <small>{!availability[key] ? "Usado neste turno" : hint}</small>
+      </span>
     </button>
   );
 
   return createPortal(
     <>
-      {categoryButton("race", "Raça", "✦")}
-      {categoryButton("class", "Classe", "◆")}
-      {categoryButton("item", "Item", "✚")}
+      {categoryButton("race", "Raça", "✦", "Habilidades raciais")}
+      {categoryButton("class", "Classe", "◆", "Habilidades de classe")}
+      {categoryButton("item", "Item", "✚", "Itens utilizáveis")}
     </>,
     toolbar,
   );

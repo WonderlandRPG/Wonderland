@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Véu Sombrio">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#090b18"/><stop offset=".5" stop-color="#17172a"/><stop offset="1" stop-color="#0a0c16"/></linearGradient>
+  <radialGradient id="rift" cx="50%" cy="44%" r="34%"><stop stop-color="#8d78ff" stop-opacity=".45"/><stop offset=".35" stop-color="#5e4ac7" stop-opacity=".2"/><stop offset="1" stop-color="#17172a" stop-opacity="0"/></radialGradient>
+  <filter id="blur"><feGaussianBlur stdDeviation="24"/></filter>
+</defs>
+<rect width="1600" height="1000" fill="url(#bg)"/><rect width="1600" height="1000" fill="url(#rift)"/>
+<g fill="#101221"><path d="M0 0h230l-58 190 70 128-66 174 37 178L122 1000H0z"/><path d="M1600 0h-238l63 185-74 137 62 170-35 188 94 320h128z"/></g>
+<g fill="#222039" stroke="#0b0c14" stroke-width="12"><path d="M360 720l76-162 126-42 95 97-44 159-151 55z"/><path d="M1010 626l86-118 136 15 68 118-70 134-160-8z"/><path d="M716 798l61-105 92 2 62 102-61 109-100-3z"/></g>
+<g fill="#5f56a8" opacity=".75"><polygon points="425,595 466,535 491,601 468,672"/><polygon points="1122,540 1154,474 1188,552 1157,634"/><polygon points="817,710 845,648 874,718 845,786"/></g>
+<g stroke="#7268cf" stroke-width="8" fill="none" opacity=".65"><path d="M795 246c-56 72-80 136-18 194 65 61 46 118 12 170"/><path d="M824 252c52 71 72 130 17 187-54 56-41 111-6 164"/></g>
+<g fill="#a697ff"><circle cx="790" cy="420" r="7"/><circle cx="845" cy="496" r="5"/><circle cx="742" cy="540" r="6"/><circle cx="918" cy="390" r="5"/><circle cx="660" cy="380" r="4"/></g>
+<g fill="#9d93ff" opacity=".22" filter="url(#blur)"><ellipse cx="800" cy="445" rx="315" ry="95"/><ellipse cx="510" cy="720" rx="310" ry="50"/><ellipse cx="1115" cy="725" rx="320" ry="48"/></g>
+<g fill="#28243d" opacity=".9"><path d="M0 760c190-64 303-35 428 6 139 45 255 25 380-31 141-63 243-45 369 9 113 49 226 46 423 3v253H0z"/></g>
+<g stroke="#413b69" stroke-width="18" fill="none" opacity=".7"><path d="M126 1000c35-160 46-278 25-419"/><path d="M1464 1000c-29-170-34-281-8-431"/><path d="M298 1000c18-104 18-175-16-268"/><path d="M1308 1000c-11-108-6-186 28-276"/></g>
+</svg>

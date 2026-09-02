@@ -49,16 +49,14 @@ export function CombatExitGuard({ kind, combatId }: { kind: CombatKind; combatId
       }
     };
 
-    // pagehide/beforeunload cover real document exits; click/popstate cover
-    // Next.js client-side navigation, which does not unload the document.
-    window.addEventListener("pagehide", finish);
-    window.addEventListener("beforeunload", finish);
+    // Mobile browsers may emit pagehide/beforeunload when the app is merely
+    // backgrounded or the tab is suspended. Abandoning here invalidates a
+    // legitimate PvE victory before the player can claim it. Internal
+    // navigation and the explicit surrender control remain authoritative.
     window.addEventListener("popstate", finish);
     document.addEventListener("click", onDocumentClick, true);
 
     return () => {
-      window.removeEventListener("pagehide", finish);
-      window.removeEventListener("beforeunload", finish);
       window.removeEventListener("popstate", finish);
       document.removeEventListener("click", onDocumentClick, true);
       // Intentionally do not call finish() here. React/Next can unmount and

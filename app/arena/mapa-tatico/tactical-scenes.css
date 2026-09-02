@@ -1,0 +1,68 @@
+/* Five explicit tactical scene artworks. Route-scoped and loaded after tactical-v2.css. */
+
+.tactical-route-v2 [data-tactical-shell] button[data-scene-key="forest"] > span:first-child{
+  background-image:linear-gradient(180deg,transparent,color-mix(in srgb,var(--wl-surface-dark-strong) 18%,transparent)),url("/tactical/maps/forest-scene.svg");
+}
+.tactical-route-v2 [data-tactical-shell] button[data-scene-key="ruins"] > span:first-child{
+  background-image:linear-gradient(180deg,transparent,color-mix(in srgb,var(--wl-surface-dark-strong) 16%,transparent)),url("/tactical/maps/ruins-scene.svg");
+}
+.tactical-route-v2 [data-tactical-shell] button[data-scene-key="veil"] > span:first-child{
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-accent) 7%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 18%,transparent)),url("/tactical/maps/veil-scene.svg");
+}
+.tactical-route-v2 [data-tactical-shell] button[data-scene-key="moon"] > span:first-child{
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-accent) 5%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 14%,transparent)),url("/tactical/maps/moon-scene.svg");
+}
+.tactical-route-v2 [data-tactical-shell] button[data-scene-key="ember"] > span:first-child{
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-gold) 5%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 16%,transparent)),url("/tactical/maps/ember-scene.svg");
+}
+
+.tactical-route-v2 [data-tactical-shell] button[data-scene-key] > span:first-child{
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:cover;
+}
+
+.tactical-route-v2 [data-tactical-shell][data-combat-mode="battle"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child,
+.tactical-route-v2 [data-tactical-shell][data-combat-mode="battle"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child > div{
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:cover;
+}
+
+.tactical-route-v2 [data-tactical-shell][data-map-scene="forest"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child,
+.tactical-route-v2 [data-tactical-shell][data-map-scene="forest"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child > div{
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-surface-dark-strong) 5%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 12%,transparent)),url("/tactical/maps/forest-scene.svg");
+}
+.tactical-route-v2 [data-tactical-shell][data-map-scene="ruins"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child,
+.tactical-route-v2 [data-tactical-shell][data-map-scene="ruins"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child > div{
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-surface-dark-strong) 4%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 12%,transparent)),url("/tactical/maps/ruins-scene.svg");
+}
+.tactical-route-v2 [data-tactical-shell][data-map-scene="veil"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child,
+.tactical-route-v2 [data-tactical-shell][data-map-scene="veil"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child > div{
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-accent) 4%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 13%,transparent)),url("/tactical/maps/veil-scene.svg");
+}
+.tactical-route-v2 [data-tactical-shell][data-map-scene="moon"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child,
+.tactical-route-v2 [data-tactical-shell][data-map-scene="moon"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child > div{
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-accent) 3%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 10%,transparent)),url("/tactical/maps/moon-scene.svg");
+}
+.tactical-route-v2 [data-tactical-shell][data-map-scene="ember"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child,
+.tactical-route-v2 [data-tactical-shell][data-map-scene="ember"] [aria-label="Laboratório do mapa tático V8"] > div:nth-of-type(3) > div:first-child > div{
+  background-image:linear-gradient(180deg,color-mix(in srgb,var(--wl-gold) 3%,transparent),color-mix(in srgb,var(--wl-surface-dark-strong) 11%,transparent)),url("/tactical/maps/ember-scene.svg");
+}
+
+/* Keep the artwork readable through the grid. State colors remain stronger below. */
+.tactical-route-v2 [data-tactical-shell][data-combat-mode="battle"] [aria-label="Laboratório do mapa tático V8"] [data-state]{
+  background-color:color-mix(in srgb,var(--wl-surface-dark-strong) 5%,transparent);
+}
+.tactical-route-v2 [data-tactical-shell][data-combat-mode="battle"] [aria-label="Laboratório do mapa tático V8"] [data-state]:nth-child(even){
+  background-color:color-mix(in srgb,var(--wl-surface-dark-strong) 9%,transparent);
+}
+.tactical-route-v2 [data-tactical-shell][data-combat-mode="battle"] [aria-label="Laboratório do mapa tático V8"] [data-state="reachable"]{
+  background-color:color-mix(in srgb,var(--wl-accent-soft) 38%,transparent);
+}
+.tactical-route-v2 [data-tactical-shell][data-combat-mode="battle"] [aria-label="Laboratório do mapa tático V8"] [data-state="range"]{
+  background-color:color-mix(in srgb,var(--wl-gold-soft) 34%,transparent);
+}
+.tactical-route-v2 [data-tactical-shell][data-combat-mode="battle"] [aria-label="Laboratório do mapa tático V8"] [data-state="area"]{
+  background-color:color-mix(in srgb,var(--wl-danger-bg) 45%,transparent);
+}

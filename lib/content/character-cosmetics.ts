@@ -18,6 +18,10 @@ export const halloween2026CosmeticKeys = {
   border: "trono-rei-oco",
 } as const;
 
+export const inauguration2026CosmeticKeys = {
+  border: "moldura-fundadores-2026",
+} as const;
+
 export function parseCharacterCosmetics(value: unknown): CharacterCosmeticLoadout {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return { ...emptyCharacterCosmetics };

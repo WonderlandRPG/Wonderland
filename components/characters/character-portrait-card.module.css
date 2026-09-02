@@ -46,6 +46,15 @@
 .card[data-border-cosmetic='trono-rei-oco'] .topMeta{z-index:70;left:3%;right:3%;top:3%}.card[data-border-cosmetic='trono-rei-oco'] .titleMeta{z-index:70;bottom:3%}
 .card[data-border-cosmetic='trono-rei-oco'] .levelMeta{border-color:#b8894c;background:linear-gradient(#1d1710,#090d0d);color:#fff0c8;box-shadow:0 0 0 2px rgba(25,112,106,.55),0 5px 13px rgba(0,0,0,.5)}
 
+/* BORDA COMEMORATIVA · Fundadores 2026 — moldura externa sem alterar o retrato. */
+.card[data-border-cosmetic='moldura-fundadores-2026']{overflow:visible}
+.card[data-border-cosmetic='moldura-fundadores-2026'] .cosmeticBorderFx{z-index:60;inset:-8.5% -8%;opacity:1;visibility:visible;filter:drop-shadow(0 8px 12px rgba(17,45,34,.42)) drop-shadow(0 0 10px rgba(222,183,76,.3))}
+.card[data-border-cosmetic='moldura-fundadores-2026'] .borderArtwork{display:block!important;object-fit:fill!important;filter:brightness(1.02) contrast(1.04)}
+.card[data-border-cosmetic='moldura-fundadores-2026'] .topMeta{z-index:70}
+.card[data-border-cosmetic='moldura-fundadores-2026'] .titleMeta{z-index:70}
+.card[data-border-cosmetic='moldura-fundadores-2026'] .levelMeta{border-color:#d7b752;background:linear-gradient(145deg,rgba(12,66,45,.94),rgba(5,34,25,.94));color:#fff3c7}
+.compact[data-border-cosmetic='moldura-fundadores-2026'] .cosmeticBorderFx,:global(.ranking-character-card)[data-border-cosmetic='moldura-fundadores-2026'] .cosmeticBorderFx{inset:-8.5% -8%}
+
 /* Conjunto completo: borda dominante, card e aura em segundo plano. */
 .card[data-card-cosmetic='noite-veu-partido'][data-aura-cosmetic='cortejo-fogos-fatuos'][data-border-cosmetic='trono-rei-oco'] .voidEclipse{opacity:.72}
 .card[data-card-cosmetic='noite-veu-partido'][data-aura-cosmetic='cortejo-fogos-fatuos'][data-border-cosmetic='trono-rei-oco'] .cosmeticAuraFx{inset:7%;opacity:.76}

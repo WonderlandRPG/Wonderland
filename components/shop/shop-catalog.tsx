@@ -46,6 +46,18 @@ type ShopSection = "equipment" | "cosmetics";
 
 const halloween2026Cosmetics = [
   {
+    type: "Borda",
+    name: "Estrela dos Fundadores",
+    tag: "Comemorativo • Exclusivo",
+    description:
+      "Uma moldura cerimonial em ouro antigo e esmalte esmeralda, criada para reconhecer quem esteve presente na inauguração de Wonderland.",
+    highlights: ["Legado da inauguração", "Retrato preservado", "Ouro e esmeralda", "Distribuição por participação"],
+    preview: "border",
+    key: "moldura-fundadores-2026",
+    collection: "Inauguração 2026",
+    availability: "Recompensa de participação",
+  },
+  {
     type: "Card animado",
     name: "Noite do Véu Partido",
     tag: "Lendário • Animado",
@@ -54,6 +66,8 @@ const halloween2026Cosmetics = [
     highlights: ["Véus laterais rasgados", "Retrato preservado", "Luz espectral", "Névoa e brasas discretas"],
     preview: "card",
     key: "noite-veu-partido",
+    collection: "Halloween 2026",
+    availability: "Lançamento futuro",
   },
   {
     type: "Aura animada",
@@ -64,6 +78,8 @@ const halloween2026Cosmetics = [
     highlights: ["5 fantasmas reconhecíveis", "Procissão interna", "Movimento coordenado", "Sem efeitos recortados"],
     preview: "aura",
     key: "cortejo-fogos-fatuos",
+    collection: "Halloween 2026",
+    availability: "Lançamento futuro",
   },
   {
     type: "Borda",
@@ -74,6 +90,8 @@ const halloween2026Cosmetics = [
     highlights: ["Coroa oca central", "Abóboras ritualísticas", "Chamas espectrais", "PNG transparente em alta definição"],
     preview: "border",
     key: "trono-rei-oco",
+    collection: "Halloween 2026",
+    availability: "Lançamento futuro",
   },
 ] as const;
 
@@ -95,6 +113,7 @@ export function ShopCatalog({
   };
 }) {
   const [section, setSection] = useState<ShopSection>("equipment");
+  const [cosmeticFilter, setCosmeticFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [rarity, setRarity] = useState("");
   const [slot, setSlot] = useState("");
@@ -185,27 +204,61 @@ export function ShopCatalog({
       ) : null}
 
       {section === "cosmetics" && showCosmetics ? (
-        <section className="cosmetics-preview" aria-label="Prévia administrativa de cosméticos">
+        <section className="cosmetics-preview cosmetics-store" aria-label="Loja administrativa de cosméticos">
           <header className="cosmetics-collection-hero">
             <div>
-              <span>HALLOWEEN 2026 • COLEÇÃO LIMITADA</span>
-              <h2>Véspera do Rei Oco</h2>
+              <span>ATELIÊ DE WONDERLAND • CATÁLOGO DE PRÉ-LANÇAMENTO</span>
+              <h2>Relíquias que contam a sua história</h2>
               <p>
-                Na última noite de outubro, a coroa vazia volta a arder e os fogos-fátuos escolhem
-                novos nomes para conduzir pelo véu. Uma coleção criada como um conjunto visual único,
-                sem conceder qualquer vantagem de combate.
+                Molduras, auras e cards criados para transformar cada retrato em uma peça única.
+                Explore as coleções, teste no personagem e prepare a futura vitrine do RPG.
               </p>
             </div>
             <aside>
-              <small>ACESSO DE PRÉVIA</small>
-              <strong>Somente Administração</strong>
-              <span>Venda aos jogadores ainda bloqueada</span>
+              <small>LOJA EM PREPARAÇÃO</small>
+              <strong>Portas fechadas</strong>
+              <span>Apenas administradores podem visualizar ou equipar itens</span>
             </aside>
           </header>
 
+          <div className="cosmetics-storebar">
+            <div>
+              <small>CATÁLOGO</small>
+              <strong>{halloween2026Cosmetics.length} peças em exposição</strong>
+            </div>
+            <nav aria-label="Categorias de cosméticos">
+              {[["all", "Todos"], ["border", "Bordas"], ["aura", "Auras"], ["card", "Cards"]].map(([key, label]) => (
+                <button className={cosmeticFilter === key ? "is-active" : ""} key={key} onClick={() => setCosmeticFilter(key)} type="button">{label}</button>
+              ))}
+            </nav>
+            <span className="cosmetics-storebar__lock">◆ Prévia ADM</span>
+          </div>
+
           <div className="cosmetics-grid">
-            {halloween2026Cosmetics.map((cosmetic) => (
+            {halloween2026Cosmetics.filter((cosmetic) => cosmeticFilter === "all" || cosmetic.preview === cosmeticFilter).map((cosmetic, index) => (
               <article className="cosmetic-card" data-preview={cosmetic.preview} key={cosmetic.name}>
+                <div className="cosmetic-card__visual">
+                  <span className="cosmetic-card__number">0{index + 1}</span>
+                  {previewCharacter ? (
+                    <div className={`cosmetic-character-demo is-${cosmetic.preview}`}>
+                      <CharacterPortraitCard
+                        imageUrl={previewCharacter.imageUrl}
+                        level={previewCharacter.level}
+                        name={previewCharacter.name}
+                        rank={previewCharacter.rank}
+                        title={null}
+                        variant="standard"
+                        cosmetics={{
+                          card: cosmetic.preview === "card" ? cosmetic.key : null,
+                          aura: cosmetic.preview === "aura" ? cosmetic.key : null,
+                          border: cosmetic.preview === "border" ? cosmetic.key : null,
+                        }}
+                      />
+                    </div>
+                  ) : <span className="cosmetic-preview-placeholder">Sem personagem</span>}
+                  <span className="cosmetic-card__preview-label">Prévia no seu aventureiro</span>
+                </div>
+                <div className="cosmetic-card__content">
                 <header className="cosmetic-card__heading">
                   <div>
                     <small>{cosmetic.type}</small>
@@ -213,54 +266,8 @@ export function ShopCatalog({
                   </div>
                   <b>{cosmetic.tag}</b>
                 </header>
-                <div className="cosmetic-compare">
-                  <div className="cosmetic-compare__side">
-                    <b>SEM COSMÉTICO</b>
-                    <div className="cosmetic-compare__stage is-before">
-                      {previewCharacter ? (
-                        <CharacterPortraitCard
-                          imageUrl={previewCharacter.imageUrl}
-                          level={previewCharacter.level}
-                          name={previewCharacter.name}
-                          rank={previewCharacter.rank}
-                          title={null}
-                          cosmetics={{ card: null, aura: null, border: null }}
-                          variant="standard"
-                        />
-                      ) : (
-                        <span className="cosmetic-preview-placeholder">Sem personagem</span>
-                      )}
-                    </div>
-                  </div>
-
-                  <span className="cosmetic-compare__arrow" aria-hidden="true">→</span>
-
-                  <div className="cosmetic-compare__side is-after">
-                    <b>COM COSMÉTICO</b>
-                    <div className={`cosmetic-compare__stage is-after is-${cosmetic.preview}`}>
-                      {previewCharacter ? (
-                        <div className={`cosmetic-character-demo is-${cosmetic.preview}`}>
-                          <CharacterPortraitCard
-                            imageUrl={previewCharacter.imageUrl}
-                            level={previewCharacter.level}
-                            name={previewCharacter.name}
-                            rank={previewCharacter.rank}
-                            title={null}
-                            variant="standard"
-                            cosmetics={{
-                              card: cosmetic.preview === "card" ? cosmetic.key : null,
-                              aura: cosmetic.preview === "aura" ? cosmetic.key : null,
-                              border: cosmetic.preview === "border" ? cosmetic.key : null,
-                            }}
-                          />
-                        </div>
-                      ) : (
-                        <span className="cosmetic-preview-placeholder">Sem personagem</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
                 <div className="cosmetic-card__body">
+                  <div className="cosmetic-card__collection"><span>{cosmetic.collection}</span><b>{cosmetic.availability}</b></div>
                   <p>{cosmetic.description}</p>
                   <ul>
                     {cosmetic.highlights.map((highlight) => (
@@ -290,21 +297,21 @@ export function ShopCatalog({
                     )}
                   </form>
                 </footer>
+                </div>
               </article>
             ))}
           </div>
 
           <aside className="cosmetics-bundle">
             <div>
-              <small>CONJUNTO COMPLETO</small>
-              <h3>Regalia do Rei Oco</h3>
+              <small>ACESSO CONTROLADO</small>
+              <h3>A vitrine está pronta; as portas continuam fechadas</h3>
               <p>
-                Card + Aura + Borda formam a identidade completa da coleção. Os três cosméticos
-                são independentes e podem ser combinados, criando a apresentação máxima da
-                coleção Véspera do Rei Oco — Halloween 2026.
+                Nenhum jogador recebeu acesso à loja. A Estrela dos Fundadores está preparada
+                como recompensa comemorativa, mas sua distribuição depende da lista oficial de participantes.
               </p>
             </div>
-            <strong>Preço ainda não definido</strong>
+            <strong>Jogadores sem acesso</strong>
           </aside>
         </section>
       ) : (

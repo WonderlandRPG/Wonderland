@@ -7,10 +7,10 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-const valid = new Map([
-  ["card", "noite-veu-partido"],
-  ["aura", "cortejo-fogos-fatuos"],
-  ["border", "trono-rei-oco"],
+const valid = new Map<string, Set<string>>([
+  ["card", new Set(["noite-veu-partido"])],
+  ["aura", new Set(["cortejo-fogos-fatuos"])],
+  ["border", new Set(["trono-rei-oco", "moldura-fundadores-2026"])],
 ]);
 
 export async function setAdminCosmeticAction(formData: FormData) {
@@ -22,7 +22,7 @@ export async function setAdminCosmeticAction(formData: FormData) {
   const remove = String(formData.get("remove") ?? "") === "1";
   const expected = valid.get(slot);
 
-  if (!expected || (!remove && requested !== expected)) {
+  if (!expected || (!remove && !expected.has(requested))) {
     redirect("/loja?status=cosmetico-invalido");
   }
 

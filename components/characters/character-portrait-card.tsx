@@ -29,6 +29,13 @@ export function CharacterPortraitCard({
   children,
   cosmetics,
 }: CharacterPortraitCardProps) {
+  const borderArtwork =
+    cosmetics?.border === "trono-rei-oco"
+      ? "/cosmetics/halloween-2026/trono-rei-oco-v2.png"
+      : cosmetics?.border === "moldura-fundadores-2026"
+        ? "/cosmetics/inauguracao/moldura-fundadores-2026.png"
+        : null;
+
   return (
     <div
       className={[styles.card, styles[variant], className].filter(Boolean).join(" ")}
@@ -58,11 +65,7 @@ export function CharacterPortraitCard({
       </div>
 
       <div className={styles.cosmeticBorderFx} aria-hidden="true">
-        <img
-          alt=""
-          className={styles.borderArtwork}
-          src="/cosmetics/halloween-2026/trono-rei-oco-v2.png"
-        />
+        {borderArtwork ? <img alt="" className={styles.borderArtwork} src={borderArtwork} /> : null}
       </div>
 
       <div className={styles.cosmeticAuraFx} aria-hidden="true">

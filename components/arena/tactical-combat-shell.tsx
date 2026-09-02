@@ -66,12 +66,13 @@ export function TacticalCombatShell({
   return (
     <div
       className={styles.shell}
+      data-tactical-shell
       data-combat-mode={started ? "battle" : "preparation"}
       data-details-open={detailsOpen ? "true" : "false"}
       data-map-scene={scene}
     >
       {!started ? (
-        <section className={styles.preparationHeader}>
+        <section className={styles.preparationHeader} data-tactical-preparation>
           <div className={styles.preparationIntro}>
             <span className={styles.eyebrow}>Combate tático</span>
             <h1>Prepare a arena</h1>
@@ -81,7 +82,11 @@ export function TacticalCombatShell({
             </p>
           </div>
 
-          <div className={styles.scenePicker} role="radiogroup" aria-label="Escolha o cenário do combate">
+          <div
+            className={styles.scenePicker}
+            role="radiogroup"
+            aria-label="Escolha do campo de batalha"
+          >
             {TACTICAL_SCENES.map((entry) => (
               <button
                 key={entry.key}
@@ -90,6 +95,7 @@ export function TacticalCombatShell({
                 aria-checked={scene === entry.key}
                 className={styles.sceneCard}
                 data-scene={entry.key}
+                data-scene-key={entry.key}
                 data-selected={scene === entry.key ? "true" : "false"}
                 onClick={() => setScene(entry.key)}
               >
@@ -104,7 +110,7 @@ export function TacticalCombatShell({
           </div>
         </section>
       ) : (
-        <div className={styles.battleTopbar}>
+        <div className={styles.battleTopbar} data-tactical-topbar>
           <button type="button" onClick={() => setStarted(false)}>
             <span aria-hidden="true">←</span>
             Preparação
@@ -119,18 +125,18 @@ export function TacticalCombatShell({
         </div>
       )}
 
-      <div className={styles.identityWrap}>
+      <div className={styles.identityWrap} data-tactical-identity-host>
         <TacticalCombatIdentity characters={characters} creatures={creatures} />
       </div>
 
-      <div className={styles.labWrap}>
+      <div className={styles.labWrap} data-tactical-lab-host>
         <TacticalLabV9 characters={characters} creatures={creatures} />
       </div>
 
       <TacticalActionCategories active={started} />
 
       {!started ? (
-        <div className={styles.startArea}>
+        <div className={styles.startArea} data-tactical-start-area>
           <button className={styles.startButton} type="button" onClick={() => setStarted(true)}>
             <span>Entrar no campo</span>
             <strong>Iniciar combate</strong>

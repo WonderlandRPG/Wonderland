@@ -75,16 +75,16 @@
 
 /* Halloween 2026 — camadas novas, independentes das dimensões do retrato. */
 .cardArtwork,.witchArtwork{position:absolute;display:none;max-width:none;pointer-events:none}
-.card[data-card-cosmetic='vigilia-do-cemiterio'] .cosmeticCardFx{opacity:1}
-.card[data-card-cosmetic='vigilia-do-cemiterio'] .cardArtwork{display:block;z-index:8;inset:0;width:100%;height:100%;object-fit:fill;animation:graveyardBreath 5.5s ease-in-out infinite}
+.card[data-card-cosmetic='vigilia-do-cemiterio'] .cosmeticCardFx{opacity:1;background:url('/cosmetics/halloween-2026/vigilia-do-cemiterio.png') center/100% 100% no-repeat;animation:graveyardBreath 5.5s ease-in-out infinite}
+.card[data-card-cosmetic='vigilia-do-cemiterio'] .cardArtwork{display:none}
 .card[data-card-cosmetic='vigilia-do-cemiterio'] .image{filter:saturate(.86) contrast(1.04) brightness(.88)}
 .card[data-border-cosmetic='moldura-colheita-noturna']{overflow:visible}
-.card[data-border-cosmetic='moldura-colheita-noturna'] .cosmeticBorderFx{inset:-10.5% -10%;z-index:60;opacity:1;visibility:visible;filter:drop-shadow(0 8px 13px color-mix(in srgb,var(--wl-ink) 58%,transparent))}
-.card[data-border-cosmetic='moldura-colheita-noturna'] .borderArtwork{display:block!important;object-fit:fill!important;filter:saturate(1.05) contrast(1.03)}
+.card[data-border-cosmetic='moldura-colheita-noturna'] .cosmeticBorderFx{inset:-10.5% -10%;z-index:60;opacity:1;visibility:visible;background:url('/cosmetics/halloween-2026/colheita-da-meia-noite.png') center/100% 100% no-repeat;filter:drop-shadow(0 8px 13px color-mix(in srgb,var(--wl-ink) 58%,transparent))}
+.card[data-border-cosmetic='moldura-colheita-noturna'] .borderArtwork{display:none!important}
 .card[data-border-cosmetic='moldura-colheita-noturna'] .topMeta,.card[data-border-cosmetic='moldura-colheita-noturna'] .titleMeta{z-index:70}
 .card[data-aura-cosmetic='voo-da-bruxa']{overflow:hidden}
 .card[data-aura-cosmetic='voo-da-bruxa'] .cosmeticAuraFx{inset:0;z-index:13;opacity:1;overflow:hidden;border-radius:inherit}
-.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{display:block;top:10%;left:0;width:94%;height:auto;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--wl-accent) 46%,transparent));animation:witchFlight 8s cubic-bezier(.45,.03,.55,.97) infinite}
+.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{display:block;top:18%;left:3%;width:94%;height:auto;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--wl-accent) 46%,transparent));animation:witchFlight 6s ease-in-out infinite alternate}
 @keyframes graveyardBreath{50%{transform:scale(1.012);filter:brightness(1.08)}}
-@keyframes witchFlight{0%{transform:translateX(-115%) translateY(9%) scale(.68);opacity:0}12%{opacity:1}48%{transform:translateX(8%) translateY(-2%) scale(.78);opacity:1}76%{transform:translateX(65%) translateY(8%) scale(.7);opacity:.92}100%{transform:translateX(125%) translateY(-3%) scale(.63);opacity:0}}
+@keyframes witchFlight{0%{transform:translateX(-4%) translateY(5%) scale(.9);opacity:.9}50%{transform:translateX(4%) translateY(-4%) scale(.94);opacity:1}100%{transform:translateX(-2%) translateY(3%) scale(.9);opacity:.92}}
 @media(prefers-reduced-motion:reduce){.card[data-card-cosmetic='vigilia-do-cemiterio'] .cardArtwork,.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{animation:none}.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{transform:translateX(4%) scale(.76);opacity:.88}}

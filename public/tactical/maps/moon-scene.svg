@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Santuário Lunar">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#091321"/><stop offset=".55" stop-color="#12283b"/><stop offset="1" stop-color="#0a1723"/></linearGradient>
+  <radialGradient id="moon" cx="50%" cy="22%" r="30%"><stop stop-color="#dff5ff" stop-opacity=".82"/><stop offset=".35" stop-color="#83c8e8" stop-opacity=".25"/><stop offset="1" stop-color="#0b1723" stop-opacity="0"/></radialGradient>
+  <filter id="mist"><feGaussianBlur stdDeviation="24"/></filter>
+</defs>
+<rect width="1600" height="1000" fill="url(#bg)"/><rect width="1600" height="1000" fill="url(#moon)"/>
+<circle cx="800" cy="174" r="92" fill="#d7eff7" opacity=".92"/><circle cx="835" cy="155" r="18" fill="#a9ccd8" opacity=".55"/><circle cx="772" cy="195" r="13" fill="#b6d6df" opacity=".5"/>
+<g fill="#08131d"><path d="M0 0h190l-34 180 77 125-68 164 40 185-82 346H0z"/><path d="M1600 0h-202l46 182-78 130 67 164-38 192 84 332h121z"/></g>
+<ellipse cx="800" cy="720" rx="610" ry="280" fill="#18384a"/><ellipse cx="800" cy="720" rx="505" ry="215" fill="#21475b" opacity=".72"/>
+<g fill="#2c596c" stroke="#0d2735" stroke-width="10"><path d="M365 710l72-127 110-24 89 98-43 127-144 44z"/><path d="M1055 626l87-112 121 20 54 111-74 115-133-4z"/></g>
+<g fill="#6ecff1" opacity=".95"><polygon points="448,610 476,526 506,614 480,705"/><polygon points="1160,551 1192,466 1224,556 1195,653"/><polygon points="776,786 810,686 846,790 811,890"/></g>
+<g fill="#bcefff" opacity=".32" filter="url(#mist)"><ellipse cx="475" cy="625" rx="95" ry="75"/><ellipse cx="1192" cy="580" rx="110" ry="80"/><ellipse cx="812" cy="790" rx="120" ry="86"/></g>
+<path d="M560 1000c28-135 81-238 143-330 37-55 60-119 97-201 38 82 59 144 98 201 64 94 112 194 145 330z" fill="#356178" opacity=".28"/>
+<g stroke="#477c91" stroke-width="10" fill="none" opacity=".45"><circle cx="800" cy="718" r="228"/><circle cx="800" cy="718" r="168"/><path d="M800 490v456M572 718h456"/></g>
+<g fill="#c8f4ff"><circle cx="588" cy="497" r="5"/><circle cx="975" cy="515" r="6"/><circle cx="720" cy="418" r="4"/><circle cx="902" cy="432" r="5"/><circle cx="1284" cy="612" r="4"/></g>
+<g fill="#bdeaff" opacity=".12" filter="url(#mist)"><ellipse cx="800" cy="600" rx="530" ry="60"/><ellipse cx="800" cy="865" rx="650" ry="58"/></g>
+</svg>

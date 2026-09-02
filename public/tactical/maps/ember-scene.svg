@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Ruínas do Crepúsculo">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#2a1714"/><stop offset=".5" stop-color="#513025"/><stop offset="1" stop-color="#201612"/></linearGradient>
+  <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f6c16f" stop-opacity=".55"/><stop offset="1" stop-color="#d96735" stop-opacity="0"/></linearGradient>
+  <filter id="heat"><feGaussianBlur stdDeviation="20"/></filter>
+</defs>
+<rect width="1600" height="1000" fill="url(#bg)"/><rect width="1600" height="1000" fill="url(#sun)" opacity=".48"/>
+<circle cx="1260" cy="190" r="112" fill="#f2b85d" opacity=".72"/>
+<g fill="#2a1f19" opacity=".92"><path d="M0 0h195l-34 184 68 126-61 170 31 188-78 332H0z"/><path d="M1600 0h-205l48 194-75 123 61 172-37 190 91 321h117z"/></g>
+<g fill="#5a4739" stroke="#2e241e" stroke-width="12"><path d="M154 720l132-103 148 28 61 107-78 119-170 15z"/><path d="M1132 628l122-94 142 39 43 115-85 102-161-5z"/><path d="M681 530l103-137 126 23 55 121-83 103-139-20z"/></g>
+<g fill="#6a5140"><rect x="90" y="310" width="104" height="280" rx="7"/><rect x="1410" y="290" width="100" height="300" rx="7"/><rect x="318" y="198" width="80" height="232" rx="5"/><rect x="1192" y="206" width="82" height="229" rx="5"/></g>
+<g fill="#8c6a4d"><path d="M71 310h143l-15-46H87z"/><path d="M1390 290h140l-14-48h-111z"/></g>
+<path d="M0 760c202-69 355-20 498-2 142 18 245-6 368-57 149-62 284-35 422 10 101 33 197 45 312 31v258H0z" fill="#473426" opacity=".9"/>
+<g fill="#f2a34b"><circle cx="327" cy="650" r="6"/><circle cx="488" cy="742" r="5"/><circle cx="875" cy="670" r="7"/><circle cx="1088" cy="608" r="5"/><circle cx="1320" cy="725" r="6"/></g>
+<g fill="#f5a24a" opacity=".25" filter="url(#heat)"><ellipse cx="510" cy="720" rx="260" ry="50"/><ellipse cx="1120" cy="680" rx="310" ry="55"/><ellipse cx="800" cy="870" rx="610" ry="48"/></g>
+<g stroke="#9a5f39" stroke-width="9" fill="none" opacity=".52"><path d="M610 1000l82-188 88-92 71 93 79 187"/><path d="M268 870l62-106 68 94"/><path d="M1215 850l62-98 65 110"/></g>
+<g fill="#c8793d" opacity=".34"><path d="M747 595l46-66 44 70-43 67z"/><path d="M1015 752l35-54 38 60-36 61z"/></g>
+</svg>

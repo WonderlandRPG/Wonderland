@@ -121,6 +121,18 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_characters"]["Insert"]>;
         Relationships: [];
       };
+      v2_cosmetics: {
+        Row: { id: string; key: string; name: string; description: string; slot: "card" | "aura" | "border"; rarity: string; collection_name: string; price_cents: number | null; artwork_url: string | null; active: boolean; grant_only: boolean; sort_order: number; created_at: string; updated_at: string };
+        Insert: { id?: string; key: string; name: string; description?: string; slot: "card" | "aura" | "border"; rarity?: string; collection_name: string; price_cents?: number | null; artwork_url?: string | null; active?: boolean; grant_only?: boolean; sort_order?: number; created_at?: string; updated_at?: string };
+        Update: Partial<Database["public"]["Tables"]["v2_cosmetics"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_character_cosmetics: {
+        Row: { character_id: string; cosmetic_id: string; granted_by: string | null; grant_reason: string; created_at: string };
+        Insert: { character_id: string; cosmetic_id: string; granted_by?: string | null; grant_reason?: string; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["v2_character_cosmetics"]["Insert"]>;
+        Relationships: [];
+      };
       v2_dungeon_queue: {
         Row: {
           id: string;
@@ -963,6 +975,8 @@ export interface Database {
         Returns: number;
       };
       v2_admin_delete_title: { Args: { p_title_id: string }; Returns: number };
+      v2_admin_update_cosmetic: { Args: { p_cosmetic_id: string; p_price_cents: number; p_active: boolean }; Returns: undefined };
+      v2_admin_grant_cosmetic: { Args: { p_cosmetic_id: string; p_character_id?: string | null; p_all?: boolean }; Returns: number };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

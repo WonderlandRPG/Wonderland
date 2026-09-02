@@ -16,6 +16,7 @@ import { getStructuredRaceAbilities } from "@/lib/game/races";
 import { compatibleEquipSlots, equipmentSlots, itemSlotLabel } from "@/lib/game/equipment";
 import { updateCharacterImageAction } from "./equipment-actions";
 import { completePathQuestAction } from "./path-actions";
+import { getOwnedCosmetics } from "@/lib/content/cosmetics";
 
 export const metadata = { title: "Ficha do Personagem" };
 export const dynamic = "force-dynamic";
@@ -30,6 +31,7 @@ export default async function CharacterSheetPage({
   const [{ id }, query] = await Promise.all([params, searchParams]);
   await requireActiveCharacter(`/personagens/${id}`);
   const character = await requireCharacterSheet(id);
+  const ownedCosmetics = await getOwnedCosmetics(id);
   const progress = getLevelProgress(character.xp);
   const tab = ["resumo", "habilidades", "equipamentos"].includes(query.tab ?? "")
     ? query.tab!
@@ -340,6 +342,7 @@ export default async function CharacterSheetPage({
               <p>Monte seu conjunto de combate. Cada peça equipada altera a ficha e a Arena.</p>
             </header>
             <InventoryWorkbench
+              cosmetics={ownedCosmetics}
               character={{
                 id: character.id,
                 name: character.name,

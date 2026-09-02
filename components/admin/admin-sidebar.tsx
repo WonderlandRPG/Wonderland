@@ -35,6 +35,7 @@ const navigation = [
       { label: "Classes", glyph: "CL", href: "/admin/classes" },
       { label: "Bestiário", glyph: "BS", href: "/admin/bestiario" },
       { label: "Itens", glyph: "05", href: "/admin/itens" },
+      { label: "Cosméticos", glyph: "◇", href: "/admin/cosmeticos" },
       { label: "Missões", glyph: "✥", href: "/admin/missoes" },
       { label: "Controle de Reinos", glyph: "♛", href: "/admin/reinos" },
       { label: "Títulos", glyph: "✦", href: "/admin/titulos" },

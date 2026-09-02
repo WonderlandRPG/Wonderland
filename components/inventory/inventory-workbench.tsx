@@ -11,6 +11,8 @@ import { CharacterPortraitCard } from "@/components/characters/character-portrai
 import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
 import { ItemGlyph } from "@/components/items/item-glyph";
 import { ItemArtwork } from "@/components/items/item-artwork";
+import { equipOwnedCosmeticAction } from "@/app/personagens/[id]/cosmetic-actions";
+import type { CosmeticCatalogItem } from "@/lib/content/cosmetics";
 
 type InventoryItem = {
   id: string;
@@ -37,12 +39,14 @@ export function InventoryWorkbench({
   character,
   slots,
   items,
+  cosmetics,
 }: {
   character: { id: string; name: string; imageUrl: string | null; rank: string; level: number; cosmetics: CharacterCosmeticLoadout };
   slots: Slot[];
   items: InventoryItem[];
+  cosmetics: CosmeticCatalogItem[];
 }) {
-  const [view, setView] = useState<"all" | "bag" | "equipped" | "rewards">("all");
+  const [view, setView] = useState<"all" | "bag" | "equipped" | "rewards" | "cosmetics">("all");
   const [search, setSearch] = useState("");
   const [slotFilter, setSlotFilter] = useState("");
   const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
@@ -204,8 +208,23 @@ export function InventoryWorkbench({
               <button className={view === "bag" ? "is-active" : ""} onClick={() => setView("bag")} type="button">Mochila</button>
               <button className={view === "equipped" ? "is-active" : ""} onClick={() => setView("equipped")} type="button">Equipados</button>
               <button className={view === "rewards" ? "is-active" : ""} onClick={() => setView("rewards")} type="button">Recompensas ADM</button>
+              <button className={view === "cosmetics" ? "is-active" : ""} onClick={() => setView("cosmetics")} type="button">✦ Cosméticos</button>
             </nav>
           </header>
+
+          {view === "cosmetics" ? (
+            <div className="inventory-cosmetics">
+              <div className="inventory-cosmetics__intro"><span className="eyebrow">Guarda-roupa mágico</span><h3>Seus cosméticos</h3><p>Ative aqui as peças que já foram adicionadas ao inventário deste personagem.</p></div>
+              {cosmetics.length ? <div className="inventory-cosmetics__grid">{cosmetics.map((cosmetic) => {
+                const active = character.cosmetics[cosmetic.slot] === cosmetic.key;
+                return <article key={cosmetic.id} data-rarity={cosmetic.rarity}>
+                  <div className="inventory-cosmetics__preview"><CharacterPortraitCard imageUrl={character.imageUrl} level={character.level} name={character.name} rank={character.rank} title={null} variant="compact" cosmetics={{ card: cosmetic.slot === "card" ? cosmetic.key : null, aura: cosmetic.slot === "aura" ? cosmetic.key : null, border: cosmetic.slot === "border" ? cosmetic.key : null }} /></div>
+                  <small>{cosmetic.collectionName} · {cosmetic.slot === "border" ? "Borda" : cosmetic.slot === "aura" ? "Aura" : "Card"}</small><h4>{cosmetic.name}</h4><p>{cosmetic.description}</p>
+                  <form action={equipOwnedCosmeticAction.bind(null, character.id)}><input name="slot" type="hidden" value={cosmetic.slot} /><input name="key" type="hidden" value={active ? "" : cosmetic.key} /><button className={`button ${active ? "button--dark" : "button--primary"}`}>{active ? "✓ Ativo · remover" : "Ativar cosmético"}</button></form>
+                </article>;
+              })}</div> : <div className="inventory-empty"><strong>Nenhum cosmético neste inventário</strong><p>Quando uma peça for adquirida ou concedida pela administração, ela aparecerá aqui.</p></div>}
+            </div>
+          ) : <>
 
           <div className="inventory-search">
             <label>
@@ -265,9 +284,10 @@ export function InventoryWorkbench({
               </button>
             </div>
           )}
+          </>}
         </div>
 
-        <aside className="inventory-inspector">
+        {view !== "cosmetics" ? <aside className="inventory-inspector">
           {selected ? (
             <>
               <header>
@@ -329,7 +349,7 @@ export function InventoryWorkbench({
               <p>Os atributos e ações aparecerão aqui.</p>
             </div>
           )}
-        </aside>
+        </aside> : null}
       </section>
 
       {activeSlot && typeof document !== "undefined"

@@ -105,6 +105,7 @@
 .inventory-hud .inventory-browser__catalog,.inventory-hud .inventory-inspector{min-width:0!important;width:100%!important}
 .inventory-hud .inventory-browser__catalog>header{display:grid!important;gap:10px!important;min-width:0!important}
 .inventory-hud .inventory-browser__catalog>header nav{display:flex!important;flex-wrap:wrap!important;gap:6px!important}
+.inventory-cosmetics{display:grid;gap:18px;margin-top:18px}.inventory-cosmetics__intro{padding:18px;border-radius:16px;background:var(--wl-surface-soft)}.inventory-cosmetics__intro h3{margin:4px 0}.inventory-cosmetics__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.inventory-cosmetics__grid article{display:grid;gap:8px;padding:16px;border:1px solid var(--wl-border);border-radius:16px;background:var(--wl-surface)}.inventory-cosmetics__grid h4,.inventory-cosmetics__grid p{margin:0}.inventory-cosmetics__preview{display:grid;place-items:center;min-height:190px;border-radius:12px;background:var(--wl-panel-dark)}.inventory-cosmetics__preview>div{width:130px!important;min-width:130px!important}.inventory-cosmetics__grid form,.inventory-cosmetics__grid button{width:100%}
 .inventory-hud .inventory-search{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:8px!important;min-width:0!important}
 .inventory-hud .inventory-search label{flex:1 1 220px!important;min-width:180px!important;max-width:360px!important}
 .inventory-hud .inventory-search input{width:100%!important;min-width:0!important}

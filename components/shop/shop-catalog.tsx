@@ -6,8 +6,8 @@ import { ItemArtwork } from "@/components/items/item-artwork";
 import { ShopBuyButton } from "@/components/shop/shop-buy-button";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { buyCart, buyItem } from "@/app/loja/actions";
-import { setAdminCosmeticAction } from "@/app/loja/cosmetic-actions";
 import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
+import type { CosmeticCatalogItem } from "@/lib/content/cosmetics";
 
 export type ShopCatalogItem = {
   id: string;
@@ -44,7 +44,7 @@ const normalize = (value: string) =>
 
 type ShopSection = "equipment" | "cosmetics";
 
-const halloween2026Cosmetics = [
+const legacyCosmetics = [
   {
     type: "Borda",
     name: "Estrela dos Fundadores",
@@ -98,12 +98,14 @@ const halloween2026Cosmetics = [
 export function ShopCatalog({
   items,
   gold,
-  showCosmetics = false,
+  showCosmetics = true,
+  cosmetics = [],
   previewCharacter,
 }: {
   items: ShopCatalogItem[];
   gold: number;
   showCosmetics?: boolean;
+  cosmetics?: CosmeticCatalogItem[];
   previewCharacter?: {
     name: string;
     imageUrl: string | null;
@@ -181,6 +183,14 @@ export function ShopCatalog({
     setOrder("featured");
     setPage(1);
   };
+  const storefrontCosmetics = cosmetics.filter((item) => item.active).map((item) => ({
+    type: item.slot === "border" ? "Borda" : item.slot === "aura" ? "Aura animada" : "Card animado",
+    name: item.name, tag: item.rarity, description: item.description,
+    highlights: ["Aplicado sem alterar o retrato", "Disponível após confirmação externa"],
+    preview: item.slot, key: item.key, collection: item.collectionName,
+    availability: item.priceCents == null ? "Concessão especial" : new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.priceCents / 100),
+  }));
+  void legacyCosmetics;
 
   return (
     <>
@@ -198,16 +208,16 @@ export function ShopCatalog({
             onClick={() => setSection("cosmetics")}
             type="button"
           >
-            ✦ Cosméticos <small>ADM</small>
+            ✦ Cosméticos
           </button>
         </nav>
       ) : null}
 
       {section === "cosmetics" && showCosmetics ? (
-        <section className="cosmetics-preview cosmetics-store" aria-label="Loja administrativa de cosméticos">
+        <section className="cosmetics-preview cosmetics-store" aria-label="Loja de cosméticos">
           <header className="cosmetics-collection-hero">
             <div>
-              <span>ATELIÊ DE WONDERLAND • CATÁLOGO DE PRÉ-LANÇAMENTO</span>
+              <span>ATELIÊ DE WONDERLAND • CATÁLOGO OFICIAL</span>
               <h2>Relíquias que contam a sua história</h2>
               <p>
                 Molduras, auras e cards criados para transformar cada retrato em uma peça única.
@@ -215,27 +225,27 @@ export function ShopCatalog({
               </p>
             </div>
             <aside>
-              <small>LOJA EM PREPARAÇÃO</small>
-              <strong>Portas fechadas</strong>
-              <span>Apenas administradores podem visualizar ou equipar itens</span>
+              <small>AQUISIÇÃO ASSISTIDA</small>
+              <strong>Pagamento externo</strong>
+              <span>A equipe confirma a compra e entrega a peça ao inventário do personagem.</span>
             </aside>
           </header>
 
           <div className="cosmetics-storebar">
             <div>
               <small>CATÁLOGO</small>
-              <strong>{halloween2026Cosmetics.length} peças em exposição</strong>
+              <strong>{storefrontCosmetics.length} peças disponíveis</strong>
             </div>
             <nav aria-label="Categorias de cosméticos">
               {[["all", "Todos"], ["border", "Bordas"], ["aura", "Auras"], ["card", "Cards"]].map(([key, label]) => (
                 <button className={cosmeticFilter === key ? "is-active" : ""} key={key} onClick={() => setCosmeticFilter(key)} type="button">{label}</button>
               ))}
             </nav>
-            <span className="cosmetics-storebar__lock">◆ Prévia ADM</span>
+            <span className="cosmetics-storebar__lock">◆ Vitrine pública</span>
           </div>
 
           <div className="cosmetics-grid">
-            {halloween2026Cosmetics.filter((cosmetic) => cosmeticFilter === "all" || cosmetic.preview === cosmeticFilter).map((cosmetic, index) => (
+            {storefrontCosmetics.filter((cosmetic) => cosmeticFilter === "all" || cosmetic.preview === cosmeticFilter).map((cosmetic, index) => (
               <article className="cosmetic-card" data-preview={cosmetic.preview} key={cosmetic.name}>
                 <div className="cosmetic-card__visual">
                   <span className="cosmetic-card__number">0{index + 1}</span>
@@ -280,22 +290,7 @@ export function ShopCatalog({
                     <span>Parte da coleção</span>
                     <strong>Véspera do Rei Oco</strong>
                   </div>
-                  <form action={setAdminCosmeticAction}>
-                    <input name="slot" type="hidden" value={cosmetic.preview} />
-                    <input name="key" type="hidden" value={cosmetic.key} />
-                    {previewCharacter?.cosmetics[cosmetic.preview] === cosmetic.key ? (
-                      <>
-                        <input name="remove" type="hidden" value="1" />
-                        <button className="cosmetic-equip is-equipped" type="submit">
-                          ✓ Equipado · Remover
-                        </button>
-                      </>
-                    ) : (
-                      <button className="cosmetic-equip" type="submit">
-                        Equipar cosmético
-                      </button>
-                    )}
-                  </form>
+                  <span className="cosmetic-equip">Solicitar à equipe</span>
                 </footer>
                 </div>
               </article>
@@ -304,14 +299,13 @@ export function ShopCatalog({
 
           <aside className="cosmetics-bundle">
             <div>
-              <small>ACESSO CONTROLADO</small>
-              <h3>A vitrine está pronta; as portas continuam fechadas</h3>
+              <small>COMO ADQUIRIR</small>
+              <h3>Escolha aqui; finalize diretamente com a equipe</h3>
               <p>
-                Nenhum jogador recebeu acesso à loja. A Estrela dos Fundadores está preparada
-                como recompensa comemorativa, mas sua distribuição depende da lista oficial de participantes.
+                O site não processa pagamentos. Depois da confirmação externa, o cosmético será colocado no inventário do personagem e poderá ser ativado na ficha.
               </p>
             </div>
-            <strong>Jogadores sem acesso</strong>
+            <strong>Sem checkout no site</strong>
           </aside>
         </section>
       ) : (

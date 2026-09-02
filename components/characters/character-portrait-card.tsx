@@ -30,8 +30,8 @@ export function CharacterPortraitCard({
   cosmetics,
 }: CharacterPortraitCardProps) {
   const borderArtwork =
-    cosmetics?.border === "trono-rei-oco"
-      ? "/cosmetics/halloween-2026/trono-rei-oco-v2.png"
+    cosmetics?.border === "moldura-colheita-noturna"
+      ? "/cosmetics/halloween-2026/colheita-da-meia-noite.png"
       : cosmetics?.border === "moldura-fundadores-2026"
         ? "/cosmetics/inauguracao/moldura-fundadores-2026.png"
         : null;
@@ -57,6 +57,7 @@ export function CharacterPortraitCard({
       <RankAtmosphere rank={rank} />
 
       <div className={styles.cosmeticCardFx} aria-hidden="true">
+        {cosmetics?.card === "vigilia-do-cemiterio" ? <img alt="" className={styles.cardArtwork} src="/cosmetics/halloween-2026/vigilia-do-cemiterio.png" /> : null}
         <i className={styles.voidEclipse} />
         <i className={styles.branchVeil} />
         <i className={styles.emberField} />
@@ -69,6 +70,7 @@ export function CharacterPortraitCard({
       </div>
 
       <div className={styles.cosmeticAuraFx} aria-hidden="true">
+        {cosmetics?.aura === "voo-da-bruxa" ? <img alt="" className={styles.witchArtwork} src="/cosmetics/halloween-2026/voo-da-bruxa.png" /> : null}
         <i className={[styles.wisp, styles.wispOne].join(" ")} />
         <i className={[styles.wisp, styles.wispTwo].join(" ")} />
         <i className={[styles.wisp, styles.wispThree].join(" ")} />

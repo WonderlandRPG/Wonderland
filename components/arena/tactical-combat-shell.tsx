@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentProps } from "react";
+import { useState, type ComponentProps, type CSSProperties } from "react";
 
 import { TacticalActionCategories } from "@/components/arena/tactical-action-categories";
 import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
@@ -18,14 +18,15 @@ type SceneDefinition = {
   name: string;
   description: string;
   mood: string;
+  image: string;
 };
 
 const TACTICAL_SCENES: SceneDefinition[] = [
-  { key: "forest", name: "Bosque Místico", description: "Clareira ancestral tomada por raízes, musgo e energia feérica.", mood: "Floresta ancestral" },
-  { key: "ruins", name: "Ruínas de Verdantia", description: "Pátio de pedra coberto por vegetação e restos de uma civilização esquecida.", mood: "Ruínas selvagens" },
-  { key: "veil", name: "Véu Sombrio", description: "Clareira noturna marcada por névoa, pedra negra e brilho espectral.", mood: "Noite espectral" },
-  { key: "moon", name: "Santuário Lunar", description: "Bosque antigo banhado por luar frio, cristais azulados e silêncio arcano.", mood: "Luar arcano" },
-  { key: "ember", name: "Ruínas do Crepúsculo", description: "Pedras antigas sob luz âmbar, poeira quente e ecos de uma batalha esquecida.", mood: "Crepúsculo antigo" },
+  { key: "forest", name: "Bosque Místico", description: "Clareira ancestral tomada por raízes, musgo e energia feérica.", mood: "Floresta ancestral", image: "/tactical/maps/forest-arena.webp" },
+  { key: "ruins", name: "Ruínas de Verdantia", description: "Pátio de pedra coberto por vegetação e restos de uma civilização esquecida.", mood: "Ruínas selvagens", image: "/tactical/maps/ruins-arena.webp" },
+  { key: "veil", name: "Véu Sombrio", description: "Clareira noturna marcada por névoa, pedra negra e brilho espectral.", mood: "Noite espectral", image: "/tactical/maps/veil-arena.webp" },
+  { key: "moon", name: "Santuário Lunar", description: "Bosque antigo banhado por luar frio, cristais azulados e silêncio arcano.", mood: "Luar arcano", image: "/tactical/maps/moon-arena.webp" },
+  { key: "ember", name: "Ruínas do Crepúsculo", description: "Pedras antigas sob luz âmbar, poeira quente e ecos de uma batalha esquecida.", mood: "Crepúsculo antigo", image: "/tactical/maps/ember-arena.webp" },
 ];
 
 export function TacticalCombatShell({ characters, creatures }: { characters: Character[]; creatures: Creature[] }) {
@@ -33,6 +34,7 @@ export function TacticalCombatShell({ characters, creatures }: { characters: Cha
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [scene, setScene] = useState<TacticalScene>("forest");
   const selectedScene = TACTICAL_SCENES.find((entry) => entry.key === scene) ?? TACTICAL_SCENES[0];
+  const shellStyle = { "--tactical-scene-image": `url("${selectedScene.image}")` } as CSSProperties;
 
   return (
     <div
@@ -41,6 +43,7 @@ export function TacticalCombatShell({ characters, creatures }: { characters: Cha
       data-combat-mode={started ? "battle" : "preparation"}
       data-details-open={detailsOpen ? "true" : "false"}
       data-map-scene={scene}
+      style={shellStyle}
     >
       {!started ? (
         <section className={styles.preparationHeader} data-tactical-preparation>
@@ -63,7 +66,7 @@ export function TacticalCombatShell({ characters, creatures }: { characters: Cha
                 data-selected={scene === entry.key ? "true" : "false"}
                 onClick={() => setScene(entry.key)}
               >
-                <span className={styles.scenePreview} aria-hidden="true" />
+                <span className={styles.scenePreview} aria-hidden="true" style={{ backgroundImage: `url("${entry.image}")` }} />
                 <span className={styles.sceneCopy}>
                   <small>{entry.mood}</small>
                   <strong>{entry.name}</strong>

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Bosque Místico">
+<defs>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#071f1c"/><stop offset=".55" stop-color="#12352b"/><stop offset="1" stop-color="#0c241e"/></linearGradient>
+  <radialGradient id="glow" cx="50%" cy="38%" r="48%"><stop stop-color="#9bd8ae" stop-opacity=".38"/><stop offset=".55" stop-color="#4f9b79" stop-opacity=".12"/><stop offset="1" stop-color="#061b18" stop-opacity="0"/></radialGradient>
+  <filter id="mist"><feGaussianBlur stdDeviation="28"/></filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="7"/></filter>
+  <pattern id="moss" width="130" height="130" patternUnits="userSpaceOnUse"><circle cx="15" cy="38" r="3" fill="#6fa56b" opacity=".22"/><circle cx="92" cy="70" r="4" fill="#a5c978" opacity=".15"/><path d="M0 115Q45 88 92 110T160 105" fill="none" stroke="#6e8d5b" stroke-opacity=".12" stroke-width="5"/></pattern>
+</defs>
+<rect width="1600" height="1000" fill="url(#sky)"/><rect width="1600" height="1000" fill="url(#glow)"/>
+<g opacity=".9" fill="#061a17"><path d="M0 0h170l-28 180 70 118-55 162 28 183-83 357H0z"/><path d="M1600 0h-190l42 190-82 123 66 158-38 190 92 339h110z"/></g>
+<g fill="#0b2d25" opacity=".95"><path d="M110 0c32 160 8 253 48 380 31 99 16 241-35 620h128c37-300 29-438 4-578-26-145 32-279 51-422z"/><path d="M1390 0c-38 163-16 266-62 398-33 95-20 238 23 602h-124c-31-295-23-449 5-587 29-143-24-279-46-413z"/></g>
+<g stroke="#2f5c48" stroke-width="24" fill="none" opacity=".75"><path d="M0 290C270 205 302 86 463 0"/><path d="M1600 305c-250-86-329-195-457-305"/><path d="M38 840c212-134 278-217 427-265"/><path d="M1566 846c-208-146-286-214-429-266"/></g>
+<ellipse cx="800" cy="680" rx="590" ry="300" fill="#183f31"/><ellipse cx="800" cy="696" rx="520" ry="245" fill="#234a37" opacity=".9"/><ellipse cx="800" cy="700" rx="430" ry="192" fill="#2b533e" opacity=".64"/>
+<path d="M278 810Q438 650 610 708T964 693q170-57 362 119l-18 188H294z" fill="#1b3b2c" opacity=".85"/>
+<rect y="540" width="1600" height="460" fill="url(#moss)"/>
+<g fill="#607b62" stroke="#283d32" stroke-width="9"><path d="M448 685l64-80 90 13 25 73-48 64-95-6z"/><path d="M1032 622l76-61 85 38 4 77-71 48-82-27z"/><path d="M718 790l62-48 69 29-7 73-81 26z"/></g>
+<g fill="#8ac9a0"><circle cx="414" cy="535" r="6"/><circle cx="678" cy="488" r="5"/><circle cx="918" cy="526" r="7"/><circle cx="1180" cy="554" r="5"/><circle cx="812" cy="402" r="8"/></g>
+<g fill="#c9efd0" opacity=".55" filter="url(#soft)"><circle cx="414" cy="535" r="17"/><circle cx="678" cy="488" r="15"/><circle cx="918" cy="526" r="19"/><circle cx="1180" cy="554" r="14"/><circle cx="812" cy="402" r="20"/></g>
+<g fill="#b9d8bf" opacity=".12" filter="url(#mist)"><ellipse cx="520" cy="470" rx="300" ry="58"/><ellipse cx="1080" cy="540" rx="360" ry="64"/><ellipse cx="800" cy="805" rx="610" ry="54"/></g>
+<path d="M650 1000c65-108 102-223 150-371 52 152 89 271 160 371z" fill="#2d5a43" opacity=".28"/>
+</svg>

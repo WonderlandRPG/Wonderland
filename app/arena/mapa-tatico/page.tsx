@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import "./tactical-stage.css";
 import "./tactical-board-fill.css";
+import "./tactical-final-polish.css";
 import { TacticalCombatShell } from "@/components/arena/tactical-combat-shell";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";

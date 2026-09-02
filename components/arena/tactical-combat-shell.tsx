@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ComponentProps } from "react";
+import { useState, type ComponentProps, type CSSProperties } from "react";
 
 import { TacticalActionCategories } from "@/components/arena/tactical-action-categories";
 import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
@@ -13,41 +13,49 @@ type Character = LabProps["characters"][number] & IdentityProps["characters"][nu
 type Creature = LabProps["creatures"][number] & IdentityProps["creatures"][number];
 type TacticalScene = "forest" | "ruins" | "veil" | "moon" | "ember";
 
-const TACTICAL_SCENES: Array<{
+type SceneDefinition = {
   key: TacticalScene;
   name: string;
   description: string;
   mood: string;
-}> = [
+  image: string;
+};
+
+const TACTICAL_SCENES: SceneDefinition[] = [
   {
     key: "forest",
     name: "Bosque Místico",
     description: "Clareira ancestral tomada por raízes, musgo e energia feérica.",
     mood: "Floresta ancestral",
+    image: "/tactical/maps/forest-scene.svg",
   },
   {
     key: "ruins",
     name: "Ruínas de Verdantia",
     description: "Pátio de pedra coberto por vegetação e restos de uma civilização esquecida.",
     mood: "Ruínas selvagens",
+    image: "/tactical/maps/ruins-scene.svg",
   },
   {
     key: "veil",
     name: "Véu Sombrio",
     description: "Clareira noturna marcada por névoa, pedra negra e brilho espectral.",
     mood: "Noite espectral",
+    image: "/tactical/maps/veil-scene.svg",
   },
   {
     key: "moon",
     name: "Santuário Lunar",
     description: "Bosque antigo banhado por luar frio, cristais azulados e silêncio arcano.",
     mood: "Luar arcano",
+    image: "/tactical/maps/moon-scene.svg",
   },
   {
     key: "ember",
     name: "Ruínas do Crepúsculo",
     description: "Pedras antigas sob luz âmbar, poeira quente e ecos de uma batalha esquecida.",
     mood: "Crepúsculo antigo",
+    image: "/tactical/maps/ember-scene.svg",
   },
 ];
 
@@ -62,6 +70,7 @@ export function TacticalCombatShell({
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [scene, setScene] = useState<TacticalScene>("forest");
   const selectedScene = TACTICAL_SCENES.find((entry) => entry.key === scene) ?? TACTICAL_SCENES[0];
+  const shellStyle = { "--tactical-scene-image": `url("${selectedScene.image}")` } as CSSProperties;
 
   return (
     <div
@@ -70,6 +79,7 @@ export function TacticalCombatShell({
       data-combat-mode={started ? "battle" : "preparation"}
       data-details-open={detailsOpen ? "true" : "false"}
       data-map-scene={scene}
+      style={shellStyle}
     >
       {!started ? (
         <section className={styles.preparationHeader} data-tactical-preparation>
@@ -82,11 +92,7 @@ export function TacticalCombatShell({
             </p>
           </div>
 
-          <div
-            className={styles.scenePicker}
-            role="radiogroup"
-            aria-label="Escolha do campo de batalha"
-          >
+          <div className={styles.scenePicker} role="radiogroup" aria-label="Escolha do campo de batalha">
             {TACTICAL_SCENES.map((entry) => (
               <button
                 key={entry.key}
@@ -99,7 +105,11 @@ export function TacticalCombatShell({
                 data-selected={scene === entry.key ? "true" : "false"}
                 onClick={() => setScene(entry.key)}
               >
-                <span className={styles.scenePreview} aria-hidden="true" />
+                <span
+                  className={styles.scenePreview}
+                  aria-hidden="true"
+                  style={{ backgroundImage: `url("${entry.image}")` }}
+                />
                 <span className={styles.sceneCopy}>
                   <small>{entry.mood}</small>
                   <strong>{entry.name}</strong>
@@ -125,7 +135,7 @@ export function TacticalCombatShell({
         </div>
       )}
 
-      <div className={styles.identityWrap} data-tactical-identity-host>
+      <div className={styles.identityWrap} data-tactical-identity>
         <TacticalCombatIdentity characters={characters} creatures={creatures} />
       </div>
 
@@ -136,7 +146,7 @@ export function TacticalCombatShell({
       <TacticalActionCategories active={started} />
 
       {!started ? (
-        <div className={styles.startArea} data-tactical-start-area>
+        <div className={styles.startArea} data-tactical-start>
           <button className={styles.startButton} type="button" onClick={() => setStarted(true)}>
             <span>Entrar no campo</span>
             <strong>Iniciar combate</strong>

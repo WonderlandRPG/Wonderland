@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import "./tactical-stage.css";
-import "./tactical-board-fill.css";
-import "./tactical-final-polish.css";
 import { TacticalCombatShell } from "@/components/arena/tactical-combat-shell";
 import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
@@ -145,15 +142,7 @@ export default async function TacticalMapLabPage() {
   });
 
   return (
-    <main
-      className="arena-page"
-      style={{
-        backgroundImage: "url('/backgrounds/arena.svg')",
-        backgroundPosition: "center top",
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-      }}
-    >
+    <main className="arena-page">
       <PlayerNav />
       <div className="page-container arena-page__inner tactical-lab-stage">
         <Link className="arena-mode-back" href="/arena">← Voltar para Arena</Link>

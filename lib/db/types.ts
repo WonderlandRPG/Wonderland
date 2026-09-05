@@ -650,6 +650,18 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["v2_missions"]["Insert"]>;
         Relationships: [];
       };
+      v2_character_diary: {
+        Row: { id: string; character_id: string; user_id: string; category: string; title: string; body: string; occurred_on: string; created_at: string; updated_at: string };
+        Insert: { id?: string; character_id: string; user_id: string; category?: string; title: string; body: string; occurred_on?: string; created_at?: string; updated_at?: string };
+        Update: Partial<Database["public"]["Tables"]["v2_character_diary"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_notifications: {
+        Row: { id: string; user_id: string; character_id: string | null; kind: string; title: string; message: string; href: string | null; read_at: string | null; created_at: string };
+        Insert: { id?: string; user_id: string; character_id?: string | null; kind: string; title: string; message: string; href?: string | null; read_at?: string | null; created_at?: string };
+        Update: Partial<Database["public"]["Tables"]["v2_notifications"]["Insert"]>;
+        Relationships: [];
+      };
       v2_creatures: {
         Row: {
           id: string;
@@ -719,6 +731,10 @@ export interface Database {
           retry_after: string | null;
           reward_xp: number;
           reward_gold: number;
+          scene_stage: string;
+          scene_summary: string | null;
+          scene_started_at: string | null;
+          scene_submitted_at: string | null;
         };
         Insert: {
           id?: string;
@@ -732,6 +748,10 @@ export interface Database {
           retry_after?: string | null;
           reward_xp?: number;
           reward_gold?: number;
+          scene_stage?: string;
+          scene_summary?: string | null;
+          scene_started_at?: string | null;
+          scene_submitted_at?: string | null;
         };
         Update: Partial<Database["public"]["Tables"]["v2_mission_assignments"]["Insert"]>;
         Relationships: [];
@@ -842,6 +862,8 @@ export interface Database {
       v2_start_arena_session: { Args: { p_character_id: string; p_mode: string }; Returns: string };
       v2_get_pve_daily_status: { Args: { p_character_id: string }; Returns: Json };
       v2_claim_arena_victory: { Args: { p_session_id: string }; Returns: Json };
+      v2_mark_notification_read: { Args: { p_notification_id?: string }; Returns: number };
+      v2_update_mission_scene: { Args: { p_assignment_id: string; p_stage: string; p_summary?: string }; Returns: Json };
       v2_join_pvp_queue: { Args: { p_character_id: string }; Returns: Json };
       v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };
       v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };

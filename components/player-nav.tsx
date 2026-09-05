@@ -33,6 +33,9 @@ export async function PlayerNav() {
       : { data: null };
   const hasUnreadUpdate = Boolean(latestUpdate && !updateReceipt?.read_at);
   const hasUnseenUpdate = Boolean(latestUpdate && !updateReceipt?.seen_at);
+  const { count: unreadNotifications } = client
+    ? await client.from("v2_notifications").select("id", { count: "exact", head: true }).is("read_at", null)
+    : { count: 0 };
 
   return (
     <header
@@ -51,6 +54,7 @@ export async function PlayerNav() {
             activeCharacterId={activeCharacterId}
             isAdmin={Boolean(account && isAdministrativeRole(account.role))}
             hasUnreadUpdate={hasUnreadUpdate}
+            unreadNotifications={unreadNotifications ?? 0}
           />
         ) : null}
         {!activeCharacterId && account && isAdministrativeRole(account.role) ? (

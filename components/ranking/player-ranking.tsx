@@ -20,7 +20,6 @@ function titleData(entry: Pick<RankingEntry, "title_name" | "title_style" | "tit
     : null;
   return { name: entry.title_name, rarity: entry.title_rarity ?? "title", titleStyle };
 }
-
 export function PlayerRanking({ currentCharacterId, entries }: { currentCharacterId: string; entries: RankingEntry[] }) {
   const [query, setQuery] = useState("");
   const [rank, setRank] = useState<(typeof rankOrder)[number]>("Todos");
@@ -38,8 +37,10 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
     "E",
   );
   const normalized = query.trim().toLocaleLowerCase("pt-BR");
+  const podiumIds = new Set(leaders.map((entry) => entry.id));
   const visible = entries.filter(
     (entry) =>
+      !podiumIds.has(entry.id) &&
       (rank === "Todos" || entry.adventure_rank === rank) &&
       (!normalized ||
         `${entry.name} ${entry.race_name} ${entry.class_name} ${kingdomName(entry.kingdom)}`
@@ -50,7 +51,7 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
 
   if (!entries.length) {
     return (
-      <div className="leaderboard-empty">
+      <div className="ranking-empty">
         <span aria-hidden="true">♜</span>
         <h2>O primeiro lugar ainda está livre</h2>
         <p>Os aventureiros aparecerão aqui assim que começarem a progredir.</p>
@@ -60,7 +61,7 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
 
   return (
     <div className="player-ranking">
-      <section className="leaderboard-season-banner">
+      <section className="ranking-season-banner">
         <div>
           <span className="eyebrow">Temporada inaugural</span>
           <h2>Salão dos grandes aventureiros</h2>
@@ -70,18 +71,18 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
           <div><dt>Competidores</dt><dd>{entries.length}</dd></div>
           <div><dt>Maior nível</dt><dd>{entries[0]?.level ?? 0}</dd></div>
           <div><dt>Rank mais alto</dt><dd>{highestRank}</dd></div>
-          <div className="leaderboard-self"><dt>Sua posição</dt><dd>{currentEntry ? `#${currentEntry.rank}` : "—"}</dd><small>{currentEntry ? `Nível ${currentEntry.level}` : "Sem registro"}</small></div>
+          <div className="ranking-self"><dt>Sua posição</dt><dd>{currentEntry ? `#${currentEntry.rank}` : "—"}</dd><small>{currentEntry ? `Nível ${currentEntry.level}` : "Sem registro"}</small></div>
         </dl>
       </section>
 
-      <section className="leaderboard-podium" aria-label="Pódio dos três melhores jogadores">
+      <section className="ranking-podium" aria-label="Pódio dos três melhores jogadores">
         {podium.map(({ entry, position }) => (
-          <Link className={`leaderboard-podium__place is-place-${position} ${entry.id === currentCharacterId ? "is-current" : ""}`} href={`/jogadores/${entry.id}`} key={entry.id}>
-            <b className="leaderboard-podium__number">{position}</b>
-            <span className="leaderboard-podium__portrait official-leaderboard-card-host">
-              {position === 1 ? <span className="leaderboard-crown" aria-label="Primeiro colocado">♛</span> : null}
+          <Link className={`ranking-podium__place is-place-${position} ${entry.id === currentCharacterId ? "is-current" : ""}`} href={`/jogadores/${entry.id}`} key={entry.id}>
+            <b className="ranking-podium__number">{position}</b>
+            <span className="ranking-podium__portrait official-ranking-card-host">
+              {position === 1 ? <span className="ranking-crown" aria-label="Primeiro colocado">♛</span> : null}
               <CharacterPortraitCard
-                className="leaderboard-character-card"
+                className="ranking-character-card"
                 imageUrl={entry.image_url}
                 level={entry.level}
                 name={entry.name}
@@ -95,32 +96,31 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
               <small>{position === 1 ? "Líder da temporada" : `${position}º colocado`}</small>
               <h3>{entry.name}</h3>
               <p>{entry.race_name} · {entry.class_name}</p>
-              <strong className="leaderboard-podium__score">Nível {entry.level} <small>{entry.xp.toLocaleString("pt-BR")} XP</small></strong>
+              <strong className="ranking-podium__score">Nível {entry.level} <small>{entry.xp.toLocaleString("pt-BR")} XP</small></strong>
             </div>
           </Link>
         ))}
       </section>
 
-      <section className="leaderboard-board">
-        <header className="leaderboard-board__header">
+      <section className="ranking-board">
+        <header className="ranking-board__header">
           <div><span className="eyebrow">Classificação geral</span><h2>Todos os jogadores</h2></div>
-          <label className="leaderboard-search"><span className="sr-only">Buscar jogador</span><input onChange={(event) => setQuery(event.target.value)} placeholder="Buscar jogador, raça ou classe..." type="search" value={query} /></label>
+          <label className="ranking-search"><span className="sr-only">Buscar jogador</span><input onChange={(event) => setQuery(event.target.value)} placeholder="Buscar jogador, raça ou classe..." type="search" value={query} /></label>
         </header>
-        <nav className="leaderboard-filters" aria-label="Filtrar por Rank">
+        <nav className="ranking-filters" aria-label="Filtrar por Rank">
           {rankOrder.map((option) => (
             <button aria-pressed={rank === option} className={rank === option ? "is-active" : ""} key={option} onClick={() => setRank(option)} type="button">
               {option === "Todos" ? option : `Rank ${option}`}
             </button>
           ))}
         </nav>
-        <p className="leaderboard-result-count" aria-live="polite">{visible.length} de {entries.length} aventureiros</p>
-        <div className="leaderboard-grid" role="list" aria-label="Ranking de jogadores">
+        <div className="ranking-grid" role="list" aria-label="Ranking de jogadores">
           {visible.map((entry) => (
-            <Link className={`leaderboard-grid__entry ${entry.id === currentCharacterId ? "is-current" : ""}`} href={`/jogadores/${entry.id}`} key={entry.id} role="listitem">
-              <strong className="leaderboard-grid__position"><small>Posição</small>#{entry.rank}</strong>
-              <span className="leaderboard-grid__portrait">
+            <Link className={`ranking-grid__entry ${entry.id === currentCharacterId ? "is-current" : ""}`} href={`/jogadores/${entry.id}`} key={entry.id} role="listitem">
+              <strong className="ranking-grid__position"><small>Posição</small>#{entry.rank}</strong>
+              <span className="ranking-grid__portrait">
                 <CharacterPortraitCard
-                  className="leaderboard-character-card leaderboard-grid-character-card"
+                  className="ranking-character-card ranking-grid-character-card"
                   imageUrl={entry.image_url}
                   level={entry.level}
                   name={entry.name}
@@ -130,16 +130,16 @@ export function PlayerRanking({ currentCharacterId, entries }: { currentCharacte
                   variant="standard"
                 />
               </span>
-              <span className="leaderboard-grid__details">
-                <span className="leaderboard-grid__identity"><b>{entry.name}</b><small>{entry.race_name} · {entry.class_name}</small><em>{kingdomName(entry.kingdom)}</em></span>
-                <span className="leaderboard-grid__metrics">
-                  <span className="leaderboard-grid__progress"><small>Progresso</small><b>Nível {entry.level}</b><em>{entry.xp.toLocaleString("pt-BR")} XP</em></span>
-                  <span className="leaderboard-grid__rank"><RankBadge compact rank={entry.adventure_rank} /><small>Rank {entry.adventure_rank}</small></span>
+              <span className="ranking-grid__details">
+                <span className="ranking-grid__identity"><b>{entry.name}</b><small>{entry.race_name} · {entry.class_name}</small><em>{kingdomName(entry.kingdom)}</em></span>
+                <span className="ranking-grid__metrics">
+                  <span className="ranking-grid__progress"><small>Progresso</small><b>Nível {entry.level}</b><em>{entry.xp.toLocaleString("pt-BR")} XP</em></span>
+                  <span className="ranking-grid__rank"><RankBadge compact rank={entry.adventure_rank} /><small>Rank {entry.adventure_rank}</small></span>
                 </span>
               </span>
             </Link>
           ))}
-          {!visible.length ? <p className="leaderboard-no-results">Nenhum aventureiro encontrado com esses filtros.</p> : null}
+          {!visible.length ? <p className="ranking-no-results">Nenhum aventureiro encontrado com esses filtros.</p> : null}
         </div>
       </section>
     </div>

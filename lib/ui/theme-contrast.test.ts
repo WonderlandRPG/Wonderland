@@ -105,6 +105,7 @@ const legacyColorFiles = new Set([
   "app/personagens/sheet-experience.css",
   "app/presence-experience.css",
   "app/rank-visuals.css",
+  "app/ranking-experience.css",
   "app/readability-hotfix.css",
   "app/reinos/reinos.css",
   "app/requested-visual-overhaul.css",

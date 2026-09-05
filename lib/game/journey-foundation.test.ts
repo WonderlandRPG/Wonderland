@@ -13,9 +13,9 @@ describe("character journey foundation", () => {
     expect(migration).toContain("revoke all on public.v2_notifications from anon, authenticated");
   });
 
-  it("keeps the WhatsApp scene flow separate from reward approval", () => {
-    expect(missionPage).toContain("awaiting_evaluation");
-    expect(missionPage).toContain("Enviar para avaliação");
+  it("keeps mission completion under Guild management", () => {
+    expect(missionPage).toContain("Aguardando conclusão");
+    expect(missionPage).not.toContain("updateMissionSceneAction");
     expect(migration).toContain("old.status = 'in_progress'");
     expect(migration).toContain("new.scene_stage := 'reward_received'");
   });

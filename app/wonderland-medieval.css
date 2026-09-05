@@ -28,12 +28,6 @@ body::after {
 }
 
 /* Navegação — salão real, sem alterar o mecanismo do menu Mundo. */
-.player-nav {
-  border-color: var(--wl-border) !important;
-  border-radius: 7px 7px 16px 16px !important;
-  background: linear-gradient(180deg, var(--wl-surface-dark), var(--wl-surface-dark-strong)) !important;
-  box-shadow: 0 3px 0 #0a2419, 0 15px 34px rgba(2, 10, 6, 0.38), inset 0 1px rgba(255, 238, 186, 0.13) !important;
-}
 
 .brand-mark__crest {
   border-color: #d4b360 !important;
@@ -41,90 +35,16 @@ body::after {
   box-shadow: 0 0 0 3px rgba(218, 187, 108, 0.14), 0 0 18px rgba(225, 190, 104, 0.18) !important;
 }
 
-.player-nav__links > a,
-.player-nav__world-menu > button {
-  border-radius: 3px !important;
-  color: var(--wl-text-inverse) !important;
-}
-
-.player-nav__links > a:hover,
-.player-nav__world-menu > button:hover,
-.player-nav__world-menu.is-open > button {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--wl-gold-soft) 18%, transparent), color-mix(in srgb, var(--wl-gold-soft) 5%, transparent)) !important;
-  color: var(--wl-accent-contrast) !important;
-}
-
-.player-nav__character > a {
-  border-color: #ad8647 !important;
-  border-radius: 4px 4px 9px 9px !important;
-  background: linear-gradient(180deg, var(--wl-surface), var(--wl-surface-muted)) !important;
-}
-
-#player-world-navigation {
-  border-color: #8b6638 !important;
-  border-radius: 5px 5px 14px 14px !important;
-  background: linear-gradient(135deg, var(--wl-surface), var(--wl-surface-muted)) !important;
-  box-shadow: 0 20px 50px rgba(4, 12, 8, 0.48), inset 0 0 0 3px rgba(91, 57, 28, 0.08) !important;
-}
-
-#player-world-navigation a,
-#player-world-navigation form button {
-  border-radius: 4px !important;
-  background: rgba(255, 245, 216, 0.64) !important;
-  color: var(--wl-text) !important;
-  box-shadow: none !important;
-}
-
 /* Cabeçalhos e superfícies comuns. */
-.world-page__intro {
-  position: relative;
-  overflow: hidden;
-  border-color: #a67f46 !important;
-  border-radius: 5px 5px 22px 22px !important;
-  background: linear-gradient(110deg, rgba(249, 235, 198, 0.98), rgba(216, 188, 133, 0.97)) !important;
-  box-shadow: 0 5px 0 rgba(75, 47, 25, 0.22), var(--shadow) !important;
-}
 
-.world-page__intro::after {
-  content: '✦';
-  position: absolute;
-  right: 34px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: rgba(80, 63, 34, 0.09);
-  font-size: 8rem;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.world-page__intro > * { position: relative; z-index: 1; }
-.world-page__intro small { color: #2f6048 !important; }
-.world-page__intro h1 { color: #332317; text-shadow: 0 1px #fff0c7; }
-.world-page__footer { color: #dfcca4 !important; border-color: rgba(224, 194, 125, 0.3) !important; }
-
-:where(
-  .panel,
-  .card,
-  .account-card,
-  .character-card,
-  .shop-item,
-  .classic-item-card,
-  .inventory-inspector,
-  .inventory-browser,
-  .ranking-board,
-  .presence-pass,
-  .public-character-summary,
-  .public-character-equipment
-) {
+:where(.panel, .card, .account-card, .character-card, .shop-item, .classic-item-card, .inventory-inspector, .inventory-browser, .ranking-board, .presence-pass, .public-character-summary, .public-character-equipment) {
   border-color: #987345 !important;
   box-shadow: var(--shadow-soft) !important;
 }
 
 /* Somente botões canônicos. Controles especiais de Arena, inventário e ADM
    preservam integralmente seus estilos e estados próprios. */
-.button,
-.home-hero__actions a,
-.world-page__intro .button {
+.button {
   border-color: #88602d !important;
   border-radius: 4px 4px 9px 9px !important;
   background: linear-gradient(180deg, #2e654c, #173f2f) !important;
@@ -139,83 +59,19 @@ body::after {
 }
 
 /* Entrada épica. */
-.home-landing { width: min(1320px, calc(100% - 24px)) !important; }
-
-.home-hero {
-  min-height: 650px !important;
-  border-color: #a78042 !important;
-  border-radius: 6px 6px 28px 28px !important;
-  background:
-    linear-gradient(90deg, rgba(10, 31, 22, 0.97) 0%, rgba(17, 48, 35, 0.93) 48%, rgba(18, 47, 35, 0.52) 72%, rgba(8, 23, 16, 0.74) 100%),
-    url('/images/kingdoms/wonderland-map.webp') center / cover !important;
-  box-shadow: 0 5px 0 #092016, 0 30px 70px rgba(2, 10, 6, 0.48) !important;
-  color: #f6e7be;
-}
-
-.home-hero::before {
-  content: '';
-  position: absolute;
-  inset: 14px;
-  border: 1px solid rgba(220, 184, 103, 0.3);
-  border-radius: 2px 2px 20px 20px;
-  pointer-events: none;
-}
-
-.home-hero__eyebrow { color: #e3c47c !important; }
-.home-hero__copy h1 { color: #fff1c7; text-shadow: 0 3px 18px rgba(0, 0, 0, 0.5); }
-.home-hero__copy h1 em { color: #e0b85d !important; }
-.home-hero__lead { color: #e5d7b7 !important; }
-.home-hero__tale { border-color: #ba914d !important; background: radial-gradient(circle at 50% 30%, rgba(68, 129, 96, 0.98), rgba(15, 48, 35, 0.98) 66%) !important; }
-
-.home-path {
-  border-color: #92703f !important;
-  border-radius: 5px 5px 16px 16px !important;
-  background: linear-gradient(145deg, rgba(248, 232, 191, 0.98), rgba(213, 183, 124, 0.98)) !important;
-  box-shadow: 0 4px 0 rgba(70, 43, 21, 0.22), var(--shadow-soft) !important;
-}
 
 /* Molduras medievais para as áreas; sem modificar layout interno. */
-:where(
-  .mission-board-hero,
-  .presence-hero,
-  .guild-registry-cover,
-  .duelist-banner,
-  .royal-chronicle__edition,
-  .royal-chronicle__archive,
-  .ranking-board,
-  .guild-decrees__intro,
-  .guild-trials-scroll,
-  .public-character-hero,
-  .public-character-summary,
-  .public-character-equipment,
-  .character-create-section,
-  .maintenance-shell
-) { border-radius: 5px 5px 18px 18px !important; }
+:where(.mission-board-hero, .presence-hero, .guild-registry-cover, .royal-chronicle__edition, .royal-chronicle__archive, .ranking-board, .guild-decrees__intro, .guild-trials-scroll, .public-character-hero, .public-character-summary, .public-character-equipment, .character-create-section, .maintenance-shell) { border-radius: 5px 5px 18px 18px !important; }
 
-.admin-sidebar {
-  background: linear-gradient(180deg, #173b2c, #0c251b) !important;
-  border-right-color: #a17c45 !important;
-}
-
-.admin-topbar,
 .admin-content > header,
 .admin-content > .admin-page-header { border-radius: 4px 4px 14px 14px !important; }
 
 @media (max-width: 900px) {
   body { background-attachment: scroll !important; }
-  .home-hero { min-height: 560px !important; background-position: 62% center !important; }
 }
 
 @media (max-width: 640px) {
   body::after { display: none; }
-  .home-hero {
-    min-height: 0 !important;
-    padding: 38px 22px !important;
-    background: linear-gradient(135deg, rgba(12, 37, 27, 0.98), rgba(26, 66, 48, 0.95)) !important;
-  }
-  .home-hero::before { inset: 8px; }
-  .world-page__intro::after { right: 8px; font-size: 5rem; }
-  .player-nav { border-radius: 5px 5px 12px 12px !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {

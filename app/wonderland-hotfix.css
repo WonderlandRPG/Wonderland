@@ -38,47 +38,5 @@
 .world-map__territory:focus-visible .world-map__pin{transform:translate(-50%,-50%) scale(1.12)}
 
 /* RANKING — centraliza retratos e conteúdo do pódio */
-.ranking-podium__place{align-items:center!important;text-align:center!important}
-.ranking-podium__portrait{
-  width:118px!important;
-  height:118px!important;
-  margin:8px auto 16px!important;
-  display:grid!important;
-  place-items:center!important;
-  position:relative!important;
-}
-.ranking-podium__portrait .ranking-avatar,
-.ranking-avatar{
-  display:block!important;
-  width:96px!important;
-  height:96px!important;
-  margin:auto!important;
-  border-radius:50%!important;
-  background-position:center center!important;
-  background-size:cover!important;
-  background-repeat:no-repeat!important;
-}
-.ranking-podium__place>div{width:100%;text-align:center!important}
-.ranking-crown{left:50%!important;transform:translateX(-50%)!important}
 
 /* MENU MUNDO — backdrop estava ficando acima do painel e bloqueando todos os links */
-.player-nav__world-menu{position:relative!important;z-index:1001!important}
-.player-nav__world-menu>button:first-child{position:relative;z-index:1003}
-.player-nav__world-backdrop{
-  position:fixed!important;
-  inset:0!important;
-  width:100vw!important;
-  height:100vh!important;
-  opacity:0!important;
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-  z-index:1000!important;
-}
-#player-world-navigation{
-  position:absolute!important;
-  z-index:1004!important;
-  pointer-events:auto!important;
-}
-#player-world-navigation a,
-#player-world-navigation button{position:relative!important;z-index:1005!important;pointer-events:auto!important}

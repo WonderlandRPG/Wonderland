@@ -33,11 +33,6 @@ body {
   background-size: cover !important;
   background-attachment: fixed !important;
 }
-body:has(.home-landing) {
-  background-image:
-    linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
-    url("/backgrounds/lore.svg") !important;
-}
 body:has(.realms-page),
 body:has(.kingdom-current-page) {
   background-image:
@@ -58,7 +53,6 @@ body:has(.market-page) {
     linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
     url("/backgrounds/market.svg") !important;
 }
-body:has(.champions-hall),
 body:has(.guild-decrees) {
   background-image:
     linear-gradient(var(--wl-page-overlay-start), var(--wl-page-overlay-end)),
@@ -98,19 +92,6 @@ main {
   width: min(var(--repair-page), calc(100% - 32px)) !important;
   max-width: var(--repair-page) !important;
   margin-inline: auto !important;
-  min-width: 0;
-}
-.world-page__intro,
-.world-page__content,
-.world-page__footer {
-  width: min(1120px, calc(100% - 32px)) !important;
-  max-width: 1120px !important;
-  margin-inline: auto !important;
-}
-.world-page__content {
-  padding: 22px 0 !important;
-}
-.world-page__content > section {
   min-width: 0;
 }
 
@@ -301,7 +282,7 @@ progress {
   gap: 8px !important;
   padding: 16px !important;
   border-radius: 14px !important;
-  background: #fff0ca !important;
+  background: var(--wl-surface) !important;
   border: 1px solid #b99c6b !important;
 }
 .kingdom-upgrade > aside small,
@@ -332,7 +313,7 @@ progress {
   padding: 16px !important;
   margin-top: 10px !important;
   border-radius: 14px !important;
-  background: #fff0ca !important;
+  background: var(--wl-surface) !important;
   border: 1px solid #b99d70 !important;
 }
 .kingdom-crown-votes progress {
@@ -399,8 +380,8 @@ progress {
   min-width: 72px !important;
   padding: 5px 7px !important;
   border-radius: 8px !important;
-  background: #315f47 !important;
-  color: #fff2cf !important;
+  background: var(--wl-accent) !important;
+  color: var(--wl-text-inverse) !important;
   text-align: center !important;
   font-size: 0.68rem !important;
 }
@@ -534,7 +515,7 @@ progress {
   align-content: center !important;
   padding: 10px 12px !important;
   border-radius: 12px !important;
-  background: #f6e7be !important;
+  background: var(--wl-surface-raised) !important;
   border: 1px solid #b29768 !important;
   color: #3b2e23 !important;
 }
@@ -654,7 +635,7 @@ progress.is-race-resource::-webkit-progress-value,
   align-items: center !important;
   padding: 4px 6px !important;
   border-radius: 8px !important;
-  background: #dce6d5 !important;
+  background: var(--wl-accent-soft) !important;
   font-size: 0.65rem !important;
 }
 .arena-status-icons > span.is-debuff {
@@ -664,7 +645,7 @@ progress.is-race-resource::-webkit-progress-value,
   margin-top: 7px !important;
   border: 1px solid #b79a6b !important;
   border-radius: 10px !important;
-  background: #fff0c8 !important;
+  background: var(--wl-surface) !important;
   overflow: hidden !important;
 }
 .arena-attributes summary {
@@ -780,7 +761,7 @@ progress.is-race-resource::-webkit-progress-value,
 .arena-message > span {
   padding: 4px 7px !important;
   border-radius: 7px !important;
-  background: #315f47 !important;
+  background: var(--wl-accent) !important;
   color: #fff1ce !important;
   font-size: 0.65rem !important;
   text-transform: uppercase !important;
@@ -843,7 +824,7 @@ progress.is-race-resource::-webkit-progress-value,
   padding: 11px !important;
   text-align: left !important;
   align-content: start !important;
-  background: #fff0c9 !important;
+  background: var(--wl-surface) !important;
   color: #392d22 !important;
   border-color: #a98b60 !important;
   box-shadow: 0 3px 0 #8b6b44 !important;
@@ -954,7 +935,7 @@ progress.is-race-resource::-webkit-progress-value,
   min-height: 112px !important;
   text-align: left !important;
   align-content: start !important;
-  background: #fff0c9 !important;
+  background: var(--wl-surface) !important;
   color: #3a2d22 !important;
   border-color: #a8885d !important;
 }
@@ -974,7 +955,7 @@ progress.is-race-resource::-webkit-progress-value,
   font-size: 0.66rem !important;
 }
 .pvp-action > em.is-ready {
-  color: #315f47 !important;
+  color: var(--wl-accent) !important;
   font-weight: 700 !important;
 }
 .pvp-action__cooldown {
@@ -985,7 +966,7 @@ progress.is-race-resource::-webkit-progress-value,
   height: 42px !important;
   border-radius: 50% !important;
   background: #65472f !important;
-  color: #fff0c9 !important;
+  color: var(--wl-text-inverse) !important;
   display: grid !important;
   place-items: center !important;
   align-content: center !important;
@@ -1049,7 +1030,7 @@ progress.is-race-resource::-webkit-progress-value,
   border-radius: 50% !important;
   display: grid !important;
   place-items: center !important;
-  background: #315f47 !important;
+  background: var(--wl-accent) !important;
   color: #fff1c9 !important;
   font-size: 2rem !important;
   font-weight: 800 !important;
@@ -1084,7 +1065,7 @@ progress.is-race-resource::-webkit-progress-value,
 .mission-board-progress > div > span > i {
   display: block !important;
   height: 100% !important;
-  background: #315f47 !important;
+  background: var(--wl-accent) !important;
 }
 .mission-board-progress p {
   margin: 0 !important;
@@ -1130,7 +1111,7 @@ progress.is-race-resource::-webkit-progress-value,
   border-radius: 3px !important;
   box-shadow: 4px 7px 14px rgba(51, 35, 20, 0.2) !important;
   transform: rotate(var(--paper-tilt)) !important;
-  color: #3d3024 !important;
+  color: var(--wl-text) !important;
 }
 .mission-parchment h2 {
   font-size: 1.55rem !important;
@@ -1142,7 +1123,7 @@ progress.is-race-resource::-webkit-progress-value,
 .mission-parchment blockquote {
   margin: 0 !important;
   padding: 10px !important;
-  border-left: 4px solid #315f47 !important;
+  border-left: 4px solid var(--wl-accent) !important;
   background: rgba(255, 248, 221, 0.55) !important;
 }
 .mission-parchment dl {
@@ -1291,7 +1272,7 @@ progress.is-race-resource::-webkit-progress-value,
 .presence-reward-icon > span {
   font-size: 1.25rem !important;
   font-weight: 800 !important;
-  color: #315f47 !important;
+  color: var(--wl-accent) !important;
 }
 .presence-reward-grid > article > strong {
   font-size: 0.9rem !important;
@@ -1328,8 +1309,8 @@ progress.is-race-resource::-webkit-progress-value,
   border-radius: 50% !important;
   display: grid !important;
   place-items: center !important;
-  background: #315f47 !important;
-  color: #fff0c8 !important;
+  background: var(--wl-accent) !important;
+  color: var(--wl-text-inverse) !important;
   border: 4px double #d2b87f !important;
   font-size: 1.55rem !important;
   font-weight: 800 !important;
@@ -1377,7 +1358,7 @@ progress.is-race-resource::-webkit-progress-value,
   padding: 6px 8px !important;
   border-radius: 8px !important;
   background: #65472f !important;
-  color: #fff0c9 !important;
+  color: var(--wl-text-inverse) !important;
   text-align: center !important;
 }
 .guild-registry-folio h2 {
@@ -1472,7 +1453,7 @@ progress.is-race-resource::-webkit-progress-value,
   position: relative !important;
   min-height: 430px !important;
   background: #536a58 center top/cover no-repeat !important;
-  color: #fff0c8 !important;
+  color: var(--wl-text-inverse) !important;
   display: grid !important;
   place-items: center !important;
   font-size: 2.4rem !important;
@@ -1557,7 +1538,7 @@ progress.is-race-resource::-webkit-progress-value,
   padding: 12px !important;
   border: 1px solid #b79b6d !important;
   border-radius: 13px !important;
-  background: #fff0ca !important;
+  background: var(--wl-surface) !important;
 }
 .public-character-equipment article svg {
   width: 70px !important;
@@ -1628,9 +1609,9 @@ progress.is-race-resource::-webkit-progress-value,
   align-items: center !important;
   padding: 18px !important;
   border-left: 7px solid var(--rank-color) !important;
-  border-top: 1px solid #a98a5e !important;
-  border-right: 1px solid #a98a5e !important;
-  border-bottom: 1px solid #a98a5e !important;
+  border-top: 1px solid var(--wl-border) !important;
+  border-right: 1px solid var(--wl-border) !important;
+  border-bottom: 1px solid var(--wl-border) !important;
   border-radius: 14px !important;
   background: #f3e1b7 !important;
   box-shadow: 0 7px 18px rgba(48, 34, 21, 0.08) !important;
@@ -1695,7 +1676,7 @@ progress.is-race-resource::-webkit-progress-value,
   gap: 9px !important;
   padding: 11px !important;
   border-radius: 11px !important;
-  background: #fff0ca !important;
+  background: var(--wl-surface) !important;
   border: 1px solid #b99c70 !important;
 }
 .guild-trials-scroll article > span {
@@ -1704,8 +1685,8 @@ progress.is-race-resource::-webkit-progress-value,
   border-radius: 50% !important;
   display: grid !important;
   place-items: center !important;
-  background: #315f47 !important;
-  color: #fff0c9 !important;
+  background: var(--wl-accent) !important;
+  color: var(--wl-text-inverse) !important;
   font-weight: 800 !important;
 }
 .guild-trials-scroll article h3 {
@@ -1744,7 +1725,7 @@ progress.is-race-resource::-webkit-progress-value,
   display: grid !important;
   place-items: center !important;
   background: #65472f !important;
-  color: #fff0c9 !important;
+  color: var(--wl-text-inverse) !important;
   font-size: 1.5rem !important;
   font-weight: 800 !important;
 }
@@ -1760,11 +1741,11 @@ progress.is-race-resource::-webkit-progress-value,
   grid-template-columns: 150px minmax(0, 1fr) !important;
   gap: 16px !important;
   padding: 16px 20px !important;
-  background: #e2cda0 !important;
+  background: var(--wl-surface-muted) !important;
 }
 .royal-chronicle__headline > aside {
   padding-right: 14px !important;
-  border-right: 1px solid #a88a60 !important;
+  border-right: 1px solid var(--wl-border) !important;
 }
 .royal-chronicle__headline aside :where(small, strong, span) {
   display: block !important;
@@ -1792,7 +1773,7 @@ progress.is-race-resource::-webkit-progress-value,
 }
 .royal-chronicle__archive {
   padding: 18px !important;
-  border: 1px solid #9f8159 !important;
+  border: 1px solid var(--wl-border) !important;
   border-radius: 17px !important;
   background: #ead7ad !important;
 }
@@ -1803,7 +1784,7 @@ progress.is-race-resource::-webkit-progress-value,
   margin-top: 8px !important;
   border: 1px solid #b3976a !important;
   border-radius: 11px !important;
-  background: #fff0ca !important;
+  background: var(--wl-surface) !important;
   overflow: hidden !important;
 }
 .royal-chronicle__volume summary {
@@ -1909,126 +1890,10 @@ progress.is-race-resource::-webkit-progress-value,
   align-items: stretch !important;
   background: transparent !important;
 }
-.admin-sidebar {
-  position: sticky !important;
-  top: 0 !important;
-  height: 100vh !important;
-  min-height: 100vh !important;
-  overflow-y: auto !important;
-  padding: 16px 12px !important;
-  background: linear-gradient(#25382c, #1b2d23) !important;
-  border-right: 1px solid #8d744f !important;
-}
-.admin-sidebar__brand {
-  display: grid !important;
-  gap: 8px !important;
-  padding: 0 4px 12px !important;
-  border-bottom: 1px solid rgba(235, 218, 174, 0.18) !important;
-}
-.admin-sidebar__edition {
-  display: inline-flex !important;
-  width: max-content !important;
-  padding: 4px 7px !important;
-  border-radius: 6px !important;
-  background: rgba(235, 218, 174, 0.1) !important;
-  color: #d9c49a !important;
-  font-size: 0.58rem !important;
-  letter-spacing: 0.08em !important;
-}
-.admin-sidebar__nav {
-  display: grid !important;
-  gap: 14px !important;
-  padding: 13px 0 !important;
-}
-.admin-sidebar__nav-group {
-  display: grid !important;
-  gap: 4px !important;
-}
-.admin-sidebar__nav-label {
-  display: block !important;
-  padding: 0 8px 4px !important;
-  color: #bda77e !important;
-  font-size: 0.56rem !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.12em !important;
-}
-.admin-sidebar__nav-item {
-  display: grid !important;
-  grid-template-columns: 34px minmax(0, 1fr) !important;
-  gap: 8px !important;
-  align-items: center !important;
-  width: 100% !important;
-  min-height: 38px !important;
-  padding: 7px 8px !important;
-  border: 0 !important;
-  border-radius: 8px !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  color: #eadfc7 !important;
-  font-size: 0.75rem !important;
-  line-height: 1.15 !important;
-  text-align: left !important;
-  text-decoration: none !important;
-}
-.admin-sidebar__nav-item > span {
-  width: 32px !important;
-  height: 28px !important;
-  border-radius: 6px !important;
-  display: grid !important;
-  place-items: center !important;
-  background: rgba(235, 218, 174, 0.09) !important;
-  color: #d9be8a !important;
-  font-size: 0.62rem !important;
-}
-.admin-sidebar__nav-item:hover,
-.admin-sidebar__nav-item.is-active {
-  background: rgba(235, 218, 174, 0.13) !important;
-  color: #fff2cd !important;
-  transform: none !important;
-}
-.admin-sidebar__subnav {
-  display: grid !important;
-  gap: 4px !important;
-  padding: 6px !important;
-  border-radius: 9px !important;
-  background: rgba(0, 0, 0, 0.12) !important;
-}
-.admin-sidebar__subnav > a {
-  display: grid !important;
-  grid-template-columns: 32px 1fr !important;
-  gap: 7px !important;
-  padding: 7px !important;
-  border-radius: 7px !important;
-}
-.admin-sidebar__footer {
-  display: grid !important;
-  grid-template-columns: auto minmax(0, 1fr) !important;
-  gap: 8px !important;
-  align-items: center !important;
-  padding: 12px 6px !important;
-  border-top: 1px solid rgba(235, 218, 174, 0.18) !important;
-}
-.admin-sidebar__footer .signal-dot {
-  grid-row: 1/3 !important;
-}
-.admin-sidebar__footer strong,
-.admin-sidebar__footer small {
-  display: block !important;
-}
-.admin-sidebar__footer form,
-.admin-sidebar__footer button {
-  grid-column: 1/-1 !important;
-  width: 100% !important;
-}
 .admin-workspace {
   width: 100% !important;
   min-width: 0 !important;
   padding-bottom: 60px !important;
-}
-.admin-topbar {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 30 !important;
 }
 .admin-content {
   width: min(1180px, calc(100% - 28px)) !important;
@@ -2039,7 +1904,7 @@ progress.is-race-resource::-webkit-progress-value,
 .admin-content > header,
 .admin-content > .admin-page-header {
   padding: 20px !important;
-  border: 1px solid #a88a60 !important;
+  border: 1px solid var(--wl-border) !important;
   border-radius: 18px !important;
   background: #f2dfb5 !important;
 }
@@ -2073,23 +1938,6 @@ progress.is-race-resource::-webkit-progress-value,
 }
 
 /* ---------- HOME / AUTH / GRIMÓRIOS / LOJA / RANKING: GARANTIAS ---------- */
-.home-landing {
-  width: min(1320px, calc(100% - 24px)) !important;
-  max-width: 1320px !important;
-}
-.home-paths {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-}
-.home-path {
-  min-width: 0 !important;
-}
-.auth-shell {
-  width: min(1120px, calc(100% - 32px)) !important;
-}
-.auth-panel,
-.auth-visual {
-  min-width: 0 !important;
-}
 .market-page {
   width: 100% !important;
   max-width: none !important;
@@ -2111,16 +1959,8 @@ progress.is-race-resource::-webkit-progress-value,
 .classic-item-card h2 {
   overflow-wrap: break-word !important;
 }
-.champions-hall {
-  min-width: 0 !important;
-}
-.ranking-list-shell,
 .pvp-ranking-list {
   overflow-x: auto !important;
-}
-.ranking-list-header,
-.ranking-list-row {
-  min-width: 760px !important;
 }
 .pvp-ranking-row {
   min-width: 700px !important;
@@ -2270,22 +2110,8 @@ progress.is-race-resource::-webkit-progress-value,
   .admin-shell {
     display: block !important;
   }
-  .admin-sidebar {
-    position: relative !important;
-    height: auto !important;
-    min-height: 0 !important;
-  }
-  .admin-sidebar__nav {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-  .admin-sidebar__footer {
-    grid-template-columns: auto 1fr auto !important;
-  }
   .admin-workspace {
     min-width: 0 !important;
-  }
-  .admin-topbar {
-    position: relative !important;
   }
   .admin-content {
     width: calc(100% - 20px) !important;
@@ -2295,9 +2121,6 @@ progress.is-race-resource::-webkit-progress-value,
 /* ---------- RESPONSIVO: CELULAR ---------- */
 @media (max-width: 620px) {
   .page-container,
-  .world-page__intro,
-  .world-page__content,
-  .world-page__footer,
   .sheet-page__inner,
   .arena-page__inner,
   .world-lore-shell,
@@ -2305,7 +2128,6 @@ progress.is-race-resource::-webkit-progress-value,
   .market-shell {
     width: calc(100% - 14px) !important;
   }
-  .player-nav,
   .site-header {
     width: calc(100% - 14px) !important;
     margin-top: 7px !important;
@@ -2473,7 +2295,7 @@ progress.is-race-resource::-webkit-progress-value,
   }
   .royal-chronicle__headline > aside {
     border-right: 0 !important;
-    border-bottom: 1px solid #a88a60 !important;
+    border-bottom: 1px solid var(--wl-border) !important;
     padding: 0 0 9px !important;
   }
   .royal-chronicle__volume summary {
@@ -2482,18 +2304,5 @@ progress.is-race-resource::-webkit-progress-value,
   .royal-chronicle__volume summary time,
   .royal-chronicle__volume summary > b {
     grid-column: 2 !important;
-  }
-  .admin-sidebar__nav {
-    grid-template-columns: 1fr !important;
-  }
-  .admin-sidebar__footer {
-    grid-template-columns: auto 1fr !important;
-  }
-  .admin-sidebar__footer form,
-  .admin-sidebar__footer button {
-    grid-column: 1/-1 !important;
-  }
-  .home-paths {
-    grid-template-columns: 1fr !important;
   }
 }

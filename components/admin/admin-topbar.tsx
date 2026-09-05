@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import styles from "./admin-navigation.module.css";
 import { usePathname } from "next/navigation";
 
 import type { CurrentAccount } from "@/lib/auth/roles";
@@ -18,6 +19,9 @@ function getRouteHeading(pathname: string) {
   }
   const routes = [
     ["/admin/estudio", "Criação assistida", "Studio de Criação"],
+    ["/admin/bestiario", "Conteúdo do jogo", "Bestiário"],
+    ["/admin/cosmeticos", "Aparência", "Cosméticos"],
+    ["/admin/historias", "Comunidade", "Histórias e contos"],
     ["/admin/portal", "Comunidade", "Tela principal"],
     ["/admin/atualizacoes", "Comunidade / Publicações", "Atualizações"],
     ["/admin/eventos", "Comunidade / Publicações", "Eventos"],
@@ -60,17 +64,17 @@ export function AdminTopbar({
     .join("");
 
   return (
-    <header className="admin-topbar">
+    <header className={styles.topbar}>
       <div>
-        <span className="admin-topbar__path">{heading.path}</span>
+        <span className={styles.path}>{heading.path}</span>
         <h1>{heading.title}</h1>
       </div>
-      <div className="admin-topbar__actions">
-        <span className={`connection-status ${configured ? "is-online" : "is-pending"}`}>
+      <div className={styles.actions}>
+        <span className={styles.connection}>
           <span className="signal-dot" />
-          {configured ? "Supabase conectado" : "Supabase aguardando conexão"}
+          {configured ? "Serviços configurados" : "Configuração pendente"}
         </span>
-        <Link className="admin-profile" href="/perfil">
+        <Link className={styles.profile} href="/perfil">
           <span>{initials || "W"}</span>
           <span>
             <strong>{account.displayName}</strong>

@@ -110,6 +110,10 @@
   --wl-action-accent-text: var(--wl-gold-contrast);
 
   /* Elevação e geometria */
+  --wl-font-body: "Segoe UI", Arial, sans-serif;
+  --wl-font-display: Georgia, "Times New Roman", serif;
+  --wl-control-height: 44px;
+  --wl-radius-lg: 20px;
   --wl-shadow: 0 22px 58px rgba(18, 12, 8, 0.3);
   --wl-shadow-soft: 0 10px 26px rgba(18, 12, 8, 0.18);
   --wl-radius-sm: 9px;

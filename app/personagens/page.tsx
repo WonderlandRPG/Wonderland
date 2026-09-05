@@ -60,7 +60,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
     <main className={styles.page}>
       <PlayerNav />
       <div className={styles.inner}>
-        <header className={`${styles.intro} ${!selecting ? styles.commandHeader : ""}`}>
+        <header className={styles.intro}>
           <div>
             <small>{selecting ? `Salão de ${account.displayName}` : "Central do aventureiro"}</small>
             <h1>{selecting ? "Escolha seu aventureiro" : "Comando de jornada"}</h1>
@@ -90,9 +90,9 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
                 <strong className={styles.levelBadge}><small>Nível</small>{activeCharacter.level}</strong>
               </header>
               <div className={styles.progress}>
-                <div><span>Próximo nível</span><strong>{activeProgress.percent}%</strong></div>
-                <i><b style={{ width: `${activeProgress.percent}%` }} /></i>
-                <small>{activeCharacter.xp.toLocaleString("pt-BR")} XP · faltam {(activeProgress.next - activeCharacter.xp).toLocaleString("pt-BR")}</small>
+                <div><span>{activeProgress.level === 100 ? "Nível máximo" : "Próximo nível"}</span><strong>{Math.floor(activeProgress.percent)}%</strong></div>
+                <i role="progressbar" aria-label="Experiência para o próximo nível" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.floor(activeProgress.percent)}><b style={{ width: `${activeProgress.percent}%` }} /></i>
+                <small>{activeCharacter.xp.toLocaleString("pt-BR")} XP{activeProgress.level < 100 ? ` · faltam ${Math.max(0, activeProgress.next - activeCharacter.xp).toLocaleString("pt-BR")} XP` : " · progressão de nível completa"}</small>
               </div>
               <dl className={styles.dashboardStats}>
                 <div><dt>Vitalidade</dt><dd>{activeCharacter.stats.maxHp}</dd><small>HP máximo</small></div>
@@ -114,7 +114,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
               <div className={styles.journeyStrip}>
                 <div><small>Próximo passo</small><strong>{journeyBoard?.activeAssignment ? journeyBoard.activeAssignment.name : "Escolha uma missão"}</strong><span>{journeyBoard?.activeAssignment ? "Missão em andamento · continue a cena" : "Uma missão libera XP e avanço de rank"}</span></div>
                 <div><small>PvE hoje</small><strong>{Number(pve?.used ?? 0)} / {Number(pve?.limit ?? 5)} lutas</strong><span>{Number(pve?.remaining ?? 5) > 0 ? "Recompensas disponíveis" : "Limite diário atingido · reseta à meia-noite"}</span></div>
-                <Link href={journeyBoard?.activeAssignment ? "/missoes" : "/missoes"}>Abrir jornada →</Link>
+                <Link href="/missoes">Abrir jornada →</Link>
               </div>
               {(activeCharacter.level <= 5 || equippedCount === 0 || !journeyBoard?.activeAssignment) ? <section className={styles.onboarding} aria-label="Primeiros passos">
                 <header><small>Primeiros passos</small><strong>Comece sua aventura</strong></header>

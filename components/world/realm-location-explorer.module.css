@@ -40,8 +40,8 @@
 
 .atlas > header small,
 .modalCopy > small {
-  color: #315f47;
-  font-size: 0.62rem;
+  color: var(--wl-accent);
+  font-size: .8125rem;
   font-weight: 800;
   letter-spacing: 0.12em;
 }
@@ -75,7 +75,7 @@
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.34), transparent 48%),
     #f7e4b7;
-  color: #3d3024;
+  color: var(--wl-text);
   text-align: left;
   cursor: pointer;
   box-shadow: 0 7px 16px rgba(48, 34, 20, 0.09);
@@ -134,7 +134,7 @@
 
 .cardCopy small {
   color: #176646;
-  font-size: 0.64rem;
+  font-size: .8125rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -186,7 +186,7 @@
 .modalCopy h2 {
   margin: 0;
   font-size: clamp(1.8rem, 3.2vw, 3rem);
-  line-height: 1;
+  line-height: 1.12;
   overflow-wrap: anywhere;
 }
 
@@ -226,7 +226,7 @@
   border: 1px solid rgba(255, 244, 215, 0.55);
   border-radius: 50%;
   background: rgba(24, 24, 21, 0.72);
-  color: #fff0ca;
+  color: var(--wl-text-inverse);
   font-size: 1.65rem;
   line-height: 1;
   cursor: pointer;

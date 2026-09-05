@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import styles from "./admin-navigation.module.css";
 import { usePathname } from "next/navigation";
 
 import { SignOutButton } from "@/components/account/sign-out-button";
@@ -52,23 +53,23 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
   const pathname = usePathname();
 
   return (
-    <aside className="admin-sidebar">
-      <div className="admin-sidebar__brand">
+    <aside className={styles.sidebar}>
+      <div className={styles.brand}>
         <BrandMark inverse />
-        <span className="admin-sidebar__edition">Livro de Comando · v2</span>
+        <span className={styles.edition}>Livro de Comando · v2</span>
       </div>
 
-      <nav className="admin-sidebar__nav" aria-label="Seções administrativas">
+      <nav className={styles.nav} aria-label="Seções administrativas">
         {navigation.map((section) => (
-          <div className="admin-sidebar__nav-group" key={section.group}>
-            <span className="admin-sidebar__nav-label">{section.group}</span>
+          <div className={styles.group} key={section.group}>
+            <span className={styles.label}>{section.group}</span>
             {section.items.map((item) => {
               const active = item.href === "/admin" ? pathname === item.href : pathname.startsWith(item.href.split("#")[0]);
 
               return (
                 <Link
                   aria-current={active ? "page" : undefined}
-                  className={`admin-sidebar__nav-item ${active ? "is-active" : ""}`}
+                  className={styles.item}
                   href={item.href}
                   key={item.label}
                 >
@@ -80,7 +81,7 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
           </div>
         ))}
         {pathname.startsWith("/admin/racas") ? (
-          <div className="admin-sidebar__subnav">
+          <div className={styles.subnav}>
             <Link className="is-active" href="/admin/racas">
               <span>RA</span>
               Raças
@@ -92,7 +93,7 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
           </div>
         ) : null}
         {pathname.startsWith("/admin/classes") ? (
-          <div className="admin-sidebar__subnav">
+          <div className={styles.subnav}>
             <Link className="is-active" href="/admin/classes">
               <span>CL</span>Classes
             </Link>
@@ -103,7 +104,7 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
         ) : null}
       </nav>
 
-      <div className="admin-sidebar__footer">
+      <div className={styles.footer}>
         <span className="signal-dot" />
         <div>
           <strong>{account.displayName}</strong>

@@ -15,12 +15,10 @@ body{color:var(--wl-text);background-color:#d9d5c3;background-attachment:fixed;b
 body:has(.sheet-page),body:has(.character-creator),body:has(.profile-page){background-image:linear-gradient(rgba(246,238,214,.84),rgba(222,221,202,.90)),url('/backgrounds/character.svg')}
 body:has(.market-page){background-image:linear-gradient(rgba(246,237,211,.84),rgba(221,219,199,.91)),url('/backgrounds/market.svg')}
 body:has(.realms-page),body:has(.kingdom-current-page){background-image:linear-gradient(rgba(245,237,214,.82),rgba(219,221,202,.91)),url('/backgrounds/realms.svg')}
-body:has(.world-page){background-image:linear-gradient(rgba(245,237,213,.84),rgba(219,221,202,.91)),url('/backgrounds/lore.svg')}
-body:has(.champions-hall){background-image:linear-gradient(rgba(245,236,211,.83),rgba(219,218,199,.91)),url('/backgrounds/ranking.svg')}
 body:has(.arena-page),body:has(.dungeon-page),body:has(.battle-page){background-image:linear-gradient(rgba(239,231,207,.82),rgba(210,213,196,.91)),url('/backgrounds/arena.svg')}
 
 /* Never allow an inner page wrapper to paint over the global backdrop. */
-.sheet-page,.market-page,.realms-page,.world-page,.arena-page,.kingdom-current-page,.profile-page,.presence-page,.ranking-page,.updates-page,.events-page{background:transparent!important}
+.sheet-page,.market-page,.realms-page,.arena-page,.kingdom-current-page,.profile-page,.presence-page,.updates-page,.events-page{background:transparent!important}
 
 /* ---------- GLOBAL WIDTH / TEXT SAFETY ---------- */
 main{max-width:none}
@@ -40,12 +38,7 @@ button,input,select,textarea{max-width:100%}
 img{max-width:100%}
 
 /* Keep the shared HUD predictable on every route. */
-.player-nav,.site-header{width:min(var(--wl-page-wide),calc(100% - 32px));max-width:var(--wl-page-wide);margin-inline:auto;z-index:100}
-.player-nav__links{min-width:0}
-.player-nav__world-menu{position:relative;z-index:120}
-.player-nav__world-backdrop{position:fixed!important;inset:0!important;z-index:110!important;width:100vw!important;height:100vh!important;opacity:0!important;pointer-events:auto!important}
-#player-world-navigation{z-index:130!important;pointer-events:auto!important}
-#player-world-navigation a,#player-world-navigation button{position:relative;z-index:131;pointer-events:auto!important}
+.site-header{width:min(var(--wl-page-wide),calc(100% - 32px));max-width:var(--wl-page-wide);margin-inline:auto;z-index:100}
 
 /* ---------- CHARACTER SHEET ---------- */
 .sheet-page{width:100%;max-width:none;margin:0;padding-bottom:80px}
@@ -131,24 +124,11 @@ img{max-width:100%}
 .shop-cart--sidebar{min-width:0;position:sticky;top:96px}
 
 /* ---------- RANKING ---------- */
-.world-page{width:100%;max-width:none;margin:0;padding-bottom:70px}
-.world-page>.player-nav{margin-inline:auto}
-.world-page__intro,.world-page__content,.world-page__footer{width:min(1120px,calc(100% - 32px));max-width:1120px;margin-inline:auto}
-.champions-hall{width:100%;min-width:0}
-.ranking-podium{width:100%;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important;align-items:end!important}
-.ranking-podium__place{min-width:0;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important}
-.ranking-podium__avatar{width:118px!important;height:118px!important;margin:12px auto 14px!important;display:grid!important;place-items:center!important;overflow:hidden!important;border-radius:50%!important}
-.ranking-podium__avatar>span{display:grid!important;place-items:center!important;width:100%!important;height:100%!important;background-position:center!important;background-size:cover!important;border-radius:50%!important}
-.ranking-podium__place>*{margin-left:auto;margin-right:auto}
-.ranking-list-shell,.pvp-ranking-list{width:100%;min-width:0;overflow:hidden}
-.ranking-list-header,.ranking-list-row{display:grid!important;grid-template-columns:70px minmax(240px,1.35fr) minmax(120px,.7fr) minmax(150px,.8fr) 90px!important;gap:12px!important;align-items:center!important}
-.ranking-list-row>*{min-width:0}
-.ranking-list-row a,.ranking-list-row strong,.ranking-list-row small{word-break:normal!important;overflow-wrap:break-word!important}
+.pvp-ranking-list{width:100%;min-width:0;overflow:hidden}
 .pvp-ranking-row{display:grid!important;grid-template-columns:54px minmax(220px,1fr) repeat(4,minmax(74px,.35fr))!important;gap:10px!important;align-items:center!important}
 
 /* ---------- REALMS / MAP ---------- */
 .realms-page{width:100%;max-width:none;margin:0;padding-bottom:80px}
-.realms-page>.player-nav{margin-inline:auto}
 .world-lore-shell{width:min(var(--wl-page-wide),calc(100% - 32px));max-width:var(--wl-page-wide);margin-inline:auto}
 .realms-hero{width:100%;min-width:0}
 .world-map--illustrated{position:relative;width:100%;min-height:620px;overflow:hidden;border:7px solid #67482e;border-radius:18px;background:#1d2d29;box-shadow:var(--wl-shadow)}
@@ -167,7 +147,6 @@ img{max-width:100%}
 
 /* ---------- ARENA ---------- */
 .arena-page{width:100%;max-width:none;margin:0;padding-bottom:80px}
-.arena-page>.player-nav{margin-inline:auto}
 .arena-page__inner{width:min(var(--wl-page-wide),calc(100% - 32px));max-width:var(--wl-page-wide);margin-inline:auto}
 .arena-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .arena-mode-card,.arena-mode-locked{min-width:0}
@@ -177,13 +156,10 @@ img{max-width:100%}
 .tactical-grid,.arena-grid,[class*="battle-grid"],[class*="combat-grid"]{max-width:100%;overflow:auto}
 
 /* ---------- PORTAL / PROFILE / PRESENCE / UPDATES / EVENTS ---------- */
-.profile-page,.presence-page,.updates-page,.events-page,.ranking-page{width:100%;max-width:none;margin:0}
-.profile-page>.player-nav,.presence-page>.player-nav,.updates-page>.player-nav,.events-page>.player-nav,.ranking-page>.player-nav{margin-inline:auto}
+.profile-page,.presence-page,.updates-page,.events-page{width:100%;max-width:none;margin:0}
 .profile-shell,.presence-shell,.updates-shell,.events-shell{width:min(1120px,calc(100% - 32px));margin-inline:auto}
 
 /* ---------- AUTH ---------- */
-.auth-shell{max-width:1120px;width:calc(100% - 32px)}
-.auth-panel,.auth-visual{min-width:0}
 
 /* ---------- TABLES / FORMS ---------- */
 .table-wrap,[class*="table-wrap"],[class*="table-scroll"]{width:100%;overflow-x:auto}
@@ -197,29 +173,25 @@ form{min-width:0}
   .inventory-command__loadout{grid-template-columns:minmax(190px,.75fr) minmax(300px,1fr) minmax(190px,.75fr)!important}
   .inventory-classic-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
   .classic-item-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .ranking-list-header,.ranking-list-row{grid-template-columns:60px minmax(200px,1.2fr) 120px 140px 78px!important}
 }
 
 @media(max-width:900px){
-  .player-nav{flex-wrap:wrap}.player-nav__links{order:3;width:100%;margin-left:0;justify-content:center}.player-nav__character{margin-left:auto}
   .character-command-hero{grid-template-columns:1fr}.character-command-hero__art{min-height:480px}.character-progress-strip{grid-template-columns:1fr}.sheet-columns{grid-template-columns:1fr}.combat-formulas>div{grid-template-columns:repeat(2,minmax(0,1fr))}
   .inventory-command__loadout{grid-template-columns:1fr 1fr!important;grid-template-areas:"head head" "hero hero" "left right"!important}.inventory-character-card{width:min(520px,100%)!important;max-width:520px!important}.inventory-browser{grid-template-columns:1fr!important}.inventory-inspector{width:100%;position:static}.inventory-classic-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-  .market-hero{grid-template-columns:1fr}.shop-browser{grid-template-columns:1fr}.shop-cart--sidebar{position:static}.shop-controls>div{grid-template-columns:1fr 1fr}.shop-controls__search{grid-column:1/-1}
-  .ranking-podium{grid-template-columns:1fr 1fr!important}.ranking-podium__place.is-place-1{grid-column:1/-1;grid-row:1}.ranking-list-shell,.pvp-ranking-list{overflow-x:auto}.ranking-list-header,.ranking-list-row{min-width:760px}.pvp-ranking-row{min-width:760px}
+  .market-hero{grid-template-columns:1fr}.shop-browser{grid-template-columns:1fr}.shop-cart--sidebar{position:static}.shop-controls>div{grid-template-columns:1fr 1fr}.shop-controls__search{grid-column:1/-1}.pvp-ranking-list{overflow-x:auto}.pvp-ranking-row{min-width:760px}
   .realm-dossiers--atlas>article>header{grid-template-columns:auto 1fr}.realm-dossiers--atlas dl{grid-column:1/-1}.realm-dossiers__body{grid-template-columns:1fr}.realm-gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
 @media(max-width:640px){
-  .page-container,.sheet-page__inner,.arena-page__inner,.market-shell,.world-lore-shell,.world-page__intro,.world-page__content,.world-page__footer{width:calc(100% - 18px)}
-  .player-nav,.site-header{width:calc(100% - 14px);padding:9px}.player-nav__links{overflow-x:auto;justify-content:flex-start;flex-wrap:nowrap}.player-nav__links>a{white-space:nowrap}.player-nav__character{width:100%}.player-nav__character>a{width:100%}#player-world-navigation{position:fixed;left:10px;right:10px;top:84px;width:auto;max-height:calc(100vh - 100px);overflow:auto}
+  .page-container,.sheet-page__inner,.arena-page__inner,.market-shell,.world-lore-shell{width:calc(100% - 18px)}
+  .site-header{width:calc(100% - 14px);padding:9px}
   .character-command-hero__art{min-height:380px}.character-command-hero__identity{padding:22px}.character-command-hero__facts{grid-template-columns:1fr 1fr}.sheet-stat-grid,.sheet-attributes,.combat-formulas>div{grid-template-columns:1fr}
   .inventory-command__loadout{grid-template-columns:1fr!important;grid-template-areas:"head" "hero" "left" "right"!important;padding:14px!important}.inventory-character-card{min-width:0!important;min-height:430px!important}.inventory-character-card>div:first-child{min-height:320px!important}.inventory-classic-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .shop-controls>div{grid-template-columns:1fr}.shop-controls__search{grid-column:auto}.classic-item-grid{grid-template-columns:1fr}
-  .ranking-podium{grid-template-columns:1fr!important}.ranking-podium__place.is-place-1{grid-column:auto}.ranking-podium__avatar{width:104px!important;height:104px!important}
   .world-map--illustrated{min-height:430px;border-width:4px}.world-map__painting,.world-map__territories{inset:7px!important}.world-map__title{top:16px;left:16px}.world-map__legend{left:16px;bottom:16px}.world-map__compass{right:16px;bottom:16px;width:58px;height:58px}.realm-gallery{grid-template-columns:1fr}
   .arena-mode-grid{grid-template-columns:1fr}
 }
 /* Recompensas configuráveis de eventos */
 .admin-event-rewards{grid-column:1/-1;padding:18px;border:1px solid rgba(116,82,47,.3);border-radius:14px;background:rgba(255,248,226,.55)}
-.admin-event-rewards>p{margin:6px 0 14px;color:#6e5b45;font-size:.86rem}.admin-event-rewards__list{display:grid;gap:10px;margin-bottom:12px}.admin-event-reward{display:grid;grid-template-columns:minmax(130px,.7fr) minmax(190px,1.5fr) minmax(100px,.55fr) auto;gap:10px;align-items:end;padding:12px;border:1px solid rgba(116,82,47,.18);border-radius:10px;background:rgba(255,255,255,.55)}.admin-event-reward label{margin:0}.admin-event-reward .button{min-height:42px}.realm-notice__rewards{display:grid;gap:4px;margin:12px 0;padding:10px 12px;list-style:none;border-top:1px dashed rgba(87,58,31,.32);border-bottom:1px dashed rgba(87,58,31,.32);font-size:.78rem;font-weight:800;color:#315f47}.realm-notice footer form{margin:0}.realm-notice footer .button{padding:7px 12px;font-size:.72rem}.classic-item-card__build{display:block;margin:-2px 0 8px;color:#8b6d3e;font-weight:800}.classic-item-card__classes{margin:8px 0 0!important;font-size:.7rem!important;line-height:1.4!important;color:#66533d!important}
+.admin-event-rewards>p{margin:6px 0 14px;color:#6e5b45;font-size:.86rem}.admin-event-rewards__list{display:grid;gap:10px;margin-bottom:12px}.admin-event-reward{display:grid;grid-template-columns:minmax(130px,.7fr) minmax(190px,1.5fr) minmax(100px,.55fr) auto;gap:10px;align-items:end;padding:12px;border:1px solid rgba(116,82,47,.18);border-radius:10px;background:rgba(255,255,255,.55)}.admin-event-reward label{margin:0}.admin-event-reward .button{min-height:42px}.realm-notice__rewards{display:grid;gap:4px;margin:12px 0;padding:10px 12px;list-style:none;border-top:1px dashed rgba(87,58,31,.32);border-bottom:1px dashed rgba(87,58,31,.32);font-size:.78rem;font-weight:800;color:var(--wl-accent)}.realm-notice footer form{margin:0}.realm-notice footer .button{padding:7px 12px;font-size:.72rem}.classic-item-card__build{display:block;margin:-2px 0 8px;color:#8b6d3e;font-weight:800}.classic-item-card__classes{margin:8px 0 0!important;font-size:.7rem!important;line-height:1.4!important;color:#66533d!important}
 @media(max-width:760px){.admin-event-reward{grid-template-columns:1fr}.admin-event-reward .button{width:100%}.realm-notice footer{align-items:flex-start;gap:8px;flex-direction:column}}

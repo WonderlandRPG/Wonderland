@@ -1,7 +1,7 @@
 .jrpg-battle{
   --jrpg-ink:#1d261f;
   --jrpg-deep:#17251d;
-  --jrpg-green:#315f47;
+  --jrpg-green:var(--wl-accent);
   --jrpg-green-soft:#477a5d;
   --jrpg-gold:#d7b46a;
   --jrpg-gold-soft:#f0d89b;
@@ -93,8 +93,8 @@
 }
 .jrpg-turn-order span.is-active{
   transform:translateY(-1px);
-  border-color:#315f47;
-  background:#315f47;
+  border-color:var(--wl-accent);
+  background:var(--wl-accent);
   color:#fff3c9;
   box-shadow:0 5px 14px rgba(49,95,71,.24);
 }
@@ -235,7 +235,7 @@
   border-radius:50% 50% 28% 28%!important;
   background:
     radial-gradient(circle at 50% 45%,rgba(236,210,140,.16),transparent 38%),
-    linear-gradient(160deg,#315f47,#183528)!important;
+    linear-gradient(160deg,var(--wl-accent),#183528)!important;
   box-shadow:inset 0 0 0 9px rgba(13,27,20,.45),0 16px 28px rgba(0,0,0,.32),0 0 0 1px rgba(255,255,255,.04);
 }
 .jrpg-fighter h3{
@@ -271,7 +271,7 @@
   font-weight:800;
 }
 .jrpg-statuses{z-index:1;display:flex;flex-wrap:wrap;justify-content:center;gap:4px;width:90%;margin-top:2px}
-.jrpg-statuses span{padding:3px 7px;border:1px solid rgba(229,196,124,.34);border-radius:7px;background:#6f4c2f;color:#fff0c9;font-size:.55rem;font-weight:850;box-shadow:0 3px 8px rgba(0,0,0,.16)}
+.jrpg-statuses span{padding:3px 7px;border:1px solid rgba(229,196,124,.34);border-radius:7px;background:#6f4c2f;color:var(--wl-text-inverse);font-size:.55rem;font-weight:850;box-shadow:0 3px 8px rgba(0,0,0,.16)}
 
 .arena-message{
   position:relative;
@@ -294,7 +294,7 @@
 .jrpg-battle>.arena-message span{
   padding:5px 8px;
   border-radius:7px;
-  background:#315f47;
+  background:var(--wl-accent);
   color:#fff1c4;
   font-size:.55rem;
   font-weight:950;
@@ -347,7 +347,7 @@
   border:1px solid rgba(224,192,124,.38)!important;
   border-radius:11px!important;
   background:linear-gradient(180deg,#69472f,#4d3323)!important;
-  color:#fff0c5!important;
+  color:var(--wl-text-inverse)!important;
   box-shadow:0 6px 13px rgba(56,36,23,.15),inset 0 1px rgba(255,255,255,.07)!important;
   cursor:pointer;
   transition:transform .15s ease,filter .15s ease,border-color .15s ease,box-shadow .15s ease;
@@ -361,7 +361,7 @@
   opacity:.48;
 }
 .jrpg-action:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.12);border-color:rgba(239,208,139,.72)!important;box-shadow:0 9px 19px rgba(56,36,23,.21),0 0 0 2px rgba(215,180,106,.08)!important}
-.jrpg-action:focus-visible{outline:2px solid #315f47;outline-offset:2px}
+.jrpg-action:focus-visible{outline:2px solid var(--wl-accent);outline-offset:2px}
 .jrpg-action:disabled{
   opacity:1!important;
   filter:saturate(.35) brightness(.82);
@@ -398,7 +398,7 @@
   margin-bottom:2px;
   border-color:#69472f!important;
   background:#69472f!important;
-  color:#fff0c5!important;
+  color:var(--wl-text-inverse)!important;
   box-shadow:0 5px 12px rgba(67,44,26,.16);
 }
 .jrpg-submenu .jrpg-action{min-height:82px}

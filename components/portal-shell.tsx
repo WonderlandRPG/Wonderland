@@ -1,4 +1,5 @@
 import { PlayerNav } from "@/components/player-nav";
+import styles from "./portal-shell.module.css";
 
 export function PortalShell({
   eyebrow,
@@ -12,15 +13,15 @@ export function PortalShell({
   children: React.ReactNode;
 }) {
   return (
-    <main className="world-page">
+    <main className={styles.page}>
       <PlayerNav />
-      <header className="world-page__intro">
+      <header className={styles.intro}>
         <small>{eyebrow}</small>
         <h1>{title}</h1>
         <p>{description}</p>
       </header>
-      <section className="world-page__content">{children}</section>
-      <footer className="world-page__footer">Wonderland · crônicas de um mundo vivo</footer>
+      <section className={styles.content}>{children}</section>
+      <footer className={styles.footer}>Wonderland · crônicas de um mundo vivo</footer>
     </main>
   );
 }

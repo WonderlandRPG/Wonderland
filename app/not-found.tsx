@@ -1,14 +1,18 @@
 import Link from "next/link";
+import styles from "./route-feedback.module.css";
 
 export default function NotFound() {
   return (
-    <main className="not-found">
-      <span className="eyebrow">Erro 404 // Fratura detectada</span>
-      <h1>Esta região ainda não existe.</h1>
-      <p>A rota procurada não faz parte da nova fundação do Wonderland.</p>
-      <Link className="button button--primary" href="/">
+    <main className={styles.page}>
+      <section className={styles.card}>
+      <span className={styles.symbol} aria-hidden="true">?</span>
+      <span className={styles.eyebrow}>Página não encontrada · 404</span>
+      <h1>Este caminho não está no mapa.</h1>
+      <p>O endereço pode ter mudado ou a página pode não estar mais disponível.</p>
+      <div className={styles.actions}><Link data-wl-action="primary" href="/">
         Voltar ao portal
-      </Link>
+      </Link></div>
+      </section>
     </main>
   );
 }

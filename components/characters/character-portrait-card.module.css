@@ -44,7 +44,7 @@
 .card[data-border-cosmetic='trono-rei-oco'] .image{z-index:1;inset:0;border-radius:17px;box-shadow:0 0 0 2px #17110d,0 0 24px rgba(53,229,213,.26)}
 .card[data-border-cosmetic='trono-rei-oco'] .cosmeticBorderFx{z-index:60!important;opacity:1!important;visibility:visible!important}.card[data-border-cosmetic='trono-rei-oco'] .borderArtwork{display:block!important}
 .card[data-border-cosmetic='trono-rei-oco'] .topMeta{z-index:70;left:3%;right:3%;top:3%}.card[data-border-cosmetic='trono-rei-oco'] .titleMeta{z-index:70;bottom:3%}
-.card[data-border-cosmetic='trono-rei-oco'] .levelMeta{border-color:#b8894c;background:linear-gradient(#1d1710,#090d0d);color:#fff0c8;box-shadow:0 0 0 2px rgba(25,112,106,.55),0 5px 13px rgba(0,0,0,.5)}
+.card[data-border-cosmetic='trono-rei-oco'] .levelMeta{border-color:#b8894c;background:linear-gradient(#1d1710,#090d0d);color:var(--wl-text-inverse);box-shadow:0 0 0 2px rgba(25,112,106,.55),0 5px 13px rgba(0,0,0,.5)}
 
 /* BORDA COMEMORATIVA · Fundadores 2026 — moldura externa sem alterar o retrato. */
 .card[data-border-cosmetic='moldura-fundadores-2026']{overflow:visible}

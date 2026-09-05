@@ -73,7 +73,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
 
         {!selecting && activeCharacter && activeProgress && activeRank ? (
           <section className={styles.activeDashboard} style={{ "--card-rank": activeRank.color } as React.CSSProperties}>
-            <div className={`${styles.activePortrait} official-character-card-host`}>
+            <div className={styles.activePortrait}>
               <CharacterPortraitCard
                 imageUrl={activeCharacter.image_url}
                 level={activeCharacter.level}

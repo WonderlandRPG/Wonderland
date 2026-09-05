@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { claimArenaVictoryAction } from "@/app/arena/actions";
+import Link from "next/link";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { CombatSkillCard } from "@/components/arena/combat-skill-card";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
@@ -89,7 +90,7 @@ export function TrainingArena({
 
   return (
     <JrpgBattle
-      key={`${selected.id}-${resetKey}`}
+      key={`${selected.id}-${sessionId ?? "training"}-${resetKey}`}
       character={selected}
       options={characters}
       rules={rules}
@@ -304,9 +305,10 @@ function JrpgBattle({
   useEffect(() => {
     if (finished || playerTurn || isTurnBlocked(enemy)) return;
     const timer = window.setTimeout(() => {
-      const result = mode === "pve"
-        ? resolveSmartPveTurn(enemy, player, rules, round)
-        : resolveBasicAttack(enemy, player, rules);
+      const result =
+        mode === "pve"
+          ? resolveSmartPveTurn(enemy, player, rules, round)
+          : resolveBasicAttack(enemy, player, rules);
       playFx("player", result.event);
       const targetPlayer =
         result.event.kind === "damage" && result.event.amount > 0
@@ -376,7 +378,8 @@ function JrpgBattle({
           <div>
             <strong>Fraqueza ativa: {pveCreature.weaknesses.join(" · ")}</strong>
             <p>
-              Ataques de dano {pveCreature.weaknessKind === "physical" ? "físico" : "mágico"} causam 25% a mais nesta luta.
+              Ataques de dano {pveCreature.weaknessKind === "physical" ? "físico" : "mágico"} causam
+              25% a mais nesta luta.
             </p>
           </div>
         </aside>
@@ -539,8 +542,14 @@ function JrpgBattle({
       ) : (
         <CombatResultModal
           victory={enemy.hp <= 0}
-          title={enemy.hp <= 0 ? `${enemy.name} foi derrotado.` : `${character.name} caiu em combate.`}
-          description={enemy.hp <= 0 ? "Seu nome será registrado entre os vencedores da Arena." : "Reorganize sua estratégia e retorne ao campo de batalha."}
+          title={
+            enemy.hp <= 0 ? `${enemy.name} foi derrotado.` : `${character.name} caiu em combate.`
+          }
+          description={
+            enemy.hp <= 0
+              ? "Seu nome será registrado entre os vencedores da Arena."
+              : "Reorganize sua estratégia e retorne ao campo de batalha."
+          }
         >
           {mode === "pve" && enemy.hp <= 0 ? (
             <>
@@ -566,9 +575,15 @@ function JrpgBattle({
               {rewardError ? <p className="arena-result__error">{rewardError}</p> : null}
             </>
           ) : null}
-          <button className="button button--ghost" onClick={onReset} type="button">
-            Lutar novamente
-          </button>
+          {mode === "pve" ? (
+            <Link className="button button--ghost" href="/arena" prefetch={false}>
+              Voltar à Arena
+            </Link>
+          ) : (
+            <button className="button button--ghost" onClick={onReset} type="button">
+              Lutar novamente
+            </button>
+          )}
         </CombatResultModal>
       )}
     </section>
@@ -602,23 +617,29 @@ function createBattle(
   const attributes = { ...character.attributes };
   for (const [key, value] of Object.entries(sumItemEffectModifiers(character.equipmentEffects)))
     attributes[key as keyof typeof attributes] += value ?? 0;
-  const player = applyCombatLorePassives(applyBattleStartItemEffects(
-    createCombatant({ ...character, attributes, rules, itemEffects: character.equipmentEffects }),
-    character.equipmentEffects,
-  ), character);
+  const player = applyCombatLorePassives(
+    applyBattleStartItemEffects(
+      createCombatant({ ...character, attributes, rules, itemEffects: character.equipmentEffects }),
+      character.equipmentEffects,
+    ),
+    character,
+  );
   if (opponent) {
     const enemyAttributes = { ...opponent.attributes };
     for (const [key, value] of Object.entries(sumItemEffectModifiers(opponent.equipmentEffects)))
       enemyAttributes[key as keyof typeof enemyAttributes] += value ?? 0;
-    const enemy = applyCombatLorePassives(applyBattleStartItemEffects(
-      createCombatant({
-        ...opponent,
-        attributes: enemyAttributes,
-        rules,
-        itemEffects: opponent.equipmentEffects,
-      }),
-      opponent.equipmentEffects,
-    ), opponent);
+    const enemy = applyCombatLorePassives(
+      applyBattleStartItemEffects(
+        createCombatant({
+          ...opponent,
+          attributes: enemyAttributes,
+          rules,
+          itemEffects: opponent.equipmentEffects,
+        }),
+        opponent.equipmentEffects,
+      ),
+      opponent,
+    );
     return {
       player,
       enemy,
@@ -706,30 +727,57 @@ export function resolveSmartPveTurn(
   round: number,
 ) {
   const hpRatio = monster.hp / Math.max(1, monster.maxHp);
-  if (hpRatio < 0.45 && monster.shield < monster.maxHp * 0.08 && (monster.cooldowns["defesa-total"] ?? 0) === 0) {
+  if (
+    hpRatio < 0.45 &&
+    monster.shield < monster.maxHp * 0.08 &&
+    (monster.cooldowns["defesa-total"] ?? 0) === 0
+  ) {
     const guarded = guardCombatant(monster);
     const shield = Math.max(30, Math.round(monster.maxHp * 0.12));
     return {
       actor: { ...guarded, shield: guarded.shield + shield },
       target: player,
-      event: { kind: "shield" as const, amount: shield, message: `${monster.name} leu o combate, assumiu postura defensiva e recebeu ${shield} de escudo.` },
+      event: {
+        kind: "shield" as const,
+        amount: shield,
+        message: `${monster.name} leu o combate, assumiu postura defensiva e recebeu ${shield} de escudo.`,
+      },
     };
   }
   if (hpRatio < 0.6 && round % 3 === 0) {
     const stats = getEffectiveAttributes(monster);
     const raw = Math.max(stats.INT, stats.FOR) * 1.08;
-    const amount = calculateDamage(raw, stats.INT >= stats.FOR ? "magic" : "physical", getEffectiveAttributes(player), rules);
+    const amount = calculateDamage(
+      raw,
+      stats.INT >= stats.FOR ? "magic" : "physical",
+      getEffectiveAttributes(player),
+      rules,
+    );
     const target = applyDamage(player, amount);
     const dealt = player.hp + player.shield - target.hp - target.shield;
     const healing = Math.min(Math.round(dealt * 0.5), monster.maxHp - monster.hp);
     return {
       actor: { ...monster, hp: monster.hp + healing },
       target,
-      event: { kind: "damage" as const, amount: dealt, damageType: stats.INT >= stats.FOR ? "magic" as const : "physical" as const, message: `${monster.name} explorou a abertura, causou ${dealt} de dano e recuperou ${healing} de HP.` },
+      event: {
+        kind: "damage" as const,
+        amount: dealt,
+        damageType: stats.INT >= stats.FOR ? ("magic" as const) : ("physical" as const),
+        message: `${monster.name} explorou a abertura, causou ${dealt} de dano e recuperou ${healing} de HP.`,
+      },
     };
   }
-  const result = resolveBasicAttack(monster, player, { ...rules, basicAttackMultiplier: rules.basicAttackMultiplier * (round >= 4 ? 1.22 : 1.12) });
-  return { ...result, event: { ...result.event, message: `${result.event.message} O monstro escolheu o alvo após avaliar suas defesas.` } };
+  const result = resolveBasicAttack(monster, player, {
+    ...rules,
+    basicAttackMultiplier: rules.basicAttackMultiplier * (round >= 4 ? 1.22 : 1.12),
+  });
+  return {
+    ...result,
+    event: {
+      ...result.event,
+      message: `${result.event.message} O monstro escolheu o alvo após avaliar suas defesas.`,
+    },
+  };
 }
 
 function CombatantCard({

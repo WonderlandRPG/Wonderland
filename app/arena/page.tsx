@@ -6,6 +6,8 @@ import { defaultCombatRules } from "@/lib/game/combat";
 import { PvpLobby } from "@/components/arena/pvp-lobby";
 import { arenaRewards, type ArenaMode } from "@/lib/game/arena";
 import Link from "next/link";
+import { startPveAction } from "./actions";
+import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { toArenaCharacter } from "@/lib/game/arena-character";
 import { createInitialPvpState } from "@/lib/game/pvp-state";
@@ -35,6 +37,7 @@ export default async function ArenaPage({
     filas?: string;
     quantidade?: string;
     mensagem?: string;
+    sessao?: string;
   }>;
 }) {
   const { account, characterId } = await requireActiveCharacter("/arena");
@@ -73,15 +76,28 @@ export default async function ArenaPage({
         </div>
       </main>
     );
+  const sessionQuery = z.uuid().safeParse(query.sessao);
   const arenaSessionResult =
-    client && activeCharacter && mode === "pve"
-      ? await client.rpc("v2_start_arena_session", {
-          p_character_id: activeCharacter.id,
-          p_mode: "pve",
-        })
-      : { data: null };
-  const arenaSessionId = arenaSessionResult.data;
-  const arenaSessionError = "error" in arenaSessionResult ? arenaSessionResult.error : null;
+    client && activeCharacter && mode === "pve" && sessionQuery.success
+      ? await client
+          .from("v2_arena_sessions")
+          .select("id,status")
+          .eq("id", sessionQuery.data)
+          .eq("character_id", activeCharacter.id)
+          .eq("user_id", account.id)
+          .eq("mode", "pve")
+          .eq("status", "open")
+          .maybeSingle()
+      : { data: null, error: null };
+  const arenaSessionId = arenaSessionResult.data?.id ?? null;
+  const arenaSessionError =
+    mode === "pve" && !arenaSessionId
+      ? {
+          message:
+            arenaSessionResult.error?.message ??
+            "Volte à Arena e clique em Entrar no PvE para iniciar ou retomar uma luta.",
+        }
+      : null;
   const creatureIndex =
     typeof arenaSessionId === "string"
       ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
@@ -128,6 +144,8 @@ export default async function ArenaPage({
         limit: Number(rawPveStatus.limit ?? 5),
         used: Number(rawPveStatus.used ?? 0),
         remaining: Number(rawPveStatus.remaining ?? 5),
+        activeSessionId:
+          typeof rawPveStatus.activeSessionId === "string" ? rawPveStatus.activeSessionId : null,
       }
     : null;
   const opponent =
@@ -201,16 +219,16 @@ export default async function ArenaPage({
                 <p>Teste habilidades e sequências contra o Boneco Rúnico.</p>
                 <b>Entrar →</b>
               </Link>
-              {pveStatus?.remaining === 0 ? (
+              {pveStatus?.remaining === 0 && !pveStatus.activeSessionId ? (
                 <article className="arena-mode-locked">
                   <span>獣</span>
                   <small>Limite diário atingido</small>
                   <strong>PvE</strong>
                   <p>Este personagem já realizou as {pveStatus.limit} expedições de hoje.</p>
-                  <b>Volte amanhã</b>
+                  <b>Reinício à meia-noite de Brasília</b>
                 </article>
               ) : (
-                <Link className="arena-mode-card is-pve" href="/arena?modo=pve">
+                <form action={startPveAction} className="arena-mode-card is-pve">
                   <span className="arena-mode-card__sigil">獣</span>
                   <i>02</i>
                   <small>
@@ -226,7 +244,10 @@ export default async function ArenaPage({
                       : "Entrar"}{" "}
                     →
                   </b>
-                </Link>
+                  <button className="button button--primary" type="submit">
+                    {pveStatus?.activeSessionId ? "Retomar PvE" : "Entrar no PvE"}
+                  </button>
+                </form>
               )}
               <Link className="arena-mode-card is-pvp" href="/arena?modo=pvp">
                 <span className="arena-mode-card__sigil">対</span>

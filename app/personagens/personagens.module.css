@@ -7,3 +7,6 @@
 /* A moldura cresce para fora; reserve espaço sem reduzir o retrato. */
 @media(min-width:1081px){.activeDashboard:has([data-border-cosmetic="trono-rei-oco"]){grid-template-columns:minmax(310px,340px) minmax(0,1fr) minmax(230px,290px)}}
 @media(min-width:761px) and (max-width:1080px){.activeDashboard:has([data-border-cosmetic="trono-rei-oco"]){grid-template-columns:310px minmax(0,1fr)}}
+.journeyStrip{display:grid;grid-template-columns:1.5fr 1fr auto;gap:1rem;align-items:center;margin-top:1.2rem;padding:1rem 1.1rem;border:1px solid color-mix(in srgb,var(--wl-gold) 35%,transparent);border-radius:14px;background:color-mix(in srgb,var(--wl-surface-raised) 72%,transparent)}
+.journeyStrip div{display:grid;gap:.2rem}.journeyStrip small{text-transform:uppercase;letter-spacing:.12em;color:var(--wl-text-muted);font-size:.65rem}.journeyStrip strong{font-family:var(--wl-font-display);font-size:1rem;color:var(--wl-text)}.journeyStrip span{font-size:.75rem;color:var(--wl-text-muted)}.journeyStrip a{white-space:nowrap;color:var(--wl-gold);font-weight:700}
+@media (max-width:760px){.journeyStrip{grid-template-columns:1fr}.journeyStrip a{justify-self:start}}

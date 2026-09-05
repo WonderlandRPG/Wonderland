@@ -10,6 +10,8 @@ import { getActiveCharacterId } from "@/lib/content/active-character";
 import { getAdventureRank } from "@/lib/game/ranks";
 import { getRecentPortalUpdates } from "@/lib/game/player-portal";
 import { getLevelProgress } from "@/lib/game/experience";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { parseMissionBoard } from "@/lib/game/missions";
 import { selectCharacterAction } from "./select-actions";
 import styles from "./personagens.module.css";
 
@@ -32,6 +34,14 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
   const visibleCharacters = selecting ? characters : activeCharacter ? [activeCharacter] : characters;
   const activeProgress = activeCharacter ? getLevelProgress(activeCharacter.xp) : null;
   const activeRank = activeCharacter ? getAdventureRank(activeCharacter.adventure_rank) : null;
+  const client = await createServerSupabaseClient();
+  const journeyResult = activeCharacter && client ? await Promise.all([
+    client.rpc("v2_get_mission_board", { p_character_id: activeCharacter.id }),
+    client.rpc("v2_get_pve_daily_status", { p_character_id: activeCharacter.id }),
+  ]) : null;
+  const journeyBoard = journeyResult ? parseMissionBoard(journeyResult[0].data) : null;
+  const pveRaw = journeyResult?.[1].data;
+  const pve = pveRaw && typeof pveRaw === "object" && !Array.isArray(pveRaw) ? pveRaw as Record<string, unknown> : null;
   const equippedCount = activeCharacter?.inventory.filter((item) => item.equippedSlot).length ?? 0;
   const abilityCount = activeCharacter
     ? activeCharacter.unlockedRaceAbilities.length + activeCharacter.unlockedClassSkills.length
@@ -92,6 +102,11 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
               <div className={styles.primaryActions}>
                 <Link className="button button--primary" href={`/personagens/${activeCharacter.id}`}>Abrir ficha completa</Link>
                 <Link className="button button--dark" href="/arena">Entrar na Arena</Link>
+              </div>
+              <div className={styles.journeyStrip}>
+                <div><small>Próximo passo</small><strong>{journeyBoard?.activeAssignment ? journeyBoard.activeAssignment.name : "Escolha uma missão"}</strong><span>{journeyBoard?.activeAssignment ? "Missão em andamento · continue a cena" : "Uma missão libera XP e avanço de rank"}</span></div>
+                <div><small>PvE hoje</small><strong>{Number(pve?.used ?? 0)} / {Number(pve?.limit ?? 5)} lutas</strong><span>{Number(pve?.remaining ?? 5) > 0 ? "Recompensas disponíveis" : "Limite diário atingido · reseta à meia-noite"}</span></div>
+                <Link href={journeyBoard?.activeAssignment ? "/missoes" : "/missoes"}>Abrir jornada →</Link>
               </div>
             </div>
             <aside className={styles.destinations}>

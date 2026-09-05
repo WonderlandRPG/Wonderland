@@ -8,10 +8,12 @@ export function PlayerWorldMenu({
   activeCharacterId,
   isAdmin,
   hasUnreadUpdate,
+  unreadNotifications,
 }: {
   activeCharacterId: string;
   isAdmin: boolean;
   hasUnreadUpdate: boolean;
+  unreadNotifications: number;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -48,6 +50,8 @@ export function PlayerWorldMenu({
             <Link href={`/personagens/${activeCharacterId}?tab=equipamentos`}>Equipamentos</Link>
             <Link href="/loja">Loja</Link>
             <Link href="/presenca">Presença</Link>
+            <Link href="/diario">Diário</Link>
+            <Link href="/notificacoes">Notificações{unreadNotifications > 0 ? ` (${unreadNotifications})` : ""}</Link>
             <small>Comunidade</small>
             <Link href="/ranking">Ranking</Link>
             <Link href="/ranks">Ranks</Link>

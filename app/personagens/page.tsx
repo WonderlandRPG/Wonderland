@@ -49,6 +49,12 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
   const peakPower = activeCharacter
     ? Math.max(activeCharacter.stats.physicalPower, activeCharacter.stats.magicalPower, activeCharacter.stats.supportPower)
     : 0;
+  const nextClassSkill = activeCharacter?.characterClass.payload.progression
+    .filter((skill) => skill.level > activeCharacter.level)
+    .sort((left, right) => left.level - right.level)[0];
+  const pathUnlock = activeCharacter && !activeCharacter.class_path_key
+    ? activeCharacter.characterClass.payload.paths.slice().sort((left, right) => left.unlockLevel - right.unlockLevel)[0]
+    : null;
 
   return (
     <main className={styles.page}>
@@ -98,6 +104,8 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
                 <span><b>{equippedCount}</b> itens equipados</span>
                 <span><b>{abilityCount}</b> técnicas liberadas</span>
                 <span><b>{activeCharacter.characterClass.payload.resource.name}</b> recurso de classe</span>
+                {nextClassSkill ? <span><b>Nível {nextClassSkill.level}</b> libera {nextClassSkill.name}</span> : <span><b>Técnicas</b> progressão completa</span>}
+                {pathUnlock ? <span><b>Nível {pathUnlock.unlockLevel}</b> escolha de caminho</span> : null}
               </div>
               <div className={styles.primaryActions}>
                 <Link className="button button--primary" href={`/personagens/${activeCharacter.id}`}>Abrir ficha completa</Link>
@@ -108,6 +116,15 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
                 <div><small>PvE hoje</small><strong>{Number(pve?.used ?? 0)} / {Number(pve?.limit ?? 5)} lutas</strong><span>{Number(pve?.remaining ?? 5) > 0 ? "Recompensas disponíveis" : "Limite diário atingido · reseta à meia-noite"}</span></div>
                 <Link href={journeyBoard?.activeAssignment ? "/missoes" : "/missoes"}>Abrir jornada →</Link>
               </div>
+              {(activeCharacter.level <= 5 || equippedCount === 0 || !journeyBoard?.activeAssignment) ? <section className={styles.onboarding} aria-label="Primeiros passos">
+                <header><small>Primeiros passos</small><strong>Comece sua aventura</strong></header>
+                <ol>
+                  <li className={styles.done}><span>1</span><div><b>Personagem escolhido</b><small>{activeCharacter.name} está ativo</small></div></li>
+                  <li className={equippedCount > 0 ? styles.done : ""}><span>2</span><div><b>Equipe um item</b><small>{equippedCount > 0 ? "Equipamento preparado" : "Abra a ficha e prepare sua build"}</small></div></li>
+                  <li className={journeyBoard?.activeAssignment ? styles.done : ""}><span>3</span><div><b>Aceite a missão introdutória</b><small>{journeyBoard?.activeAssignment ? "Contrato em andamento" : "Escolha um contrato no mural"}</small></div></li>
+                  <li className={Number(pve?.used ?? 0) > 0 ? styles.done : ""}><span>4</span><div><b>Conclua seu primeiro combate</b><small>O treino não gasta as lutas diárias</small></div></li>
+                </ol>
+              </section> : null}
             </div>
             <aside className={styles.destinations}>
               <header><small>Acesso rápido</small><h2>Próximo destino</h2></header>

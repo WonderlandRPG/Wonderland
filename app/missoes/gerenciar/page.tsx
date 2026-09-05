@@ -17,6 +17,11 @@ export default async function MissionManagementPage({
   const client = await createServerSupabaseClient();
   const result = client ? await client.rpc("v2_get_managed_missions") : { data: null, error: null };
   const assignments = parseManagedMissions(result.data);
+  const assignmentIds = assignments.map((item) => item.assignmentId);
+  const { data: sceneRows } = client && assignmentIds.length
+    ? await client.from("v2_mission_assignments").select("id,scene_stage,scene_summary,scene_submitted_at").in("id", assignmentIds)
+    : { data: [] };
+  const scenes = new Map((sceneRows ?? []).map((row) => [row.id, row]));
   return (
     <main className="mission-page">
       <PlayerNav />
@@ -55,8 +60,10 @@ export default async function MissionManagementPage({
             <span>Recompensa</span>
             <span>Decisão</span>
           </header>
-          {assignments.map((item) => (
-            <article key={item.assignmentId}>
+          {assignments.map((item) => {
+            const scene = scenes.get(item.assignmentId);
+            const ready = scene?.scene_stage === "awaiting_evaluation";
+            return <article key={item.assignmentId}>
               <div>
                 <strong>{item.characterName}</strong>
                 <small>{kingdomMissionNames[item.kingdom] ?? item.kingdom}</small>
@@ -80,6 +87,10 @@ export default async function MissionManagementPage({
                     <p>{item.missionObjective}</p>
                   </div>
                 </details>
+                <details className="mission-manager-briefing">
+                  <summary>{ready ? "Relato enviado pelo jogador" : "Cena ainda não enviada"}</summary>
+                  <div><p>{scene?.scene_summary ?? "O jogador ainda precisa iniciar a cena e enviar o resumo para avaliação."}</p></div>
+                </details>
               </div>
               <div>
                 <b>{item.rewardXp.toLocaleString("pt-BR")} XP</b>
@@ -88,7 +99,7 @@ export default async function MissionManagementPage({
               <div className="mission-manager-actions">
                 <form action={resolveMissionAction}>
                   <input name="assignmentId" type="hidden" value={item.assignmentId} />
-                  <button className="is-complete" name="result" value="completed">
+                  <button className="is-complete" name="result" value="completed" disabled={!ready} title={!ready ? "Aguarde o envio da cena" : undefined}>
                     Concluída
                   </button>
                   <button className="is-failed" name="result" value="failed">
@@ -100,8 +111,8 @@ export default async function MissionManagementPage({
                   <button className="is-cancelled">Cancelar missão</button>
                 </form>
               </div>
-            </article>
-          ))}
+            </article>;
+          })}
           {!assignments.length ? (
             <div className="mission-ledger__empty">
               <span>✓</span>

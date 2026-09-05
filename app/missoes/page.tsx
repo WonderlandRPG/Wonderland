@@ -7,7 +7,7 @@ import {
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { kingdomMissionNames, parseMissionBoard } from "@/lib/game/missions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { acceptMissionAction } from "./actions";
+import { acceptMissionAction, updateMissionSceneAction } from "./actions";
 
 export const metadata = { title: "Mural de Missões" };
 export const dynamic = "force-dynamic";
@@ -46,6 +46,10 @@ export default async function MissionBoardPage({
         .eq("id", board.activeAssignment.missionId)
         .maybeSingle()
     : { data: null };
+  const { data: sceneProgress } = board.activeAssignment
+    ? await client!.from("v2_mission_assignments").select("scene_stage,scene_summary,scene_started_at,scene_submitted_at").eq("id", board.activeAssignment.id).maybeSingle()
+    : { data: null };
+  const sceneStage = sceneProgress?.scene_stage ?? "accepted";
   return (
     <main className="mission-page">
       <PlayerNav />
@@ -113,7 +117,7 @@ export default async function MissionBoardPage({
             className={`mission-active-contract ${board.activeAssignment.isRankTrial ? "is-trial" : ""}`}
           >
             <span className="mission-paper-pin" />
-            <small>CONTRATO ASSINADO · MISSÃO EM ANDAMENTO</small>
+            <small>CONTRATO ASSINADO · {sceneStage === "accepted" ? "AGUARDANDO INÍCIO DA CENA" : sceneStage === "in_scene" ? "CENA EM ANDAMENTO" : "AGUARDANDO AVALIAÇÃO"}</small>
             <h2>
               <RealmLocationText text={board.activeAssignment.name} variant="title" />
             </h2>
@@ -135,6 +139,17 @@ export default async function MissionBoardPage({
                 </p>
               </div>
             </details>
+            <div className="mission-scene-flow" data-wl-surface="raised">
+              <div className="mission-scene-flow__steps" aria-label="Progresso da missão">
+                {["Aceita","Em cena","Aguardando avaliação","Concluída","Recompensa"].map((label,index) => {
+                  const current = sceneStage === "accepted" ? 0 : sceneStage === "in_scene" ? 1 : sceneStage === "awaiting_evaluation" ? 2 : sceneStage === "completed" ? 3 : 4;
+                  return <span className={index <= current ? "is-done" : ""} key={label}>{index + 1}<small>{label}</small></span>;
+                })}
+              </div>
+              {sceneStage === "accepted" ? <form action={updateMissionSceneAction}><input type="hidden" name="assignmentId" value={board.activeAssignment.id}/><input type="hidden" name="stage" value="in_scene"/><button className="button button--primary">Começar cena no WhatsApp</button></form> : null}
+              {sceneStage === "in_scene" ? <form action={updateMissionSceneAction} className="mission-scene-flow__report"><input type="hidden" name="assignmentId" value={board.activeAssignment.id}/><input type="hidden" name="stage" value="awaiting_evaluation"/><label>Resumo para avaliação<textarea name="summary" minLength={10} maxLength={4000} required placeholder="Conte o que aconteceu na cena, como o objetivo foi abordado e o resultado."/></label><button className="button button--primary">Enviar para avaliação</button></form> : null}
+              {sceneStage === "awaiting_evaluation" ? <div className="mission-scene-flow__waiting"><strong>Relato enviado à Guilda</strong><p>{sceneProgress?.scene_summary}</p><small>Um responsável avaliará a cena e a recompensa será entregue automaticamente após a aprovação.</small></div> : null}
+            </div>
             <footer>
               <span>
                 Aceita em {new Date(board.activeAssignment.acceptedAt).toLocaleString("pt-BR")}

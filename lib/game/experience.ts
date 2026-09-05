@@ -20,6 +20,6 @@ export function getLevelProgress(xp: number) {
     level,
     current,
     next,
-    percent: level === 100 ? 100 : Math.min(100, ((xp - current) / (next - current)) * 100),
+    percent: level === 100 ? 100 : Math.max(0, Math.min(100, ((Math.max(0, xp) - current) / (next - current)) * 100)),
   };
 }

@@ -3,6 +3,7 @@
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import type { CombatRules, CombatantState } from "@/lib/game/combat";
 import { getSkillCombatPreview } from "@/lib/game/skill-preview";
+import styles from "./combat-skill-card.module.css";
 
 export function CombatSkillCard({
   fighter,
@@ -47,20 +48,22 @@ export function CombatSkillCard({
 
   return (
     <button
-      className={`combat-skill-card ${used ? "is-used" : ""}`}
+      className={styles.card}
+      data-source={skill.resourceKey}
       disabled={unavailable}
       onClick={onClick}
       type="button"
     >
-      <span className="combat-skill-card__head">
+      <span className={styles.source}>{skill.resourceKey === "race" ? "Habilidade de raça" : "Habilidade de classe"}</span>
+      <span className={styles.head}>
         <strong>{skill.name}</strong>
-        <small>{used ? "Usada neste turno" : cooldown ? `Recarga: ${cooldown}T` : skill.cost ? `${skill.cost} ${resourceName}` : "Sem custo"}</small>
+        <small>{used ? "Usada neste turno" : cooldown ? `Recarga: ${cooldown} turno(s)` : available < skill.cost ? `Recurso insuficiente · ${skill.cost} ${resourceName}` : skill.cost ? `${skill.cost} ${resourceName}` : "Sem custo"}</small>
       </span>
-      <span className="combat-skill-card__description">{preview.description}</span>
-      <span className="combat-skill-card__effects">
+      <span className={styles.description}>{preview.description}</span>
+      <span className={styles.effects}>
         {preview.effectLines.map((line) => <em key={line}>{line}</em>)}
       </span>
-      <span className="combat-skill-card__meta">
+      <span className={styles.meta}>
         <b>{skill.target === "self" ? "Próprio" : skill.target === "ally" ? "Aliado" : skill.target === "area" ? "Área" : "Inimigo"}</b>
         {skill.cooldown ? <b>CD {skill.cooldown}T</b> : null}
         {skill.chance < 100 ? <b>{skill.chance}% chance</b> : null}

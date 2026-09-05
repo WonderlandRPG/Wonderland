@@ -1,12 +1,14 @@
+import styles from "./route-feedback.module.css";
+
 export default function Loading() {
   return (
-    <main className="route-loading" role="status" aria-live="polite" aria-label="Carregando página">
-      <section className="route-loading__gate">
-        <div className="route-loading__crest" aria-hidden="true"><span>W</span></div>
-        <small>ATRAVESSANDO O PORTAL</small>
-        <strong>Carregando Wonderland</strong>
+    <main className={styles.page} role="status" aria-live="polite" aria-label="Carregando página">
+      <section className={styles.card}>
+        <div className={styles.symbol} aria-hidden="true">W</div>
+        <small className={styles.eyebrow}>ATRAVESSANDO O PORTAL</small>
+        <h2>Carregando Wonderland</h2>
         <p>Preparando pergaminhos, personagens e caminhos da sua jornada.</p>
-        <div className="route-loading__progress" aria-hidden="true"><i /></div>
+        <div className={styles.progress} aria-hidden="true" />
       </section>
     </main>
   );

@@ -6,6 +6,7 @@ import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 import { getActiveCharacterNavigation } from "@/lib/content/active-character";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { UpdateNotification } from "@/components/updates/update-notification";
+import styles from "./player-nav.module.css";
 
 export async function PlayerNav() {
   const account = await getCurrentAccount();
@@ -39,11 +40,11 @@ export async function PlayerNav() {
 
   return (
     <header
-      className="player-nav"
+      className={`player-nav ${styles.header}`}
       data-active-character-rank={activeCharacter?.adventure_rank ?? undefined}
     >
       <BrandMark compact />
-      <nav className="player-nav__links" aria-label="Portal dos jogadores">
+      <nav className={styles.links} aria-label="Portal dos jogadores">
         <Link href="/racas">Raças</Link>
         <Link href="/classes">Classes</Link>
         <Link href="/historia">História</Link>
@@ -61,7 +62,7 @@ export async function PlayerNav() {
           <Link href="/admin">Painel ADM</Link>
         ) : null}
       </nav>
-      <div className="player-nav__character">
+      <div className={styles.character}>
         {activeCharacter ? (
           <Link href="/personagens">
             <span>{activeCharacter.name}</span>

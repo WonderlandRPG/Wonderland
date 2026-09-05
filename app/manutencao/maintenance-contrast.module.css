@@ -5,7 +5,7 @@
 }
 
 .shell > h1 {
-  color: #fff0ca !important;
+  color: var(--wl-text-inverse) !important;
   text-shadow: 0 3px 18px rgba(0, 0, 0, 0.28);
 }
 

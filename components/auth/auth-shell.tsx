@@ -32,7 +32,7 @@ export function AuthShell({ eyebrow, title, description, children }: AuthShellPr
           <span className="signal-dot" />
           <div>
             <strong>Conexão protegida</strong>
-            <small>Senha criptografada pelo Supabase Auth</small>
+            <small>Acesso seguro à sua conta</small>
           </div>
         </div>
       </section>

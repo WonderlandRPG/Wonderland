@@ -85,7 +85,7 @@
 .market-page .shop-controls>nav button[data-rarity].is-active{
   background:var(--filter-rarity)!important;
   border-color:var(--filter-rarity)!important;
-  color:#fff7df!important;
+  color:var(--wl-text-inverse)!important;
   box-shadow:0 0 13px color-mix(in srgb,var(--filter-rarity) 46%,transparent)!important;
 }
 

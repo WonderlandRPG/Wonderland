@@ -148,7 +148,7 @@
 .combat-status-icon small{
   align-self:start!important;
   justify-self:center;
-  color:#fff0c7!important;
+  color:var(--wl-text-inverse)!important;
   font-size:.48rem!important;
   font-weight:900!important;
   letter-spacing:.02em;

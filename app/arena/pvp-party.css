@@ -33,7 +33,7 @@
 .pvp-party-invites .pvp-party-avatar,.pvp-party-outgoing .pvp-party-avatar,.pvp-party-search-results .pvp-party-avatar{width:50px;height:50px;border-radius:12px}
 .pvp-party-invites article small,.pvp-party-invites article strong,.pvp-party-invites article span,.pvp-party-outgoing article strong,.pvp-party-outgoing article span,.pvp-party-search-results article strong,.pvp-party-search-results article span{display:block}
 .pvp-party-invites article small{font-size:.52rem;letter-spacing:.08em;color:#89caa4;font-weight:900}
-.pvp-party-invites article strong,.pvp-party-outgoing article strong,.pvp-party-search-results article strong{color:#fff0c5}
+.pvp-party-invites article strong,.pvp-party-outgoing article strong,.pvp-party-search-results article strong{color:var(--wl-text-inverse)}
 .pvp-party-invites article span,.pvp-party-outgoing article span,.pvp-party-search-results article span{font-size:.67rem;color:#cfbb91}
 .pvp-party-invite-actions{display:flex!important;grid-template-columns:none!important;gap:6px!important;width:auto!important;margin:0!important}
 .pvp-party-invite-actions button,.pvp-party-outgoing button,.pvp-party-search-results button,.pvp-party-search label>div>button{padding:7px 10px;border:1px solid #b58e56;border-radius:8px;background:#e2c27d;color:#302319;font-weight:900;cursor:pointer}

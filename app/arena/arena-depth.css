@@ -165,12 +165,12 @@
   border:1px solid rgba(116,86,48,.42);
   border-radius:18px;
   background:linear-gradient(150deg,rgba(244,225,178,.98),rgba(213,183,119,.92));
-  color:#392819;
+  color:var(--wl-text);
   box-shadow:0 12px 28px rgba(41,30,17,.12),inset 0 1px rgba(255,255,255,.62);
   cursor:pointer;
 }
-.pvp-format-card:hover,.pvp-format-card.is-selected{transform:translateY(-2px);border-color:#315f47;box-shadow:0 14px 30px rgba(49,95,71,.2)}
-.pvp-format-card>span{font-size:.66rem;font-weight:950;letter-spacing:.16em;color:#315f47}
+.pvp-format-card:hover,.pvp-format-card.is-selected{transform:translateY(-2px);border-color:var(--wl-accent);box-shadow:0 14px 30px rgba(49,95,71,.2)}
+.pvp-format-card>span{font-size:.66rem;font-weight:950;letter-spacing:.16em;color:var(--wl-accent)}
 .pvp-format-card>strong{font-size:1.35rem}
 .pvp-format-card>small{line-height:1.45;color:#5d4932}
 .pvp-format-card>b{margin-top:auto;color:#234d38}

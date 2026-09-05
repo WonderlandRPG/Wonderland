@@ -48,7 +48,7 @@
   min-height:76px;
   padding:10px;
   border-radius:50%;
-  background:#173f31;
+  background:var(--wl-accent);
   border:2px solid #d4b46f;
   color:#fff4cf!important;
   font-size:.76rem!important;

@@ -22,12 +22,7 @@
   border: 1px solid var(--wl-border);
 }
 
-:where(
-  .wl-surface,
-  [data-wl-surface="default"],
-  .wl-surface-raised,
-  [data-wl-surface="raised"]
-) :where(p, small, em) {
+:where(.wl-surface, [data-wl-surface="default"], .wl-surface-raised, [data-wl-surface="raised"]) :where(p, small, em) {
   color: var(--wl-text-muted);
 }
 
@@ -36,6 +31,15 @@
 }
 
 :where(.wl-action, [data-wl-action="primary"]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--wl-control-height);
+  padding: 10px 18px;
+  border: 1px solid var(--wl-border-strong);
+  border-radius: var(--wl-radius-sm);
+  font-weight: 700;
   color: var(--wl-action-text);
   background: var(--wl-action-bg);
   border-color: var(--wl-border-strong);
@@ -46,12 +50,26 @@
 }
 
 :where(.wl-action-accent, [data-wl-action="accent"]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--wl-control-height);
+  padding: 10px 18px;
+  border: 1px solid var(--wl-border-strong);
+  border-radius: var(--wl-radius-sm);
+  font-weight: 700;
   color: var(--wl-action-accent-text);
   background: var(--wl-action-accent-bg);
   border-color: var(--wl-border-strong);
 }
 
 :where(.wl-field, [data-wl-field]) {
+  min-height: var(--wl-control-height);
+  padding: 10px 12px;
+  border: 1px solid var(--wl-border);
+  border-radius: var(--wl-radius-sm);
+  font-size: 1rem;
   color: var(--wl-field-text);
   background: var(--wl-field-bg);
   border-color: var(--wl-border);
@@ -99,11 +117,6 @@
   color: var(--wl-text);
 }
 
-:where(
-  .wl-panel,
-  [data-wl-component="panel"],
-  .wl-card,
-  [data-wl-component="card"]
-) :where(p, small, em) {
+:where(.wl-panel, [data-wl-component="panel"], .wl-card, [data-wl-component="card"]) :where(p, small, em) {
   color: var(--wl-text-muted);
 }

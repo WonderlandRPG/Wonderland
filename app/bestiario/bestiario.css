@@ -52,10 +52,10 @@
 }
 .bestiary-hero h1 {
   margin: 0.55rem 0 1rem;
-  color: #fff2cf;
+  color: var(--wl-text-inverse);
   font-family: Georgia, serif;
   font-size: clamp(2.7rem, 6vw, 5.1rem);
-  line-height: 0.94;
+  line-height: 1.12;
   text-wrap: balance;
 }
 .bestiary-hero h1 em {
@@ -124,7 +124,7 @@
   display: block;
   margin-bottom: 0.5rem;
   color: #46351e;
-  font-size: 0.72rem;
+  font-size: .8125rem;
   font-weight: 900;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -244,7 +244,7 @@
 }
 .bestiary-card__caption small {
   color: #efd17c;
-  font-size: 0.68rem;
+  font-size: .8125rem;
   font-weight: 900;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -257,7 +257,7 @@
   max-height: 0;
   overflow: hidden;
   color: #f4dfae;
-  font-size: 0.7rem;
+  font-size: .8125rem;
   font-style: normal;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -295,7 +295,7 @@
   margin: 0.25rem 0 0.75rem;
   font-family: Georgia, serif;
   font-size: 1.4rem;
-  line-height: 1.05;
+  line-height: 1.12;
 }
 .bestiary-card__description {
   margin: 0;
@@ -320,7 +320,7 @@
 .bestiary-card__section small,
 .bestiary-card footer small {
   color: #60451f;
-  font-size: 0.68rem;
+  font-size: .8125rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -437,7 +437,7 @@
   place-items: center;
   border: 1px solid rgba(93, 56, 24, 0.38);
   border-radius: 50%;
-  background: #fff2cf;
+  background: var(--wl-surface);
   color: #3b2918;
   cursor: pointer;
   font-size: 1.6rem;

@@ -11,7 +11,7 @@
 }
 .jrpg-formation-stage.combat-stage-training{background:linear-gradient(180deg,rgba(8,19,12,.08),rgba(7,17,11,.58)),url('/images/kingdoms/lesedi-1.webp') center/cover no-repeat,#53694f!important}
 .jrpg-formation-stage.combat-stage-pve{background:linear-gradient(180deg,rgba(6,14,9,.06),rgba(8,18,12,.58)),url('/images/kingdoms/aokigahara-2.webp') center/cover no-repeat,#435c3f!important}
-.jrpg-formation-stage.combat-stage-pvp{background:linear-gradient(180deg,rgba(10,12,22,.12),rgba(11,15,24,.64)),url('/images/kingdoms/namida-2.webp') center/cover no-repeat,#3d4955!important}
+.jrpg-formation-stage.combat-stage-pvp,.jrpg-duo-stage.combat-stage-pvp{background:linear-gradient(180deg,rgba(10,12,22,.08),rgba(11,15,24,.5)),url('/images/arena/wonderland-grand-colosseum.webp') center/cover no-repeat,#202938!important}
 .jrpg-formation-stage.combat-stage-dungeon{background:linear-gradient(180deg,rgba(10,8,12,.12),rgba(13,8,11,.7)),url('/images/kingdoms/darkya-2.webp') center/cover no-repeat,#33292d!important}
 
 .jrpg-formation-stage>.combat-enemy-side{grid-column:1;grid-row:1;justify-self:center}

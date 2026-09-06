@@ -1,6 +1,13 @@
-import { CombatStatusGlyph } from "@/components/arena/combat-status-glyph";
 import type { CombatantState } from "@/lib/game/combat";
 import { describeCombatStatus, getCombatStatusVisual } from "@/lib/game/combat-status-visual";
+
+const STATUS_EMOJI = {
+  for: "⚔️", def: "🛡️", res: "💚", ini: "⚡", int: "✨", arc: "🔮",
+  bleed: "🩸", poison: "☠️", burn: "🔥", silence: "🤐", stun: "💫",
+  regen: "💖", shield: "🛡️", root: "🌿", fear: "😨", blind: "🌑",
+  curse: "🕯️", taunt: "🎯", immune: "🛡️", stealth: "🌫️", haste: "⚡",
+  slow: "🐌", vulnerable: "💔", summon: "🐾", form: "🐺", buff: "⬆️", debuff: "⬇️",
+} as const;
 
 export function CombatStatusDock({ fighter }: { fighter: CombatantState }) {
   const statuses = Object.values(fighter.statuses);
@@ -14,8 +21,7 @@ export function CombatStatusDock({ fighter }: { fighter: CombatantState }) {
           title={`Escudo ativo · ${fighter.shield.toLocaleString("pt-BR")} pontos`}
           aria-label={`Escudo: ${fighter.shield.toLocaleString("pt-BR")} pontos`}
         >
-          <CombatStatusGlyph icon="shield" />
-          <span className="combat-status-marker">◆</span>
+          <span className="combat-status-emoji" aria-hidden="true">🛡️</span>
           <span className="combat-status-name">Escudo</span>
           <small className="combat-status-duration">{compactValue(fighter.shield)}</small>
         </span>
@@ -29,11 +35,10 @@ export function CombatStatusDock({ fighter }: { fighter: CombatantState }) {
             title={describeCombatStatus(status)}
             aria-label={describeCombatStatus(status)}
           >
-            <CombatStatusGlyph icon={visual.iconKey} />
-            <span className="combat-status-marker">{visual.kind === "buff" ? "↑" : "↓"}</span>
+            <span className="combat-status-emoji" aria-hidden="true">{STATUS_EMOJI[visual.iconKey]}</span>
             <span className="combat-status-name">{visual.label}</span>
             <small className="combat-status-duration">
-              {status.duration > 0 ? `${status.duration}T` : "∞"}
+              {status.duration >= 900 || status.duration <= 0 ? "Permanente" : `${status.duration} turno${status.duration === 1 ? "" : "s"}`}
             </small>
           </span>
         );

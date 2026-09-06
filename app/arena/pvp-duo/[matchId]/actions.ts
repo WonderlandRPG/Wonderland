@@ -188,8 +188,11 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
   ]);
   if (!client || !room || !roster || roster.format !== "duo")
     return { ok: false as const, message: "Sala 2x2 indisponível." };
-  if (room.version !== expectedVersion)
-    return { ok: true as const, data: room, synchronized: true as const };
+  // A tela pode estar alguns milissegundos atrás do Realtime. A versão enviada
+  // pelo navegador é apenas uma dica: a jogada sempre parte do estado
+  // autoritativo recém-lido. As validações abaixo impedem ação duplicada ou fora
+  // do turno, enquanto evitam descartar silenciosamente o primeiro clique.
+  const authoritativeVersion = room.version;
 
   const state = structuredClone(room.state) as PvpDuoBattleState;
   if (state.status !== "active")
@@ -324,7 +327,7 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
 
   const { data, error } = await client.rpc("v2_update_pvp_match_state", {
     p_match_id: parsedId.data,
-    p_expected_version: expectedVersion,
+    p_expected_version: authoritativeVersion,
     p_state: state as unknown as Json,
   });
   const updated = parseRoom(data);

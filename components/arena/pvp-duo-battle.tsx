@@ -45,7 +45,9 @@ export function PvpDuoBattle({
   const [selectedTargetId, setSelectedTargetId] = useState("");
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
-  const [clock, setClock] = useState(() => Date.now());
+  // O primeiro HTML precisa ser idêntico no servidor e no navegador. O relógio
+  // real começa apenas após a hidratação para não remontar a interface do turno.
+  const [clock, setClock] = useState<number | null>(null);
   const [effects, setEffects] = useState<Fx[]>([]);
   const [realtimeReady, setRealtimeReady] = useState(false);
   const refreshInFlight = useRef(false);
@@ -62,7 +64,9 @@ export function PvpDuoBattle({
   const activeFighter = state.fighters[activeId];
   const isMyTurn = state.status === "active" && controllableIds.includes(activeId);
   const usage = state.turnActions ?? createTurnActionUsage();
-  const seconds = Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
+  const seconds = clock === null
+    ? 60
+    : Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
   const finished = state.status !== "active";
   const livingTargets = [...ownIds, ...enemyIds].filter((id) => (state.fighters[id]?.hp ?? 0) > 0);
   const chosenTargetId =
@@ -133,6 +137,7 @@ export function PvpDuoBattle({
   }, [matchId, refresh]);
 
   useEffect(() => {
+    setClock(Date.now());
     const timer = window.setInterval(() => setClock(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);

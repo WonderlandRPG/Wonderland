@@ -48,6 +48,7 @@ export function PvpDuoBattle({
   const [clock, setClock] = useState(() => Date.now());
   const [effects, setEffects] = useState<Fx[]>([]);
   const [realtimeReady, setRealtimeReady] = useState(false);
+  const refreshInFlight = useRef(false);
   const state = room.state;
   const meta = useMemo(
     () => Object.fromEntries(members.map((member) => [member.character.id, member.character])),
@@ -79,10 +80,16 @@ export function PvpDuoBattle({
   );
 
   const refresh = useCallback(async () => {
-    const result = await getPvpDuoMatchStateAction(matchId);
-    if (result.ok)
-      setRoom((current) => (result.data.version > current.version ? result.data : current));
-    else setError(result.message);
+    if (refreshInFlight.current) return;
+    refreshInFlight.current = true;
+    try {
+      const result = await getPvpDuoMatchStateAction(matchId);
+      if (result.ok)
+        setRoom((current) => (result.data.version > current.version ? result.data : current));
+      else setError(result.message);
+    } finally {
+      refreshInFlight.current = false;
+    }
   }, [matchId]);
 
   useEffect(() => {
@@ -92,7 +99,19 @@ export function PvpDuoBattle({
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "v2_pvp_matches", filter: `id=eq.${matchId}` },
-        () => void refresh(),
+        (payload) => {
+          const update = payload.new as { version?: unknown; state?: unknown };
+          if (typeof update.version === "number" && update.state && typeof update.state === "object") {
+            const nextVersion = update.version;
+            const nextState = update.state as PvpDuoBattleState;
+            setRoom((current) =>
+              nextVersion > current.version
+                ? { ...current, version: nextVersion, state: nextState }
+                : current,
+            );
+          }
+          void refresh();
+        },
       )
       .subscribe((status) => {
         setRealtimeReady(status === "SUBSCRIBED");
@@ -102,7 +121,9 @@ export function PvpDuoBattle({
     const onVisibility = () => { if (document.visibilityState === "visible") syncNow(); };
     window.addEventListener("focus", syncNow);
     document.addEventListener("visibilitychange", onVisibility);
-    const fallback = window.setInterval(syncNow, 1000);
+    const fallback = window.setInterval(() => {
+      if (document.visibilityState === "visible") syncNow();
+    }, 700);
     return () => {
       window.clearInterval(fallback);
       window.removeEventListener("focus", syncNow);

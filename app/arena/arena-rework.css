@@ -36,6 +36,15 @@
 @media(max-width:1100px){.arena-page .arena-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}.arena-page .jrpg-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(max-width:700px){.arena-page .arena-mode-select>header{min-height:220px;padding:25px!important}.arena-page .arena-mode-grid{grid-template-columns:1fr!important;padding:12px!important}.arena-page .arena-mode-card{min-height:260px!important}.arena-page .jrpg-stage{min-height:500px!important;padding:22px 10px!important}.arena-page .jrpg-actions{grid-template-columns:1fr 1fr!important}.arena-page .jrpg-command-panel>header{display:block}}
 
+/* A arena competitiva tem cenário próprio; esta regra precisa ficar depois do
+   fundo genérico de .jrpg-stage para não ser substituída pela capa do portal. */
+.arena-page .jrpg-stage.combat-stage-pvp{
+  background:
+    linear-gradient(180deg,rgba(10,12,22,.08),rgba(11,15,24,.5)),
+    url('/images/arena/wonderland-grand-colosseum.webp') center 58%/cover no-repeat,
+    #202938!important;
+}
+
 
 /* Coesão visual final: conteúdo nítido e uma única família de cores no combate. */
 .arena-page .jrpg-stage .jrpg-fighter,

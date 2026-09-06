@@ -91,7 +91,7 @@
 .jrpg-duo-stage.combat-stage-pvp{
   background:
     linear-gradient(180deg,rgba(46,62,92,.03),rgba(12,19,32,.13) 55%,rgba(7,10,18,.54)),
-    url('/images/kingdoms/namida-3.webp') center 62%/cover no-repeat!important;
+    url('/images/arena/wonderland-grand-colosseum.png') center 62%/cover no-repeat!important;
 }
 .jrpg-formation-stage.combat-stage-dungeon{
   background:

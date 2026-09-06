@@ -49,6 +49,7 @@ export function CombatSkillCard({
   return (
     <button
       className={styles.card}
+      data-combat-skill-card="true"
       data-source={skill.resourceKey}
       disabled={unavailable}
       onClick={onClick}

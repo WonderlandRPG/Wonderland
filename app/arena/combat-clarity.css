@@ -1,5 +1,27 @@
 /* Wonderland · Combat clarity — última camada visual da Arena. */
 
+/* Cards de habilidade são claros em todos os modos e não herdam a paleta escura
+   dos botões JRPG genéricos. */
+.arena-page .combat-skill-list button[data-combat-skill-card='true']{
+  opacity:1!important;
+  background:var(--wl-surface)!important;
+  color:var(--wl-text)!important;
+  filter:none!important;
+}
+.arena-page .combat-skill-list button[data-combat-skill-card='true'][data-source='class']{
+  background:color-mix(in srgb,var(--wl-accent-soft) 32%,var(--wl-surface))!important;
+}
+.arena-page .combat-skill-list button[data-combat-skill-card='true'][data-source='race']{
+  background:color-mix(in srgb,var(--wl-gold-soft) 24%,var(--wl-surface))!important;
+}
+.arena-page .combat-skill-list button[data-combat-skill-card='true'] :where(strong,em,b,small,span){
+  color:var(--wl-text)!important;
+  text-shadow:none!important;
+}
+.arena-page .combat-skill-list button[data-combat-skill-card='true']:disabled :where(strong,em,b,small,span){
+  color:var(--wl-text-muted)!important;
+}
+
 /* Evita rasterização/blurring de texto e retratos causada por filtros 3D em cards inteiros. */
 .jrpg-stage .jrpg-fighter,
 .jrpg-stage .formation-front,

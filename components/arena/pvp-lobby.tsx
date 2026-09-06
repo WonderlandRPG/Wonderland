@@ -45,7 +45,7 @@ export function PvpLobby({
       setQueue(result.data.queue);
       setFormat("duo");
       setPartyOpen(true);
-    }
+    } else setQueue(null);
   }, [characterId]);
 
   useEffect(() => {

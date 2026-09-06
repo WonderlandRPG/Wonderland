@@ -27,7 +27,7 @@ type DuoRoom = {
 };
 
 type Member = { team: number; slot: number; character: ArenaCharacter };
-type Fx = { id: string; kind: "damage" | "heal" | "shield"; token: number } | null;
+type Fx = { id: string; kind: "damage" | "heal" | "shield"; amount: number; token: number };
 
 export function PvpDuoBattle({
   matchId,
@@ -46,7 +46,8 @@ export function PvpDuoBattle({
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
   const [clock, setClock] = useState(() => Date.now());
-  const [fx, setFx] = useState<Fx>(null);
+  const [effects, setEffects] = useState<Fx[]>([]);
+  const [realtimeReady, setRealtimeReady] = useState(false);
   const state = room.state;
   const meta = useMemo(
     () => Object.fromEntries(members.map((member) => [member.character.id, member.character])),
@@ -93,10 +94,19 @@ export function PvpDuoBattle({
         { event: "UPDATE", schema: "public", table: "v2_pvp_matches", filter: `id=eq.${matchId}` },
         () => void refresh(),
       )
-      .subscribe();
-    const fallback = window.setInterval(() => void refresh(), 2500);
+      .subscribe((status) => {
+        setRealtimeReady(status === "SUBSCRIBED");
+        if (status === "SUBSCRIBED") void refresh();
+      });
+    const syncNow = () => void refresh();
+    const onVisibility = () => { if (document.visibilityState === "visible") syncNow(); };
+    window.addEventListener("focus", syncNow);
+    document.addEventListener("visibilitychange", onVisibility);
+    const fallback = window.setInterval(syncNow, 1000);
     return () => {
       window.clearInterval(fallback);
+      window.removeEventListener("focus", syncNow);
+      document.removeEventListener("visibilitychange", onVisibility);
       if (client && channel) void client.removeChannel(channel);
     };
   }, [matchId, refresh]);
@@ -108,22 +118,21 @@ export function PvpDuoBattle({
 
   useEffect(() => {
     const old = previousHp.current;
+    const next: Fx[] = [];
     for (const fighter of Object.values(state.fighters)) {
       const before = old[fighter.id];
       if (!before) continue;
       if (fighter.hp < before.hp) {
-        setFx({ id: fighter.id, kind: "damage", token: Date.now() });
-        break;
+        next.push({ id: fighter.id, kind: "damage", amount: before.hp - fighter.hp, token: Date.now() + next.length });
       }
       if (fighter.hp > before.hp) {
-        setFx({ id: fighter.id, kind: "heal", token: Date.now() });
-        break;
+        next.push({ id: fighter.id, kind: "heal", amount: fighter.hp - before.hp, token: Date.now() + next.length });
       }
       if (fighter.shield > before.shield) {
-        setFx({ id: fighter.id, kind: "shield", token: Date.now() });
-        break;
+        next.push({ id: fighter.id, kind: "shield", amount: fighter.shield - before.shield, token: Date.now() + next.length });
       }
     }
+    if (next.length) setEffects(next);
     previousHp.current = Object.fromEntries(
       Object.values(state.fighters).map((fighter) => [fighter.id, { hp: fighter.hp, shield: fighter.shield }]),
     );
@@ -165,6 +174,7 @@ export function PvpDuoBattle({
         </strong>
         <strong className="arena-turn-counter"><small>Rodada</small>{String(state.round).padStart(2, "0")}</strong>
       </header>
+      <div className={`pvp-live-state ${isMyTurn ? "is-own-turn" : ""}`} role="status" aria-live="assertive"><i aria-hidden="true" /><strong>{finished ? "Combate encerrado" : isMyTurn ? "É a sua vez" : `Turno de ${state.fighters[activeId]?.name ?? "outro jogador"}`}</strong><small>{realtimeReady ? "Sincronização ao vivo" : "Reconectando automaticamente…"}</small></div>
 
       <div className="jrpg-turn-order">
         {state.turnOrder.filter((id) => (state.fighters[id]?.hp ?? 0) > 0).map((id, index) => (
@@ -176,11 +186,11 @@ export function PvpDuoBattle({
 
       <div className="jrpg-stage jrpg-duo-stage combat-stage-pvp">
         <div className="duo-team duo-team--enemy">
-          {enemyIds.map((id) => <DuoFighter key={id} fighter={state.fighters[id]} character={meta[id]} active={activeId === id} fx={fx?.id === id ? fx : null} />)}
+          {enemyIds.map((id) => <DuoFighter key={id} fighter={state.fighters[id]} character={meta[id]} active={activeId === id} fx={effects.find((effect) => effect.id === id)} />)}
         </div>
         <span className="pvp-versus">VS<small>2x2</small></span>
         <div className="duo-team duo-team--own">
-          {ownIds.map((id) => <DuoFighter key={id} fighter={state.fighters[id]} character={meta[id]} active={activeId === id} controlled={controllableIds.includes(id)} fx={fx?.id === id ? fx : null} />)}
+          {ownIds.map((id) => <DuoFighter key={id} fighter={state.fighters[id]} character={meta[id]} active={activeId === id} controlled={controllableIds.includes(id)} fx={effects.find((effect) => effect.id === id)} />)}
         </div>
       </div>
 
@@ -215,12 +225,12 @@ export function PvpDuoBattle({
         </section>
       ) : null}
 
-      {finished ? <CombatResultModal victory={winnerTeam === ownTeam} eyebrow="CONFRONTO EM DUPLA ENCERRADO" title={winnerTeam === ownTeam ? "Sua dupla venceu o confronto." : state.winnerCharacterId ? "A dupla adversária venceu." : "A partida terminou em derrota por desistência."} description={winnerTeam === ownTeam ? "A vitória da equipe foi registrada na Arena." : "Reúna sua dupla, ajuste a estratégia e tente novamente."}><Link className="button button--primary" href="/arena">Voltar à Arena</Link></CombatResultModal> : null}
+      {finished ? <CombatResultModal victory={winnerTeam === ownTeam} eyebrow="CONFRONTO EM DUPLA ENCERRADO" title={winnerTeam === ownTeam ? "Sua dupla venceu o confronto." : state.winnerCharacterId ? "A dupla adversária venceu." : "A partida terminou em derrota por desistência."} description={winnerTeam === ownTeam ? "A vitória da equipe foi registrada na Arena." : "Reúna sua dupla, ajuste a estratégia e tente novamente."}><Link className="button button--primary" href="/arena?modo=pvp">Buscar nova partida</Link><Link className="button button--ghost" href="/arena">Voltar à Arena</Link></CombatResultModal> : null}
     </section>
   );
 }
 
-function DuoFighter({ fighter, character, active, controlled = false, fx }: { fighter?: CombatantState; character?: ArenaCharacter; active: boolean; controlled?: boolean; fx: Fx }) {
+function DuoFighter({ fighter, character, active, controlled = false, fx }: { fighter?: CombatantState; character?: ArenaCharacter; active: boolean; controlled?: boolean; fx?: Fx }) {
   if (!fighter || !character) return null;
   return (
     <article className={`pvp-fighter jrpg-fighter duo-fighter ${active ? "is-active" : ""} ${controlled ? "is-controlled" : ""} ${fighter.hp <= 0 ? "is-down" : ""} ${fx ? `fx-${fx.kind}` : ""}`}>
@@ -228,7 +238,7 @@ function DuoFighter({ fighter, character, active, controlled = false, fx }: { fi
       <div className="combat-identity-frame">
         <CharacterPortraitCard name={character.name} imageUrl={character.imageUrl || null} rank={character.adventureRank} level={character.level} title={character.equippedTitle} cosmetics={character.cosmetics} variant="compact" className="combat-official-character-card" />
         {controlled ? <span className="duo-control-badge">SEU PERSONAGEM</span> : null}
-        {fx ? <span key={fx.token} className={`combat-fx combat-fx--${fx.kind}`}>{fx.kind === "heal" ? "+" : fx.kind === "shield" ? "✦" : "✹"}</span> : null}
+        {fx ? <span key={fx.token} data-fx-label={fx.kind === "heal" ? "CURA" : fx.kind === "shield" ? "ESCUDO" : "DANO"} className={`combat-fx combat-fx--${fx.kind}`}>{fx.kind === "damage" ? "−" : "+"}{fx.amount.toLocaleString("pt-BR")}</span> : null}
       </div>
       <div className="combat-hud-panel"><h3>{character.name}</h3><p>{character.raceName} · {character.className}</p><CombatStatusDock fighter={fighter} /></div>
     </article>

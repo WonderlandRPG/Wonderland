@@ -11,6 +11,7 @@ import {
   invitePvpPartnerAction,
   joinPvpQueueAction,
   pollPvpQueueAction,
+  respondPvpMatchAction,
   respondPvpPartyInviteAction,
   searchPvpPartnerAction,
   type PvpPartyState,
@@ -35,6 +36,7 @@ export function PvpLobby({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<QueueCharacter[]>([]);
   const [pending, startTransition] = useTransition();
+  const [now, setNow] = useState(() => Date.now());
   const router = useRouter();
 
   const refreshParty = useCallback(async () => {
@@ -55,14 +57,14 @@ export function PvpLobby({
   }, [refreshParty]);
 
   useEffect(() => {
-    if (queue?.status === "matched" && queue.matchId) {
+    if (queue?.status === "matched" && queue.matchId && queue.acceptanceStatus === "ready") {
       if (queue.format === "duo") router.replace(`/arena/pvp-duo/${queue.matchId}`);
       else router.replace(`/arena?modo=pvp&partida=${queue.matchId}`);
     }
   }, [queue, router]);
 
   useEffect(() => {
-    if (!queue || queue.status !== "searching") return;
+    if (!queue || (queue.status !== "searching" && queue.status !== "matched")) return;
     const timer = window.setInterval(() => {
       void pollPvpQueueAction(queue.queueId).then((result) => {
         if (result.ok) setQueue(result.data);
@@ -71,6 +73,12 @@ export function PvpLobby({
     }, 1500);
     return () => window.clearInterval(timer);
   }, [queue]);
+
+  useEffect(() => {
+    if (queue?.status !== "matched") return;
+    const timer = window.setInterval(() => setNow(Date.now()), 250);
+    return () => window.clearInterval(timer);
+  }, [queue?.status]);
 
   function join(selectedFormat: "solo" | "duo") {
     setMessage("");
@@ -156,10 +164,27 @@ export function PvpLobby({
     });
   }
 
+  function confirmMatch(accept: boolean) {
+    if (!queue?.matchId) return;
+    setMessage("");
+    startTransition(async () => {
+      const result = await respondPvpMatchAction(queue.matchId!, accept);
+      if (!result.ok) setMessage(result.message);
+      else if (!accept || result.data.status !== "matched") {
+        setQueue(null);
+        setMessage(accept ? "O prazo de confirmação terminou." : "Partida recusada. Você saiu desta busca.");
+        await refreshParty();
+      } else setQueue(result.data);
+    });
+  }
+
   const matched = queue?.status === "matched";
   const activeFormat = queue?.format ?? format;
   const party = partyState?.party ?? null;
   const partyUsesActiveCharacter = party?.ownCharacter.id === characterId;
+  const acceptanceSeconds = queue?.acceptDeadline
+    ? Math.max(0, Math.ceil((Date.parse(queue.acceptDeadline) - now) / 1000))
+    : 30;
 
   return (
     <section className={`pvp-lobby ${matched ? "is-matched" : ""}`}>
@@ -352,6 +377,32 @@ export function PvpLobby({
             {queue.opponentSecondary ? <p>Dupla com {queue.opponentSecondary.name}</p> : <p>Preparando a Arena…</p>}
           </div>
           <b>VS</b>
+        </div>
+      ) : null}
+
+      {matched && queue.matchId && queue.acceptanceStatus !== "ready" ? (
+        <div className="pvp-ready-overlay" role="dialog" aria-modal="true" aria-labelledby="pvp-ready-title">
+          <section className="pvp-ready-check">
+            <span className="pvp-ready-check__icon">⚔️</span>
+            <small>ARENA PvP · {activeFormat === "duo" ? "2 × 2" : "1 × 1"}</small>
+            <h2 id="pvp-ready-title">Partida encontrada!</h2>
+            <p>Todos os jogadores precisam confirmar para o combate começar.</p>
+            <strong className={`pvp-ready-check__timer ${acceptanceSeconds <= 10 ? "is-ending" : ""}`}>
+              {String(acceptanceSeconds).padStart(2, "0")}s
+            </strong>
+            <div className="pvp-ready-check__progress">
+              <span style={{ width: `${Math.min(100, ((queue.acceptedCount ?? 0) / Math.max(1, queue.requiredCount ?? 1)) * 100)}%` }} />
+            </div>
+            <b>{queue.acceptedCount ?? 0} de {queue.requiredCount ?? (activeFormat === "duo" ? 4 : 2)} confirmaram</b>
+            {queue.acceptedByYou ? (
+              <div className="pvp-ready-check__accepted">✓ Você confirmou · aguardando os demais</div>
+            ) : (
+              <div className="pvp-ready-check__actions">
+                <button disabled={pending || acceptanceSeconds === 0} onClick={() => confirmMatch(true)} type="button">Sim, estou pronto</button>
+                <button disabled={pending} onClick={() => confirmMatch(false)} type="button">Recusar</button>
+              </div>
+            )}
+          </section>
         </div>
       ) : null}
 

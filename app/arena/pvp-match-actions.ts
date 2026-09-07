@@ -73,6 +73,19 @@ export async function getPvpMatchStateAction(matchId: string) {
     : { ok: false as const, message: "A sala PvP não está mais disponível." };
 }
 
+export async function expirePvpTurnAction(matchId: string) {
+  await requireCurrentAccount(`/arena?modo=pvp&partida=${matchId}`);
+  const parsed = matchSchema.safeParse(matchId);
+  if (!parsed.success) return { ok: false as const, message: "Partida inválida." };
+  const client = await createServerSupabaseClient();
+  if (!client) return { ok: false as const, message: "Arena indisponível." };
+  const { data, error } = await client.rpc("v2_expire_pvp_turn" as never, { p_match_id: parsed.data } as never);
+  const room = parseRoom(data);
+  if (error || !room)
+    return { ok: false as const, message: error?.message ?? "Não foi possível avançar o turno." };
+  return { ok: true as const, data: room };
+}
+
 function advancePvpTurn(state: PvpBattleState) {
   const next = getNextTurn(state);
   state.round = next.round;

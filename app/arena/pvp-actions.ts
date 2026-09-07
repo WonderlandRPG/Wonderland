@@ -25,6 +25,11 @@ export type QueueState = {
   secondaryCharacter?: QueueCharacter | null;
   opponent?: QueueCharacter | null;
   opponentSecondary?: QueueCharacter | null;
+  acceptanceStatus?: "waiting" | "accepted" | "ready" | "expired" | null;
+  acceptedByYou?: boolean;
+  acceptedCount?: number;
+  requiredCount?: number;
+  acceptDeadline?: string | null;
 };
 
 export type PvpPartyInvite = {
@@ -111,6 +116,21 @@ export async function pollPvpQueueAction(queueId: string) {
   const { data, error } = await context.rpc("v2_poll_pvp_queue_v2", { p_queue_id: parsed.data });
   if (error || !validResult(data))
     return { ok: false as const, message: error?.message ?? "Não foi possível consultar a fila." };
+  return { ok: true as const, data };
+}
+
+export async function respondPvpMatchAction(matchId: string, accept: boolean) {
+  await requireCurrentAccount("/arena?modo=pvp");
+  const parsed = idSchema.safeParse(matchId);
+  if (!parsed.success) return { ok: false as const, message: "Partida inválida." };
+  const context = await rpcClient();
+  if (!context) return { ok: false as const, message: "Arena indisponível." };
+  const { data, error } = await context.rpc("v2_respond_pvp_match", {
+    p_match_id: parsed.data,
+    p_accept: accept,
+  });
+  if (error || !validResult(data))
+    return { ok: false as const, message: error?.message ?? "Não foi possível confirmar a partida." };
   return { ok: true as const, data };
 }
 

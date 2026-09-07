@@ -12,7 +12,7 @@ import { defaultCombatRules, type CombatantState } from "@/lib/game/combat";
 import { createTurnActionUsage, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import type { PvpDuoBattleState } from "@/lib/game/pvp-duo-state";
-import { getPvpDuoMatchStateAction, performPvpDuoAction } from "@/app/arena/pvp-duo/[matchId]/actions";
+import { expirePvpDuoTurnAction, getPvpDuoMatchStateAction, performPvpDuoAction } from "@/app/arena/pvp-duo/[matchId]/actions";
 
 type DuoRoom = {
   matchId: string;
@@ -51,6 +51,7 @@ export function PvpDuoBattle({
   const [effects, setEffects] = useState<Fx[]>([]);
   const [realtimeReady, setRealtimeReady] = useState(false);
   const refreshInFlight = useRef(false);
+  const timeoutInFlight = useRef(false);
   const state = room.state;
   const meta = useMemo(
     () => Object.fromEntries(members.map((member) => [member.character.id, member.character])),
@@ -88,9 +89,16 @@ export function PvpDuoBattle({
     refreshInFlight.current = true;
     try {
       const result = await getPvpDuoMatchStateAction(matchId);
-      if (result.ok)
+      if (result.ok) {
         setRoom((current) => (result.data.version > current.version ? result.data : current));
-      else setError(result.message);
+        const expired = result.data.state.status === "active" && Date.parse(result.data.state.turnEndsAt) <= Date.now();
+        if (expired && !timeoutInFlight.current) {
+          timeoutInFlight.current = true;
+          void expirePvpDuoTurnAction(matchId)
+            .then((advance) => { if (advance.data) setRoom((current) => advance.data!.version > current.version ? advance.data! : current); })
+            .finally(() => { timeoutInFlight.current = false; });
+        }
+      } else setError(result.message);
     } finally {
       refreshInFlight.current = false;
     }
@@ -165,10 +173,10 @@ export function PvpDuoBattle({
   }, [room.version, state.fighters]);
 
   useEffect(() => {
-    if (seconds !== 0 || !isMyTurn || pending || finished) return;
-    void submit({ kind: "end" });
+    if (seconds !== 0 || finished) return;
+    void refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seconds, isMyTurn, room.version, finished]);
+  }, [seconds, room.version, finished, refresh]);
 
   function submit(action: Record<string, unknown>) {
     if (!isMyTurn || pending || finished) return;

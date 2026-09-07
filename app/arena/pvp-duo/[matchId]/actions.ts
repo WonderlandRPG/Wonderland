@@ -175,7 +175,11 @@ function areaTargetIds(
   return livingTeamMembers(state, team);
 }
 
-export async function performPvpDuoAction(matchId: string, expectedVersion: number, input: unknown) {
+export async function performPvpDuoAction(
+  matchId: string,
+  expectedVersion: number,
+  input: unknown,
+) {
   await requireCurrentAccount(`/arena/pvp-duo/${matchId}`);
   const parsedId = idSchema.safeParse(matchId);
   const parsedAction = actionSchema.safeParse(input);
@@ -334,4 +338,18 @@ export async function performPvpDuoAction(matchId: string, expectedVersion: numb
   if (error || !updated)
     return { ok: false as const, message: error?.message ?? "A jogada não pôde ser sincronizada." };
   return { ok: true as const, data: updated, synchronized: false as const };
+}
+
+/** Avança um turno abandonado sem depender do navegador do jogador ausente. */
+export async function expirePvpDuoTurnAction(matchId: string) {
+  await requireCurrentAccount(`/arena/pvp-duo/${matchId}`);
+  const parsed = idSchema.safeParse(matchId);
+  if (!parsed.success) return { ok: false as const, message: "Partida inválida." };
+  const client = await createServerSupabaseClient();
+  if (!client) return { ok: false as const, message: "Arena indisponível." };
+  const { data, error } = await client.rpc("v2_expire_pvp_turn" as never, { p_match_id: parsed.data } as never);
+  const room = parseRoom(data);
+  if (error || !room)
+    return { ok: false as const, message: error?.message ?? "Não foi possível avançar o turno." };
+  return { ok: true as const, data: room };
 }

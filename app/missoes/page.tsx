@@ -210,10 +210,6 @@ export default async function MissionBoardPage({
                       <dt>WG</dt>
                       <dd>{mission.rewardGold.toLocaleString("pt-BR")}</dd>
                     </div>
-                    <div>
-                      <dt>Nível</dt>
-                      <dd>{mission.minLevel}+</dd>
-                    </div>
                   </dl>
                   <form action={acceptMissionAction}>
                     <input name="missionId" type="hidden" value={mission.id} />

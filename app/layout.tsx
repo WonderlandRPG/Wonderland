@@ -15,6 +15,7 @@ import "./theme-tokens.css";
 import "./visual-contract.css";
 import "./wonderland-base.css";
 import "./wonderland-repair.css";
+import "./kingdom-heraldry.css";
 import "./rank-visuals.css";
 import "./wonderland-medieval.css";
 import "./presence-experience.css";

@@ -2,6 +2,7 @@ import { PlayerNav } from "@/components/player-nav";
 import Image from "next/image";
 import Link from "next/link";
 import { WorldMap } from "@/components/world/world-map";
+import { KingdomEmblem } from "@/components/world/kingdom-emblem";
 import {
   RealmLocationAtlas,
   RealmLocationModalHost,
@@ -30,7 +31,9 @@ export default function RealmsPage() {
           <nav>
             {realmLore.map((realm) => (
               <a href={`#${realm.key}`} key={realm.key}>
-                <i style={{ background: realm.color }} />
+                <span className="realm-nav-emblem" style={{ "--realm": realm.color } as React.CSSProperties}>
+                  <KingdomEmblem realmKey={realm.key} title={`Brasão de ${realm.name}`} />
+                </span>
                 {realm.name}
               </a>
             ))}
@@ -45,7 +48,9 @@ export default function RealmsPage() {
               style={{ "--realm": realm.color } as React.CSSProperties}
             >
               <header>
-                <span>{realm.icon}</span>
+                <span className="realm-dossier-emblem">
+                  <KingdomEmblem realmKey={realm.key} title={`Brasão de ${realm.name}`} />
+                </span>
                 <div>
                   <small>
                     {String(index + 1).padStart(2, "0")} · {realm.title}

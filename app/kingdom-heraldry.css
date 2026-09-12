@@ -1,0 +1,60 @@
+/* Brasões oficiais dos seis reinos de Wonderland. */
+.world-map__pin{
+  position:absolute!important;
+  left:var(--pin-x)!important;
+  top:var(--pin-y)!important;
+  z-index:4!important;
+  width:48px!important;
+  height:56px!important;
+  display:grid!important;
+  place-items:start center!important;
+  transform:translate(-50%,-50%)!important;
+  border:2px solid #d7bd78!important;
+  border-radius:23px 23px 17px 17px!important;
+  background:linear-gradient(165deg,color-mix(in srgb,var(--realm) 80%,#355340),#173a2b 72%)!important;
+  color:#fff2c6!important;
+  box-shadow:0 5px 0 rgba(44,31,18,.34),0 8px 18px rgba(20,30,24,.4),inset 0 0 0 2px rgba(255,244,211,.13)!important;
+  transition:transform .18s ease,filter .18s ease!important;
+}
+.world-map__pin::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:-8px;
+  width:15px;
+  height:15px;
+  transform:translateX(-50%) rotate(45deg);
+  background:#173a2b;
+  border-right:2px solid #d7bd78;
+  border-bottom:2px solid #d7bd78;
+  border-radius:0 0 3px 0;
+}
+.world-map__pin b{
+  position:relative!important;
+  z-index:2!important;
+  width:38px!important;
+  height:38px!important;
+  margin-top:5px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:50%!important;
+  background:radial-gradient(circle,rgba(255,245,211,.21),rgba(12,31,23,.08))!important;
+  box-shadow:inset 0 0 0 1px rgba(255,244,211,.28)!important;
+}
+.world-map__pin svg{
+  width:28px!important;
+  height:28px!important;
+  overflow:visible!important;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))!important;
+}
+.world-map__territory:hover .world-map__pin,
+.world-map__territory:focus-visible .world-map__pin{
+  transform:translate(-50%,-50%) scale(1.12)!important;
+  filter:brightness(1.12) saturate(1.08)!important;
+}
+
+@media(max-width:700px){
+  .world-map__pin{width:40px!important;height:47px!important;border-width:1.5px!important}
+  .world-map__pin b{width:32px!important;height:32px!important;margin-top:4px!important}
+  .world-map__pin svg{width:23px!important;height:23px!important}
+}

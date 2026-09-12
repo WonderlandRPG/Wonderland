@@ -15,7 +15,6 @@ import "./theme-tokens.css";
 import "./visual-contract.css";
 import "./wonderland-base.css";
 import "./wonderland-repair.css";
-import "./kingdom-heraldry.css";
 import "./rank-visuals.css";
 import "./wonderland-medieval.css";
 import "./presence-experience.css";
@@ -25,6 +24,7 @@ import "./site-experience.css";
 import "./contrast-guard.css";
 import "./experience-polish.css";
 import "./requested-visual-overhaul.css";
+import "./kingdom-heraldry.css";
 
 export const metadata: Metadata = {
   title: {

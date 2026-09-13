@@ -47,7 +47,9 @@ export function PvpLobby({
       setQueue(result.data.queue);
       setFormat("duo");
       setPartyOpen(true);
-    } else setQueue(null);
+    } else {
+      setQueue((current) => (current?.format === "duo" ? null : current));
+    }
   }, [characterId]);
 
   useEffect(() => {
@@ -67,8 +69,19 @@ export function PvpLobby({
     if (!queue || (queue.status !== "searching" && queue.status !== "matched")) return;
     const timer = window.setInterval(() => {
       void pollPvpQueueAction(queue.queueId).then((result) => {
-        if (result.ok) setQueue(result.data);
-        else setMessage(result.message);
+        if (result.ok) {
+          setQueue((current) => {
+            if (
+              current?.status === "matched" &&
+              result.data.status === "matched" &&
+              current.matchId === result.data.matchId &&
+              (current.acceptedCount ?? 0) > (result.data.acceptedCount ?? 0)
+            ) {
+              return current;
+            }
+            return result.data;
+          });
+        } else setMessage(result.message);
       });
     }, 1500);
     return () => window.clearInterval(timer);
@@ -201,30 +214,12 @@ export function PvpLobby({
 
       {!queue || queue.status === "cancelled" || queue.status === "expired" ? (
         <div className="pvp-format-grid">
-          <button
-            className={`pvp-format-card ${format === "solo" ? "is-selected" : ""}`}
-            disabled={pending}
-            onClick={() => join("solo")}
-            type="button"
-          >
-            <span>1 × 1</span>
-            <strong>Fila Solo</strong>
-            <small>Seu personagem contra outro aventureiro do mesmo Rank.</small>
-            <b>{pending && format === "solo" ? "Entrando…" : "Buscar duelo"}</b>
+          <button className={`pvp-format-card ${format === "solo" ? "is-selected" : ""}`} disabled={pending} onClick={() => join("solo")} type="button">
+            <span>1 × 1</span><strong>Fila Solo</strong><small>Seu personagem contra outro aventureiro do mesmo Rank.</small><b>{pending && format === "solo" ? "Entrando…" : "Buscar duelo"}</b>
           </button>
-          <button
-            className={`pvp-format-card is-duo ${format === "duo" ? "is-selected" : ""}`}
-            disabled={pending}
-            onClick={openDuo}
-            type="button"
-          >
-            <span>2 × 2</span>
-            <strong>Fila de Duplas</strong>
-            <small>
-              {party
-                ? `Sua dupla está formada com ${party.partner.name}.`
-                : "Convide o personagem de outro jogador e formem uma dupla persistente."}
-            </small>
+          <button className={`pvp-format-card is-duo ${format === "duo" ? "is-selected" : ""}`} disabled={pending} onClick={openDuo} type="button">
+            <span>2 × 2</span><strong>Fila de Duplas</strong>
+            <small>{party ? `Sua dupla está formada com ${party.partner.name}.` : "Convide o personagem de outro jogador e formem uma dupla persistente."}</small>
             <b>{party ? "Abrir dupla" : "Formar dupla"}</b>
           </button>
         </div>
@@ -232,214 +227,45 @@ export function PvpLobby({
 
       {partyOpen && activeFormat === "duo" && (!queue || queue.status === "cancelled" || queue.status === "expired") ? (
         <section className={`pvp-party-panel ${party ? "is-formed" : ""}`}>
-          <header>
-            <div>
-              <span className="eyebrow">Equipe 2x2</span>
-              <h2>{party ? "Dupla formada" : "Formar dupla"}</h2>
-              <p>
-                {party
-                  ? "A dupla continua ativa entre partidas e só termina quando um dos jogadores clicar em Desfazer dupla."
-                  : `Procure um personagem Rank ${rank}, envie o convite e aguarde o aceite.`}
-              </p>
-            </div>
-            {party ? <span className="pvp-party-status"><i /> ATIVA</span> : null}
-          </header>
-
+          <header><div><span className="eyebrow">Equipe 2x2</span><h2>{party ? "Dupla formada" : "Formar dupla"}</h2><p>{party ? "A dupla continua ativa entre partidas e só termina quando um dos jogadores clicar em Desfazer dupla." : `Procure um personagem Rank ${rank}, envie o convite e aguarde o aceite.`}</p></div>{party ? <span className="pvp-party-status"><i /> ATIVA</span> : null}</header>
           {party ? (
             <>
-              <div className="pvp-party-members">
-                <PartyMember label="VOCÊ" character={party.ownCharacter} />
-                <span className="pvp-party-link">＋</span>
-                <PartyMember label="PARCEIRO" character={party.partner} />
-              </div>
-              {!partyUsesActiveCharacter ? (
-                <p className="pvp-party-warning">
-                  Esta dupla foi formada com <strong>{party.ownCharacter.name}</strong>. Selecione esse personagem como ativo para entrar no 2x2.
-                </p>
-              ) : null}
+              <div className="pvp-party-members"><PartyMember label="VOCÊ" character={party.ownCharacter} /><span className="pvp-party-link">＋</span><PartyMember label="PARCEIRO" character={party.partner} /></div>
+              {!partyUsesActiveCharacter ? <p className="pvp-party-warning">Esta dupla foi formada com <strong>{party.ownCharacter.name}</strong>. Selecione esse personagem como ativo para entrar no 2x2.</p> : null}
               <div className="pvp-party-actions">
-                <button
-                  className="button button--dark"
-                  disabled={pending || !partyUsesActiveCharacter}
-                  onClick={() => join("duo")}
-                  type="button"
-                >
-                  {pending ? "Preparando…" : `Buscar 2x2 com ${party.partner.name}`}
-                </button>
-                <button className="button button--ghost" disabled={pending} onClick={disband} type="button">
-                  Desfazer dupla
-                </button>
+                <button className="button button--dark" disabled={pending || !partyUsesActiveCharacter} onClick={() => join("duo")} type="button">{pending ? "Preparando…" : `Buscar 2x2 com ${party.partner.name}`}</button>
+                <button className="button button--ghost" disabled={pending} onClick={disband} type="button">Desfazer dupla</button>
               </div>
             </>
           ) : (
             <>
-              {partyState?.incoming.length ? (
-                <div className="pvp-party-invites">
-                  <h3>Convites recebidos</h3>
-                  {partyState.incoming.map((entry) => (
-                    <article key={entry.id}>
-                      <PartyAvatar character={entry.character} />
-                      <div><small>QUER FORMAR DUPLA</small><strong>{entry.character.name}</strong><span>Lv. {entry.character.level} · Rank {entry.character.rank}</span></div>
-                      <div className="pvp-party-invite-actions">
-                        <button disabled={pending} onClick={() => respond(entry.id, true)} type="button">Aceitar</button>
-                        <button disabled={pending} onClick={() => respond(entry.id, false)} type="button">Recusar</button>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              ) : null}
-
+              {partyState?.incoming.length ? <div className="pvp-party-invites"><h3>Convites recebidos</h3>{partyState.incoming.map((entry) => <article key={entry.id}><PartyAvatar character={entry.character} /><div><small>QUER FORMAR DUPLA</small><strong>{entry.character.name}</strong><span>Lv. {entry.character.level} · Rank {entry.character.rank}</span></div><div className="pvp-party-invite-actions"><button disabled={pending} onClick={() => respond(entry.id, true)} type="button">Aceitar</button><button disabled={pending} onClick={() => respond(entry.id, false)} type="button">Recusar</button></div></article>)}</div> : null}
               <div className="pvp-party-search">
-                <label>
-                  <span>Procurar personagem</span>
-                  <div>
-                    <input
-                      maxLength={60}
-                      onChange={(event) => setSearchQuery(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          event.preventDefault();
-                          searchPartner();
-                        }
-                      }}
-                      placeholder="Digite o nome do personagem…"
-                      value={searchQuery}
-                    />
-                    <button disabled={pending || searchQuery.trim().length < 2} onClick={searchPartner} type="button">
-                      Procurar
-                    </button>
-                  </div>
-                </label>
-                {searchResults.length ? (
-                  <div className="pvp-party-search-results">
-                    {searchResults.map((entry) => (
-                      <article key={entry.id}>
-                        <PartyAvatar character={entry} />
-                        <div><strong>{entry.name}</strong><span>Lv. {entry.level} · Rank {entry.rank}</span></div>
-                        <button disabled={pending} onClick={() => invite(entry.id)} type="button">Convidar</button>
-                      </article>
-                    ))}
-                  </div>
-                ) : null}
+                <label><span>Procurar personagem</span><div><input maxLength={60} onChange={(event) => setSearchQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); searchPartner(); } }} placeholder="Digite o nome do personagem…" value={searchQuery} /><button disabled={pending || searchQuery.trim().length < 2} onClick={searchPartner} type="button">Procurar</button></div></label>
+                {searchResults.length ? <div className="pvp-party-search-results">{searchResults.map((entry) => <article key={entry.id}><PartyAvatar character={entry} /><div><strong>{entry.name}</strong><span>Lv. {entry.level} · Rank {entry.rank}</span></div><button disabled={pending} onClick={() => invite(entry.id)} type="button">Convidar</button></article>)}</div> : null}
               </div>
-
-              {partyState?.outgoing.length ? (
-                <div className="pvp-party-outgoing">
-                  <h3>Convites enviados</h3>
-                  {partyState.outgoing.map((entry) => (
-                    <article key={entry.id}>
-                      <PartyAvatar character={entry.character} />
-                      <div><strong>{entry.character.name}</strong><span>Aguardando resposta…</span></div>
-                      <button disabled={pending} onClick={() => cancelInvite(entry.id)} type="button">Cancelar</button>
-                    </article>
-                  ))}
-                </div>
-              ) : null}
+              {partyState?.outgoing.length ? <div className="pvp-party-outgoing"><h3>Convites enviados</h3>{partyState.outgoing.map((entry) => <article key={entry.id}><PartyAvatar character={entry.character} /><div><strong>{entry.character.name}</strong><span>Aguardando resposta…</span></div><button disabled={pending} onClick={() => cancelInvite(entry.id)} type="button">Cancelar</button></article>)}</div> : null}
             </>
           )}
         </section>
       ) : null}
 
-      <div className="pvp-lobby__facts">
-        <article>
-          <small>Seu personagem</small>
-          <strong>{characterName}</strong>
-        </article>
-        <article>
-          <small>Balanceamento</small>
-          <strong>Somente Rank {rank}</strong>
-        </article>
-        <article>
-          <small>Formato atual</small>
-          <strong>{activeFormat === "duo" ? "Duplas 2 × 2" : "Solo 1 × 1"}</strong>
-        </article>
-      </div>
-
-      {queue?.status === "searching" && queue.secondaryCharacter ? (
-        <div className="pvp-duo-partner">
-          <small>SEU PARCEIRO DE EQUIPE</small>
-          <strong>{queue.secondaryCharacter.name}</strong>
-          <span>Lv. {queue.secondaryCharacter.level} · Rank {queue.secondaryCharacter.rank}</span>
-        </div>
-      ) : null}
-
-      {matched && queue.opponent ? (
-        <div className="pvp-match-card">
-          <span
-            className={queue.opponent.imageUrl ? "is-image" : ""}
-            style={queue.opponent.imageUrl ? { backgroundImage: `url(${queue.opponent.imageUrl})` } : undefined}
-          >
-            {queue.opponent.imageUrl ? "" : queue.opponent.name.slice(0, 2).toUpperCase()}
-          </span>
-          <div>
-            <small>OPONENTE · RANK {queue.opponent.rank}</small>
-            <strong>{queue.opponent.name}</strong>
-            {queue.opponentSecondary ? <p>Dupla com {queue.opponentSecondary.name}</p> : <p>Preparando a Arena…</p>}
-          </div>
-          <b>VS</b>
-        </div>
-      ) : null}
-
+      <div className="pvp-lobby__facts"><article><small>Seu personagem</small><strong>{characterName}</strong></article><article><small>Balanceamento</small><strong>Somente Rank {rank}</strong></article><article><small>Formato atual</small><strong>{activeFormat === "duo" ? "Duplas 2 × 2" : "Solo 1 × 1"}</strong></article></div>
+      {queue?.status === "searching" && queue.secondaryCharacter ? <div className="pvp-duo-partner"><small>SEU PARCEIRO DE EQUIPE</small><strong>{queue.secondaryCharacter.name}</strong><span>Lv. {queue.secondaryCharacter.level} · Rank {queue.secondaryCharacter.rank}</span></div> : null}
+      {matched && queue.opponent ? <div className="pvp-match-card"><span className={queue.opponent.imageUrl ? "is-image" : ""} style={queue.opponent.imageUrl ? { backgroundImage: `url(${queue.opponent.imageUrl})` } : undefined}>{queue.opponent.imageUrl ? "" : queue.opponent.name.slice(0, 2).toUpperCase()}</span><div><small>OPONENTE · RANK {queue.opponent.rank}</small><strong>{queue.opponent.name}</strong>{queue.opponentSecondary ? <p>Dupla com {queue.opponentSecondary.name}</p> : <p>Preparando a Arena…</p>}</div><b>VS</b></div> : null}
       {matched && queue.matchId && queue.acceptanceStatus !== "ready" ? (
-        <div className="pvp-ready-overlay" role="dialog" aria-modal="true" aria-labelledby="pvp-ready-title">
-          <section className="pvp-ready-check">
-            <span className="pvp-ready-check__icon">⚔️</span>
-            <small>ARENA PvP · {activeFormat === "duo" ? "2 × 2" : "1 × 1"}</small>
-            <h2 id="pvp-ready-title">Partida encontrada!</h2>
-            <p>Todos os jogadores precisam confirmar para o combate começar.</p>
-            <strong className={`pvp-ready-check__timer ${acceptanceSeconds <= 10 ? "is-ending" : ""}`}>
-              {String(acceptanceSeconds).padStart(2, "0")}s
-            </strong>
-            <div className="pvp-ready-check__progress">
-              <span style={{ width: `${Math.min(100, ((queue.acceptedCount ?? 0) / Math.max(1, queue.requiredCount ?? 1)) * 100)}%` }} />
-            </div>
-            <b>{queue.acceptedCount ?? 0} de {queue.requiredCount ?? (activeFormat === "duo" ? 4 : 2)} confirmaram</b>
-            {queue.acceptedByYou ? (
-              <div className="pvp-ready-check__accepted">✓ Você confirmou · aguardando os demais</div>
-            ) : (
-              <div className="pvp-ready-check__actions">
-                <button disabled={pending || acceptanceSeconds === 0} onClick={() => confirmMatch(true)} type="button">Sim, estou pronto</button>
-                <button disabled={pending} onClick={() => confirmMatch(false)} type="button">Recusar</button>
-              </div>
-            )}
-          </section>
-        </div>
+        <div className="pvp-ready-overlay" role="dialog" aria-modal="true" aria-labelledby="pvp-ready-title"><section className="pvp-ready-check"><span className="pvp-ready-check__icon">⚔️</span><small>ARENA PvP · {activeFormat === "duo" ? "2 × 2" : "1 × 1"}</small><h2 id="pvp-ready-title">Partida encontrada!</h2><p>Todos os jogadores precisam confirmar para o combate começar.</p><strong className={`pvp-ready-check__timer ${acceptanceSeconds <= 10 ? "is-ending" : ""}`}>{String(acceptanceSeconds).padStart(2, "0")}s</strong><div className="pvp-ready-check__progress"><span style={{ width: `${Math.min(100, ((queue.acceptedCount ?? 0) / Math.max(1, queue.requiredCount ?? 1)) * 100)}%` }} /></div><b>{queue.acceptedCount ?? 0} de {queue.requiredCount ?? (activeFormat === "duo" ? 4 : 2)} confirmaram</b>{queue.acceptedByYou ? <div className="pvp-ready-check__accepted">✓ Você confirmou · aguardando os demais</div> : <div className="pvp-ready-check__actions"><button disabled={pending || acceptanceSeconds === 0} onClick={() => confirmMatch(true)} type="button">Sim, estou pronto</button><button disabled={pending} onClick={() => confirmMatch(false)} type="button">Recusar</button></div>}</section></div>
       ) : null}
-
-      {queue?.status === "searching" ? (
-        <>
-          <button className="button button--dark" disabled={pending} onClick={cancel} type="button">
-            Cancelar busca
-          </button>
-          <em>
-            <span className="signal-dot" /> Procurando {activeFormat === "duo" ? "outra dupla" : "outro personagem"} Rank {rank}…
-          </em>
-        </>
-      ) : null}
+      {queue?.status === "searching" ? <><button className="button button--dark" disabled={pending} onClick={cancel} type="button">Cancelar busca</button><em><span className="signal-dot" /> Procurando {activeFormat === "duo" ? "outra dupla" : "outro personagem"} Rank {rank}…</em></> : null}
       {message ? <p className="arena-result__error pvp-party-message">{message}</p> : null}
     </section>
   );
 }
 
 function PartyAvatar({ character }: { character: QueueCharacter }) {
-  return (
-    <span
-      className="pvp-party-avatar"
-      style={character.imageUrl ? { backgroundImage: `url(${character.imageUrl})` } : undefined}
-      aria-hidden="true"
-    >
-      {character.imageUrl ? "" : character.name.slice(0, 2).toUpperCase()}
-    </span>
-  );
+  return <span className="pvp-party-avatar" style={character.imageUrl ? { backgroundImage: `url(${character.imageUrl})` } : undefined} aria-hidden="true">{character.imageUrl ? "" : character.name.slice(0, 2).toUpperCase()}</span>;
 }
 
 function PartyMember({ label, character }: { label: string; character: QueueCharacter }) {
-  return (
-    <article>
-      <PartyAvatar character={character} />
-      <small>{label}</small>
-      <strong>{character.name}</strong>
-      <span>Lv. {character.level} · Rank {character.rank}</span>
-    </article>
-  );
+  return <article><PartyAvatar character={character} /><small>{label}</small><strong>{character.name}</strong><span>Lv. {character.level} · Rank {character.rank}</span></article>;
 }

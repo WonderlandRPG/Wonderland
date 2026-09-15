@@ -7,16 +7,16 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { redirect } from "next/navigation";
 
 export async function startPveAction() {
-  const { characterId } = await requireActiveCharacter("/arena");
+  const { characterId } = await requireActiveCharacter("/combate");
   const client = await createServerSupabaseClient();
-  if (!client) redirect("/arena?mensagem=Banco%20indisponível");
+  if (!client) redirect("/combate?mensagem=Banco%20indisponível");
   const { data: mission, error: missionError } = await client
     .from("v2_mission_assignments")
     .select("id")
     .eq("character_id", characterId)
     .eq("status", "in_progress")
     .limit(1);
-  if (missionError) redirect("/arena?mensagem=Não%20foi%20possível%20verificar%20as%20missões");
+  if (missionError) redirect("/combate?mensagem=Não%20foi%20possível%20verificar%20as%20missões");
   if (mission?.length) redirect("/missoes");
   const { data, error } = await client.rpc("v2_start_arena_session", {
     p_character_id: characterId,
@@ -24,13 +24,13 @@ export async function startPveAction() {
   });
   if (error || !data)
     redirect(
-      `/arena?mensagem=${encodeURIComponent(error?.message ?? "Não foi possível iniciar a luta")}`,
+      `/combate?mensagem=${encodeURIComponent(error?.message ?? "Não foi possível iniciar a luta")}`,
     );
-  redirect(`/arena?modo=pve&sessao=${data}`);
+  redirect(`/combate?modo=pve&sessao=${data}`);
 }
 
 export async function claimArenaVictoryAction(sessionId: string) {
-  await requireCurrentAccount("/arena");
+  await requireCurrentAccount("/combate");
   const parsed = z.uuid().safeParse(sessionId);
   if (!parsed.success) return { ok: false as const, message: "Sessão de combate inválida." };
   const client = await createServerSupabaseClient();

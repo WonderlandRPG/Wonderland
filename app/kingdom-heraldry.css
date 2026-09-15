@@ -1,85 +1,122 @@
-/* Brasões oficiais dos seis reinos de Wonderland.
- * Esta folha é carregada por último para vencer qualquer estilo legado de Reinos/Mapa.
- */
-.world-map__crest{
-  position:absolute!important;
-  left:var(--pin-x)!important;
-  top:var(--pin-y)!important;
-  z-index:9!important;
-  width:72px!important;
-  height:82px!important;
-  display:grid!important;
-  place-items:center!important;
-  transform:translate(-50%,-50%)!important;
-  color:#fff3c7!important;
-  background:none!important;
-  border:0!important;
-  border-radius:0!important;
-  box-shadow:none!important;
-  filter:drop-shadow(0 8px 10px rgba(10,18,14,.58)) drop-shadow(0 0 12px color-mix(in srgb,var(--realm) 58%,transparent))!important;
-  transition:transform .18s ease,filter .18s ease!important;
+/* Brasões oficiais dos seis reinos. A especificidade mantém esta camada acima
+ * do legado sem quebrar o contrato visual com correções forçadas. */
+.world-map .world-map__crest {
+  position: absolute;
+  left: var(--pin-x);
+  top: var(--pin-y);
+  z-index: 9;
+  display: grid;
+  width: 72px;
+  height: 82px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  color: var(--wl-text-inverse);
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 8px 10px color-mix(in srgb, var(--wl-surface-dark-strong) 58%, transparent))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--realm) 58%, transparent));
+  transition:
+    transform 0.18s ease,
+    filter 0.18s ease;
 }
-.world-map__crest::before,.world-map__crest::after{content:none!important;display:none!important}
-.world-map__crest svg{
-  width:72px!important;
-  height:82px!important;
-  display:block!important;
-  overflow:visible!important;
-  color:color-mix(in srgb,var(--realm) 84%,#fff1c4)!important;
+.world-map .world-map__crest::before,
+.world-map .world-map__crest::after {
+  content: none;
+  display: none;
 }
-.world-map__territory:hover .world-map__crest,
-.world-map__territory:focus-visible .world-map__crest{
-  transform:translate(-50%,-50%) scale(1.14)!important;
-  filter:drop-shadow(0 10px 13px rgba(8,17,12,.62)) drop-shadow(0 0 18px var(--realm)) brightness(1.14)!important;
+.world-map .world-map__crest svg {
+  width: 72px;
+  height: 82px;
+  display: block;
+  overflow: visible;
+  color: color-mix(in srgb, var(--realm) 84%, var(--wl-text-inverse));
 }
-
-.realms-page .realm-nav-emblem{
-  width:32px!important;
-  height:36px!important;
-  display:grid!important;
-  place-items:center!important;
-  flex:none!important;
-  border:0!important;
-  border-radius:0!important;
-  background:none!important;
-  box-shadow:none!important;
-  color:color-mix(in srgb,var(--realm) 80%,#6d4b20)!important;
-}
-.realms-page .realm-nav-emblem::before,.realms-page .realm-nav-emblem::after{content:none!important;display:none!important}
-.realms-page .realm-nav-emblem svg{width:32px!important;height:36px!important;display:block!important}
-.realms-page .realm-dossier-emblem{
-  width:92px!important;
-  height:104px!important;
-  display:grid!important;
-  place-items:center!important;
-  border:0!important;
-  border-radius:0!important;
-  background:none!important;
-  box-shadow:none!important;
-  color:color-mix(in srgb,var(--realm) 80%,#6d4b20)!important;
-  font-size:0!important;
-}
-.realms-page .realm-dossier-emblem::before,.realms-page .realm-dossier-emblem::after{content:none!important;display:none!important}
-.realms-page .realm-dossier-emblem svg{
-  width:88px!important;
-  height:100px!important;
-  display:block!important;
-  filter:drop-shadow(0 7px 10px rgba(59,39,19,.24))!important;
-}
-.realms-page .realm-dossiers>article>header{
-  grid-template-columns:104px minmax(0,1fr) minmax(260px,390px)!important;
+.world-map .world-map__territory:hover .world-map__crest,
+.world-map .world-map__territory:focus-visible .world-map__crest {
+  transform: translate(-50%, -50%) scale(1.14);
+  filter: drop-shadow(
+      0 10px 13px color-mix(in srgb, var(--wl-surface-dark-strong) 62%, transparent)
+    )
+    drop-shadow(0 0 18px var(--realm)) brightness(1.14);
 }
 
-@media(max-width:900px){
-  .realms-page .realm-dossiers>article>header{grid-template-columns:88px minmax(0,1fr)!important}
-  .realms-page .realm-dossiers>article>header dl{grid-column:1/-1!important}
+.realms-page .realm-nav .realm-nav-emblem {
+  width: 32px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: color-mix(in srgb, var(--realm) 80%, var(--wl-gold-strong));
 }
-@media(max-width:700px){
-  .world-map__crest{width:52px!important;height:60px!important}
-  .world-map__crest svg{width:52px!important;height:60px!important}
-  .realms-page .realm-dossier-emblem{width:76px!important;height:86px!important;margin:auto!important}
-  .realms-page .realm-dossier-emblem svg{width:72px!important;height:82px!important}
+.realms-page .realm-nav .realm-nav-emblem::before,
+.realms-page .realm-nav .realm-nav-emblem::after {
+  content: none;
+  display: none;
 }
-@media(max-width:620px){
-  .realms-page .realm-dossiers>article>header{grid-template-columns:1fr!important}
+.realms-page .realm-nav .realm-nav-emblem svg {
+  width: 32px;
+  height: 36px;
+  display: block;
+}
+.realms-page .realm-dossiers .realm-dossier-emblem {
+  width: 92px;
+  height: 104px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: color-mix(in srgb, var(--realm) 80%, var(--wl-gold-strong));
+  font-size: 0;
+}
+.realms-page .realm-dossiers .realm-dossier-emblem::before,
+.realms-page .realm-dossiers .realm-dossier-emblem::after {
+  content: none;
+  display: none;
+}
+.realms-page .realm-dossiers .realm-dossier-emblem svg {
+  width: 88px;
+  height: 100px;
+  display: block;
+  filter: drop-shadow(0 7px 10px color-mix(in srgb, var(--wl-gold-strong) 24%, transparent));
+}
+.realms-page .realm-dossiers > article > header {
+  grid-template-columns: 104px minmax(0, 1fr) minmax(260px, 390px);
+}
+
+@media (max-width: 900px) {
+  .realms-page .realm-dossiers > article > header {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+  .realms-page .realm-dossiers > article > header dl {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 700px) {
+  .world-map .world-map__crest,
+  .world-map .world-map__crest svg {
+    width: 52px;
+    height: 60px;
+  }
+  .realms-page .realm-dossiers .realm-dossier-emblem {
+    width: 76px;
+    height: 86px;
+    margin: auto;
+  }
+  .realms-page .realm-dossiers .realm-dossier-emblem svg {
+    width: 72px;
+    height: 82px;
+  }
+}
+@media (max-width: 620px) {
+  .realms-page .realm-dossiers > article > header {
+    grid-template-columns: 1fr;
+  }
 }

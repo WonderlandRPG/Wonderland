@@ -13,6 +13,7 @@ import { toArenaCharacter } from "@/lib/game/arena-character";
 import { createInitialPvpState } from "@/lib/game/pvp-state";
 import { PvpBattle } from "@/components/arena/pvp-battle";
 import type { Json } from "@/lib/db/types";
+import { isAdministrativeRole } from "@/lib/auth/roles";
 import { leaveAllQueuesAction } from "@/app/arena/queue-actions";
 import { CombatExitGuard } from "@/components/arena/combat-exit-guard";
 import {
@@ -23,7 +24,7 @@ import {
   type CreatureRank,
 } from "@/lib/game/bestiary";
 
-export const metadata = { title: "Combate" };
+export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
 
 export default async function ArenaPage({
@@ -39,7 +40,7 @@ export default async function ArenaPage({
     sessao?: string;
   }>;
 }) {
-  const { account, characterId } = await requireActiveCharacter("/combate");
+  const { account, characterId } = await requireActiveCharacter("/arena");
   const [characters, query] = await Promise.all([getCharacterSheets(account.id), searchParams]);
   const mode = (["training", "pve", "pvp"] as const).includes(query.modo as ArenaMode)
     ? (query.modo as ArenaMode)
@@ -66,7 +67,7 @@ export default async function ArenaPage({
             <h1>A Guilda requer sua atenção</h1>
             <p>
               Enquanto uma missão estiver em andamento, este personagem não pode participar de
-              Treino, PvE ou PvP.
+              Treino, PvE, PvP ou Dungeons.
             </p>
             <Link className="button button--primary" href="/missoes">
               Voltar ao Mural de Missões
@@ -177,14 +178,14 @@ export default async function ArenaPage({
               <h1>Escolha seu modo</h1>
               <p>Cada modalidade usa a ficha e os equipamentos do personagem selecionado.</p>
             </header>
-            <Link className="arena-history-link" href="/combate/historico">
+            <Link className="arena-history-link" href="/arena/historico">
               Ver histórico de vitórias e derrotas →
             </Link>
             <aside className="arena-queue-cleanup">
               <div>
                 <small>GERENCIAMENTO DE FILAS</small>
                 <strong>Vai aceitar uma missão?</strong>
-                <p>Encerre de uma vez filas e combates pendentes de PvE e PvP.</p>
+                <p>Encerre de uma vez filas e combates pendentes de Arena, PvP e Dungeon.</p>
               </div>
               <form action={leaveAllQueuesAction}>
                 <button className="button button--danger" type="submit">
@@ -210,7 +211,7 @@ export default async function ArenaPage({
               </p>
             ) : null}
             <div className="arena-mode-grid">
-              <Link className="arena-mode-card is-training" href="/combate?modo=training">
+              <Link className="arena-mode-card is-training" href="/arena?modo=training">
                 <span className="arena-mode-card__sigil">修</span>
                 <i>01</i>
                 <small>Sem recompensas</small>
@@ -248,7 +249,7 @@ export default async function ArenaPage({
                   </button>
                 </form>
               )}
-              <Link className="arena-mode-card is-pvp" href="/combate?modo=pvp">
+              <Link className="arena-mode-card is-pvp" href="/arena?modo=pvp">
                 <span className="arena-mode-card__sigil">対</span>
                 <i>03</i>
                 <small>Estrutura competitiva</small>
@@ -256,14 +257,26 @@ export default async function ArenaPage({
                 <p>Entre na fila para duelos balanceados entre aventureiros.</p>
                 <b>Ver fila →</b>
               </Link>
-              <Link className="arena-mode-card is-pvp" href="/combate/ranqueada">
-                <span className="arena-mode-card__sigil">冠</span>
-                <i>04</i>
-                <small>Exclusivamente 2 × 2</small>
-                <strong>Ranqueada</strong>
-                <p>Complete o MD5, conquiste um elo e dispute PdL com sua dupla.</p>
-                <b>Entrar na temporada →</b>
-              </Link>
+              {isAdministrativeRole(account.role) ? (
+                <Link className="arena-mode-card" href="/arena/mapa-tatico">
+                  <span className="arena-mode-card__sigil">棋</span>
+                  <i>ADM</i>
+                  <small>Laboratório administrativo</small>
+                  <strong>Mapa Tático</strong>
+                  <p>Reconstrua e valide o novo tabuleiro sem alterar os modos ativos.</p>
+                  <b>Abrir laboratório →</b>
+                </Link>
+              ) : null}
+              {isAdministrativeRole(account.role) ? (
+                <Link className="arena-mode-card is-dungeon" href="/arena/dungeons">
+                  <span className="arena-mode-card__sigil">門</span>
+                  <i>04</i>
+                  <small>Prévia administrativa · Rank E</small>
+                  <strong>Dungeon</strong>
+                  <p>Forme um grupo de quatro aventureiros e explore as Ruínas de Verdantia.</p>
+                  <b>Abrir expedição →</b>
+                </Link>
+              ) : null}
             </div>
           </section>
         ) : null}
@@ -277,7 +290,7 @@ export default async function ArenaPage({
                   "A sessão de combate não foi criada. Tente novamente em alguns instantes."}
               </p>
             </div>
-            <Link href="/combate">Voltar aos modos</Link>
+            <Link href="/arena">Voltar aos modos</Link>
           </section>
         ) : null}
         {mode === "pvp" && pvpMatchError ? (
@@ -287,7 +300,7 @@ export default async function ArenaPage({
               <strong>Partida PvP indisponível</strong>
               <p>{pvpMatchError}</p>
             </div>
-            <Link href="/combate?modo=pvp">Voltar para a fila</Link>
+            <Link href="/arena?modo=pvp">Voltar para a fila</Link>
           </section>
         ) : null}
         {mode === "pvp" && activeCharacter && !query.partida && !opponent ? (
@@ -299,7 +312,7 @@ export default async function ArenaPage({
         ) : null}
         {mode && !(mode === "pve" && arenaSessionError) && (mode !== "pvp" || opponent) ? (
           <>
-            <Link className="arena-mode-back" href="/combate">
+            <Link className="arena-mode-back" href="/arena">
               ← Trocar modo
             </Link>
             {mode === "pvp" && query.partida && arenaCharacter && arenaOpponent && pvpRoom ? (

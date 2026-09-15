@@ -33,6 +33,6 @@ export async function claimPresenceRewardAction() {
   }
   revalidatePath("/presenca");
   revalidatePath(`/personagens/${characterId}`);
-  revalidatePath("/combate");
+  revalidatePath("/arena");
   redirect("/presenca?status=resgatado");
 }

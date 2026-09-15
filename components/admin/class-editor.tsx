@@ -34,7 +34,7 @@ export function ClassEditor({ initialValue, notice }: { initialValue: Value; not
               {initialValue.status === "published" ? "Publicada" : "Rascunho"}
             </span>
           </div>
-          <p>Contrato estruturado usado pela Arena e pelas dungeons.</p>
+          <p>Contrato estruturado usado em todos os modos de Combate.</p>
         </div>
       </header>
       {notice ? (

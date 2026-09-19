@@ -29,6 +29,19 @@ import {
 } from "@/lib/game/rework-attributes";
 import { parseItemSpecialEffects, type ItemSpecialEffect } from "@/lib/game/item-effects";
 import { parseTitleStyle } from "@/lib/game/title-style";
+import {
+  buildSkillLoadoutAvailability,
+  defaultSkillLoadoutLimits,
+  getPassiveOptions,
+  getTalentSkills,
+  resolveSkillLoadout,
+  skillBalanceOverridesSchema,
+  skillLoadoutLimitsSchema,
+  type PassiveOption,
+  type SkillBalanceOverrides,
+  type SkillLoadout,
+  type SkillLoadoutLimits,
+} from "@/lib/game/skill-loadout";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   parseCharacterCosmetics,
@@ -43,7 +56,10 @@ type InventoryRow = Pick<
 >;
 type InventoryRowWithSlots = InventoryRow & { equipped_slots?: string[] | null };
 
-export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes" | "rework_attributes" | "cosmetics"> {
+export interface CharacterRecord extends Omit<
+  CharacterRow,
+  "allocated_attributes" | "rework_attributes" | "cosmetics"
+> {
   allocatedAttributes: AllocatedAttributes;
   reworkAttributes: ReworkAttributes;
   growth_profile: GrowthProfile;
@@ -54,9 +70,17 @@ export interface CharacterSheet extends CharacterRecord {
   race: { id: string; name: string; payload: RacePayload };
   characterClass: { id: string; name: string; payload: ClassPayload };
   stats: ReturnType<typeof buildCharacterStats>;
-  reworkStats: ReturnType<typeof calculateReworkSheet> & { base: ReworkAttributes; equipment: Partial<ReworkAttributes> };
+  reworkStats: ReturnType<typeof calculateReworkSheet> & {
+    base: ReworkAttributes;
+    equipment: Partial<ReworkAttributes>;
+  };
   unlockedRaceAbilities: ClassPayload["progression"];
   unlockedClassSkills: ClassPayload["progression"];
+  passiveOptions: PassiveOption[];
+  talentSkills: ClassPayload["progression"];
+  skillLoadout: SkillLoadout;
+  skillLoadoutLimits: SkillLoadoutLimits;
+  skillBalanceOverrides: SkillBalanceOverrides;
   inventory: Array<{
     id: string;
     itemId: string;
@@ -81,13 +105,25 @@ function parseCharacter(row: CharacterRow): CharacterRecord | null {
   const allocated = allocatedAttributesSchema.safeParse(row.allocated_attributes);
   if (!allocated.success) return null;
   const parsedRework = reworkAttributesSchema.safeParse(row.rework_attributes);
-  const { allocated_attributes: _raw, rework_attributes: _reworkRaw, cosmetics: rawCosmetics, ...record } = row;
+  const {
+    allocated_attributes: _raw,
+    rework_attributes: _reworkRaw,
+    cosmetics: rawCosmetics,
+    ...record
+  } = row;
   void _raw;
+  void _reworkRaw;
   return {
     ...record,
     allocatedAttributes: allocated.data,
-    reworkAttributes: parsedRework.success ? parsedRework.data : migrateLegacyAllocation(row.allocated_attributes),
-    growth_profile: (["aggressive", "balanced", "defensive", "custom"] as const).includes(row.growth_profile as GrowthProfile) ? row.growth_profile as GrowthProfile : "custom",
+    reworkAttributes: parsedRework.success
+      ? parsedRework.data
+      : migrateLegacyAllocation(row.allocated_attributes),
+    growth_profile: (["aggressive", "balanced", "defensive", "custom"] as const).includes(
+      row.growth_profile as GrowthProfile,
+    )
+      ? (row.growth_profile as GrowthProfile)
+      : "custom",
     cosmetics: parseCharacterCosmetics(rawCosmetics),
   };
 }
@@ -105,6 +141,31 @@ async function loadSheets(
   const { data } = await client.from("v2_content").select("*").in("id", ids);
   const content = new Map((data ?? []).map((entry) => [entry.id, entry as ContentRow]));
   const characterIds = records.map((entry) => entry.id);
+  const [{ data: loadoutRows }, { data: loadoutSettingRows }] = await Promise.all([
+    client
+      .from("v2_character_skill_loadouts")
+      .select(
+        "character_id,equipped_class_skill_keys,equipped_race_skill_keys,selected_passive_keys,selected_talent_keys",
+      )
+      .in("character_id", characterIds),
+    client
+      .from("v2_game_settings")
+      .select("key,value")
+      .in("key", ["combat.loadout_limits", "combat.skill_balance_overrides"])
+      .eq("status", "published"),
+  ]);
+  const loadouts = new Map((loadoutRows ?? []).map((entry) => [entry.character_id, entry]));
+  const loadoutSettings = new Map(
+    (loadoutSettingRows ?? []).map((entry) => [entry.key, entry.value]),
+  );
+  const parsedLimits = skillLoadoutLimitsSchema.safeParse(
+    loadoutSettings.get("combat.loadout_limits"),
+  );
+  const loadoutLimits = parsedLimits.success ? parsedLimits.data : defaultSkillLoadoutLimits;
+  const parsedOverrides = skillBalanceOverridesSchema.safeParse(
+    loadoutSettings.get("combat.skill_balance_overrides"),
+  );
+  const skillBalanceOverrides = parsedOverrides.success ? parsedOverrides.data : {};
   const inventoryRows = providedInventoryRows
     ? providedInventoryRows
     : ((
@@ -179,8 +240,17 @@ async function loadSheets(
           ),
       ]),
     );
-    const reworkRace = reworkRaces.find((entry) => entry.id === raceRow.slug || entry.name === raceRow.name);
-    const reworkBase = reworkRace?.baseStats ?? { FOR: 0, INT: 0, DEF: 0, RES: 0, HP: race.data.baseHp, INI: 0 };
+    const reworkRace = reworkRaces.find(
+      (entry) => entry.id === raceRow.slug || entry.name === raceRow.name,
+    );
+    const reworkBase = reworkRace?.baseStats ?? {
+      FOR: 0,
+      INT: 0,
+      DEF: 0,
+      RES: 0,
+      HP: race.data.baseHp,
+      INI: 0,
+    };
     const reworkEquipment = {
       FOR: equipmentBonuses.FOR,
       INT: equipmentBonuses.INT,
@@ -189,6 +259,22 @@ async function loadSheets(
       HP: equipmentBonuses.ARC,
       INI: equipmentBonuses.INI,
     };
+    const unlockedRaceAbilities = getUnlockedRaceAbilities(race.data, record.level);
+    const unlockedClassSkills = [
+      ...getUnlockedClassSkills(characterClass.data, record.level),
+      ...getUnlockedPathSkills(characterClass.data, record.class_path_key, record.level),
+    ].sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
+    const passiveOptions = getPassiveOptions(characterClass.data, race.data, record.class_path_key);
+    const talentSkills = getTalentSkills(characterClass.data, record.class_path_key, record.level);
+    const skillLoadout = resolveSkillLoadout(
+      loadouts.get(record.id),
+      buildSkillLoadoutAvailability({
+        classSkills: unlockedClassSkills,
+        raceSkills: unlockedRaceAbilities,
+        passiveOptions,
+        talentSkills,
+      }),
+    );
     return [
       {
         ...record,
@@ -206,11 +292,13 @@ async function loadSheets(
           base: reworkBase,
           equipment: reworkEquipment,
         },
-        unlockedRaceAbilities: getUnlockedRaceAbilities(race.data, record.level),
-        unlockedClassSkills: [
-          ...getUnlockedClassSkills(characterClass.data, record.level),
-          ...getUnlockedPathSkills(characterClass.data, record.class_path_key, record.level),
-        ].sort((left, right) => left.level - right.level || left.name.localeCompare(right.name)),
+        unlockedRaceAbilities,
+        unlockedClassSkills,
+        passiveOptions,
+        talentSkills,
+        skillLoadout,
+        skillLoadoutLimits: loadoutLimits,
+        skillBalanceOverrides,
         inventory,
       },
     ];

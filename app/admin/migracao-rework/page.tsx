@@ -1,13 +1,19 @@
 import styles from "./rework-migration.module.css";
 
 import { getReworkRolloutState } from "@/lib/content/rework-rollout";
+import { getReworkClasses, getReworkRaces } from "@/lib/content/rework-catalog";
 import { reworkRolloutModules } from "@/lib/game/rework-rollout";
+import { ReworkCatalogEditor } from "@/components/admin/rework-catalog-editor";
 
 export const metadata = { title: "Migração do Rework | Painel ADM" };
 export const dynamic = "force-dynamic";
 
 export default async function ReworkMigrationPage() {
-  const state = await getReworkRolloutState();
+  const [state, classes, races] = await Promise.all([
+    getReworkRolloutState(),
+    getReworkClasses(),
+    getReworkRaces(),
+  ]);
 
   return (
     <div className="admin-content">
@@ -26,6 +32,8 @@ export default async function ReworkMigrationPage() {
           oficial. Nenhuma rotina desta fundação lê ou importa usuários de outro projeto.
         </p>
       </section>
+
+      <ReworkCatalogEditor classes={classes} races={races} />
 
       <section className="admin-section">
         <header>

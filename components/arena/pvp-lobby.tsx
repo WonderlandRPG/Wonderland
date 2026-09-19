@@ -39,16 +39,6 @@ export function PvpLobby({
   const [now, setNow] = useState(() => Date.now());
   const router = useRouter();
 
-  const openMatch = useCallback(
-    (match: QueueState) => {
-      if (!match.matchId || match.acceptanceStatus !== "ready") return false;
-      if (match.format === "duo") router.replace(`/arena/pvp-duo/${match.matchId}`);
-      else router.replace(`/arena?modo=pvp&partida=${match.matchId}`);
-      return true;
-    },
-    [router],
-  );
-
   const refreshParty = useCallback(async () => {
     const result = await getPvpPartyStateAction(characterId);
     if (!result.ok) return;
@@ -69,15 +59,17 @@ export function PvpLobby({
   }, [refreshParty]);
 
   useEffect(() => {
-    if (queue?.status === "matched") openMatch(queue);
-  }, [openMatch, queue]);
+    if (queue?.status === "matched" && queue.matchId && queue.acceptanceStatus === "ready") {
+      if (queue.format === "duo") router.replace(`/arena/pvp-duo/${queue.matchId}`);
+      else router.replace(`/arena?modo=pvp&partida=${queue.matchId}`);
+    }
+  }, [queue, router]);
 
   useEffect(() => {
     if (!queue || (queue.status !== "searching" && queue.status !== "matched")) return;
     const timer = window.setInterval(() => {
       void pollPvpQueueAction(queue.queueId).then((result) => {
         if (result.ok) {
-          openMatch(result.data);
           setQueue((current) => {
             if (
               current?.status === "matched" &&
@@ -93,7 +85,7 @@ export function PvpLobby({
       });
     }, 1500);
     return () => window.clearInterval(timer);
-  }, [openMatch, queue]);
+  }, [queue]);
 
   useEffect(() => {
     if (queue?.status !== "matched") return;
@@ -196,7 +188,6 @@ export function PvpLobby({
         setMessage(accept ? "O prazo de confirmação terminou." : "Partida recusada. Você saiu desta busca.");
         await refreshParty();
       } else setQueue(result.data);
-      if (result.ok) openMatch(result.data);
     });
   }
 

@@ -158,7 +158,7 @@ export default async function CharactersPage({ searchParams }: { searchParams: P
                     <small>Herói de Wonderland</small><h2>{character.name}</h2>
                     <dl className={styles.identity}><div><dt>Raça</dt><dd>{character.race.name}</dd></div><div><dt>Classe</dt><dd>{character.characterClass.name}</dd></div><div><dt>Rank</dt><dd>{rank.key}</dd></div></dl>
                     <p className={styles.wallet}><span>Carteira</span><strong>{character.gold.toLocaleString("pt-BR")} WG</strong></p>
-                    <div className={styles.stats}><span>HP <strong>{character.stats.maxHp}</strong></span><span>Recurso <strong>{character.characterClass.payload.resource.name}</strong></span><span>INI <strong>{character.stats.initiative}</strong></span></div>
+                    <div className={styles.stats}><span>HP <strong>{character.reworkStats.attributes.HP}</strong></span><span>Poder Total <strong>{character.reworkStats.powerTotal}</strong></span><span>INI <strong>{character.reworkStats.attributes.INI}</strong></span></div>
                   </div>
                   <footer className={styles.footer}>
                     {selecting ? <form action={selectCharacterAction}><input name="characterId" type="hidden" value={character.id} /><input name="next" type="hidden" value={query.next ?? "/personagens"} /><button className="button button--dark" type="submit">{character.id === activeCharacterId ? "Continuar jornada" : "Jogar com este"}</button></form> : <Link className="button button--dark" href="/arena">Ir para a Arena</Link>}

@@ -94,6 +94,8 @@ export interface Database {
           kingdom: string;
           adventure_rank: string;
           allocated_attributes: Json;
+          rework_attributes: Json | null;
+          growth_profile: string;
           cosmetics: Json;
           created_at: string;
           updated_at: string;
@@ -114,6 +116,8 @@ export interface Database {
           kingdom?: string;
           adventure_rank?: string;
           allocated_attributes: Json;
+          rework_attributes?: Json | null;
+          growth_profile?: string;
           cosmetics?: Json;
           created_at?: string;
           updated_at?: string;

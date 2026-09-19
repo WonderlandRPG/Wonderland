@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { itemCatalogSlots, itemRarities } from "@/lib/game/equipment";
 
 export const attributeDraftSchema = z.object({
   FOR: z.number().int().min(0).max(999), DEF: z.number().int().min(0).max(999), RES: z.number().int().min(0).max(999),
@@ -25,13 +26,20 @@ export const simpleRaceDraftSchema = z.object({
 export type SimpleRaceDraft = z.infer<typeof simpleRaceDraftSchema>;
 export const simpleRaceDefaults = (): SimpleRaceDraft => ({ id:"", name:"Nova raça", description:"Descreva origem, aparência, cultura e papel desta raça em Wonderland.", specialization:"Versátil", difficulty:2, baseHp:300, baseMana:0, imageUrl:"", bonuses:emptyAttributes(), traitName:"Traço racial", traitDescription:"Descreva uma característica permanente desta raça." });
 
-export const itemSlots = ["head","torso","hands","legs","feet","main_weapon","off_weapon","necklace","ring","earring","cape"] as const;
-export const rarities = ["common","uncommon","rare","epic","legendary","mythic"] as const;
+export const itemSlots = itemCatalogSlots;
+export const rarities = itemRarities;
 export const effectKinds = ["","POISON","BLEED","LIFE_STEAL","COOLDOWN_REDUCTION","FREEZE"] as const;
 export const simpleItemDraftSchema = z.object({
   id:z.string().optional().default(""), name:z.string().trim().min(2).max(100), description:z.string().trim().min(5).max(500), category:z.string().trim().min(2).max(50),
   slot:z.enum(itemSlots), rarity:z.enum(rarities), price:z.number().int().min(0).max(999999999), imageUrl:z.string().trim().max(1000), attributes:attributeDraftSchema,
   twoHanded:z.boolean(), effectKind:z.enum(effectKinds), effectName:z.string().trim().max(100), effectDescription:z.string().trim().max(500), effectPower:z.number().min(0).max(1000), effectDuration:z.number().int().min(0).max(20),
+}).superRefine((item, context) => {
+  if (item.twoHanded && !["main_weapon", "off_weapon"].includes(item.slot)) {
+    context.addIssue({ code:"custom", path:["twoHanded"], message:"Somente armas podem ocupar as duas mãos." });
+  }
+  if (item.effectKind && !item.effectName) {
+    context.addIssue({ code:"custom", path:["effectName"], message:"Informe o nome do efeito especial." });
+  }
 });
 export type SimpleItemDraft = z.infer<typeof simpleItemDraftSchema>;
 export const simpleItemDefaults = (): SimpleItemDraft => ({ id:"", name:"Novo item", description:"Descreva o equipamento e sua função.", category:"Equipamento", slot:"main_weapon", rarity:"common", price:0, imageUrl:"", attributes:emptyAttributes(), twoHanded:false, effectKind:"", effectName:"", effectDescription:"", effectPower:0, effectDuration:0 });

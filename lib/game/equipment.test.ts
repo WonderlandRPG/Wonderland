@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   canEquipItemInSlot,
   compatibleEquipSlots,
+  equippedItemCopies,
   getBasicAttackRange,
+  occupiedEquipmentSlots,
 } from "@/lib/game/equipment";
 
 describe("regras de armas e espaços", () => {
@@ -16,6 +18,16 @@ describe("regras de armas e espaços", () => {
   it("reserva os dois espaços para qualquer arma de duas mãos", () => {
     expect(compatibleEquipSlots("main_weapon", true)).toEqual(["main_weapon", "off_weapon"]);
     expect(compatibleEquipSlots("off_weapon", true)).toEqual(["main_weapon", "off_weapon"]);
+  });
+
+  it("ocupa as duas mãos sem duplicar os atributos da arma", () => {
+    const weapon = { equippedSlots: ["main_weapon"], twoHanded: true };
+    expect(occupiedEquipmentSlots(weapon)).toEqual(["main_weapon", "off_weapon"]);
+    expect(equippedItemCopies(weapon)).toBe(1);
+  });
+
+  it("conta cópias realmente equipadas de itens empilháveis", () => {
+    expect(equippedItemCopies({ equippedSlots: ["ring_1", "ring_2"], twoHanded: false })).toBe(2);
   });
 
   it("calcula o alcance básico pela arma realmente equipada", () => {

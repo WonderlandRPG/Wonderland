@@ -47,6 +47,7 @@ import {
   parseCharacterCosmetics,
   type CharacterCosmeticLoadout,
 } from "@/lib/content/character-cosmetics";
+import { equippedItemCopies } from "@/lib/game/equipment";
 
 type CharacterRow = Database["public"]["Tables"]["v2_characters"]["Row"];
 type ContentRow = Database["public"]["Tables"]["v2_content"]["Row"];
@@ -231,13 +232,11 @@ async function loadSheets(
     const equipmentBonuses = Object.fromEntries(
       attributeKeys.map((attribute) => [
         attribute,
-        inventory
-          .filter((entry) => entry.equippedSlots.length)
-          .reduce(
-            (total, entry) =>
-              total + (entry.attributes[attribute] ?? 0) * entry.equippedSlots.length,
-            0,
-          ),
+        inventory.reduce(
+          (total, entry) =>
+            total + (entry.attributes[attribute] ?? 0) * equippedItemCopies(entry),
+          0,
+        ),
       ]),
     );
     const reworkRace = reworkRaces.find(

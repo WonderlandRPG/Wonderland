@@ -1,0 +1,524 @@
+[
+  {
+    "contractVersion": 2,
+    "id": "aengel",
+    "name": "Aengel",
+    "epithet": "Herdeiros da Alvorada",
+    "sigil": "✦",
+    "description": "Protetores celestiais que dominam luz, barreiras e os céus do campo de batalha.",
+    "baseStats": {
+      "FOR": 20,
+      "INT": 55,
+      "DEF": 40,
+      "RES": 40,
+      "HP": 460,
+      "INI": 10
+    },
+    "powers": [
+      {
+        "id": "aengel-0",
+        "iconUrl": "/assets/skills/races/aengel/0.webp",
+        "unlockLevel": 1,
+        "name": "Luz Celestial",
+        "kind": "Característica",
+        "description": "No início do combate, escolha a si ou um aliado. O alvo recebe uma Barreira de 100 + 40% da INT do Aengel. Uma vez por combate."
+      },
+      {
+        "id": "aengel-1",
+        "iconUrl": "/assets/skills/races/aengel/1.webp",
+        "unlockLevel": 1,
+        "name": "Julgamento da Alvorada",
+        "kind": "Habilidade",
+        "description": "Causa 80% da INT como dano mágico de Luz aos inimigos na área.",
+        "cooldown": "6 turnos",
+        "range": "5",
+        "area": "3×3"
+      },
+      {
+        "id": "aengel-2",
+        "iconUrl": "/assets/skills/races/aengel/2.webp",
+        "unlockLevel": 5,
+        "name": "Voo da Alvorada",
+        "kind": "Habilidade",
+        "description": "Voe até uma célula livre, ignorando unidades e obstáculos baixos. Ao pousar, receba 20% de redução de dano até o próximo turno.",
+        "cooldown": "5 turnos",
+        "range": "4"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "draconato",
+    "name": "Draconato",
+    "epithet": "Sangue dos Dragões",
+    "sigil": "◆",
+    "description": "Descendentes de linhagens dracônicas, resistentes e capazes de dominar território com poder elemental.",
+    "baseStats": {
+      "FOR": 55,
+      "INT": 25,
+      "DEF": 50,
+      "RES": 35,
+      "HP": 620,
+      "INI": 7
+    },
+    "powers": [
+      {
+        "id": "draconato-0",
+        "iconUrl": "/assets/skills/races/draconato/0.webp",
+        "unlockLevel": 1,
+        "name": "Escamas Ancestrais",
+        "kind": "Característica",
+        "description": "O primeiro ataque sofrido a cada rodada causa 15% menos dano. Ataques que ignoram defesa reduzem apenas metade desse valor."
+      },
+      {
+        "id": "draconato-1",
+        "iconUrl": "/assets/skills/races/draconato/1.webp",
+        "unlockLevel": 1,
+        "name": "Sopro Dracônico",
+        "kind": "Habilidade",
+        "description": "Expele energia dracônica em cone, causando 70% da FOR + 30% da INT como dano mágico.",
+        "cooldown": "5 turnos",
+        "range": "3",
+        "area": "Cone"
+      },
+      {
+        "id": "draconato-2",
+        "iconUrl": "/assets/skills/races/draconato/2.webp",
+        "unlockLevel": 5,
+        "name": "Domínio do Dragão",
+        "kind": "Habilidade",
+        "description": "Golpeia o chão e empurra inimigos adjacentes 2 células. Alvos que colidirem com obstáculo sofrem dano físico adicional.",
+        "cooldown": "6 turnos",
+        "range": "Próprio",
+        "area": "Adjacente"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "elfo",
+    "name": "Elfo",
+    "epithet": "Vigilantes Antigos",
+    "sigil": "❖",
+    "description": "Combatentes precisos e atentos, ligados às rotas ocultas e às forças vivas do mundo.",
+    "baseStats": {
+      "FOR": 35,
+      "INT": 45,
+      "DEF": 25,
+      "RES": 40,
+      "HP": 400,
+      "INI": 14
+    },
+    "powers": [
+      {
+        "id": "elfo-0",
+        "iconUrl": "/assets/skills/races/elfo/0.webp",
+        "unlockLevel": 1,
+        "name": "Sentidos Milenares",
+        "kind": "Característica",
+        "description": "O primeiro ataque contra cada inimigo ignora 15% da DEF ou RES correspondente."
+      },
+      {
+        "id": "elfo-1",
+        "iconUrl": "/assets/skills/races/elfo/1.webp",
+        "unlockLevel": 1,
+        "name": "Passo Silvestre",
+        "kind": "Habilidade",
+        "description": "Desloque-se até uma célula livre sem provocar reação. Se terminar próximo a cobertura, receba 15% de redução de dano à distância.",
+        "cooldown": "4 turnos",
+        "range": "4"
+      },
+      {
+        "id": "elfo-2",
+        "iconUrl": "/assets/skills/races/elfo/2.webp",
+        "unlockLevel": 5,
+        "name": "Raízes do Primeiro Bosque",
+        "kind": "Habilidade",
+        "description": "Prende o alvo ao terreno até o fim do próximo turno. O alvo ainda pode agir, mas não pode se deslocar.",
+        "cooldown": "6 turnos",
+        "range": "5",
+        "area": "1 célula"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "fada",
+    "name": "Fada",
+    "epithet": "Centelhas do Véu",
+    "sigil": "✧",
+    "description": "Seres feéricos frágeis, velozes e extraordinariamente afinados com magia e encantamentos.",
+    "baseStats": {
+      "FOR": 15,
+      "INT": 60,
+      "DEF": 20,
+      "RES": 50,
+      "HP": 320,
+      "INI": 16
+    },
+    "powers": [
+      {
+        "id": "fada-0",
+        "iconUrl": "/assets/skills/races/fada/0.webp",
+        "unlockLevel": 1,
+        "name": "Corpo Feérico",
+        "kind": "Característica",
+        "description": "Pode atravessar células ocupadas por unidades durante o movimento e recebe 20% menos dano de ataques em área."
+      },
+      {
+        "id": "fada-1",
+        "iconUrl": "/assets/skills/races/fada/1.webp",
+        "unlockLevel": 1,
+        "name": "Pó Restaurador",
+        "kind": "Habilidade",
+        "description": "Remove um efeito negativo do alvo e restaura 40 + 25% da INT em HP.",
+        "cooldown": "5 turnos",
+        "range": "4",
+        "area": "1 alvo"
+      },
+      {
+        "id": "fada-2",
+        "iconUrl": "/assets/skills/races/fada/2.webp",
+        "unlockLevel": 5,
+        "name": "Salto entre Véus",
+        "kind": "Habilidade",
+        "description": "Teleporte-se para uma célula visível. A próxima habilidade de suporte usada até o fim do turno recebe 15% de potência.",
+        "cooldown": "5 turnos",
+        "range": "5"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "humano",
+    "name": "Humano",
+    "epithet": "Vontade Inquebrável",
+    "sigil": "◇",
+    "description": "Adaptáveis e imprevisíveis, humanos transformam preparação e cooperação em vantagem.",
+    "baseStats": {
+      "FOR": 40,
+      "INT": 40,
+      "DEF": 40,
+      "RES": 40,
+      "HP": 500,
+      "INI": 10
+    },
+    "powers": [
+      {
+        "id": "humano-0",
+        "iconUrl": "/assets/skills/races/humano/0.webp",
+        "unlockLevel": 1,
+        "name": "Versatilidade",
+        "kind": "Característica",
+        "description": "No início do combate, escolha Ofensiva, Defesa ou Velocidade e receba 10% no conjunto correspondente até o fim do combate."
+      },
+      {
+        "id": "humano-1",
+        "iconUrl": "/assets/skills/races/humano/1.webp",
+        "unlockLevel": 1,
+        "name": "Superação",
+        "kind": "Habilidade",
+        "description": "Remove um efeito de controle de si e concede 20% de resistência a efeitos negativos até o próximo turno.",
+        "cooldown": "6 turnos",
+        "range": "Próprio"
+      },
+      {
+        "id": "humano-2",
+        "iconUrl": "/assets/skills/races/humano/2.webp",
+        "unlockLevel": 5,
+        "name": "Comando Inspirador",
+        "kind": "Habilidade",
+        "description": "Você e aliados próximos recebem 10% de dano e 10% de escudo e cura adicionais durante 2 turnos.",
+        "cooldown": "7 turnos",
+        "range": "Próprio",
+        "area": "Raio 2"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "kitsune",
+    "name": "Kitsune",
+    "epithet": "Tecelões de Ilusão",
+    "sigil": "◈",
+    "description": "Místicos ardilosos que acumulam fogo espiritual e confundem a leitura do campo.",
+    "baseStats": {
+      "FOR": 20,
+      "INT": 58,
+      "DEF": 25,
+      "RES": 45,
+      "HP": 360,
+      "INI": 15
+    },
+    "powers": [
+      {
+        "id": "kitsune-0",
+        "iconUrl": "/assets/skills/races/kitsune/0.webp",
+        "unlockLevel": 1,
+        "name": "Caudas Espirituais",
+        "kind": "Característica",
+        "description": "Ao usar uma habilidade, ganhe uma Chama Espiritual, até 3. Com 3 Chamas, a próxima habilidade racial causa 20% mais efeito e consome todas."
+      },
+      {
+        "id": "kitsune-1",
+        "iconUrl": "/assets/skills/races/kitsune/1.webp",
+        "unlockLevel": 1,
+        "name": "Fogo da Raposa",
+        "kind": "Habilidade",
+        "description": "Lança fogo espiritual que causa 75% da INT como dano mágico. O alvo fica Revelado por 2 turnos.",
+        "cooldown": "4 turnos",
+        "range": "5",
+        "area": "1 alvo"
+      },
+      {
+        "id": "kitsune-2",
+        "iconUrl": "/assets/skills/races/kitsune/2.webp",
+        "unlockLevel": 5,
+        "name": "Reflexo Enganador",
+        "kind": "Habilidade",
+        "description": "Cria uma ilusão na célula escolhida. O primeiro ataque inimigo contra você dentro do alcance acerta a ilusão e a destrói.",
+        "cooldown": "7 turnos",
+        "range": "4",
+        "area": "1 célula"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "leonis",
+    "name": "Leonis",
+    "epithet": "Orgulho da Savana",
+    "sigil": "✺",
+    "description": "Caçadores nobres que marcam presas, pressionam a linha de frente e protegem seu território.",
+    "baseStats": {
+      "FOR": 52,
+      "INT": 20,
+      "DEF": 45,
+      "RES": 30,
+      "HP": 580,
+      "INI": 11
+    },
+    "powers": [
+      {
+        "id": "leonis-0",
+        "iconUrl": "/assets/skills/races/leonis/0.webp",
+        "unlockLevel": 1,
+        "name": "Instinto do Alfa",
+        "kind": "Característica",
+        "description": "Ao causar dano pela primeira vez, marque o inimigo como Presa. Contra a Presa, ganhe 10% de dano e 1 de movimento."
+      },
+      {
+        "id": "leonis-1",
+        "iconUrl": "/assets/skills/races/leonis/1.webp",
+        "unlockLevel": 1,
+        "name": "Rugido Soberano",
+        "kind": "Habilidade",
+        "description": "Inimigos próximos causam 15% menos dano por 2 turnos e são forçados a revelar sua posição.",
+        "cooldown": "6 turnos",
+        "range": "Próprio",
+        "area": "Raio 2"
+      },
+      {
+        "id": "leonis-2",
+        "iconUrl": "/assets/skills/races/leonis/2.webp",
+        "unlockLevel": 5,
+        "name": "Bote do Predador",
+        "kind": "Habilidade",
+        "description": "Salte sobre um inimigo e cause 90% da FOR como dano físico. O alcance aumenta em 1 contra a Presa.",
+        "cooldown": "5 turnos",
+        "range": "4",
+        "area": "1 alvo"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "lobisomem",
+    "name": "Lobisomem",
+    "epithet": "Fúria Lunar",
+    "sigil": "☾",
+    "description": "Predadores ferozes que ficam mais perigosos quando feridos e perseguem alvos enfraquecidos.",
+    "baseStats": {
+      "FOR": 58,
+      "INT": 15,
+      "DEF": 35,
+      "RES": 25,
+      "HP": 620,
+      "INI": 13
+    },
+    "powers": [
+      {
+        "id": "lobisomem-0",
+        "iconUrl": "/assets/skills/races/lobisomem/0.webp",
+        "unlockLevel": 1,
+        "name": "Fera Desperta",
+        "kind": "Característica",
+        "description": "Abaixo de 50% do HP, receba 15% de dano físico e 10% de cura pelo dano físico causado."
+      },
+      {
+        "id": "lobisomem-1",
+        "iconUrl": "/assets/skills/races/lobisomem/1.webp",
+        "unlockLevel": 1,
+        "name": "Garras Dilacerantes",
+        "kind": "Habilidade",
+        "description": "Causa 85% da FOR como dano físico e aplica Sangramento de 15% da FOR por 2 turnos.",
+        "cooldown": "4 turnos",
+        "range": "1",
+        "area": "1 alvo"
+      },
+      {
+        "id": "lobisomem-2",
+        "iconUrl": "/assets/skills/races/lobisomem/2.webp",
+        "unlockLevel": 5,
+        "name": "Caçada Implacável",
+        "kind": "Habilidade",
+        "description": "Avance até um inimigo visível com menos de 50% do HP e receba 20% de redução de dano até o próximo turno.",
+        "cooldown": "6 turnos",
+        "range": "5",
+        "area": "1 alvo"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "orc",
+    "name": "Orc",
+    "epithet": "Filhos da Guerra",
+    "sigil": "⬙",
+    "description": "Guerreiros de força brutal, difíceis de derrubar e capazes de romper formações.",
+    "baseStats": {
+      "FOR": 60,
+      "INT": 15,
+      "DEF": 48,
+      "RES": 25,
+      "HP": 650,
+      "INI": 6
+    },
+    "powers": [
+      {
+        "id": "orc-0",
+        "iconUrl": "/assets/skills/races/orc/0.webp",
+        "unlockLevel": 1,
+        "name": "Recusar a Morte",
+        "kind": "Característica",
+        "description": "Uma vez por combate, ao receber dano fatal, permaneça com 1 HP e ganhe 25% de redução de dano até o próximo turno."
+      },
+      {
+        "id": "orc-1",
+        "iconUrl": "/assets/skills/races/orc/1.webp",
+        "unlockLevel": 1,
+        "name": "Golpe Demolidor",
+        "kind": "Habilidade",
+        "description": "Causa 100% da FOR como dano físico e destrói 25% das Barreiras atuais do alvo antes do dano.",
+        "cooldown": "5 turnos",
+        "range": "1",
+        "area": "1 alvo"
+      },
+      {
+        "id": "orc-2",
+        "iconUrl": "/assets/skills/races/orc/2.webp",
+        "unlockLevel": 5,
+        "name": "Clamor de Guerra",
+        "kind": "Habilidade",
+        "description": "Você e aliados próximos recebem 15% de FOR e não podem ser empurrados durante 2 turnos.",
+        "cooldown": "7 turnos",
+        "range": "Próprio",
+        "area": "Raio 2"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "tiefling",
+    "name": "Tiefling",
+    "epithet": "Herdeiros do Pacto",
+    "sigil": "♢",
+    "description": "Portadores de poder infernal que convertem risco em magia e dominam áreas perigosas.",
+    "baseStats": {
+      "FOR": 25,
+      "INT": 55,
+      "DEF": 30,
+      "RES": 48,
+      "HP": 430,
+      "INI": 11
+    },
+    "powers": [
+      {
+        "id": "tiefling-0",
+        "iconUrl": "/assets/skills/races/tiefling/0.webp",
+        "unlockLevel": 1,
+        "name": "Sangue Infernal",
+        "kind": "Característica",
+        "description": "Receba 20% menos dano de Fogo. Sempre que perder HP por custo próprio, ganhe uma Barreira igual a 30% do HP gasto."
+      },
+      {
+        "id": "tiefling-1",
+        "iconUrl": "/assets/skills/races/tiefling/1.webp",
+        "unlockLevel": 1,
+        "name": "Chão Profanado",
+        "kind": "Habilidade",
+        "description": "Cria uma área por 2 turnos. Inimigos que entram ou iniciam o turno nela sofrem 35% da INT como dano mágico.",
+        "cooldown": "6 turnos",
+        "range": "5",
+        "area": "2×2"
+      },
+      {
+        "id": "tiefling-2",
+        "iconUrl": "/assets/skills/races/tiefling/2.webp",
+        "unlockLevel": 5,
+        "name": "Pacto Ardente",
+        "kind": "Habilidade",
+        "description": "Sacrifique 8% do HP atual para ganhar 25% de dano mágico durante 2 turnos.",
+        "cooldown": "6 turnos",
+        "range": "Próprio"
+      }
+    ]
+  },
+  {
+    "contractVersion": 2,
+    "id": "vampiro",
+    "name": "Vampiro",
+    "epithet": "Nobreza da Noite",
+    "sigil": "✥",
+    "description": "Predadores elegantes que manipulam sangue, sustentam-se em combate e se movem como névoa.",
+    "baseStats": {
+      "FOR": 45,
+      "INT": 48,
+      "DEF": 30,
+      "RES": 42,
+      "HP": 440,
+      "INI": 14
+    },
+    "powers": [
+      {
+        "id": "vampiro-0",
+        "iconUrl": "/assets/skills/races/vampiro/0.webp",
+        "unlockLevel": 1,
+        "name": "Sede Carmesim",
+        "kind": "Característica",
+        "description": "Cure 10% do dano direto causado a inimigos. A cura por rodada não pode ultrapassar 8% do HP máximo."
+      },
+      {
+        "id": "vampiro-1",
+        "iconUrl": "/assets/skills/races/vampiro/1.webp",
+        "unlockLevel": 1,
+        "name": "Dreno Vital",
+        "kind": "Habilidade",
+        "description": "Causa 65% da INT como dano mágico e cura 50% do dano efetivamente causado.",
+        "cooldown": "5 turnos",
+        "range": "3",
+        "area": "1 alvo"
+      },
+      {
+        "id": "vampiro-2",
+        "iconUrl": "/assets/skills/races/vampiro/2.webp",
+        "unlockLevel": 5,
+        "name": "Forma de Névoa",
+        "kind": "Habilidade",
+        "description": "Mova-se até 4 células ignorando unidades. Até o próximo turno, não pode ser alvo de ataques de oportunidade e recebe 20% menos dano físico.",
+        "cooldown": "6 turnos",
+        "range": "4"
+      }
+    ]
+  }
+]

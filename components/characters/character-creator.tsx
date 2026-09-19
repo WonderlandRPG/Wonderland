@@ -4,20 +4,24 @@ import { useActionState, useMemo, useState } from "react";
 
 import { createCharacterAction } from "@/app/personagens/actions";
 import { initialCharacterActionState } from "@/lib/game/character-forms";
-import { buildCharacterPreset, type CharacterPreset } from "@/lib/game/character-presets";
 import {
-  createEmptyAllocation,
-  getAllocatedTotal,
-  type AllocatedAttributes,
-} from "@/lib/game/characters";
-import { attributeLabels, type RacePayload } from "@/lib/game/races";
-import { attributeKeys, type AttributeKey } from "@/lib/game/schemas";
+  buildReworkPreset,
+  emptyReworkAllocation,
+  reworkAttributeKeys,
+  reworkAttributeTotal,
+  type GrowthProfile,
+  type ReworkAttributeKey,
+  type ReworkAttributes,
+} from "@/lib/game/rework-attributes";
+import { type RacePayload } from "@/lib/game/races";
+import { type AttributeKey } from "@/lib/game/schemas";
 import { kingdoms } from "@/lib/game/kingdoms";
 
 interface RaceOption {
   id: string;
   name: string;
   payload: RacePayload;
+  baseStats: ReworkAttributes;
 }
 interface ClassOption {
   id: string;
@@ -36,33 +40,31 @@ export function CharacterCreator({
   races,
   classes,
   points,
-  baseAttributes,
 }: {
   races: RaceOption[];
   classes: ClassOption[];
   points: number;
-  baseAttributes: AllocatedAttributes;
 }) {
   const [state, action, pending] = useActionState(
     createCharacterAction,
     initialCharacterActionState,
   );
-  const [allocation, setAllocation] = useState(createEmptyAllocation());
+  const [allocation, setAllocation] = useState(emptyReworkAllocation());
   const [raceId, setRaceId] = useState(races[0]?.id ?? "");
   const [classId, setClassId] = useState(classes[0]?.id ?? "");
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [activePreset, setActivePreset] = useState<CharacterPreset | "custom">("custom");
+  const [activePreset, setActivePreset] = useState<GrowthProfile>("custom");
   const [codexTab, setCodexTab] = useState<"race" | "class">("race");
   const selectedRace = useMemo(() => races.find((entry) => entry.id === raceId), [raceId, races]);
   const selectedClass = useMemo(
     () => classes.find((entry) => entry.id === classId),
     [classId, classes],
   );
-  const used = getAllocatedTotal(allocation);
+  const used = reworkAttributeTotal(allocation);
   const remaining = points - used;
 
-  function update(attribute: AttributeKey, value: number) {
+  function update(attribute: ReworkAttributeKey, value: number) {
     const other = used - allocation[attribute];
     setAllocation((current) => ({
       ...current,
@@ -71,52 +73,30 @@ export function CharacterCreator({
     setActivePreset("custom");
   }
 
-  function applyPreset(preset: CharacterPreset) {
-    if (!selectedRace || !selectedClass) return;
-    setAllocation(
-      buildCharacterPreset({
-        preset,
-        points,
-        racialBonuses: selectedRace.payload.attributeBonuses,
-        primaryAttributes: selectedClass.primaryAttributes,
-      }),
-    );
+  function applyPreset(preset: Exclude<GrowthProfile, "custom">) {
+    if (!selectedClass) return;
+    const magical = selectedClass.primaryAttributes.includes("INT") && !selectedClass.primaryAttributes.includes("FOR");
+    setAllocation(buildReworkPreset(preset, magical));
     setActivePreset(preset);
   }
 
   function selectRace(nextRaceId: string) {
     setRaceId(nextRaceId);
-    const nextRace = races.find((entry) => entry.id === nextRaceId);
-    if (activePreset !== "custom" && nextRace && selectedClass) {
-      setAllocation(
-        buildCharacterPreset({
-          preset: activePreset,
-          points,
-          racialBonuses: nextRace.payload.attributeBonuses,
-          primaryAttributes: selectedClass.primaryAttributes,
-        }),
-      );
-    }
   }
 
   function selectClass(nextClassId: string) {
     setClassId(nextClassId);
     const nextClass = classes.find((entry) => entry.id === nextClassId);
-    if (activePreset !== "custom" && selectedRace && nextClass) {
-      setAllocation(
-        buildCharacterPreset({
-          preset: activePreset,
-          points,
-          racialBonuses: selectedRace.payload.attributeBonuses,
-          primaryAttributes: nextClass.primaryAttributes,
-        }),
-      );
+    if (activePreset !== "custom" && nextClass) {
+      const magical = nextClass.primaryAttributes.includes("INT") && !nextClass.primaryAttributes.includes("FOR");
+      setAllocation(buildReworkPreset(activePreset, magical));
     }
   }
 
   return (
     <form action={action} className="character-creator">
       <input name="allocation" type="hidden" value={JSON.stringify(allocation)} />
+      <input name="growthProfile" type="hidden" value={activePreset} />
       {state.status === "error" ? (
         <div className="account-notice is-warning" data-sfx-on-mount="error" role="alert">
           <span>!</span>
@@ -335,8 +315,7 @@ export function CharacterCreator({
           <div>
             <h2>Distribuição de atributos</h2>
             <p>
-              Todo atributo começa em 20, recebe os bônus da raça e mais os pontos que você
-              distribuir.
+              Distribua 20 estrelas. O resultado soma as bases raciais, sua distribuição e os equipamentos.
             </p>
           </div>
           <div className={`character-points ${remaining === 0 ? "is-valid" : ""}`}>
@@ -349,8 +328,7 @@ export function CharacterCreator({
             <span className="eyebrow">Distribuição automática</span>
             <strong>Escolha um estilo de combate</strong>
             <small>
-              O cálculo combina os bônus de {selectedRace?.name} com as afinidades de{" "}
-              {selectedClass?.name}.
+              O perfil define a distribuição inicial e pode ser ajustado livremente.
             </small>
           </div>
           <div className="character-preset-buttons">
@@ -384,14 +362,14 @@ export function CharacterCreator({
           </div>
         </div>
         <div className="character-attribute-grid">
-          {attributeKeys.map((attribute) => {
-            const racial = selectedRace?.payload.attributeBonuses[attribute] ?? 0;
-            const total = baseAttributes[attribute] + allocation[attribute] + racial;
+          {reworkAttributeKeys.map((attribute) => {
+            const racial = selectedRace?.baseStats[attribute] ?? 0;
+            const total = racial + allocation[attribute];
             return (
               <article key={attribute}>
                 <div>
                   <span>{attribute}</span>
-                  <small>{attributeLabels[attribute]}</small>
+                  <small>{{ FOR: "Força", INT: "Inteligência", DEF: "Defesa", RES: "Resistência", HP: "Vida", INI: "Iniciativa" }[attribute]}</small>
                 </div>
                 <strong>{total}</strong>
                 <div className="character-stepper">
@@ -420,7 +398,7 @@ export function CharacterCreator({
                   </button>
                 </div>
                 <small>
-                  20 base + {allocation[attribute]} livre + {racial} racial
+                  {racial} racial + {allocation[attribute]} estrelas
                 </small>
               </article>
             );

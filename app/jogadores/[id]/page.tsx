@@ -8,9 +8,8 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { getCharacterSheet } from "@/lib/content/characters";
 import { itemSlotLabel } from "@/lib/game/equipment";
 import { kingdomName } from "@/lib/game/kingdoms";
-import { attributeLabels } from "@/lib/game/races";
 import { getAdventureRank } from "@/lib/game/ranks";
-import { attributeKeys } from "@/lib/game/schemas";
+import { reworkAttributeKeys } from "@/lib/game/rework-attributes";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -44,14 +43,10 @@ export default async function PublicCharacterProfile({
     (entry) => entry.key === sheet.class_path_key,
   );
   const rank = getAdventureRank(sheet.adventure_rank);
-  const strongestAttribute = attributeKeys.reduce((strongest, key) =>
-    sheet.stats.attributes[key] > sheet.stats.attributes[strongest] ? key : strongest,
+  const strongestAttribute = reworkAttributeKeys.reduce((strongest, key) =>
+    sheet.reworkStats.attributes[key] > sheet.reworkStats.attributes[strongest] ? key : strongest,
   );
-  const peakPower = Math.max(
-    sheet.stats.physicalPower,
-    sheet.stats.magicalPower,
-    sheet.stats.supportPower,
-  );
+  const labels = { FOR: "Força", INT: "Inteligência", DEF: "Defesa", RES: "Resistência", HP: "Vida", INI: "Iniciativa" } as const;
 
   return (
     <main className="public-character-page">
@@ -97,7 +92,7 @@ export default async function PublicCharacterProfile({
               <article><small>Vitalidade</small><strong>{sheet.stats.maxHp}</strong><span>HP máximo</span></article>
               <article><small>Defesa</small><strong>{sheet.stats.attributes.DEF}</strong><span>Proteção física</span></article>
               <article><small>Iniciativa</small><strong>{sheet.stats.initiative}</strong><span>Prioridade de turno</span></article>
-              <article><small>Pico de poder</small><strong>{peakPower}</strong><span>Potência atual</span></article>
+              <article><small>Poder Total</small><strong>{sheet.reworkStats.powerTotal}</strong><span>Soma dos atributos finais</span></article>
             </div>
             <footer className="public-character-dossier__owner">
               <span>Registrado por <strong>{profile?.display_name || "Aventureiro"}</strong></span>
@@ -108,21 +103,18 @@ export default async function PublicCharacterProfile({
         <section className="public-character-summary">
           <header className="public-character-section-heading">
             <div><span className="eyebrow">Leitura de build</span><h2>Atributos finais</h2></div>
-            <p>Maior afinidade: <strong>{attributeLabels[strongestAttribute]}</strong> · {sheet.stats.attributes[strongestAttribute]} pontos</p>
+            <p>Maior afinidade: <strong>{labels[strongestAttribute]}</strong> · {sheet.reworkStats.attributes[strongestAttribute]} pontos</p>
           </header>
           <div className="public-character-stats">
-            <article data-stat="hp"><small>HP máximo</small><strong>{sheet.stats.maxHp}</strong><span>Sobrevivência</span></article>
-            {attributeKeys.map((key) => (
+            {reworkAttributeKeys.map((key) => (
               <article data-highlight={key === strongestAttribute ? "true" : undefined} key={key}>
-                <small>{attributeLabels[key]}</small><strong>{sheet.stats.attributes[key]}</strong>
+                <small>{labels[key]}</small><strong>{sheet.reworkStats.attributes[key]}</strong>
                 <span>{key === strongestAttribute ? "Afinidade principal" : key}</span>
               </article>
             ))}
           </div>
           <div className="public-character-power-grid">
-            <article><small>Poder físico</small><strong>{sheet.stats.physicalPower}</strong><span>Escala principal de força</span></article>
-            <article><small>Poder mágico</small><strong>{sheet.stats.magicalPower}</strong><span>Escala principal de inteligência</span></article>
-            <article><small>Poder de suporte</small><strong>{sheet.stats.supportPower}</strong><span>Escala principal de arcano</span></article>
+            <article><small>Poder Total</small><strong>{sheet.reworkStats.powerTotal}</strong><span>FOR + INT + DEF + RES + HP + INI</span></article>
           </div>
         </section>
         <section className="public-character-equipment">

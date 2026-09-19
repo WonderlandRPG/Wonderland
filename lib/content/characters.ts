@@ -19,6 +19,14 @@ import {
 } from "@/lib/game/characters";
 import { parseRacePayload, type RacePayload } from "@/lib/game/races";
 import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
+import { reworkRaces } from "@/lib/game/rework-catalog";
+import {
+  calculateReworkSheet,
+  migrateLegacyAllocation,
+  reworkAttributesSchema,
+  type GrowthProfile,
+  type ReworkAttributes,
+} from "@/lib/game/rework-attributes";
 import { parseItemSpecialEffects, type ItemSpecialEffect } from "@/lib/game/item-effects";
 import { parseTitleStyle } from "@/lib/game/title-style";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -35,8 +43,10 @@ type InventoryRow = Pick<
 >;
 type InventoryRowWithSlots = InventoryRow & { equipped_slots?: string[] | null };
 
-export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes" | "cosmetics"> {
+export interface CharacterRecord extends Omit<CharacterRow, "allocated_attributes" | "rework_attributes" | "cosmetics"> {
   allocatedAttributes: AllocatedAttributes;
+  reworkAttributes: ReworkAttributes;
+  growth_profile: GrowthProfile;
   cosmetics: CharacterCosmeticLoadout;
 }
 
@@ -44,6 +54,7 @@ export interface CharacterSheet extends CharacterRecord {
   race: { id: string; name: string; payload: RacePayload };
   characterClass: { id: string; name: string; payload: ClassPayload };
   stats: ReturnType<typeof buildCharacterStats>;
+  reworkStats: ReturnType<typeof calculateReworkSheet> & { base: ReworkAttributes; equipment: Partial<ReworkAttributes> };
   unlockedRaceAbilities: ClassPayload["progression"];
   unlockedClassSkills: ClassPayload["progression"];
   inventory: Array<{
@@ -69,11 +80,14 @@ export interface CharacterSheet extends CharacterRecord {
 function parseCharacter(row: CharacterRow): CharacterRecord | null {
   const allocated = allocatedAttributesSchema.safeParse(row.allocated_attributes);
   if (!allocated.success) return null;
-  const { allocated_attributes: _raw, cosmetics: rawCosmetics, ...record } = row;
+  const parsedRework = reworkAttributesSchema.safeParse(row.rework_attributes);
+  const { allocated_attributes: _raw, rework_attributes: _reworkRaw, cosmetics: rawCosmetics, ...record } = row;
   void _raw;
   return {
     ...record,
     allocatedAttributes: allocated.data,
+    reworkAttributes: parsedRework.success ? parsedRework.data : migrateLegacyAllocation(row.allocated_attributes),
+    growth_profile: (["aggressive", "balanced", "defensive", "custom"] as const).includes(row.growth_profile as GrowthProfile) ? row.growth_profile as GrowthProfile : "custom",
     cosmetics: parseCharacterCosmetics(rawCosmetics),
   };
 }
@@ -165,6 +179,16 @@ async function loadSheets(
           ),
       ]),
     );
+    const reworkRace = reworkRaces.find((entry) => entry.id === raceRow.slug || entry.name === raceRow.name);
+    const reworkBase = reworkRace?.baseStats ?? { FOR: 0, INT: 0, DEF: 0, RES: 0, HP: race.data.baseHp, INI: 0 };
+    const reworkEquipment = {
+      FOR: equipmentBonuses.FOR,
+      INT: equipmentBonuses.INT,
+      DEF: equipmentBonuses.DEF,
+      RES: equipmentBonuses.RES,
+      HP: equipmentBonuses.ARC,
+      INI: equipmentBonuses.INI,
+    };
     return [
       {
         ...record,
@@ -177,6 +201,11 @@ async function loadSheets(
           defaultCombatRules,
           equipmentBonuses,
         ),
+        reworkStats: {
+          ...calculateReworkSheet(reworkBase, record.reworkAttributes, reworkEquipment),
+          base: reworkBase,
+          equipment: reworkEquipment,
+        },
         unlockedRaceAbilities: getUnlockedRaceAbilities(race.data, record.level),
         unlockedClassSkills: [
           ...getUnlockedClassSkills(characterClass.data, record.level),

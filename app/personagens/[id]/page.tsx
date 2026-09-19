@@ -7,7 +7,7 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
 import { getLevelProgress } from "@/lib/game/experience";
 import { attributeLabels } from "@/lib/game/races";
-import { attributeKeys } from "@/lib/game/schemas";
+import { reworkAttributeKeys } from "@/lib/game/rework-attributes";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { InventoryWorkbench } from "@/components/inventory/inventory-workbench";
 import { getAdventureRank } from "@/lib/game/ranks";
@@ -260,18 +260,18 @@ export default async function CharacterSheetPage({
               <header>
                 <span className="eyebrow">Atributos finais</span>
                 <h2>Distribuição da ficha</h2>
-                <p>Base + pontos livres + bônus raciais + equipamentos ativos.</p>
+                <p>Base racial + estrelas distribuídas + equipamentos ativos.</p>
+                <strong>Poder Total: {character.reworkStats.powerTotal}</strong>
               </header>
               <div className="sheet-attributes">
-                {attributeKeys.map((attribute) => (
+                {reworkAttributeKeys.map((attribute) => (
                   <article key={attribute}>
                     <span>{attribute}</span>
-                    <strong>{character.stats.attributes[attribute]}</strong>
-                    <small>{attributeLabels[attribute]}</small>
+                    <strong>{character.reworkStats.attributes[attribute]}</strong>
+                    <small>{{ FOR: "Força", INT: "Inteligência", DEF: "Defesa", RES: "Resistência", HP: "Vida", INI: "Iniciativa" }[attribute]}</small>
                     <p>
-                      {20} base + {character.allocatedAttributes[attribute]} livre +{" "}
-                      {character.race.payload.attributeBonuses[attribute]} racial +{" "}
-                      {character.stats.attributes[attribute] - 20 - character.allocatedAttributes[attribute] - character.race.payload.attributeBonuses[attribute]} equipamento
+                      {character.reworkStats.base[attribute]} racial + {character.reworkAttributes[attribute]} estrelas +{" "}
+                      {character.reworkStats.equipment[attribute] ?? 0} equipamento
                     </p>
                   </article>
                 ))}

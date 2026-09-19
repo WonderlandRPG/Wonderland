@@ -8,7 +8,13 @@ import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterRules } from "@/lib/content/character-settings";
 import type { Json } from "@/lib/db/types";
 import type { CharacterActionState } from "@/lib/game/character-forms";
-import { allocatedAttributesSchema, getAllocatedTotal } from "@/lib/game/characters";
+import {
+  growthProfileSchema,
+  reworkAttributesSchema,
+  reworkAttributeTotal,
+  reworkDistributableStars,
+  toLegacyAllocation,
+} from "@/lib/game/rework-attributes";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { kingdoms } from "@/lib/game/kingdoms";
 
@@ -30,6 +36,7 @@ const creationSchema = z.object({
       .refine((value) => /^https?:\/\//.test(value), "Use um link http ou https."),
   ]),
   allocation: z.string().min(1),
+  growthProfile: growthProfileSchema,
 });
 
 function fail(message: string, fieldErrors?: Record<string, string[]>): CharacterActionState {
@@ -48,6 +55,7 @@ export async function createCharacterAction(
     kingdom: formData.get("kingdom"),
     imageUrl: String(formData.get("imageUrl") ?? "").trim(),
     allocation: formData.get("allocation"),
+    growthProfile: formData.get("growthProfile"),
   });
   if (!submission.success)
     return fail("Revise as informações da ficha.", submission.error.flatten().fieldErrors);
@@ -57,12 +65,12 @@ export async function createCharacterAction(
   } catch {
     return fail("A distribuição de atributos está inválida.");
   }
-  const allocation = allocatedAttributesSchema.safeParse(raw);
+  const allocation = reworkAttributesSchema.safeParse(raw);
   if (!allocation.success)
     return fail("Todos os atributos devem conter números inteiros positivos.");
   const rules = await getCharacterRules();
-  if (getAllocatedTotal(allocation.data) !== rules.distributablePoints) {
-    return fail(`Distribua exatamente ${rules.distributablePoints} pontos antes de criar a ficha.`);
+  if (reworkAttributeTotal(allocation.data) !== reworkDistributableStars) {
+    return fail(`Distribua exatamente ${reworkDistributableStars} estrelas antes de criar a ficha.`);
   }
   const client = await createServerSupabaseClient();
   if (!client) return fail("A conexão com o banco não está disponível.");
@@ -99,7 +107,9 @@ export async function createCharacterAction(
       class_path_key: null,
       kingdom: submission.data.kingdom,
       image_url: submission.data.imageUrl || null,
-      allocated_attributes: allocation.data as unknown as Json,
+      allocated_attributes: toLegacyAllocation(allocation.data) as unknown as Json,
+      rework_attributes: allocation.data as unknown as Json,
+      growth_profile: submission.data.growthProfile,
     })
     .select("id")
     .single();

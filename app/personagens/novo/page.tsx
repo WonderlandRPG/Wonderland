@@ -6,17 +6,20 @@ import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
 import { getClassCatalog } from "@/lib/content/classes";
 import { getRaceCatalog } from "@/lib/content/races";
+import { getReworkRaces } from "@/lib/content/rework-catalog";
+import { reworkDistributableStars } from "@/lib/game/rework-attributes";
 
 export const metadata = { title: "Criar Personagem" };
 export const dynamic = "force-dynamic";
 
 export default async function NewCharacterPage() {
   const account = await requireCurrentAccount("/personagens/novo");
-  const [races, classes, rules, characters] = await Promise.all([
+  const [races, classes, rules, characters, reworkRaces] = await Promise.all([
     getRaceCatalog(),
     getClassCatalog({ publishedOnly: true }),
     getCharacterRules(),
     getCharacterSheets(account.id),
+    getReworkRaces(),
   ]);
   const publishedRaces = races.filter((entry) => entry.status === "published");
   if (characters.length >= rules.maximumSlots) {
@@ -71,13 +74,16 @@ export default async function NewCharacterPage() {
           </span>
         </header>
         <CharacterCreator
-          baseAttributes={rules.baseAttributes}
-          points={rules.distributablePoints}
-          races={publishedRaces.map((entry) => ({
+          points={reworkDistributableStars}
+          races={publishedRaces.flatMap((entry) => {
+            const rework = reworkRaces.find((race) => race.id === entry.slug || race.name === entry.name);
+            return rework ? [{
             id: entry.id,
             name: entry.name,
             payload: entry.payload,
-          }))}
+            baseStats: rework.baseStats,
+          }] : [];
+          })}
           classes={classes.map((entry) => ({
             id: entry.id,
             name: entry.name,

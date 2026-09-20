@@ -112,152 +112,159 @@ export default async function CharacterSheetPage({
           </div>
         ) : null}
 
-        <section
-          className="character-command-hero"
-          style={{ "--character-rank": rank.color } as React.CSSProperties}
-          data-character-rank={rank.key}
-        >
-          <div className="character-command-hero__art official-character-card-host">
-            <CharacterPortraitCard
-              imageUrl={character.image_url}
-              level={character.level}
-              name={character.name}
-              rank={character.adventure_rank}
-              title={equippedTitle}
-              cosmetics={character.cosmetics}
-              variant="hero"
-            />
-          </div>
-          <div className="character-command-hero__identity">
-            <div className="character-command-hero__overline">
-              <span className="eyebrow">Dossiê do aventureiro</span>
-              <span className="character-command-hero__online">
-                ● Online · {kingdomName(character.kingdom)}
-              </span>
-            </div>
-            <h1>{character.name}</h1>
-            <p className="character-command-hero__calling">
-              <strong>{character.race.name}</strong>
-              <span aria-hidden="true">◆</span>
-              <strong>{character.characterClass.name}</strong>
-              <span aria-hidden="true">◆</span>
-              <span>{classPath?.name ?? "Caminho ainda não escolhido"}</span>
-            </p>
-            <dl className="character-command-hero__facts">
-              <div className="is-rank">
-                <dt>Rank atual</dt>
-                <dd>{rank.key}</dd>
-              </div>
-              <div>
-                <dt>Nível</dt>
-                <dd>{character.level}</dd>
-              </div>
-              <div>
-                <dt>Reino</dt>
-                <dd>{kingdomName(character.kingdom)}</dd>
-              </div>
-              <div>
-                <dt>Caminho</dt>
-                <dd>{classPath?.name ?? "Não definido"}</dd>
-              </div>
-            </dl>
-            <div className="character-readiness" aria-label="Prontidão para combate">
-              <div>
-                <small>Vitalidade</small>
-                <strong>{character.stats.maxHp}</strong>
-                <span>HP máximo</span>
-              </div>
-              <div>
-                <small>Defesa</small>
-                <strong>{character.stats.attributes.DEF}</strong>
-                <span>Redução física</span>
-              </div>
-              <div>
-                <small>Iniciativa</small>
-                <strong>{character.stats.initiative}</strong>
-                <span>Ordem de ação</span>
-              </div>
-              <div>
-                <small>Maior poder</small>
-                <strong>
-                  {Math.max(
-                    character.stats.physicalPower,
-                    character.stats.magicalPower,
-                    character.stats.supportPower,
-                  )}
-                </strong>
-                <span>Potência atual</span>
-              </div>
-            </div>
-            <nav className="character-command-hero__actions">
-              <Link className="button button--primary" href={`/arena?personagem=${character.id}`}>
-                ⚔ Entrar na Arena
-              </Link>
-              <Link className="button button--dark" href={tabHref("equipamentos")}>
-                ◈ Preparar equipamentos
-              </Link>
-              <Link className="character-command-hero__shop" href="/loja">
-                Visitar mercado →
-              </Link>
-            </nav>
-            <details className="character-command-hero__image-editor">
-              <summary>Alterar retrato do personagem</summary>
-              <CharacterImageUploader
-                characterId={character.id}
-                currentImageUrl={character.image_url}
-              />
-              <div className="character-image-url-option">
-                <span>ou usar uma imagem por link</span>
-                <form action={updateCharacterImageAction.bind(null, character.id)}>
-                  <label className="sr-only" htmlFor="character-image-url">
-                    URL da imagem
-                  </label>
-                  <input
-                    id="character-image-url"
-                    name="imageUrl"
-                    type="url"
-                    defaultValue={character.image_url ?? ""}
-                    placeholder="https://exemplo.com/personagem.png"
-                  />
-                  <button className="button button--dark">Salvar link</button>
-                </form>
-              </div>
-            </details>
-          </div>
-        </section>
-
-        <section
-          className="character-progress-strip character-vitals-panel"
-          style={{ "--character-rank": rank.color } as React.CSSProperties}
-        >
-          <div className="character-progress-strip__level">
-            <small>Nível atual</small>
-            <strong>{character.level}</strong>
-          </div>
-          <div className="player-xp">
-            <div>
-              <small>Progresso para o nível {character.level + 1}</small>
-              <strong>{progress.percent}%</strong>
-            </div>
-            <span
-              aria-label={`${progress.percent}% do nível concluído`}
-              aria-valuemax={100}
-              aria-valuemin={0}
-              aria-valuenow={progress.percent}
-              role="progressbar"
+        {tab !== "equipamentos" ? (
+          <>
+            <section
+              className="character-command-hero"
+              style={{ "--character-rank": rank.color } as React.CSSProperties}
+              data-character-rank={rank.key}
             >
-              <i style={{ width: `${progress.percent}%` }} />
-            </span>
-            <small>
-              {character.xp.toLocaleString("pt-BR")} XP · faltam{" "}
-              {xpRemaining.toLocaleString("pt-BR")}
-            </small>
-          </div>
-          <div className="character-progress-strip__wallet">
-            <small>Carteira</small>
-            <strong>◆ {character.gold.toLocaleString("pt-BR")} WG</strong>
-          </div>
-        </section>
+              <div className="character-command-hero__art official-character-card-host">
+                <CharacterPortraitCard
+                  imageUrl={character.image_url}
+                  level={character.level}
+                  name={character.name}
+                  rank={character.adventure_rank}
+                  title={equippedTitle}
+                  cosmetics={character.cosmetics}
+                  variant="hero"
+                />
+              </div>
+              <div className="character-command-hero__identity">
+                <div className="character-command-hero__overline">
+                  <span className="eyebrow">Dossiê do aventureiro</span>
+                  <span className="character-command-hero__online">
+                    ● Online · {kingdomName(character.kingdom)}
+                  </span>
+                </div>
+                <h1>{character.name}</h1>
+                <p className="character-command-hero__calling">
+                  <strong>{character.race.name}</strong>
+                  <span aria-hidden="true">◆</span>
+                  <strong>{character.characterClass.name}</strong>
+                  <span aria-hidden="true">◆</span>
+                  <span>{classPath?.name ?? "Caminho ainda não escolhido"}</span>
+                </p>
+                <dl className="character-command-hero__facts">
+                  <div className="is-rank">
+                    <dt>Rank atual</dt>
+                    <dd>{rank.key}</dd>
+                  </div>
+                  <div>
+                    <dt>Nível</dt>
+                    <dd>{character.level}</dd>
+                  </div>
+                  <div>
+                    <dt>Reino</dt>
+                    <dd>{kingdomName(character.kingdom)}</dd>
+                  </div>
+                  <div>
+                    <dt>Caminho</dt>
+                    <dd>{classPath?.name ?? "Não definido"}</dd>
+                  </div>
+                </dl>
+                <div className="character-readiness" aria-label="Prontidão para combate">
+                  <div>
+                    <small>Vitalidade</small>
+                    <strong>{character.stats.maxHp}</strong>
+                    <span>HP máximo</span>
+                  </div>
+                  <div>
+                    <small>Defesa</small>
+                    <strong>{character.stats.attributes.DEF}</strong>
+                    <span>Redução física</span>
+                  </div>
+                  <div>
+                    <small>Iniciativa</small>
+                    <strong>{character.stats.initiative}</strong>
+                    <span>Ordem de ação</span>
+                  </div>
+                  <div>
+                    <small>Maior poder</small>
+                    <strong>
+                      {Math.max(
+                        character.stats.physicalPower,
+                        character.stats.magicalPower,
+                        character.stats.supportPower,
+                      )}
+                    </strong>
+                    <span>Potência atual</span>
+                  </div>
+                </div>
+                <nav className="character-command-hero__actions">
+                  <Link
+                    className="button button--primary"
+                    href={`/arena?personagem=${character.id}`}
+                  >
+                    ⚔ Entrar na Arena
+                  </Link>
+                  <Link className="button button--dark" href={tabHref("equipamentos")}>
+                    ◈ Preparar equipamentos
+                  </Link>
+                  <Link className="character-command-hero__shop" href="/loja">
+                    Visitar mercado →
+                  </Link>
+                </nav>
+                <details className="character-command-hero__image-editor">
+                  <summary>Alterar retrato do personagem</summary>
+                  <CharacterImageUploader
+                    characterId={character.id}
+                    currentImageUrl={character.image_url}
+                  />
+                  <div className="character-image-url-option">
+                    <span>ou usar uma imagem por link</span>
+                    <form action={updateCharacterImageAction.bind(null, character.id)}>
+                      <label className="sr-only" htmlFor="character-image-url">
+                        URL da imagem
+                      </label>
+                      <input
+                        id="character-image-url"
+                        name="imageUrl"
+                        type="url"
+                        defaultValue={character.image_url ?? ""}
+                        placeholder="https://exemplo.com/personagem.png"
+                      />
+                      <button className="button button--dark">Salvar link</button>
+                    </form>
+                  </div>
+                </details>
+              </div>
+            </section>
+
+            <section
+              className="character-progress-strip character-vitals-panel"
+              style={{ "--character-rank": rank.color } as React.CSSProperties}
+            >
+              <div className="character-progress-strip__level">
+                <small>Nível atual</small>
+                <strong>{character.level}</strong>
+              </div>
+              <div className="player-xp">
+                <div>
+                  <small>Progresso para o nível {character.level + 1}</small>
+                  <strong>{progress.percent}%</strong>
+                </div>
+                <span
+                  aria-label={`${progress.percent}% do nível concluído`}
+                  aria-valuemax={100}
+                  aria-valuemin={0}
+                  aria-valuenow={progress.percent}
+                  role="progressbar"
+                >
+                  <i style={{ width: `${progress.percent}%` }} />
+                </span>
+                <small>
+                  {character.xp.toLocaleString("pt-BR")} XP · faltam{" "}
+                  {xpRemaining.toLocaleString("pt-BR")}
+                </small>
+              </div>
+              <div className="character-progress-strip__wallet">
+                <small>Carteira</small>
+                <strong>◆ {character.gold.toLocaleString("pt-BR")} WG</strong>
+              </div>
+            </section>
+          </>
+        ) : null}
 
         <nav className="sheet-tabs" aria-label="Seções da ficha">
           <Link
@@ -327,7 +334,7 @@ export default async function CharacterSheetPage({
               <article data-stat="support">
                 <span>Poder de suporte</span>
                 <strong>{character.stats.supportPower}</strong>
-                <small>Escala com ARC</small>
+                <small>Escala com INT</small>
               </article>
             </section>
 
@@ -578,6 +585,10 @@ export default async function CharacterSheetPage({
                 imageUrl: character.image_url,
                 rank: character.adventure_rank,
                 level: character.level,
+                raceName: character.race.name,
+                className: character.characterClass.name,
+                gold: character.gold,
+                attributes: character.reworkStats.attributes,
                 cosmetics: character.cosmetics,
               }}
               slots={equipmentSlots.map((slot) => {

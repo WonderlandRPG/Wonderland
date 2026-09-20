@@ -377,7 +377,6 @@
 }
 .board {
   display: grid;
-  grid-auto-rows: 1fr;
   width: min(100%, 820px);
   min-width: 620px;
   margin: 0 auto;

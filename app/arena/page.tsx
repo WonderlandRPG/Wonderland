@@ -194,6 +194,11 @@ export default async function ArenaPage({
                 Existe um combate iniciado recentemente. Encerre a luta antes de aceitar uma missão.
               </p>
             ) : null}
+            {query.mensagem && !query.filas ? (
+              <p className="arena-queue-notice is-error" role="alert">
+                {query.mensagem}
+              </p>
+            ) : null}
             <div className="arena-mode-grid">
               {pveStatus?.remaining === 0 && !pveStatus.activeSessionId ? (
                 <article className="arena-mode-locked">

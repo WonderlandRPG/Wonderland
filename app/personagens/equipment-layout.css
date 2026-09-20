@@ -9,14 +9,16 @@
   box-shadow: var(--wl-shadow);
 }
 .sheet-page__inner.is-inventory-mode {
-  width: min(1680px, calc(100% - 28px)) !important;
+  width: min(1760px, calc(100% - 48px));
+  max-width: none;
+  margin-inline: auto;
 }
 .inventory-hud > header {
   display: flex;
   align-items: end;
   justify-content: space-between;
-  gap: 20px;
-  padding: 18px 22px;
+  gap: 28px;
+  padding: 22px 28px;
   border-bottom: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
   background: var(--wl-surface-dark);
 }
@@ -32,18 +34,18 @@
 }
 .arsenal-shell {
   display: grid;
-  grid-template-columns: minmax(470px, 46%) minmax(0, 54%);
+  grid-template-columns: minmax(690px, 0.95fr) minmax(780px, 1.15fr);
   min-width: 0;
   min-height: 780px;
 }
 .arsenal-loadout {
   display: grid;
-  grid-template-columns: minmax(135px, 1fr) minmax(190px, 1.25fr) minmax(135px, 1fr);
+  grid-template-columns: minmax(170px, 1fr) minmax(250px, 1.35fr) minmax(170px, 1fr);
   grid-template-areas: "head head head" "left hero right" "stats stats stats";
   align-content: start;
-  gap: 12px;
+  gap: 16px;
   min-width: 0;
-  padding: 16px;
+  padding: 22px;
   border-right: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
   background: color-mix(in srgb, var(--wl-surface-dark) 76%, var(--wl-surface-dark-strong));
 }
@@ -68,8 +70,8 @@
 }
 .arsenal-slot-column {
   display: grid;
-  grid-template-rows: repeat(7, minmax(62px, auto));
-  gap: 7px;
+  grid-template-rows: repeat(7, minmax(72px, auto));
+  gap: 9px;
   min-width: 0;
 }
 .arsenal-slot-column.is-left {
@@ -80,13 +82,13 @@
 }
 .arsenal-slot-column > button {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-columns: 50px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
   width: 100%;
   min-width: 0;
-  min-height: 62px;
-  padding: 7px;
+  min-height: 72px;
+  padding: 9px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--wl-border) 55%, transparent);
   border-radius: var(--wl-radius-sm);
@@ -115,8 +117,8 @@
 .arsenal-slot-art {
   display: grid;
   place-items: center;
-  width: 42px;
-  height: 42px;
+  width: 50px;
+  height: 50px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--wl-border) 66%, transparent);
   border-radius: var(--wl-radius-sm);
@@ -138,17 +140,18 @@
 }
 .arsenal-slot-column small {
   color: var(--wl-text-inverse-muted);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
 }
 .arsenal-slot-column strong {
   margin-top: 2px;
   color: var(--wl-text-inverse);
-  font-size: 0.76rem;
+  font-size: 0.86rem;
+  line-height: 1.2;
 }
 .arsenal-slot-column em {
   margin-top: 2px;
   color: var(--wl-gold-soft);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
 }
 .arsenal-character-card {
   grid-area: hero;
@@ -163,7 +166,7 @@
   box-shadow: none;
 }
 .arsenal-character-card > div:first-child {
-  width: min(100%, 230px);
+  width: min(100%, 290px);
 }
 .arsenal-character-card__caption {
   display: grid;
@@ -206,7 +209,7 @@
 .inventory-loadout-summary__power span,
 .inventory-loadout-summary__wallet span {
   color: var(--wl-text-inverse-muted);
-  font-size: 0.7rem;
+  font-size: 0.78rem;
 }
 .inventory-loadout-summary__power strong,
 .inventory-loadout-summary__wallet strong {
@@ -237,14 +240,14 @@
 }
 .arsenal-browser {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(210px, 30%);
+  grid-template-columns: minmax(0, 1fr) minmax(290px, 31%);
   align-content: start;
   min-width: 0;
   background: var(--wl-surface-dark-strong);
 }
 .arsenal-catalog {
   min-width: 0;
-  padding: 12px;
+  padding: 18px;
   border-right: 1px solid color-mix(in srgb, var(--wl-border) 42%, transparent);
 }
 .arsenal-catalog > header {
@@ -254,7 +257,7 @@
 .arsenal-catalog > header h3 {
   margin: 2px 0;
   color: var(--wl-text-inverse);
-  font-size: 1.25rem;
+  font-size: 1.5rem;
 }
 .arsenal-catalog > header .eyebrow {
   color: var(--wl-text-inverse-muted);
@@ -265,8 +268,8 @@
   gap: 5px;
 }
 .arsenal-catalog > header nav button {
-  min-height: 38px;
-  padding: 6px 9px;
+  min-height: 42px;
+  padding: 8px 12px;
   border: 1px solid color-mix(in srgb, var(--wl-border) 50%, transparent);
   background: var(--wl-surface-dark);
   color: var(--wl-text-inverse-muted);
@@ -282,7 +285,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 10px;
-  padding: 8px;
+  padding: 10px 12px;
   border: 1px solid color-mix(in srgb, var(--wl-border) 38%, transparent);
   background: var(--wl-surface-dark);
 }
@@ -306,17 +309,17 @@
 }
 .arsenal-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(100px, 1fr));
-  gap: 7px;
-  margin-top: 10px;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
 }
 .arsenal-item-card {
   display: grid;
   align-content: start;
-  gap: 5px;
+  gap: 7px;
   min-width: 0;
-  min-height: 176px;
-  padding: 8px;
+  min-height: 238px;
+  padding: 10px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
   background: var(--wl-surface-dark);
@@ -335,7 +338,7 @@
   position: relative;
   display: grid;
   place-items: center;
-  height: 76px;
+  height: 112px;
   overflow: hidden;
   background: var(--wl-surface-dark-strong);
 }
@@ -350,17 +353,17 @@
 }
 .arsenal-item-card > small {
   color: var(--wl-text-inverse-muted);
-  font-size: 0.56rem;
+  font-size: 0.68rem;
   text-transform: uppercase;
 }
 .arsenal-item-card > strong {
   overflow-wrap: anywhere;
-  font-size: 0.75rem;
-  line-height: 1.2;
+  font-size: 0.9rem;
+  line-height: 1.25;
 }
 .arsenal-card-effect {
   color: var(--wl-gold-soft);
-  font-size: 0.62rem;
+  font-size: 0.72rem;
 }
 .arsenal-card-effect small {
   display: block;
@@ -374,32 +377,32 @@
   padding-top: 5px;
   border-top: 1px solid color-mix(in srgb, var(--wl-border) 35%, transparent);
   color: var(--wl-text-inverse-muted);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
 }
 .arsenal-inspector {
   position: sticky;
   top: 76px;
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: 14px;
   min-width: 0;
-  padding: 14px;
+  padding: 20px;
   color: var(--wl-text-inverse);
 }
 .arsenal-inspector header span,
 .arsenal-inspector header b {
   color: var(--wl-gold-soft);
-  font-size: 0.66rem;
+  font-size: 0.74rem;
 }
 .arsenal-inspector h3 {
   margin: 5px 0;
   overflow-wrap: anywhere;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
 }
 .arsenal-inspector__glyph {
   display: grid;
   place-items: center;
-  height: 120px;
+  height: 170px;
   overflow: hidden;
   border: 1px solid var(--wl-gold);
   background: var(--wl-surface-dark);
@@ -411,8 +414,8 @@
 .arsenal-inspector > p {
   margin: 0;
   color: var(--wl-text-inverse-muted);
-  font-size: 0.72rem;
-  line-height: 1.45;
+  font-size: 0.84rem;
+  line-height: 1.55;
 }
 .arsenal-inspector dl {
   display: grid;
@@ -429,7 +432,7 @@
 .arsenal-inspector dt,
 .arsenal-inspector article small {
   color: var(--wl-text-inverse-muted);
-  font-size: 0.6rem;
+  font-size: 0.7rem;
 }
 .arsenal-inspector dd {
   margin: 2px 0 0;
@@ -498,7 +501,7 @@
 .arsenal-cosmetics__preview > div {
   width: 120px;
 }
-@media (max-width: 1180px) {
+@media (max-width: 1480px) {
   .arsenal-shell {
     grid-template-columns: 1fr;
   }
@@ -510,16 +513,12 @@
     min-height: 620px;
   }
 }
-@media (max-width: 760px) {
+@media (max-width: 900px) {
+  .sheet-page__inner.is-inventory-mode {
+    width: min(100% - 24px, 1760px);
+  }
   .inventory-hud > header {
     display: grid;
-  }
-  .arsenal-loadout {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas: "head head" "hero hero" "left right" "stats stats";
-  }
-  .arsenal-character-card > div:first-child {
-    width: min(100%, 260px);
   }
   .arsenal-browser {
     grid-template-columns: 1fr;
@@ -530,6 +529,15 @@
   }
   .arsenal-inspector {
     position: static;
+  }
+}
+@media (max-width: 760px) {
+  .arsenal-loadout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas: "head head" "hero hero" "left right" "stats stats";
+  }
+  .arsenal-character-card > div:first-child {
+    width: min(100%, 260px);
   }
 }
 @media (max-width: 520px) {
@@ -559,3 +567,4 @@
     min-height: 160px;
   }
 }
+

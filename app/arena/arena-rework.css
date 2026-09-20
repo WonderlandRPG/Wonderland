@@ -7,7 +7,7 @@
 .arena-page .arena-mode-select>header p,.arena-page .arena-mode-select>header .eyebrow{position:relative;z-index:1;color:#e1c882!important}
 .arena-page .arena-history-link{justify-self:stretch;padding:13px 28px;text-align:right;background:#0b271c;color:#f0cf77!important;border-top:1px solid rgba(240,207,119,.22)}
 .arena-page .arena-queue-cleanup{margin:18px 20px 0;padding:14px 18px!important;border-color:#806633!important;background:linear-gradient(90deg,#f5e2b5,#dfc485)!important;box-shadow:0 9px 22px rgba(0,0,0,.18)}
-.arena-page .arena-mode-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;padding:20px!important}
+.arena-page .arena-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;padding:20px!important}
 .arena-page .arena-mode-card,.arena-page .arena-mode-locked{display:flex!important;flex-direction:column!important;align-items:flex-start;min-height:330px!important;padding:22px!important;border:1px solid rgba(231,195,111,.4)!important;border-radius:18px!important;background:linear-gradient(160deg,#244f3a,#102d21)!important;color:var(--wl-text-inverse)!important;box-shadow:inset 0 1px rgba(255,255,255,.08),0 14px 26px rgba(0,0,0,.25)!important}
 .arena-page .arena-mode-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 84% 12%,rgba(232,185,79,.19),transparent 35%);pointer-events:none}
 .arena-page .arena-mode-card:hover{transform:translateY(-7px)!important;border-color:#e2b753!important;box-shadow:0 24px 40px rgba(0,0,0,.34)!important}

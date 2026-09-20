@@ -4,13 +4,13 @@ import { useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { CombatSurrenderButton } from "@/components/arena/combat-surrender-button";
 
-type CombatKind = "arena" | "pvp" | "dungeon";
+type CombatKind = "arena" | "pvp";
 
 export function CombatExitGuard({ kind, combatId }: { kind: CombatKind; combatId: string }) {
   const sent = useRef(false);
   const router = useRouter();
   const onSurrenderCompleted = useCallback(() => {
-    router.replace(kind === "dungeon" ? "/arena/dungeons" : "/arena");
+    router.replace("/arena");
   }, [kind, router]);
 
   useEffect(() => {
@@ -42,7 +42,8 @@ export function CombatExitGuard({ kind, combatId }: { kind: CombatKind; combatId
         const destination = new URL(anchor.href, window.location.href);
         if (destination.origin !== window.location.origin) return;
         const current = new URL(window.location.href);
-        if (destination.pathname === current.pathname && destination.search === current.search) return;
+        if (destination.pathname === current.pathname && destination.search === current.search)
+          return;
         finish();
       } catch {
         // Ignore malformed links and let the browser handle them normally.
@@ -65,10 +66,6 @@ export function CombatExitGuard({ kind, combatId }: { kind: CombatKind; combatId
   }, [combatId, kind]);
 
   return (
-    <CombatSurrenderButton
-      kind={kind}
-      combatId={combatId}
-      onCompleted={onSurrenderCompleted}
-    />
+    <CombatSurrenderButton kind={kind} combatId={combatId} onCompleted={onSurrenderCompleted} />
   );
 }

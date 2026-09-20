@@ -10,17 +10,16 @@ import {
   savePveBattleStateAction,
   startPveAction,
 } from "./actions";
-import type { TacticalBattleSnapshot } from "@/components/arena/tactical-lab-v9";
+import type { TacticalBattleSnapshot } from "@/components/arena/tactical-combat-core";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isAdministrativeRole } from "@/lib/auth/roles";
 import { leaveAllQueuesAction } from "@/app/arena/queue-actions";
 import { CombatExitGuard } from "@/components/arena/combat-exit-guard";
 import { getCreatureImageUrl, parseTextList } from "@/lib/game/bestiary";
 import { parseCreatureCombatProfile } from "@/lib/game/creature-tactical-combat";
 import { toTacticalArenaCharacter } from "@/lib/game/arena-character";
 
-export const metadata = { title: "Arena de Treinamento" };
+export const metadata = { title: "Arena" };
 export const dynamic = "force-dynamic";
 
 export default async function ArenaPage({
@@ -38,7 +37,7 @@ export default async function ArenaPage({
 }) {
   const { account, characterId } = await requireActiveCharacter("/arena");
   const [characters, query] = await Promise.all([getCharacterSheets(account.id), searchParams]);
-  const mode = (["training", "pve", "pvp"] as const).includes(query.modo as ArenaMode)
+  const mode = (["pve", "pvp"] as const).includes(query.modo as ArenaMode)
     ? (query.modo as ArenaMode)
     : null;
   const activeCharacter = characters.find((character) => character.id === characterId);
@@ -62,8 +61,8 @@ export default async function ArenaPage({
             <small>CONTRATO ATIVO</small>
             <h1>A Guilda requer sua atenção</h1>
             <p>
-              Enquanto uma missão estiver em andamento, este personagem não pode participar de
-              Treino, PvE, PvP ou Dungeons.
+              Enquanto uma missão estiver em andamento, este personagem não pode participar de PvE
+              ou PvP.
             </p>
             <Link className="button button--primary" href="/missoes">
               Voltar ao Mural de Missões
@@ -94,12 +93,8 @@ export default async function ArenaPage({
             "Volte à Arena e clique em Entrar no PvE para iniciar ou retomar uma luta.",
         }
       : null;
-  const creatureIndex =
-    typeof arenaSessionId === "string"
-      ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
-      : 0;
   const { data: pveCreatureRows } =
-    client && activeCharacter && (mode === "training" || (mode === "pve" && !arenaSessionError))
+    client && activeCharacter && mode === "pve" && !arenaSessionError
       ? await client
           .from("v2_creatures")
           .select("*")
@@ -108,12 +103,9 @@ export default async function ArenaPage({
           .order("slug")
           .limit(50)
       : { data: [] };
-  const selectedCreatureRows =
-    mode === "pve" && arenaSessionResult.data?.creature_id
-      ? (pveCreatureRows ?? []).filter((row) => row.id === arenaSessionResult.data?.creature_id)
-      : pveCreatureRows?.length
-        ? [pveCreatureRows[creatureIndex % pveCreatureRows.length]]
-        : [];
+  const selectedCreatureRows = arenaSessionResult.data?.creature_id
+    ? (pveCreatureRows ?? []).filter((row) => row.id === arenaSessionResult.data?.creature_id)
+    : [];
   const tacticalCreatures = selectedCreatureRows.map((row) => ({
     id: row.id,
     slug: row.slug,
@@ -177,7 +169,7 @@ export default async function ArenaPage({
               <div>
                 <small>GERENCIAMENTO DE FILAS</small>
                 <strong>Vai aceitar uma missão?</strong>
-                <p>Encerre de uma vez filas e combates pendentes de Arena, PvP e Dungeon.</p>
+                <p>Encerre de uma vez filas e combates pendentes de PvE e PvP.</p>
               </div>
               <form action={leaveAllQueuesAction}>
                 <button className="button button--danger" type="submit">
@@ -203,14 +195,6 @@ export default async function ArenaPage({
               </p>
             ) : null}
             <div className="arena-mode-grid">
-              <Link className="arena-mode-card is-training" href="/arena?modo=training">
-                <span className="arena-mode-card__sigil">修</span>
-                <i>01</i>
-                <small>Sem recompensas</small>
-                <strong>Treino</strong>
-                <p>Teste habilidades e sequências contra o Boneco Rúnico.</p>
-                <b>Entrar →</b>
-              </Link>
               {pveStatus?.remaining === 0 && !pveStatus.activeSessionId ? (
                 <article className="arena-mode-locked">
                   <span>獣</span>
@@ -222,7 +206,7 @@ export default async function ArenaPage({
               ) : (
                 <form action={startPveAction} className="arena-mode-card is-pve">
                   <span className="arena-mode-card__sigil">獣</span>
-                  <i>02</i>
+                  <i>01</i>
                   <small>
                     {pveStatus
                       ? `${pveStatus.remaining} de ${pveStatus.limit} entradas restantes`
@@ -243,32 +227,12 @@ export default async function ArenaPage({
               )}
               <article className="arena-mode-locked is-pvp">
                 <span className="arena-mode-card__sigil">対</span>
-                <i>03</i>
+                <i>02</i>
                 <small>Conversão tática em andamento</small>
                 <strong>PvP</strong>
                 <p>O combate legado foi desativado. O novo PvP tático chegará no item 11.</p>
                 <b>Indisponível temporariamente</b>
               </article>
-              {isAdministrativeRole(account.role) ? (
-                <Link className="arena-mode-card" href="/arena/mapa-tatico">
-                  <span className="arena-mode-card__sigil">棋</span>
-                  <i>ADM</i>
-                  <small>Laboratório administrativo</small>
-                  <strong>Mapa Tático</strong>
-                  <p>Reconstrua e valide o novo tabuleiro sem alterar os modos ativos.</p>
-                  <b>Abrir laboratório →</b>
-                </Link>
-              ) : null}
-              {isAdministrativeRole(account.role) ? (
-                <Link className="arena-mode-card is-dungeon" href="/arena/dungeons">
-                  <span className="arena-mode-card__sigil">門</span>
-                  <i>04</i>
-                  <small>Prévia administrativa · Rank E</small>
-                  <strong>Dungeon</strong>
-                  <p>Forme um grupo de quatro aventureiros e explore as Ruínas de Verdantia.</p>
-                  <b>Abrir expedição →</b>
-                </Link>
-              ) : null}
             </div>
           </section>
         ) : null}
@@ -298,35 +262,28 @@ export default async function ArenaPage({
             <Link href="/arena">Voltar aos modos</Link>
           </section>
         ) : null}
-        {mode && mode !== "pvp" && !(mode === "pve" && arenaSessionError) ? (
+        {mode === "pve" && !arenaSessionError ? (
           <>
             <Link className="arena-mode-back" href="/arena">
               ← Trocar modo
             </Link>
             <>
-              {mode === "pve" && typeof arenaSessionId === "string" ? (
+              {typeof arenaSessionId === "string" ? (
                 <CombatExitGuard kind="arena" combatId={arenaSessionId} />
               ) : null}
               <TacticalCombatShell
                 characters={tacticalCharacters}
                 creatures={tacticalCreatures}
-                mode={mode}
-                initialMapId={mode === "pve" ? arenaSessionResult.data?.map_id : null}
+                initialMapId={arenaSessionResult.data?.map_id}
                 onVictory={
-                  mode === "pve" && arenaSessionId
-                    ? claimArenaVictoryAction.bind(null, arenaSessionId)
-                    : undefined
+                  arenaSessionId ? claimArenaVictoryAction.bind(null, arenaSessionId) : undefined
                 }
                 onDefeat={
-                  mode === "pve" && arenaSessionId
-                    ? finishArenaDefeatAction.bind(null, arenaSessionId)
-                    : undefined
+                  arenaSessionId ? finishArenaDefeatAction.bind(null, arenaSessionId) : undefined
                 }
-                initialState={mode === "pve" ? initialBattleState : null}
+                initialState={initialBattleState}
                 onCheckpoint={
-                  mode === "pve" && arenaSessionId
-                    ? savePveBattleStateAction.bind(null, arenaSessionId)
-                    : undefined
+                  arenaSessionId ? savePveBattleStateAction.bind(null, arenaSessionId) : undefined
                 }
               />
             </>

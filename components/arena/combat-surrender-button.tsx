@@ -13,7 +13,7 @@ export function CombatSurrenderButton({
   combatId,
   onCompleted,
 }: {
-  kind: "arena" | "pvp" | "dungeon";
+  kind: "arena" | "pvp";
   combatId: string;
   onCompleted?(): void;
 }) {
@@ -50,9 +50,10 @@ export function CombatSurrenderButton({
 
   function surrender() {
     if (pending || status?.completed || status?.voted) return;
-    const warning = status && status.required > 1
-      ? `Confirmar desistência? O combate só será encerrado quando todos os ${status.required} jogadores reais confirmarem. Todos sairão derrotados.`
-      : "Tem certeza de que deseja desistir? O combate será encerrado e você sairá derrotado.";
+    const warning =
+      status && status.required > 1
+        ? `Confirmar desistência? O combate só será encerrado quando todos os ${status.required} jogadores reais confirmarem. Todos sairão derrotados.`
+        : "Tem certeza de que deseja desistir? O combate será encerrado e você sairá derrotado.";
     if (!window.confirm(warning)) return;
     setError("");
     startTransition(async () => {
@@ -69,9 +70,10 @@ export function CombatSurrenderButton({
 
   if (status?.completed) return null;
 
-  const progress = status && status.required > 1
-    ? `${status.votes}/${status.required} confirmações`
-    : "Você receberá uma derrota";
+  const progress =
+    status && status.required > 1
+      ? `${status.votes}/${status.required} confirmações`
+      : "Você receberá uma derrota";
 
   return (
     <div className="combat-surrender">

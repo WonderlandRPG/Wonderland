@@ -4,7 +4,7 @@ import { z } from "zod";
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-const kindSchema = z.enum(["arena", "pvp", "dungeon"]);
+const kindSchema = z.enum(["arena", "pvp"]);
 const idSchema = z.uuid();
 
 type SurrenderStatus = {
@@ -25,7 +25,8 @@ function parseStatus(value: unknown): SurrenderStatus | null {
     typeof row.votes !== "number" ||
     typeof row.required !== "number" ||
     typeof row.voted !== "boolean"
-  ) return null;
+  )
+    return null;
   return row as unknown as SurrenderStatus;
 }
 
@@ -36,7 +37,10 @@ async function callSurrenderRpc(fn: string, kind: string, combatId: string) {
   const { data, error } = await rpc(fn, { p_kind: kind, p_combat_id: combatId });
   const status = parseStatus(data);
   if (error || !status)
-    return { ok: false as const, message: error?.message ?? "Não foi possível registrar a desistência." };
+    return {
+      ok: false as const,
+      message: error?.message ?? "Não foi possível registrar a desistência.",
+    };
   return { ok: true as const, data: status };
 }
 

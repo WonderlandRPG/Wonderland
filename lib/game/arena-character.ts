@@ -6,7 +6,7 @@ import { applySkillBalanceOverrides } from "@/lib/game/skill-loadout";
 import { equippedItemCopies } from "@/lib/game/equipment";
 import { reworkClasses } from "@/lib/game/rework-catalog";
 import { getReworkBasicAttack } from "@/lib/game/rework-combat";
-import type { TacticalCharacter } from "@/components/arena/tactical-lab-v9";
+import type { TacticalCharacter } from "@/components/arena/tactical-combat-core";
 
 export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
   const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;

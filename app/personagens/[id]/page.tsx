@@ -75,9 +75,7 @@ export default async function CharacterSheetPage({
       <PlayerNav />
       <div
         className={
-          tab === "equipamentos"
-            ? "sheet-page__inner is-inventory-mode"
-            : "page-container sheet-page__inner"
+          tab === "equipamentos" ? "inventory-page-container" : "page-container sheet-page__inner"
         }
       >
         <nav className="sheet-breadcrumb" aria-label="Localização na jornada">

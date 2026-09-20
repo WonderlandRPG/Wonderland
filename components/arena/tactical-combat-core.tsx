@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import Image from "next/image";
 
 import styles from "@/components/arena/tactical-combat-core.module.css";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
@@ -85,6 +86,14 @@ import {
 
 type SkillSource = "class" | "race";
 type TacticalItem = { id: string; name: string; description: string };
+type TacticalSkill = ClassSkill & { iconUrl?: string };
+type TacticalPassive = {
+  key: string;
+  name: string;
+  description: string;
+  iconUrl?: string;
+  source: SkillSource;
+};
 export type TacticalCharacter = {
   id: string;
   name: string;
@@ -111,7 +120,9 @@ export type TacticalCharacter = {
   usesMana: boolean;
   basicAttackRange: number;
   basicAttackDamageType: "physical" | "magic";
-  skills: Array<{ source: SkillSource; skill: ClassSkill }>;
+  basicAttack: { name: string; iconUrl?: string };
+  passives: TacticalPassive[];
+  skills: Array<{ source: SkillSource; skill: TacticalSkill }>;
   items: TacticalItem[];
 };
 
@@ -142,7 +153,7 @@ type PlayerAction =
       range: number;
       area: number;
       source: SkillSource;
-      skill: ClassSkill;
+      skill: TacticalSkill;
     };
 
 const PLAYER_MOVE = 4;
@@ -1319,6 +1330,80 @@ export function TacticalCombatCore({
       ) : null}
 
       <div className={styles.skillBar} data-wl-surface="raised">
+        <button
+          type="button"
+          className={styles.actionTile}
+          disabled={!actionAvailability.movement || movement <= 0}
+          data-action-kind="movement"
+          onClick={() => {
+            clearAction();
+            setMessage(`Movimento: ${movement}/${PLAYER_MOVE}.`);
+          }}
+        >
+          <span className={styles.fallbackIcon} aria-hidden="true">
+            ✥
+          </span>
+          <strong>Mover</strong>
+          <small>Alcance {movement}</small>
+        </button>
+        <button
+          type="button"
+          className={styles.actionTile}
+          disabled={!actionAvailability.basic}
+          data-selected={action?.kind === "basic" ? "true" : "false"}
+          data-action-kind="basic"
+          onClick={() =>
+            selectAction({
+              kind: "basic",
+              name: character.basicAttack.name,
+              range: character.basicAttackRange,
+              area: 0,
+            })
+          }
+        >
+          {character.basicAttack.iconUrl ? (
+            <Image
+              src={character.basicAttack.iconUrl}
+              alt=""
+              width={62}
+              height={62}
+              className={styles.skillIcon}
+            />
+          ) : (
+            <span className={styles.fallbackIcon} aria-hidden="true">
+              ⚔
+            </span>
+          )}
+          <strong>{character.basicAttack.name}</strong>
+          <small>{usedBasic ? "Usado" : `Alcance ${character.basicAttackRange}`}</small>
+        </button>
+        {character.passives.map((passive) => (
+          <button
+            key={`${passive.source}-${passive.key}`}
+            type="button"
+            className={styles.passiveTile}
+            disabled
+            title={passive.description}
+          >
+            {passive.iconUrl ? (
+              <Image
+                src={passive.iconUrl}
+                alt=""
+                width={62}
+                height={62}
+                className={styles.skillIcon}
+              />
+            ) : (
+              <span className={styles.fallbackIcon} aria-hidden="true">
+                ◆
+              </span>
+            )}
+            <strong>{passive.name}</strong>
+            <small>
+              {passive.source === "class" ? "Passiva de classe" : "Característica racial"}
+            </small>
+          </button>
+        ))}
         {character.skills.map(({ source, skill }) => {
           const cooldown = player.cooldowns[skill.key] ?? 0;
           const blocked =
@@ -1346,21 +1431,24 @@ export function TacticalCombatCore({
                 })
               }
             >
+              {skill.iconUrl ? (
+                <Image
+                  src={skill.iconUrl}
+                  alt=""
+                  width={62}
+                  height={62}
+                  className={styles.skillIcon}
+                />
+              ) : (
+                <span className={styles.fallbackIcon} aria-hidden="true">
+                  ◆
+                </span>
+              )}
               <strong>{skill.name}</strong>
-              <span>
-                {source === "class" ? "Classe" : "Raça"} · Alcance {skill.range} · Área {skill.area}
-              </span>
               <small>
                 {cooldown > 0
                   ? `Cooldown ${cooldown}`
-                  : skill.cost
-                    ? `${skill.cost} ${skill.resource}`
-                    : "Sem custo"}
-              </small>
-              <small>
-                {skill.operations
-                  .map((operation) => `${operation.operation}:${operation.target}`)
-                  .join(" → ")}
+                  : `${source === "class" ? "Classe" : "Raça"} · Alcance ${skill.range}${skill.area ? ` · Área ${skill.area}` : ""}`}
               </small>
             </button>
           );

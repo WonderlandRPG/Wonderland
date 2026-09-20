@@ -2,7 +2,6 @@
 
 import { useState, type ComponentProps, type CSSProperties } from "react";
 
-import { TacticalActionCategories } from "@/components/arena/tactical-action-categories";
 import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
 import { TacticalCombatCore } from "@/components/arena/tactical-combat-core";
 import { getTacticalMapById } from "@/lib/game/tactical-maps";
@@ -162,8 +161,6 @@ export function TacticalCombatShell({
           onCheckpoint={onCheckpoint}
         />
       </div>
-      <TacticalActionCategories active={started} />
-
       {!started ? (
         <div className={styles.startArea} data-tactical-start>
           <button className={styles.startButton} type="button" onClick={() => setStarted(true)}>

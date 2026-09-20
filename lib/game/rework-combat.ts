@@ -5,6 +5,7 @@ import type { PassiveOption } from "@/lib/game/skill-loadout";
 type ReworkCombat = ReworkClass["abilities"][number]["combat"];
 type ReworkSource = {
   id: string;
+  iconUrl?: string;
   name: string;
   description: string;
   unlockLevel: number;
@@ -183,13 +184,17 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
   return operations;
 }
 
-function toSkill(source: ReworkSource, resourceKey: "class" | "race"): ClassSkill {
+function toSkill(
+  source: ReworkSource,
+  resourceKey: "class" | "race",
+): ClassSkill & { iconUrl?: string } {
   const operations = makeOperation(source);
   const isDamage = operations.some((entry) => entry.operation === "DAMAGE");
   const isHeal = operations.some((entry) => entry.operation === "HEAL");
   const isShield = operations.some((entry) => entry.operation === "SHIELD");
   const area = parseArea(source.combat.area);
   return {
+    iconUrl: source.iconUrl,
     key: source.id,
     name: source.name,
     level: source.unlockLevel,
@@ -244,6 +249,7 @@ export function getReworkClassCombatSkills(
       toSkill(
         {
           id: ability.id,
+          iconUrl: ability.iconUrl,
           name: variant?.name ?? ability.name,
           description: variant?.description ?? ability.description,
           unlockLevel: ability.unlockLevel,
@@ -263,6 +269,7 @@ export function getReworkRaceCombatSkills(entry: ReworkRace, level: number) {
           toSkill(
             {
               id: power.id,
+              iconUrl: power.iconUrl,
               name: power.name,
               description: power.description,
               unlockLevel: power.unlockLevel,

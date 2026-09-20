@@ -15,6 +15,7 @@ import { getClassBasicAttackRange } from "@/lib/game/class-range";
 import { parseCreatureCombatProfile } from "@/lib/game/creature-tactical-combat";
 import { getTacticalSkillRange } from "@/lib/game/tactical-skill-range";
 import { repairTacticalInertSkill } from "@/lib/game/tactical-skill-repair";
+import { applySkillBalanceOverrides } from "@/lib/game/skill-loadout";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Combate Tático" };
@@ -33,12 +34,7 @@ export default async function TacticalMapLabPage() {
   ]);
 
   const { data: creatureRows } = client
-    ? await client
-        .from("v2_creatures")
-        .select("*")
-        .eq("active", true)
-        .order("rank")
-        .order("name")
+    ? await client.from("v2_creatures").select("*").eq("active", true).order("rank").order("name")
     : { data: [] };
 
   const creatures = (creatureRows ?? []).map((entry) => {
@@ -58,21 +54,36 @@ export default async function TacticalMapLabPage() {
   });
 
   const characters = sheets.map((character) => {
-    const rawClassSkills = character.unlockedClassSkills.filter((skill) => /ativa/i.test(skill.type));
-    const rawRaceSkills = character.unlockedRaceAbilities.filter((skill) => /ativa/i.test(skill.type));
+    const rawClassSkills = character.unlockedClassSkills.filter(
+      (skill) =>
+        /ativa/i.test(skill.type) && character.skillLoadout.classSkillKeys.includes(skill.key),
+    );
+    const rawRaceSkills = character.unlockedRaceAbilities.filter(
+      (skill) =>
+        /ativa/i.test(skill.type) && character.skillLoadout.raceSkillKeys.includes(skill.key),
+    );
     const originalSkills = new Map(
       [...rawClassSkills, ...rawRaceSkills].map((skill) => [skill.key, skill]),
     );
     const classBasicAttackRange = getClassBasicAttackRange(character.characterClass.name);
-    const classSkills = prepareClassCombatSkills(
-      character.characterClass.name,
-      character.characterClass.payload,
-      rawClassSkills,
+    const classSkills = applySkillBalanceOverrides(
+      prepareClassCombatSkills(
+        character.characterClass.name,
+        character.characterClass.payload,
+        rawClassSkills,
+      ).filter((skill) => character.skillLoadout.classSkillKeys.includes(skill.key)),
+      character.skillBalanceOverrides,
     );
-    const raceSkills = prepareRaceCombatSkills(rawRaceSkills);
+    const raceSkills = applySkillBalanceOverrides(
+      prepareRaceCombatSkills(rawRaceSkills),
+      character.skillBalanceOverrides,
+    );
     const skills = [
       ...classSkills.map((skill) => ({ source: "class" as const, skill })),
-      ...raceSkills.map((skill) => ({ source: "race" as const, skill: repairTacticalInertSkill(skill) })),
+      ...raceSkills.map((skill) => ({
+        source: "race" as const,
+        skill: repairTacticalInertSkill(skill),
+      })),
     ].map(({ source, skill }) => {
       const original = originalSkills.get(skill.key);
       const configuredRange = Math.max(0, original?.range ?? skill.range ?? 0);
@@ -124,7 +135,11 @@ export default async function TacticalMapLabPage() {
       rank: character.adventure_rank,
       raceName: character.race.name,
       className: character.characterClass.name,
-      classPathKey: character.class_path_key,
+      classPathKey:
+        character.class_path_key &&
+        character.skillLoadout.passiveKeys.includes(`path:${character.class_path_key}`)
+          ? character.class_path_key
+          : null,
       baseHp: character.race.payload.baseHp,
       baseMana: character.race.payload.baseMana,
       attributes: character.stats.attributes,
@@ -145,7 +160,9 @@ export default async function TacticalMapLabPage() {
     <main className="arena-page">
       <PlayerNav />
       <div className="page-container arena-page__inner tactical-lab-stage">
-        <Link className="arena-mode-back" href="/arena">← Voltar para Arena</Link>
+        <Link className="arena-mode-back" href="/arena">
+          ← Voltar para Arena
+        </Link>
         <TacticalCombatShell characters={characters} creatures={creatures} />
       </div>
     </main>

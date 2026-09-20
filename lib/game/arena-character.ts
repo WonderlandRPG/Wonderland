@@ -9,16 +9,31 @@ import {
   prepareClassCombatSkills,
   prepareRaceCombatSkills,
 } from "@/lib/game/class-combat-profile";
+import { applySkillBalanceOverrides } from "@/lib/game/skill-loadout";
 
 export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
   const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
-  const rawClassSkills = character.unlockedClassSkills.filter((skill) => !/passiva/i.test(skill.type));
-  const skills = prepareClassCombatSkills(
-    character.characterClass.name,
-    character.characterClass.payload,
-    rawClassSkills,
+  const rawClassSkills = character.unlockedClassSkills.filter(
+    (skill) =>
+      !/passiva|rea[cç][aã]o/i.test(skill.type) &&
+      character.skillLoadout.classSkillKeys.includes(skill.key),
+  );
+  const skills = applySkillBalanceOverrides(
+    prepareClassCombatSkills(
+      character.characterClass.name,
+      character.characterClass.payload,
+      rawClassSkills,
+    ).filter((skill) => character.skillLoadout.classSkillKeys.includes(skill.key)),
+    character.skillBalanceOverrides,
   ).map(prepareArenaSkill);
-  const raceAbilities = prepareRaceCombatSkills(character.unlockedRaceAbilities).map(prepareArenaSkill);
+  const raceAbilities = applySkillBalanceOverrides(
+    prepareRaceCombatSkills(
+      character.unlockedRaceAbilities.filter((skill) =>
+        character.skillLoadout.raceSkillKeys.includes(skill.key),
+      ),
+    ),
+    character.skillBalanceOverrides,
+  ).map(prepareArenaSkill);
   const usesMana = [...skills, ...raceAbilities].some((skill) => skill.resource === "mana");
 
   return {
@@ -53,19 +68,9 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
     skills,
     raceAbilities,
     combatLore: [
-      {
-        name: character.characterClass.payload.passive.name,
-        description: character.characterClass.payload.passive.description,
-      },
-      {
-        name: character.characterClass.payload.mechanic.name,
-        description: character.characterClass.payload.mechanic.description,
-      },
-      ...character.characterClass.payload.paths
-        .filter((path) => path.key === character.class_path_key)
-        .map((path) => ({ name: path.passive.name, description: path.passive.description })),
-      ...character.race.payload.traits,
-      ...character.race.payload.mechanics,
+      ...character.passiveOptions
+        .filter((passive) => character.skillLoadout.passiveKeys.includes(passive.key))
+        .map(({ name, description }) => ({ name, description })),
       ...character.inventory
         .filter((item) => item.equippedSlot)
         .flatMap((item) =>

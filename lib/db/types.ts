@@ -126,14 +126,80 @@ export interface Database {
         Relationships: [];
       };
       v2_cosmetics: {
-        Row: { id: string; key: string; name: string; description: string; slot: "card" | "aura" | "border"; rarity: string; collection_name: string; price_cents: number | null; artwork_url: string | null; active: boolean; grant_only: boolean; sort_order: number; created_at: string; updated_at: string };
-        Insert: { id?: string; key: string; name: string; description?: string; slot: "card" | "aura" | "border"; rarity?: string; collection_name: string; price_cents?: number | null; artwork_url?: string | null; active?: boolean; grant_only?: boolean; sort_order?: number; created_at?: string; updated_at?: string };
+        Row: {
+          id: string;
+          key: string;
+          name: string;
+          description: string;
+          slot: "card" | "aura" | "border";
+          rarity: string;
+          collection_name: string;
+          price_cents: number | null;
+          artwork_url: string | null;
+          active: boolean;
+          grant_only: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          key: string;
+          name: string;
+          description?: string;
+          slot: "card" | "aura" | "border";
+          rarity?: string;
+          collection_name: string;
+          price_cents?: number | null;
+          artwork_url?: string | null;
+          active?: boolean;
+          grant_only?: boolean;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_cosmetics"]["Insert"]>;
         Relationships: [];
       };
+      v2_character_skill_loadouts: {
+        Row: {
+          character_id: string;
+          equipped_class_skill_keys: string[];
+          equipped_race_skill_keys: string[];
+          selected_passive_keys: string[];
+          selected_talent_keys: string[];
+          revision: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          character_id: string;
+          equipped_class_skill_keys?: string[];
+          equipped_race_skill_keys?: string[];
+          selected_passive_keys?: string[];
+          selected_talent_keys?: string[];
+          revision?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_character_skill_loadouts"]["Insert"]>;
+        Relationships: [];
+      };
       v2_character_cosmetics: {
-        Row: { character_id: string; cosmetic_id: string; granted_by: string | null; grant_reason: string; created_at: string };
-        Insert: { character_id: string; cosmetic_id: string; granted_by?: string | null; grant_reason?: string; created_at?: string };
+        Row: {
+          character_id: string;
+          cosmetic_id: string;
+          granted_by: string | null;
+          grant_reason: string;
+          created_at: string;
+        };
+        Insert: {
+          character_id: string;
+          cosmetic_id: string;
+          granted_by?: string | null;
+          grant_reason?: string;
+          created_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_character_cosmetics"]["Insert"]>;
         Relationships: [];
       };
@@ -655,14 +721,54 @@ export interface Database {
         Relationships: [];
       };
       v2_character_diary: {
-        Row: { id: string; character_id: string; user_id: string; category: string; title: string; body: string; occurred_on: string; created_at: string; updated_at: string };
-        Insert: { id?: string; character_id: string; user_id: string; category?: string; title: string; body: string; occurred_on?: string; created_at?: string; updated_at?: string };
+        Row: {
+          id: string;
+          character_id: string;
+          user_id: string;
+          category: string;
+          title: string;
+          body: string;
+          occurred_on: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          character_id: string;
+          user_id: string;
+          category?: string;
+          title: string;
+          body: string;
+          occurred_on?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_character_diary"]["Insert"]>;
         Relationships: [];
       };
       v2_notifications: {
-        Row: { id: string; user_id: string; character_id: string | null; kind: string; title: string; message: string; href: string | null; read_at: string | null; created_at: string };
-        Insert: { id?: string; user_id: string; character_id?: string | null; kind: string; title: string; message: string; href?: string | null; read_at?: string | null; created_at?: string };
+        Row: {
+          id: string;
+          user_id: string;
+          character_id: string | null;
+          kind: string;
+          title: string;
+          message: string;
+          href: string | null;
+          read_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          character_id?: string | null;
+          kind: string;
+          title: string;
+          message: string;
+          href?: string | null;
+          read_at?: string | null;
+          created_at?: string;
+        };
         Update: Partial<Database["public"]["Tables"]["v2_notifications"]["Insert"]>;
         Relationships: [];
       };
@@ -867,7 +973,10 @@ export interface Database {
       v2_get_pve_daily_status: { Args: { p_character_id: string }; Returns: Json };
       v2_claim_arena_victory: { Args: { p_session_id: string }; Returns: Json };
       v2_mark_notification_read: { Args: { p_notification_id?: string }; Returns: number };
-      v2_update_mission_scene: { Args: { p_assignment_id: string; p_stage: string; p_summary?: string }; Returns: Json };
+      v2_update_mission_scene: {
+        Args: { p_assignment_id: string; p_stage: string; p_summary?: string };
+        Returns: Json;
+      };
       v2_join_pvp_queue: { Args: { p_character_id: string }; Returns: Json };
       v2_poll_pvp_queue: { Args: { p_queue_id: string }; Returns: Json };
       v2_cancel_pvp_queue: { Args: { p_queue_id: string }; Returns: undefined };
@@ -1001,8 +1110,14 @@ export interface Database {
         Returns: number;
       };
       v2_admin_delete_title: { Args: { p_title_id: string }; Returns: number };
-      v2_admin_update_cosmetic: { Args: { p_cosmetic_id: string; p_price_cents: number; p_active: boolean }; Returns: undefined };
-      v2_admin_grant_cosmetic: { Args: { p_cosmetic_id: string; p_character_id?: string | null; p_all?: boolean }; Returns: number };
+      v2_admin_update_cosmetic: {
+        Args: { p_cosmetic_id: string; p_price_cents: number; p_active: boolean };
+        Returns: undefined;
+      };
+      v2_admin_grant_cosmetic: {
+        Args: { p_cosmetic_id: string; p_character_id?: string | null; p_all?: boolean };
+        Returns: number;
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

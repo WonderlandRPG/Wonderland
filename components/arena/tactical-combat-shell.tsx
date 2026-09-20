@@ -5,6 +5,7 @@ import { useState, type ComponentProps, type CSSProperties } from "react";
 import { TacticalActionCategories } from "@/components/arena/tactical-action-categories";
 import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
 import { TacticalLabV9 } from "@/components/arena/tactical-lab-v9";
+import { getTacticalMapById } from "@/lib/game/tactical-maps";
 import styles from "./tactical-combat-shell.module.css";
 
 type LabProps = ComponentProps<typeof TacticalLabV9>;
@@ -19,21 +20,64 @@ type SceneDefinition = {
   description: string;
   mood: string;
   image: string;
+  mapId: string;
 };
 
 const TACTICAL_SCENES: SceneDefinition[] = [
-  { key: "forest", name: "Bosque Místico", description: "Clareira ancestral tomada por raízes, musgo e energia feérica.", mood: "Floresta ancestral", image: "/tactical/maps/forest-arena.webp" },
-  { key: "ruins", name: "Ruínas de Verdantia", description: "Pátio de pedra coberto por vegetação e restos de uma civilização esquecida.", mood: "Ruínas selvagens", image: "/tactical/maps/ruins-arena.webp" },
-  { key: "veil", name: "Véu Sombrio", description: "Clareira noturna marcada por névoa, pedra negra e brilho espectral.", mood: "Noite espectral", image: "/tactical/maps/veil-arena.webp" },
-  { key: "moon", name: "Santuário Lunar", description: "Bosque antigo banhado por luar frio, cristais azulados e silêncio arcano.", mood: "Luar arcano", image: "/tactical/maps/moon-arena.webp" },
-  { key: "ember", name: "Ruínas do Crepúsculo", description: "Pedras antigas sob luz âmbar, poeira quente e ecos de uma batalha esquecida.", mood: "Crepúsculo antigo", image: "/tactical/maps/ember-arena.webp" },
+  {
+    key: "forest",
+    name: "Bosque Místico",
+    description: "Cobertura central e duas rotas laterais para aproximação.",
+    mood: "Floresta ancestral",
+    image: "/tactical/maps/forest-arena.webp",
+    mapId: "ruinas-centrais",
+  },
+  {
+    key: "ruins",
+    name: "Ruínas de Verdantia",
+    description: "Corredores quebrados favorecem controle e combate frontal.",
+    mood: "Ruínas selvagens",
+    image: "/tactical/maps/ruins-arena.webp",
+    mapId: "corredor-quebrado",
+  },
+  {
+    key: "veil",
+    name: "Véu Sombrio",
+    description: "Campo aberto com um núcleo de obstáculos e flancos livres.",
+    mood: "Noite espectral",
+    image: "/tactical/maps/veil-arena.webp",
+    mapId: "clareira-partida",
+  },
+  {
+    key: "moon",
+    name: "Santuário Lunar",
+    description: "Cristais dividem o campo em rotas curtas de aproximação.",
+    mood: "Luar arcano",
+    image: "/tactical/maps/moon-arena.webp",
+    mapId: "santuario-lunar",
+  },
+  {
+    key: "ember",
+    name: "Ruínas do Crepúsculo",
+    description: "Muralhas quebradas criam flancos longos e um centro disputado.",
+    mood: "Crepúsculo antigo",
+    image: "/tactical/maps/ember-arena.webp",
+    mapId: "ruinas-crepusculo",
+  },
 ];
 
-export function TacticalCombatShell({ characters, creatures }: { characters: Character[]; creatures: Creature[] }) {
+export function TacticalCombatShell({
+  characters,
+  creatures,
+}: {
+  characters: Character[];
+  creatures: Creature[];
+}) {
   const [started, setStarted] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [scene, setScene] = useState<TacticalScene>("forest");
   const selectedScene = TACTICAL_SCENES.find((entry) => entry.key === scene) ?? TACTICAL_SCENES[0];
+  const selectedMap = getTacticalMapById(selectedScene.mapId);
   const shellStyle = { "--tactical-scene-image": `url("${selectedScene.image}")` } as CSSProperties;
 
   return (
@@ -50,10 +94,17 @@ export function TacticalCombatShell({ characters, creatures }: { characters: Cha
           <div className={styles.preparationIntro}>
             <span className={styles.eyebrow}>Combate tático</span>
             <h1>Prepare a arena</h1>
-            <p>Escolha o aventureiro, o inimigo e um dos cinco campos de batalha. O cenário muda a ambientação visual sem alterar as regras do combate.</p>
+            <p>
+              Escolha o aventureiro, o inimigo e um dos cinco campos de batalha. Cada mapa possui
+              dimensões, obstáculos e posições iniciais próprias.
+            </p>
           </div>
 
-          <div className={styles.scenePicker} role="radiogroup" aria-label="Escolha do campo de batalha">
+          <div
+            className={styles.scenePicker}
+            role="radiogroup"
+            aria-label="Escolha do campo de batalha"
+          >
             {TACTICAL_SCENES.map((entry) => (
               <button
                 key={entry.key}
@@ -66,9 +117,16 @@ export function TacticalCombatShell({ characters, creatures }: { characters: Cha
                 data-selected={scene === entry.key ? "true" : "false"}
                 onClick={() => setScene(entry.key)}
               >
-                <span className={styles.scenePreview} aria-hidden="true" style={{ backgroundImage: `url("${entry.image}")` }} />
+                <span
+                  className={styles.scenePreview}
+                  aria-hidden="true"
+                  style={{ backgroundImage: `url("${entry.image}")` }}
+                />
                 <span className={styles.sceneCopy}>
-                  <small>{entry.mood}</small>
+                  <small>
+                    {entry.mood} · {getTacticalMapById(entry.mapId).grid.width}×
+                    {getTacticalMapById(entry.mapId).grid.height}
+                  </small>
                   <strong>{entry.name}</strong>
                   <span>{entry.description}</span>
                 </span>
@@ -78,19 +136,40 @@ export function TacticalCombatShell({ characters, creatures }: { characters: Cha
         </section>
       ) : (
         <div className={styles.battleTopbar} data-tactical-topbar>
-          <button type="button" onClick={() => setStarted(false)}><span aria-hidden="true">←</span>Preparação</button>
-          <div className={styles.battleSceneTitle}><small>Campo de batalha</small><strong>{selectedScene.name}</strong></div>
-          <button type="button" onClick={() => setDetailsOpen((value) => !value)}>{detailsOpen ? "Fechar painel" : "Log / detalhes"}</button>
+          <button type="button" onClick={() => setStarted(false)}>
+            <span aria-hidden="true">←</span>Preparação
+          </button>
+          <div className={styles.battleSceneTitle}>
+            <small>
+              Campo de batalha · {selectedMap.grid.width}×{selectedMap.grid.height}
+            </small>
+            <strong>{selectedScene.name}</strong>
+          </div>
+          <button type="button" onClick={() => setDetailsOpen((value) => !value)}>
+            {detailsOpen ? "Fechar painel" : "Log / detalhes"}
+          </button>
         </div>
       )}
 
-      <div className={styles.identityWrap} data-tactical-identity><TacticalCombatIdentity characters={characters} creatures={creatures} /></div>
-      <div className={styles.labWrap} data-tactical-lab-host><TacticalLabV9 characters={characters} creatures={creatures} /></div>
+      <div className={styles.identityWrap} data-tactical-identity>
+        <TacticalCombatIdentity characters={characters} creatures={creatures} />
+      </div>
+      <div className={styles.labWrap} data-tactical-lab-host>
+        <TacticalLabV9
+          key={selectedMap.id}
+          mapId={selectedMap.id}
+          characters={characters}
+          creatures={creatures}
+        />
+      </div>
       <TacticalActionCategories active={started} />
 
       {!started ? (
         <div className={styles.startArea} data-tactical-start>
-          <button className={styles.startButton} type="button" onClick={() => setStarted(true)}><span>Entrar no campo</span><strong>Iniciar combate</strong></button>
+          <button className={styles.startButton} type="button" onClick={() => setStarted(true)}>
+            <span>Entrar no campo</span>
+            <strong>Iniciar combate</strong>
+          </button>
         </div>
       ) : null}
     </div>

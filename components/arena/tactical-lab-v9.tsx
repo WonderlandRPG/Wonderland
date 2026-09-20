@@ -1211,7 +1211,11 @@ export function TacticalLabV9({
         <div className={styles.boardShell} data-wl-surface="dark">
           <div
             className={styles.board}
-            style={{ gridTemplateColumns: `repeat(${grid.width}, minmax(0, 1fr))` }}
+            style={{
+              aspectRatio: `${grid.width} / ${grid.height}`,
+              gridTemplateColumns: `repeat(${grid.width}, minmax(0, 1fr))`,
+              gridTemplateRows: `repeat(${grid.height}, minmax(0, 1fr))`,
+            }}
           >
             {cells.map((position) => {
               const key = tacticalPositionKey(position);

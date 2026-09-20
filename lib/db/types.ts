@@ -699,8 +699,12 @@ export interface Database {
           character_id: string;
           mode: string;
           status: string;
+          creature_id: string | null;
+          map_id: string | null;
+          battle_state: Json;
           created_at: string;
           completed_at: string | null;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -708,8 +712,12 @@ export interface Database {
           character_id: string;
           mode: string;
           status?: string;
+          creature_id?: string | null;
+          map_id?: string | null;
+          battle_state?: Json;
           created_at?: string;
           completed_at?: string | null;
+          updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["v2_arena_sessions"]["Insert"]>;
         Relationships: [];
@@ -1008,6 +1016,11 @@ export interface Database {
       v2_start_arena_session: { Args: { p_character_id: string; p_mode: string }; Returns: string };
       v2_get_pve_daily_status: { Args: { p_character_id: string }; Returns: Json };
       v2_claim_arena_victory: { Args: { p_session_id: string }; Returns: Json };
+      v2_save_pve_battle_state: {
+        Args: { p_session_id: string; p_state: Json };
+        Returns: undefined;
+      };
+      v2_finish_pve_defeat: { Args: { p_session_id: string }; Returns: undefined };
       v2_mark_notification_read: { Args: { p_notification_id?: string }; Returns: number };
       v2_update_mission_scene: {
         Args: { p_assignment_id: string; p_stage: string; p_summary?: string };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import styles from "@/app/arena/mapa-tatico/tactical-lab.module.css";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
@@ -74,6 +74,7 @@ import {
   initialTacticalActionUsage,
   markTacticalActionUsed,
   resetTacticalActionUsage,
+  type TacticalActionUsage,
 } from "@/lib/game/tactical-action-economy";
 import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
 import { applyTacticalSpatialSkill } from "@/lib/game/tactical-spatial-skill";
@@ -84,7 +85,7 @@ import {
 
 type SkillSource = "class" | "race";
 type TacticalItem = { id: string; name: string; description: string };
-type TacticalCharacter = {
+export type TacticalCharacter = {
   id: string;
   name: string;
   level: number;
@@ -112,6 +113,25 @@ type TacticalCharacter = {
   basicAttackDamageType: "physical" | "magic";
   skills: Array<{ source: SkillSource; skill: ClassSkill }>;
   items: TacticalItem[];
+};
+
+export type TacticalBattleSnapshot = {
+  version: 1;
+  mapId: string;
+  characterId: string;
+  creatureId: string;
+  playerState: CombatantState;
+  enemyState: CombatantState;
+  playerPosition: TacticalPosition;
+  enemyPosition: TacticalPosition;
+  classTracker: TacticalClassResourceTracker;
+  pathTracker: TacticalPathTracker;
+  movement: number;
+  actionUsage: TacticalActionUsage;
+  round: number;
+  message: string;
+  log: string[];
+  outcome: "ongoing" | "victory" | "defeat" | "draw";
 };
 
 type PlayerAction =
@@ -203,10 +223,20 @@ export function TacticalLabV9({
   characters,
   creatures,
   mapId,
+  locked = false,
+  onVictory,
+  onDefeat,
+  initialState,
+  onCheckpoint,
 }: {
   characters: TacticalCharacter[];
   creatures: TacticalBestiaryCreature[];
   mapId: string;
+  locked?: boolean;
+  onVictory?: () => Promise<{ ok: boolean; message?: string; xp?: number; wg?: number }>;
+  onDefeat?: () => Promise<{ ok: boolean; message?: string; xp?: number; wg?: number }>;
+  initialState?: TacticalBattleSnapshot | null;
+  onCheckpoint?: (state: TacticalBattleSnapshot) => Promise<void>;
 }) {
   const tacticalMap = getTacticalMapById(mapId);
   const grid = tacticalMap.grid;
@@ -214,30 +244,117 @@ export function TacticalLabV9({
   const firstCharacter = characters[0];
   const firstCreature =
     creatures.find((entry) => entry.rank === firstCharacter?.rank) ?? creatures[0];
-  const [characterId, setCharacterId] = useState(firstCharacter?.id ?? "");
-  const [creatureId, setCreatureId] = useState(firstCreature?.id ?? "");
+  const canResume =
+    initialState?.mapId === mapId &&
+    characters.some((entry) => entry.id === initialState.characterId) &&
+    creatures.some((entry) => entry.id === initialState.creatureId);
+  const [characterId, setCharacterId] = useState(
+    canResume ? initialState.characterId : (firstCharacter?.id ?? ""),
+  );
+  const [creatureId, setCreatureId] = useState(
+    canResume ? initialState.creatureId : (firstCreature?.id ?? ""),
+  );
   const character = characters.find((entry) => entry.id === characterId) ?? firstCharacter;
   const creature = creatures.find((entry) => entry.id === creatureId) ?? firstCreature;
-  const [playerPosition, setPlayerPosition] = useState<TacticalPosition>(tacticalMap.playerStart);
-  const [enemyPosition, setEnemyPosition] = useState<TacticalPosition>(tacticalMap.enemyStart);
+  const [playerPosition, setPlayerPosition] = useState<TacticalPosition>(
+    canResume ? initialState.playerPosition : tacticalMap.playerStart,
+  );
+  const [enemyPosition, setEnemyPosition] = useState<TacticalPosition>(
+    canResume ? initialState.enemyPosition : tacticalMap.enemyStart,
+  );
   const [playerState, setPlayerState] = useState<CombatantState | null>(() =>
-    firstCharacter ? makePlayer(firstCharacter) : null,
+    canResume ? initialState.playerState : firstCharacter ? makePlayer(firstCharacter) : null,
   );
   const [enemyState, setEnemyState] = useState<CombatantState | null>(() =>
-    firstCreature ? makeCreature(firstCreature) : null,
+    canResume ? initialState.enemyState : firstCreature ? makeCreature(firstCreature) : null,
   );
   const [classTracker, setClassTracker] = useState<TacticalClassResourceTracker>(
-    initialTacticalClassResourceTracker,
+    canResume ? initialState.classTracker : initialTacticalClassResourceTracker,
   );
-  const [pathTracker, setPathTracker] = useState<TacticalPathTracker>(initialTacticalPathTracker);
-  const [movement, setMovement] = useState(PLAYER_MOVE);
+  const [pathTracker, setPathTracker] = useState<TacticalPathTracker>(
+    canResume ? initialState.pathTracker : initialTacticalPathTracker,
+  );
+  const [movement, setMovement] = useState(canResume ? initialState.movement : PLAYER_MOVE);
   const [action, setAction] = useState<PlayerAction | null>(null);
   const [areaCenter, setAreaCenter] = useState<TacticalPosition | null>(null);
-  const [actionUsage, setActionUsage] = useState(initialTacticalActionUsage);
-  const [round, setRound] = useState(1);
-  const [message, setMessage] = useState(`${tacticalMap.name}: combate pronto.`);
-  const [log, setLog] = useState<string[]>([
-    `Mapa carregado: ${tacticalMap.name} (${grid.width}×${grid.height}, ${tacticalMap.obstacles.length} obstáculos).`,
+  const [actionUsage, setActionUsage] = useState(
+    canResume ? initialState.actionUsage : initialTacticalActionUsage,
+  );
+  const [round, setRound] = useState(canResume ? initialState.round : 1);
+  const [message, setMessage] = useState(
+    canResume ? initialState.message : `${tacticalMap.name}: combate pronto.`,
+  );
+  const [log, setLog] = useState<string[]>(
+    canResume
+      ? initialState.log
+      : [
+          `Mapa carregado: ${tacticalMap.name} (${grid.width}×${grid.height}, ${tacticalMap.obstacles.length} obstáculos).`,
+        ],
+  );
+  const [settling, startSettlement] = useTransition();
+  const [settlement, setSettlement] = useState<string | null>(null);
+  const settledOutcome = useRef<string | null>(null);
+  const liveOutcome =
+    playerState && enemyState ? getTacticalCombatOutcome(playerState, enemyState) : "ongoing";
+
+  useEffect(() => {
+    if (liveOutcome !== "victory" && liveOutcome !== "defeat" && liveOutcome !== "draw") return;
+    if (settledOutcome.current === liveOutcome) return;
+    settledOutcome.current = liveOutcome;
+    const settle = liveOutcome === "victory" ? onVictory : onDefeat;
+    if (!settle) return;
+    startSettlement(async () => {
+      const result = await settle();
+      setSettlement(
+        result.ok
+          ? liveOutcome === "victory"
+            ? `Vitória confirmada: +${result.xp ?? 0} XP e +${result.wg ?? 0} WG.`
+            : "Resultado registrado no histórico."
+          : (result.message ?? "Não foi possível registrar o resultado."),
+      );
+    });
+  }, [liveOutcome, onDefeat, onVictory]);
+
+  useEffect(() => {
+    if (!onCheckpoint || !playerState || !enemyState || liveOutcome !== "ongoing") return;
+    const timer = window.setTimeout(() => {
+      void onCheckpoint({
+        version: 1,
+        mapId,
+        characterId,
+        creatureId,
+        playerState,
+        enemyState,
+        playerPosition,
+        enemyPosition,
+        classTracker,
+        pathTracker,
+        movement,
+        actionUsage,
+        round,
+        message,
+        log,
+        outcome: liveOutcome,
+      });
+    }, 600);
+    return () => window.clearTimeout(timer);
+  }, [
+    actionUsage,
+    characterId,
+    classTracker,
+    creatureId,
+    enemyPosition,
+    enemyState,
+    liveOutcome,
+    log,
+    mapId,
+    message,
+    movement,
+    onCheckpoint,
+    pathTracker,
+    playerPosition,
+    playerState,
+    round,
   ]);
 
   const reachable = useMemo(
@@ -336,6 +453,8 @@ export function TacticalLabV9({
   }
 
   function resetBoard(nextCharacter = character, nextCreature = creature) {
+    settledOutcome.current = null;
+    setSettlement(null);
     setPlayerPosition(tacticalMap.playerStart);
     setEnemyPosition(tacticalMap.enemyStart);
     setPlayerState(makePlayer(nextCharacter));
@@ -1061,7 +1180,11 @@ export function TacticalLabV9({
       <section className={styles.characterPanel} data-wl-surface="raised">
         <label>
           <span>Personagem</span>
-          <select value={character.id} onChange={(event) => changeCharacter(event.target.value)}>
+          <select
+            disabled={locked}
+            value={character.id}
+            onChange={(event) => changeCharacter(event.target.value)}
+          >
             {characters.map((entry) => (
               <option key={entry.id} value={entry.id}>
                 {entry.name} · Rank {entry.rank} · {entry.className}
@@ -1071,7 +1194,11 @@ export function TacticalLabV9({
         </label>
         <label>
           <span>Criatura do Bestiário</span>
-          <select value={creature.id} onChange={(event) => changeCreature(event.target.value)}>
+          <select
+            disabled={locked}
+            value={creature.id}
+            onChange={(event) => changeCreature(event.target.value)}
+          >
             {creatures.map((entry) => (
               <option key={entry.id} value={entry.id}>
                 {entry.name} · Rank {entry.rank} · {entry.combatProfile.aiProfile}
@@ -1182,10 +1309,14 @@ export function TacticalLabV9({
         <button type="button" disabled={!actionAvailability.endTurn} onClick={executeEnemyTurn}>
           Encerrar turno → IA
         </button>
-        <button type="button" onClick={() => resetBoard()}>
+        <button type="button" disabled={locked || settling} onClick={() => resetBoard()}>
           Reiniciar
         </button>
       </div>
+
+      {settling || settlement ? (
+        <p role="status">{settling ? "Registrando resultado..." : settlement}</p>
+      ) : null}
 
       <div className={styles.skillBar} data-wl-surface="raised">
         {character.skills.map(({ source, skill }) => {

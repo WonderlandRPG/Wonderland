@@ -6,16 +6,8 @@ import { PlayerNav } from "@/components/player-nav";
 import { isAdministrativeRole, requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheets } from "@/lib/content/characters";
 import { getCreatureImageUrl, parseTextList } from "@/lib/game/bestiary";
-import {
-  getClassBasicAttackDamageType,
-  prepareClassCombatSkills,
-  prepareRaceCombatSkills,
-} from "@/lib/game/class-combat-profile";
-import { getClassBasicAttackRange } from "@/lib/game/class-range";
 import { parseCreatureCombatProfile } from "@/lib/game/creature-tactical-combat";
-import { getTacticalSkillRange } from "@/lib/game/tactical-skill-range";
-import { repairTacticalInertSkill } from "@/lib/game/tactical-skill-repair";
-import { applySkillBalanceOverrides } from "@/lib/game/skill-loadout";
+import { toTacticalArenaCharacter } from "@/lib/game/arena-character";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const metadata = { title: "Combate Tático" };
@@ -53,108 +45,7 @@ export default async function TacticalMapLabPage() {
     };
   });
 
-  const characters = sheets.map((character) => {
-    const rawClassSkills = character.unlockedClassSkills.filter(
-      (skill) =>
-        /ativa/i.test(skill.type) && character.skillLoadout.classSkillKeys.includes(skill.key),
-    );
-    const rawRaceSkills = character.unlockedRaceAbilities.filter(
-      (skill) =>
-        /ativa/i.test(skill.type) && character.skillLoadout.raceSkillKeys.includes(skill.key),
-    );
-    const originalSkills = new Map(
-      [...rawClassSkills, ...rawRaceSkills].map((skill) => [skill.key, skill]),
-    );
-    const classBasicAttackRange = getClassBasicAttackRange(character.characterClass.name);
-    const classSkills = applySkillBalanceOverrides(
-      prepareClassCombatSkills(
-        character.characterClass.name,
-        character.characterClass.payload,
-        rawClassSkills,
-      ).filter((skill) => character.skillLoadout.classSkillKeys.includes(skill.key)),
-      character.skillBalanceOverrides,
-    );
-    const raceSkills = applySkillBalanceOverrides(
-      prepareRaceCombatSkills(rawRaceSkills),
-      character.skillBalanceOverrides,
-    );
-    const skills = [
-      ...classSkills.map((skill) => ({ source: "class" as const, skill })),
-      ...raceSkills.map((skill) => ({
-        source: "race" as const,
-        skill: repairTacticalInertSkill(skill),
-      })),
-    ].map(({ source, skill }) => {
-      const original = originalSkills.get(skill.key);
-      const configuredRange = Math.max(0, original?.range ?? skill.range ?? 0);
-      const originalOperations = new Map(
-        (original?.operations ?? []).map((operation, index) => [index, operation]),
-      );
-      const restoredSkill = {
-        ...skill,
-        range: configuredRange,
-        area: Math.max(0, original?.area ?? skill.area ?? 0),
-        operations: skill.operations.map((operation, index) => {
-          const rawOperation = originalOperations.get(index);
-          return {
-            ...operation,
-            distance: Math.max(0, rawOperation?.distance ?? operation.distance ?? 0),
-          };
-        }),
-      };
-      const tacticalRange = getTacticalSkillRange(restoredSkill, classBasicAttackRange);
-      return {
-        source,
-        skill: {
-          ...restoredSkill,
-          range: tacticalRange,
-          operations: restoredSkill.operations.map((operation) => ({
-            ...operation,
-            distance:
-              (operation.operation === "MOVE" || operation.operation === "TELEPORT") &&
-              operation.distance === 0
-                ? tacticalRange
-                : operation.distance,
-          })),
-        },
-      };
-    });
-    const usesMana = skills.some(({ skill }) => skill.resource === "mana");
-    const items = character.inventory
-      .filter((item) => /consum|poção|pocao/i.test(item.category))
-      .map((item) => ({ id: item.id, name: item.name, description: item.description }));
-    const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
-
-    return {
-      id: character.id,
-      name: character.name,
-      imageUrl: character.image_url,
-      title: equippedTitle,
-      cosmetics: character.cosmetics,
-      level: character.level,
-      rank: character.adventure_rank,
-      raceName: character.race.name,
-      className: character.characterClass.name,
-      classPathKey:
-        character.class_path_key &&
-        character.skillLoadout.passiveKeys.includes(`path:${character.class_path_key}`)
-          ? character.class_path_key
-          : null,
-      baseHp: character.race.payload.baseHp,
-      baseMana: character.race.payload.baseMana,
-      attributes: character.stats.attributes,
-      classResource: character.characterClass.payload.resource,
-      raceResource: character.race.payload.resource,
-      usesMana,
-      basicAttackRange: classBasicAttackRange,
-      basicAttackDamageType: getClassBasicAttackDamageType(
-        character.characterClass.name,
-        character.characterClass.payload,
-      ),
-      skills,
-      items,
-    };
-  });
+  const characters = sheets.map(toTacticalArenaCharacter);
 
   return (
     <main className="arena-page">

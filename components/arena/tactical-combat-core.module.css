@@ -301,12 +301,13 @@
 .skillBar button {
   position: relative;
   display: grid;
-  align-content: start;
-  gap: 5px;
-  flex: 0 0 220px;
-  min-height: 104px;
-  padding: 14px;
-  text-align: left;
+  grid-template-rows: 62px auto auto;
+  place-items: center;
+  gap: 6px;
+  flex: 0 0 112px;
+  min-height: 126px;
+  padding: 9px 7px;
+  text-align: center;
 }
 .skillBar button::before {
   content: "";
@@ -320,8 +321,11 @@
   background: var(--wl-gold);
 }
 .skillBar button strong {
-  font-size: 0.92rem;
-  line-height: 1.22;
+  width: 100%;
+  overflow: hidden;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  text-overflow: ellipsis;
 }
 .skillBar button span,
 .skillBar button small {
@@ -329,12 +333,41 @@
   line-height: 1.3;
   opacity: 0.82;
 }
-.skillBar button small:last-child {
-  margin-top: auto;
-  padding-top: 5px;
-  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
-  font-size: 0.68rem;
-  letter-spacing: 0.02em;
+.skillBar button small {
+  font-size: 0.62rem;
+}
+.skillIcon,
+.fallbackIcon {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  place-items: center;
+  border: 2px solid color-mix(in srgb, var(--wl-gold) 72%, var(--wl-border-strong));
+  border-radius: 50%;
+  background: var(--wl-surface-dark-strong);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--wl-surface-dark) 80%, transparent);
+  object-fit: cover;
+}
+.fallbackIcon {
+  color: var(--wl-gold);
+  font-size: 1.7rem;
+}
+.skillBar .passiveTile:disabled {
+  opacity: 0.82;
+  filter: none;
+}
+.passiveTile::after {
+  content: "PASSIVA";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: var(--wl-surface-dark-strong);
+  color: var(--wl-gold);
+  font-size: 0.48rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
 }
 .skillBar p {
   margin: 0;
@@ -671,7 +704,7 @@
     grid-template-columns: minmax(0, 1fr) 300px;
   }
   .skillBar button {
-    flex-basis: 205px;
+    flex-basis: 108px;
   }
 }
 @media (max-width: 980px) {
@@ -726,9 +759,9 @@
     padding: 10px;
   }
   .skillBar button {
-    flex-basis: 178px;
-    min-height: 100px;
-    padding: 11px;
+    flex-basis: 102px;
+    min-height: 122px;
+    padding: 8px 6px;
   }
   .boardShell {
     margin-inline: -6px;
@@ -755,10 +788,9 @@
     min-width: 520px;
   }
   .skillBar button {
-    flex-basis: 166px;
+    flex-basis: 98px;
   }
   .header h1 {
     font-size: 1.65rem;
   }
 }
-

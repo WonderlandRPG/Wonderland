@@ -4,7 +4,7 @@ import type { CharacterSheet } from "@/lib/content/characters";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import { applySkillBalanceOverrides } from "@/lib/game/skill-loadout";
 import { equippedItemCopies } from "@/lib/game/equipment";
-import { reworkClasses } from "@/lib/game/rework-catalog";
+import { reworkClasses, reworkRaces } from "@/lib/game/rework-catalog";
 import { getReworkBasicAttack } from "@/lib/game/rework-combat";
 import type { TacticalCharacter } from "@/components/arena/tactical-combat-core";
 
@@ -89,6 +89,17 @@ export function toTacticalArenaCharacter(character: CharacterSheet): TacticalCha
   cosmetics: ArenaCharacter["cosmetics"];
 } {
   const arena = toArenaCharacter(character);
+  const reworkClass = reworkClasses.find((entry) => entry.name === character.characterClass.name);
+  const reworkRace = reworkRaces.find((entry) => entry.name === character.race.name);
+  const basicAttack = reworkClass?.abilities.find((ability) => ability.kind === "Ataque básico");
+  const passiveCatalog = [
+    ...(reworkClass?.abilities
+      .filter((ability) => ability.kind === "Passiva")
+      .map((ability) => ({ ...ability, source: "class" as const })) ?? []),
+    ...(reworkRace?.powers
+      .filter((power) => power.kind === "Característica")
+      .map((power) => ({ ...power, source: "race" as const })) ?? []),
+  ];
   return {
     id: arena.id,
     name: arena.name,
@@ -108,6 +119,24 @@ export function toTacticalArenaCharacter(character: CharacterSheet): TacticalCha
     usesMana: arena.usesMana,
     basicAttackRange: arena.basicAttackRange,
     basicAttackDamageType: arena.basicAttackDamageType ?? "physical",
+    basicAttack: {
+      name: basicAttack?.name ?? "Ataque básico",
+      iconUrl: basicAttack?.iconUrl,
+    },
+    passives: character.skillLoadout.passiveKeys.flatMap((key) => {
+      const passive = passiveCatalog.find((entry) => entry.id === key);
+      return passive
+        ? [
+            {
+              key: passive.id,
+              name: passive.name,
+              description: passive.description,
+              iconUrl: passive.iconUrl,
+              source: passive.source,
+            },
+          ]
+        : [];
+    }),
     skills: [
       ...arena.skills.map((skill) => ({ source: "class" as const, skill })),
       ...arena.raceAbilities.map((skill) => ({ source: "race" as const, skill })),

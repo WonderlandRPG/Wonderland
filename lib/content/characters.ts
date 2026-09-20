@@ -19,7 +19,12 @@ import {
 } from "@/lib/game/characters";
 import { parseRacePayload, type RacePayload } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
-import { reworkRaces } from "@/lib/game/rework-catalog";
+import { reworkClasses, reworkRaces } from "@/lib/game/rework-catalog";
+import {
+  getReworkClassCombatSkills,
+  getReworkPassiveOptions,
+  getReworkRaceCombatSkills,
+} from "@/lib/game/rework-combat";
 import {
   calculateReworkSheet,
   migrateLegacyAllocation,
@@ -262,13 +267,25 @@ async function loadSheets(
       ),
       INI: equipmentBonuses.INI,
     };
-    const unlockedRaceAbilities = getUnlockedRaceAbilities(race.data, record.level);
-    const unlockedClassSkills = [
-      ...getUnlockedClassSkills(characterClass.data, record.level),
-      ...getUnlockedPathSkills(characterClass.data, record.class_path_key, record.level),
-    ].sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
-    const passiveOptions = getPassiveOptions(characterClass.data, race.data, record.class_path_key);
-    const talentSkills = getTalentSkills(characterClass.data, record.class_path_key, record.level);
+    const reworkClass = reworkClasses.find(
+      (entry) => entry.id === classRow.slug || entry.name === classRow.name,
+    );
+    const unlockedRaceAbilities = reworkRace
+      ? getReworkRaceCombatSkills(reworkRace, record.level)
+      : getUnlockedRaceAbilities(race.data, record.level);
+    const unlockedClassSkills = reworkClass
+      ? getReworkClassCombatSkills(reworkClass, record.level, record.class_path_key)
+      : [
+          ...getUnlockedClassSkills(characterClass.data, record.level),
+          ...getUnlockedPathSkills(characterClass.data, record.class_path_key, record.level),
+        ].sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
+    const passiveOptions =
+      reworkClass && reworkRace
+        ? getReworkPassiveOptions(reworkClass, reworkRace, record.level)
+        : getPassiveOptions(characterClass.data, race.data, record.class_path_key);
+    const talentSkills = reworkClass
+      ? []
+      : getTalentSkills(characterClass.data, record.class_path_key, record.level);
     const skillLoadout = resolveSkillLoadout(
       loadouts.get(record.id),
       buildSkillLoadoutAvailability({
@@ -277,6 +294,7 @@ async function loadSheets(
         passiveOptions,
         talentSkills,
       }),
+      loadoutLimits,
     );
     return [
       {

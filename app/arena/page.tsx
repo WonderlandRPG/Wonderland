@@ -1,28 +1,24 @@
-import { TrainingArena } from "@/components/arena/training-arena";
+import { TacticalCombatShell } from "@/components/arena/tactical-combat-shell";
 import { PlayerNav } from "@/components/player-nav";
-import { getCharacterSheets, getPvpOpponentSheet } from "@/lib/content/characters";
+import { getCharacterSheets } from "@/lib/content/characters";
 import { requireActiveCharacter } from "@/lib/content/active-character";
-import { defaultCombatRules } from "@/lib/game/combat";
-import { PvpLobby } from "@/components/arena/pvp-lobby";
 import { arenaRewards, type ArenaMode } from "@/lib/game/arena";
 import Link from "next/link";
-import { startPveAction } from "./actions";
+import {
+  claimArenaVictoryAction,
+  finishArenaDefeatAction,
+  savePveBattleStateAction,
+  startPveAction,
+} from "./actions";
+import type { TacticalBattleSnapshot } from "@/components/arena/tactical-lab-v9";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { toArenaCharacter } from "@/lib/game/arena-character";
-import { createInitialPvpState } from "@/lib/game/pvp-state";
-import { PvpBattle } from "@/components/arena/pvp-battle";
-import type { Json } from "@/lib/db/types";
 import { isAdministrativeRole } from "@/lib/auth/roles";
 import { leaveAllQueuesAction } from "@/app/arena/queue-actions";
 import { CombatExitGuard } from "@/components/arena/combat-exit-guard";
-import {
-  getCreatureImageUrl,
-  parseTextList,
-  toPveCreature,
-  type BestiaryCreature,
-  type CreatureRank,
-} from "@/lib/game/bestiary";
+import { getCreatureImageUrl, parseTextList } from "@/lib/game/bestiary";
+import { parseCreatureCombatProfile } from "@/lib/game/creature-tactical-combat";
+import { toTacticalArenaCharacter } from "@/lib/game/arena-character";
 
 export const metadata = { title: "Arena de Treinamento" };
 export const dynamic = "force-dynamic";
@@ -81,7 +77,7 @@ export default async function ArenaPage({
     client && activeCharacter && mode === "pve" && sessionQuery.success
       ? await client
           .from("v2_arena_sessions")
-          .select("id,status")
+          .select("id,status,creature_id,map_id,battle_state")
           .eq("id", sessionQuery.data)
           .eq("character_id", activeCharacter.id)
           .eq("user_id", account.id)
@@ -103,32 +99,36 @@ export default async function ArenaPage({
       ? Number.parseInt(arenaSessionId.replaceAll("-", "").slice(-4), 16) % 10
       : 0;
   const { data: pveCreatureRows } =
-    client && activeCharacter && mode === "pve" && !arenaSessionError
+    client && activeCharacter && (mode === "training" || (mode === "pve" && !arenaSessionError))
       ? await client
           .from("v2_creatures")
           .select("*")
           .eq("active", true)
           .eq("rank", activeCharacter.adventure_rank)
           .order("slug")
-          .range(creatureIndex, creatureIndex)
+          .limit(50)
       : { data: [] };
-  const pveCreatureRow = pveCreatureRows?.[0];
-  const pveCreature = pveCreatureRow
-    ? toPveCreature({
-        id: pveCreatureRow.id,
-        slug: pveCreatureRow.slug,
-        name: pveCreatureRow.name,
-        category: pveCreatureRow.category,
-        rank: pveCreatureRow.rank as CreatureRank,
-        size: pveCreatureRow.size,
-        disposition: pveCreatureRow.disposition,
-        behavior: pveCreatureRow.behavior,
-        weaknesses: parseTextList(pveCreatureRow.weaknesses),
-        habitats: parseTextList(pveCreatureRow.habitats),
-        description: pveCreatureRow.description,
-        imageUrl: getCreatureImageUrl(pveCreatureRow.slug),
-      } satisfies BestiaryCreature)
-    : undefined;
+  const selectedCreatureRows =
+    mode === "pve" && arenaSessionResult.data?.creature_id
+      ? (pveCreatureRows ?? []).filter((row) => row.id === arenaSessionResult.data?.creature_id)
+      : pveCreatureRows?.length
+        ? [pveCreatureRows[creatureIndex % pveCreatureRows.length]]
+        : [];
+  const tacticalCreatures = selectedCreatureRows.map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    category: row.category,
+    rank: row.rank,
+    behavior: row.behavior,
+    weaknesses: parseTextList(row.weaknesses),
+    description: row.description,
+    imageUrl: getCreatureImageUrl(row.slug),
+    combatProfile: parseCreatureCombatProfile(
+      row.rank,
+      (row as typeof row & { combat_profile?: unknown }).combat_profile,
+    ),
+  }));
   const pveStatusResult =
     client && activeCharacter
       ? await client.rpc("v2_get_pve_daily_status", { p_character_id: activeCharacter.id })
@@ -148,24 +148,16 @@ export default async function ArenaPage({
           typeof rawPveStatus.activeSessionId === "string" ? rawPveStatus.activeSessionId : null,
       }
     : null;
-  const opponent =
-    mode === "pvp" && query.partida ? await getPvpOpponentSheet(query.partida) : null;
-  const pvpMatchError =
-    query.partida && !opponent
-      ? "A sala foi encontrada, mas não foi possível carregar o adversário. Volte à fila e tente novamente."
+  const tacticalCharacters = activeCharacter ? [toTacticalArenaCharacter(activeCharacter)] : [];
+  const rawBattleState = arenaSessionResult.data?.battle_state;
+  const initialBattleState =
+    rawBattleState &&
+    typeof rawBattleState === "object" &&
+    !Array.isArray(rawBattleState) &&
+    rawBattleState.version === 1 &&
+    typeof rawBattleState.mapId === "string"
+      ? (rawBattleState as unknown as TacticalBattleSnapshot)
       : null;
-  const arenaCharacter = activeCharacter ? toArenaCharacter(activeCharacter) : null;
-  const arenaOpponent = opponent ? toArenaCharacter(opponent) : null;
-  let pvpRoom = null;
-  if (client && mode === "pvp" && query.partida && arenaCharacter && arenaOpponent) {
-    const initialState = createInitialPvpState(arenaCharacter, arenaOpponent, defaultCombatRules);
-    await client.rpc("v2_initialize_pvp_match", {
-      p_match_id: query.partida,
-      p_state: initialState as unknown as Json,
-    });
-    const roomResult = await client.rpc("v2_get_pvp_match_state", { p_match_id: query.partida });
-    pvpRoom = roomResult.data;
-  }
 
   return (
     <main className="arena-page">
@@ -249,14 +241,14 @@ export default async function ArenaPage({
                   </button>
                 </form>
               )}
-              <Link className="arena-mode-card is-pvp" href="/arena?modo=pvp">
+              <article className="arena-mode-locked is-pvp">
                 <span className="arena-mode-card__sigil">対</span>
                 <i>03</i>
-                <small>Estrutura competitiva</small>
+                <small>Conversão tática em andamento</small>
                 <strong>PvP</strong>
-                <p>Entre na fila para duelos balanceados entre aventureiros.</p>
-                <b>Ver fila →</b>
-              </Link>
+                <p>O combate legado foi desativado. O novo PvP tático chegará no item 11.</p>
+                <b>Indisponível temporariamente</b>
+              </article>
               {isAdministrativeRole(account.role) ? (
                 <Link className="arena-mode-card" href="/arena/mapa-tatico">
                   <span className="arena-mode-card__sigil">棋</span>
@@ -293,57 +285,51 @@ export default async function ArenaPage({
             <Link href="/arena">Voltar aos modos</Link>
           </section>
         ) : null}
-        {mode === "pvp" && pvpMatchError ? (
+        {mode === "pvp" ? (
           <section className="arena-load-error" role="alert">
             <span>!</span>
             <div>
-              <strong>Partida PvP indisponível</strong>
-              <p>{pvpMatchError}</p>
+              <strong>PvP antigo desativado</strong>
+              <p>
+                O modo competitivo será reaberto somente com o mapa e as regras do Rework no item
+                11.
+              </p>
             </div>
-            <Link href="/arena?modo=pvp">Voltar para a fila</Link>
+            <Link href="/arena">Voltar aos modos</Link>
           </section>
         ) : null}
-        {mode === "pvp" && activeCharacter && !query.partida && !opponent ? (
-          <PvpLobby
-            characterId={activeCharacter.id}
-            characterName={activeCharacter.name}
-            rank={activeCharacter.adventure_rank}
-          />
-        ) : null}
-        {mode && !(mode === "pve" && arenaSessionError) && (mode !== "pvp" || opponent) ? (
+        {mode && mode !== "pvp" && !(mode === "pve" && arenaSessionError) ? (
           <>
             <Link className="arena-mode-back" href="/arena">
               ← Trocar modo
             </Link>
-            {mode === "pvp" && query.partida && arenaCharacter && arenaOpponent && pvpRoom ? (
-              <>
-                <CombatExitGuard kind="pvp" combatId={query.partida} />
-                <PvpBattle
-                  matchId={query.partida}
-                  initialRoom={pvpRoom}
-                  character={arenaCharacter}
-                  opponent={arenaOpponent}
-                />
-              </>
-            ) : (
-              <>
-                {mode === "pve" && typeof arenaSessionId === "string" ? (
-                  <CombatExitGuard kind="arena" combatId={arenaSessionId} />
-                ) : null}
-                <TrainingArena
-                  characters={characters
-                    .filter((character) => character.id === characterId)
-                    .map(toArenaCharacter)}
-                  initialCharacterId={query.personagem}
-                  mode={mode}
-                  monsterIndex={creatureIndex}
-                  pveCreature={pveCreature}
-                  sessionId={typeof arenaSessionId === "string" ? arenaSessionId : undefined}
-                  opponent={arenaOpponent ?? undefined}
-                  rules={defaultCombatRules}
-                />
-              </>
-            )}
+            <>
+              {mode === "pve" && typeof arenaSessionId === "string" ? (
+                <CombatExitGuard kind="arena" combatId={arenaSessionId} />
+              ) : null}
+              <TacticalCombatShell
+                characters={tacticalCharacters}
+                creatures={tacticalCreatures}
+                mode={mode}
+                initialMapId={mode === "pve" ? arenaSessionResult.data?.map_id : null}
+                onVictory={
+                  mode === "pve" && arenaSessionId
+                    ? claimArenaVictoryAction.bind(null, arenaSessionId)
+                    : undefined
+                }
+                onDefeat={
+                  mode === "pve" && arenaSessionId
+                    ? finishArenaDefeatAction.bind(null, arenaSessionId)
+                    : undefined
+                }
+                initialState={mode === "pve" ? initialBattleState : null}
+                onCheckpoint={
+                  mode === "pve" && arenaSessionId
+                    ? savePveBattleStateAction.bind(null, arenaSessionId)
+                    : undefined
+                }
+              />
+            </>
           </>
         ) : null}
       </div>

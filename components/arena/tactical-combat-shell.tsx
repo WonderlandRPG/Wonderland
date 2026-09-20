@@ -69,13 +69,27 @@ const TACTICAL_SCENES: SceneDefinition[] = [
 export function TacticalCombatShell({
   characters,
   creatures,
+  mode = "lab",
+  initialMapId,
+  onVictory,
+  onDefeat,
+  initialState,
+  onCheckpoint,
 }: {
   characters: Character[];
   creatures: Creature[];
+  mode?: "lab" | "training" | "pve";
+  initialMapId?: string | null;
+  onVictory?: LabProps["onVictory"];
+  onDefeat?: LabProps["onDefeat"];
+  initialState?: LabProps["initialState"];
+  onCheckpoint?: LabProps["onCheckpoint"];
 }) {
   const [started, setStarted] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [scene, setScene] = useState<TacticalScene>("forest");
+  const [scene, setScene] = useState<TacticalScene>(
+    TACTICAL_SCENES.find((entry) => entry.mapId === initialMapId)?.key ?? "forest",
+  );
   const selectedScene = TACTICAL_SCENES.find((entry) => entry.key === scene) ?? TACTICAL_SCENES[0];
   const selectedMap = getTacticalMapById(selectedScene.mapId);
   const shellStyle = { "--tactical-scene-image": `url("${selectedScene.image}")` } as CSSProperties;
@@ -115,6 +129,7 @@ export function TacticalCombatShell({
                 data-scene={entry.key}
                 data-scene-key={entry.key}
                 data-selected={scene === entry.key ? "true" : "false"}
+                disabled={mode === "pve"}
                 onClick={() => setScene(entry.key)}
               >
                 <span
@@ -160,6 +175,11 @@ export function TacticalCombatShell({
           mapId={selectedMap.id}
           characters={characters}
           creatures={creatures}
+          locked={mode === "pve"}
+          onVictory={onVictory}
+          onDefeat={onDefeat}
+          initialState={initialState}
+          onCheckpoint={onCheckpoint}
         />
       </div>
       <TacticalActionCategories active={started} />
@@ -175,4 +195,3 @@ export function TacticalCombatShell({
     </div>
   );
 }
-

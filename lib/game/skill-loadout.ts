@@ -140,6 +140,7 @@ export function buildSkillLoadoutAvailability({
 export function resolveSkillLoadout(
   stored: StoredSkillLoadout | null | undefined,
   available: SkillLoadoutAvailability,
+  limits: SkillLoadoutLimits = defaultSkillLoadoutLimits,
 ): SkillLoadout {
   if (!stored) {
     return {
@@ -150,10 +151,19 @@ export function resolveSkillLoadout(
       persisted: false,
     };
   }
+  const selectedClass = uniqueAllowed(stored.equipped_class_skill_keys, available.classSkillKeys);
+  const selectedRace = uniqueAllowed(stored.equipped_race_skill_keys, available.raceSkillKeys);
+  const selectedPassives = uniqueAllowed(stored.selected_passive_keys, available.passiveKeys);
   return {
-    classSkillKeys: uniqueAllowed(stored.equipped_class_skill_keys, available.classSkillKeys),
-    raceSkillKeys: uniqueAllowed(stored.equipped_race_skill_keys, available.raceSkillKeys),
-    passiveKeys: uniqueAllowed(stored.selected_passive_keys, available.passiveKeys),
+    classSkillKeys: selectedClass.length
+      ? selectedClass
+      : available.classSkillKeys.slice(0, limits.classSkills),
+    raceSkillKeys: selectedRace.length
+      ? selectedRace
+      : available.raceSkillKeys.slice(0, limits.raceSkills),
+    passiveKeys: selectedPassives.length
+      ? selectedPassives
+      : available.passiveKeys.slice(0, limits.passives),
     talentKeys: uniqueAllowed(stored.selected_talent_keys, available.talentKeys),
     persisted: true,
   };

@@ -48,12 +48,14 @@ function splitList(value: string) {
 }
 
 function slugify(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "") || "habilidade";
+  return (
+    value
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "habilidade"
+  );
 }
 
 function parseSkill(formData: FormData, index: number, creatureId: string) {
@@ -230,6 +232,5 @@ export async function updateCreatureCombatProfileAdminAction(formData: FormData)
 
   revalidatePath("/admin/bestiario");
   revalidatePath("/bestiario");
-  revalidatePath("/arena/mapa-tatico");
   redirect("/admin/bestiario?status=salvo");
 }

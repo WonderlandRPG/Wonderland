@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const payloadSchema = z.object({
-  kind: z.enum(["arena", "pvp", "dungeon"]),
+  kind: z.enum(["arena", "pvp"]),
   combatId: z.uuid(),
 });
 

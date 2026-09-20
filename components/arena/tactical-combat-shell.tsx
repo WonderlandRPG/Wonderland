@@ -4,14 +4,14 @@ import { useState, type ComponentProps, type CSSProperties } from "react";
 
 import { TacticalActionCategories } from "@/components/arena/tactical-action-categories";
 import { TacticalCombatIdentity } from "@/components/arena/tactical-combat-identity";
-import { TacticalLabV9 } from "@/components/arena/tactical-lab-v9";
+import { TacticalCombatCore } from "@/components/arena/tactical-combat-core";
 import { getTacticalMapById } from "@/lib/game/tactical-maps";
 import styles from "./tactical-combat-shell.module.css";
 
-type LabProps = ComponentProps<typeof TacticalLabV9>;
+type CombatProps = ComponentProps<typeof TacticalCombatCore>;
 type IdentityProps = ComponentProps<typeof TacticalCombatIdentity>;
-type Character = LabProps["characters"][number] & IdentityProps["characters"][number];
-type Creature = LabProps["creatures"][number] & IdentityProps["creatures"][number];
+type Character = CombatProps["characters"][number] & IdentityProps["characters"][number];
+type Creature = CombatProps["creatures"][number] & IdentityProps["creatures"][number];
 type TacticalScene = "forest" | "ruins" | "veil" | "moon" | "ember";
 
 type SceneDefinition = {
@@ -69,7 +69,6 @@ const TACTICAL_SCENES: SceneDefinition[] = [
 export function TacticalCombatShell({
   characters,
   creatures,
-  mode = "lab",
   initialMapId,
   onVictory,
   onDefeat,
@@ -78,19 +77,16 @@ export function TacticalCombatShell({
 }: {
   characters: Character[];
   creatures: Creature[];
-  mode?: "lab" | "training" | "pve";
   initialMapId?: string | null;
-  onVictory?: LabProps["onVictory"];
-  onDefeat?: LabProps["onDefeat"];
-  initialState?: LabProps["initialState"];
-  onCheckpoint?: LabProps["onCheckpoint"];
+  onVictory?: CombatProps["onVictory"];
+  onDefeat?: CombatProps["onDefeat"];
+  initialState?: CombatProps["initialState"];
+  onCheckpoint?: CombatProps["onCheckpoint"];
 }) {
   const [started, setStarted] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [scene, setScene] = useState<TacticalScene>(
-    TACTICAL_SCENES.find((entry) => entry.mapId === initialMapId)?.key ?? "forest",
-  );
-  const selectedScene = TACTICAL_SCENES.find((entry) => entry.key === scene) ?? TACTICAL_SCENES[0];
+  const selectedScene =
+    TACTICAL_SCENES.find((entry) => entry.mapId === initialMapId) ?? TACTICAL_SCENES[0];
   const selectedMap = getTacticalMapById(selectedScene.mapId);
   const shellStyle = { "--tactical-scene-image": `url("${selectedScene.image}")` } as CSSProperties;
 
@@ -100,53 +96,37 @@ export function TacticalCombatShell({
       data-tactical-shell
       data-combat-mode={started ? "battle" : "preparation"}
       data-details-open={detailsOpen ? "true" : "false"}
-      data-map-scene={scene}
+      data-map-scene={selectedScene.key}
       style={shellStyle}
     >
       {!started ? (
         <section className={styles.preparationHeader} data-tactical-preparation>
           <div className={styles.preparationIntro}>
-            <span className={styles.eyebrow}>Combate tático</span>
-            <h1>Prepare a arena</h1>
-            <p>
-              Escolha o aventureiro, o inimigo e um dos cinco campos de batalha. Cada mapa possui
-              dimensões, obstáculos e posições iniciais próprias.
-            </p>
+            <span className={styles.eyebrow}>Expedição PvE</span>
+            <h1>Prepare-se para o combate</h1>
+            <p>A criatura e o campo foram definidos para esta expedição.</p>
           </div>
 
-          <div
-            className={styles.scenePicker}
-            role="radiogroup"
-            aria-label="Escolha do campo de batalha"
-          >
-            {TACTICAL_SCENES.map((entry) => (
-              <button
-                key={entry.key}
-                type="button"
-                role="radio"
-                aria-checked={scene === entry.key}
-                className={styles.sceneCard}
-                data-scene={entry.key}
-                data-scene-key={entry.key}
-                data-selected={scene === entry.key ? "true" : "false"}
-                disabled={mode === "pve"}
-                onClick={() => setScene(entry.key)}
-              >
-                <span
-                  className={styles.scenePreview}
-                  aria-hidden="true"
-                  style={{ backgroundImage: `url("${entry.image}")` }}
-                />
-                <span className={styles.sceneCopy}>
-                  <small>
-                    {entry.mood} · {getTacticalMapById(entry.mapId).grid.width}×
-                    {getTacticalMapById(entry.mapId).grid.height}
-                  </small>
-                  <strong>{entry.name}</strong>
-                  <span>{entry.description}</span>
-                </span>
-              </button>
-            ))}
+          <div className={styles.scenePicker} aria-label="Campo de batalha da expedição">
+            <article
+              className={styles.sceneCard}
+              data-scene={selectedScene.key}
+              data-scene-key={selectedScene.key}
+              data-selected="true"
+            >
+              <span
+                className={styles.scenePreview}
+                aria-hidden="true"
+                style={{ backgroundImage: `url("${selectedScene.image}")` }}
+              />
+              <span className={styles.sceneCopy}>
+                <small>
+                  {selectedScene.mood} · {selectedMap.grid.width}×{selectedMap.grid.height}
+                </small>
+                <strong>{selectedScene.name}</strong>
+                <span>{selectedScene.description}</span>
+              </span>
+            </article>
           </div>
         </section>
       ) : (
@@ -169,13 +149,13 @@ export function TacticalCombatShell({
       <div className={styles.identityWrap} data-tactical-identity>
         <TacticalCombatIdentity characters={characters} creatures={creatures} />
       </div>
-      <div className={styles.labWrap} data-tactical-lab-host>
-        <TacticalLabV9
+      <div className={styles.combatWrap} data-tactical-combat-host>
+        <TacticalCombatCore
           key={selectedMap.id}
           mapId={selectedMap.id}
           characters={characters}
           creatures={creatures}
-          locked={mode === "pve"}
+          locked
           onVictory={onVictory}
           onDefeat={onDefeat}
           initialState={initialState}

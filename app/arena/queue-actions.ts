@@ -15,7 +15,6 @@ export async function leaveAllQueuesAction() {
   });
 
   revalidatePath("/arena");
-  revalidatePath("/arena/dungeons");
   revalidatePath("/missoes");
 
   if (error) {

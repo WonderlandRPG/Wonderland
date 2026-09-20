@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import type { EquippedTitleData } from "@/components/characters/equipped-title";
 import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
@@ -24,11 +22,6 @@ type CreatureVisual = {
   imageUrl: string | null;
 };
 
-function cssImage(url: string | null) {
-  if (!url) return "none";
-  return `url("${url.replace(/"/g, "\\\"")}")`;
-}
-
 export function TacticalCombatIdentity({
   characters,
   creatures,
@@ -36,48 +29,8 @@ export function TacticalCombatIdentity({
   characters: CharacterVisual[];
   creatures: CreatureVisual[];
 }) {
-  const [characterId, setCharacterId] = useState(characters[0]?.id ?? "");
-  const [creatureId, setCreatureId] = useState(creatures[0]?.id ?? "");
-
-  const character = useMemo(
-    () => characters.find((entry) => entry.id === characterId) ?? characters[0],
-    [characterId, characters],
-  );
-  const creature = useMemo(
-    () => creatures.find((entry) => entry.id === creatureId) ?? creatures[0],
-    [creatureId, creatures],
-  );
-
-  useEffect(() => {
-    const stage = document.querySelector<HTMLElement>(".tactical-lab-stage");
-    const lab = stage?.querySelector<HTMLElement>('[aria-label="Laboratório do mapa tático V8"]');
-    if (!stage || !lab) return;
-
-    const selects = Array.from(lab.querySelectorAll<HTMLSelectElement>("select"));
-    const characterSelect = selects[0];
-    const creatureSelect = selects[1];
-    if (!characterSelect || !creatureSelect) return;
-
-    const sync = () => {
-      setCharacterId(characterSelect.value);
-      setCreatureId(creatureSelect.value);
-    };
-
-    sync();
-    characterSelect.addEventListener("change", sync);
-    creatureSelect.addEventListener("change", sync);
-    return () => {
-      characterSelect.removeEventListener("change", sync);
-      creatureSelect.removeEventListener("change", sync);
-    };
-  }, []);
-
-  useEffect(() => {
-    const stage = document.querySelector<HTMLElement>(".tactical-lab-stage");
-    if (!stage) return;
-    stage.style.setProperty("--tactical-player-image", cssImage(character?.imageUrl ?? null));
-    stage.style.setProperty("--tactical-creature-image", cssImage(creature?.imageUrl ?? null));
-  }, [character, creature]);
+  const character = characters[0];
+  const creature = creatures[0];
 
   if (!character || !creature) return null;
 

@@ -25,7 +25,7 @@ describe("structured update content", () => {
           id: "image-1",
           type: "image",
           content: "https://example.supabase.co/storage/v1/object/public/update-images/news.webp",
-          label: "Nova Dungeon",
+          label: "Nova expedição PvE",
         },
       ]),
     ).toEqual([
@@ -33,7 +33,7 @@ describe("structured update content", () => {
         id: "image-1",
         type: "image",
         content: "https://example.supabase.co/storage/v1/object/public/update-images/news.webp",
-        label: "Nova Dungeon",
+        label: "Nova expedição PvE",
       },
     ]);
   });

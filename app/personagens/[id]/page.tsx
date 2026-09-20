@@ -401,7 +401,7 @@ export default async function CharacterSheetPage({
                 <em>Abrir fórmulas</em>
               </summary>
               <p className="combat-formulas__intro">
-                Os mesmos cálculos são usados em Arena, PvE, Treino e Dungeon.
+                Os mesmos cálculos são usados no PvE e no PvP.
               </p>
               <div>
                 <article>
@@ -678,4 +678,3 @@ function SkillList({
     </div>
   );
 }
-

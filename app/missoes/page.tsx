@@ -56,13 +56,12 @@ export default async function MissionBoardPage({
               Guilda de {kingdomMissionNames[board.character.kingdom] ?? board.character.kingdom}
             </span>
             <h1>
-              Mural de{" "}
-              <br />
+              Mural de <br />
               <em>Missões</em>
             </h1>
             <p>
               Contratos reservados aos aventureiros de Rank {board.character.rank}. Aceite com
-              cuidado: uma missão ativa fecha os portões da Arena e das Dungeons.
+              cuidado: uma missão ativa fecha os portões do PvE e do PvP.
             </p>
           </div>
           <aside>
@@ -138,8 +137,8 @@ export default async function MissionBoardPage({
             <div className="mission-resolution-wait" data-wl-status="warning">
               <strong>Aguardando conclusão</strong>
               <p>
-                Um responsável pela Guilda registrará o resultado da missão e entregará a
-                recompensa quando ela for concluída.
+                Um responsável pela Guilda registrará o resultado da missão e entregará a recompensa
+                quando ela for concluída.
               </p>
             </div>
             <footer>
@@ -230,7 +229,7 @@ export default async function MissionBoardPage({
         <footer className="mission-board-rules">
           <strong>Leis do Mural</strong>
           <span>01 · Apenas um contrato por vez</span>
-          <span>02 · Arena e Dungeon bloqueadas durante a missão</span>
+          <span>02 · PvE e PvP bloqueados durante a missão</span>
           <span>03 · Missões não concluídas não bloqueiam novos contratos</span>
           <span>04 · O mural recebe uma seleção nova a cada semana</span>
         </footer>

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
-import styles from "@/app/arena/mapa-tatico/tactical-lab.module.css";
+import styles from "@/components/arena/tactical-combat-core.module.css";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
 import {
   createCombatant,
@@ -219,7 +219,7 @@ function summonExpired(before: CombatantState["statuses"], after: CombatantState
   );
 }
 
-export function TacticalLabV9({
+export function TacticalCombatCore({
   characters,
   creatures,
   mapId,
@@ -1161,10 +1161,10 @@ export function TacticalLabV9({
   const playerSkillBlocked = playerStun > 0 || playerSilence > 0;
 
   return (
-    <section className={styles.lab} aria-label="Laboratório do mapa tático V8" data-tactical-core>
+    <section className={styles.lab} aria-label="Combate tático" data-tactical-core>
       <header className={styles.header}>
         <div>
-          <span className={styles.eyebrow}>Item 7 · núcleo do combate tático</span>
+          <span className={styles.eyebrow}>Combate tático · Rework</span>
           <h1>{tacticalMap.name}</h1>
           <p>
             {tacticalMap.description} Grade {grid.width}×{grid.height}, com{" "}

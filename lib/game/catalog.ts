@@ -59,12 +59,6 @@ export const contentCatalog = [
     description: "Objetivos, decisões, requisitos e recompensas.",
     glyph: "MS",
   },
-  {
-    key: "dungeon",
-    label: "Dungeons",
-    description: "Fases, mapas, encontros e regras de conclusão.",
-    glyph: "DG",
-  },
 ] as const;
 
 export type ContentType = (typeof contentCatalog)[number]["key"];

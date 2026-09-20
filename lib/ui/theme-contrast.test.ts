@@ -34,11 +34,7 @@ function contrast(foreground: string, background: string) {
 function walkCss(directory: string): string[] {
   return readdirSync(directory).flatMap((entry) => {
     const full = resolve(directory, entry);
-    return statSync(full).isDirectory()
-      ? walkCss(full)
-      : full.endsWith(".css")
-        ? [full]
-        : [];
+    return statSync(full).isDirectory() ? walkCss(full) : full.endsWith(".css") ? [full] : [];
   });
 }
 
@@ -127,7 +123,6 @@ const legacyColorFiles = new Set([
   "app/world-pages.css",
   "components/admin/admin-creation-studio.module.css",
   "components/admin/history-cover-upload.module.css",
-  "components/arena/dungeon-lobby.module.css",
   "components/audio/audio-provider.module.css",
   "components/characters/character-portrait-card.module.css",
   "components/characters/equipped-title.module.css",
@@ -162,7 +157,7 @@ describe("contrato visual do Wonderland", () => {
     const cssFiles = [...walkCss(resolve(root, "app")), ...walkCss(resolve(root, "components"))];
 
     for (const file of cssFiles) {
-      const path = relative(root, file).replaceAll("\\\\", "/");
+      const path = relative(root, file).replaceAll("\\", "/");
       if (
         path === "app/theme-tokens.css" ||
         path === "app/visual-contract.css" ||

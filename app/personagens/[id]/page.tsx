@@ -73,7 +73,9 @@ export default async function CharacterSheetPage({
   return (
     <main className="sheet-page">
       <PlayerNav />
-      <div className="page-container sheet-page__inner">
+      <div
+        className={`page-container sheet-page__inner ${tab === "equipamentos" ? "is-inventory-mode" : ""}`}
+      >
         <nav className="sheet-breadcrumb" aria-label="Localização na jornada">
           <Link href="/personagens">Meus personagens</Link>
           <span aria-hidden="true">/</span>
@@ -568,7 +570,7 @@ export default async function CharacterSheetPage({
 
         {tab === "equipamentos" ? (
           <section
-            className="sheet-section inventory-hud"
+            className="inventory-hud"
             style={{ "--character-rank": rank.color } as React.CSSProperties}
           >
             <header>

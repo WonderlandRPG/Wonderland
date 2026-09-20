@@ -8,6 +8,9 @@
   color: var(--wl-text-inverse);
   box-shadow: var(--wl-shadow);
 }
+.sheet-page__inner.is-inventory-mode {
+  width: min(1680px, calc(100% - 28px)) !important;
+}
 .inventory-hud > header {
   display: flex;
   align-items: end;
@@ -27,13 +30,13 @@
   margin: 0;
   color: var(--wl-text-inverse-muted);
 }
-.inventory-command {
+.arsenal-shell {
   display: grid;
   grid-template-columns: minmax(470px, 46%) minmax(0, 54%);
   min-width: 0;
   min-height: 780px;
 }
-.inventory-command__loadout {
+.arsenal-loadout {
   display: grid;
   grid-template-columns: minmax(135px, 1fr) minmax(190px, 1.25fr) minmax(135px, 1fr);
   grid-template-areas: "head head head" "left hero right" "stats stats stats";
@@ -44,7 +47,7 @@
   border-right: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
   background: color-mix(in srgb, var(--wl-surface-dark) 76%, var(--wl-surface-dark-strong));
 }
-.inventory-loadout-heading {
+.arsenal-loadout-heading {
   grid-area: head;
   display: flex;
   align-items: end;
@@ -54,28 +57,28 @@
   padding-bottom: 12px;
   border-bottom: 1px solid color-mix(in srgb, var(--wl-border) 42%, transparent);
 }
-.inventory-loadout-heading h3 {
+.arsenal-loadout-heading h3 {
   margin: 2px 0 0;
   color: var(--wl-text-inverse);
   font-size: 1.35rem;
 }
-.inventory-loadout-heading small,
-.inventory-loadout-heading .eyebrow {
+.arsenal-loadout-heading small,
+.arsenal-loadout-heading .eyebrow {
   color: var(--wl-text-inverse-muted);
 }
-.inventory-slot-column {
+.arsenal-slot-column {
   display: grid;
   grid-template-rows: repeat(7, minmax(62px, auto));
   gap: 7px;
   min-width: 0;
 }
-.inventory-slot-column.is-left {
+.arsenal-slot-column.is-left {
   grid-area: left;
 }
-.inventory-slot-column.is-right {
+.arsenal-slot-column.is-right {
   grid-area: right;
 }
-.inventory-slot-column > button {
+.arsenal-slot-column > button {
   display: grid;
   grid-template-columns: 42px minmax(0, 1fr);
   align-items: center;
@@ -96,20 +99,20 @@
     background 160ms ease,
     transform 160ms ease;
 }
-.inventory-slot-column > button:hover,
-.inventory-slot-column > button:focus-visible {
+.arsenal-slot-column > button:hover,
+.arsenal-slot-column > button:focus-visible {
   border-color: var(--wl-gold-soft);
   background: color-mix(in srgb, var(--wl-surface-dark) 68%, var(--wl-gold));
   transform: translateY(-1px);
 }
-.inventory-slot-column > button.is-equipped {
+.arsenal-slot-column > button.is-equipped {
   border-color: var(--character-rank, var(--wl-gold));
   background: color-mix(in srgb, var(--wl-surface-dark) 76%, var(--wl-gold));
 }
-.inventory-slot-column > button.is-reserved {
+.arsenal-slot-column > button.is-reserved {
   opacity: var(--wl-disabled-opacity);
 }
-.inventory-slot-art {
+.arsenal-slot-art {
   display: grid;
   place-items: center;
   width: 42px;
@@ -119,35 +122,35 @@
   border-radius: var(--wl-radius-sm);
   background: var(--wl-surface-dark-strong);
 }
-.inventory-slot-art > * {
+.arsenal-slot-art > * {
   max-width: 100%;
   max-height: 100%;
 }
-.inventory-slot-column > button > span:not(.inventory-slot-art) {
+.arsenal-slot-column > button > span:not(.arsenal-slot-art) {
   min-width: 0;
 }
-.inventory-slot-column :where(small, strong, em) {
+.arsenal-slot-column :where(small, strong, em) {
   display: block;
   min-width: 0;
   margin: 0;
   overflow-wrap: anywhere;
   line-height: 1.15;
 }
-.inventory-slot-column small {
+.arsenal-slot-column small {
   color: var(--wl-text-inverse-muted);
   font-size: 0.62rem;
 }
-.inventory-slot-column strong {
+.arsenal-slot-column strong {
   margin-top: 2px;
   color: var(--wl-text-inverse);
   font-size: 0.76rem;
 }
-.inventory-slot-column em {
+.arsenal-slot-column em {
   margin-top: 2px;
   color: var(--wl-gold-soft);
   font-size: 0.58rem;
 }
-.inventory-character-card.has-official-character-card {
+.arsenal-character-card {
   grid-area: hero;
   align-self: center;
   display: grid;
@@ -159,10 +162,10 @@
   border: 0;
   box-shadow: none;
 }
-.inventory-character-card.has-official-character-card > div:first-child {
+.arsenal-character-card > div:first-child {
   width: min(100%, 230px);
 }
-.inventory-character-card__caption {
+.arsenal-character-card__caption {
   display: grid;
   width: 100%;
   gap: 2px;
@@ -172,7 +175,7 @@
   background: var(--wl-surface-dark-strong);
   text-align: center;
 }
-.inventory-character-card__caption small {
+.arsenal-character-card__caption small {
   color: var(--wl-text-inverse-muted);
 }
 .inventory-loadout-summary {
@@ -232,36 +235,36 @@
   color: var(--wl-text-inverse);
   font-weight: 800;
 }
-.inventory-browser {
+.arsenal-browser {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(210px, 30%);
   align-content: start;
   min-width: 0;
   background: var(--wl-surface-dark-strong);
 }
-.inventory-browser__catalog {
+.arsenal-catalog {
   min-width: 0;
   padding: 12px;
   border-right: 1px solid color-mix(in srgb, var(--wl-border) 42%, transparent);
 }
-.inventory-browser__catalog > header {
+.arsenal-catalog > header {
   display: grid;
   gap: 10px;
 }
-.inventory-browser__catalog > header h3 {
+.arsenal-catalog > header h3 {
   margin: 2px 0;
   color: var(--wl-text-inverse);
   font-size: 1.25rem;
 }
-.inventory-browser__catalog > header .eyebrow {
+.arsenal-catalog > header .eyebrow {
   color: var(--wl-text-inverse-muted);
 }
-.inventory-browser__catalog > header nav {
+.arsenal-catalog > header nav {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
 }
-.inventory-browser__catalog > header nav button {
+.arsenal-catalog > header nav button {
   min-height: 38px;
   padding: 6px 9px;
   border: 1px solid color-mix(in srgb, var(--wl-border) 50%, transparent);
@@ -269,12 +272,12 @@
   color: var(--wl-text-inverse-muted);
   cursor: pointer;
 }
-.inventory-browser__catalog > header nav button.is-active,
-.inventory-browser__catalog > header nav button:hover {
+.arsenal-catalog > header nav button.is-active,
+.arsenal-catalog > header nav button:hover {
   border-color: var(--wl-gold);
   color: var(--wl-text-inverse);
 }
-.inventory-search {
+.arsenal-search {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -283,31 +286,31 @@
   border: 1px solid color-mix(in srgb, var(--wl-border) 38%, transparent);
   background: var(--wl-surface-dark);
 }
-.inventory-search label {
+.arsenal-search label {
   display: flex;
   flex: 1;
   align-items: center;
   gap: 6px;
   min-width: 0;
 }
-.inventory-search input {
+.arsenal-search input {
   width: 100%;
   min-width: 0;
   border: 0;
   background: transparent;
   color: var(--wl-text-inverse);
 }
-.inventory-search small {
+.arsenal-search small {
   color: var(--wl-text-inverse-muted);
   white-space: nowrap;
 }
-.inventory-classic-grid {
+.arsenal-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(100px, 1fr));
   gap: 7px;
   margin-top: 10px;
 }
-.inventory-classic-card {
+.arsenal-item-card {
   display: grid;
   align-content: start;
   gap: 5px;
@@ -321,14 +324,14 @@
   text-align: left;
   cursor: pointer;
 }
-.inventory-classic-card:hover,
-.inventory-classic-card.is-selected {
+.arsenal-item-card:hover,
+.arsenal-item-card.is-selected {
   border-color: var(--wl-gold);
 }
-.inventory-classic-card.is-selected {
+.arsenal-item-card.is-selected {
   background: color-mix(in srgb, var(--wl-surface-dark) 78%, var(--wl-gold));
 }
-.inventory-classic-card > div:first-child {
+.arsenal-item-card > div:first-child {
   position: relative;
   display: grid;
   place-items: center;
@@ -336,34 +339,34 @@
   overflow: hidden;
   background: var(--wl-surface-dark-strong);
 }
-.inventory-classic-card > div:first-child > * {
+.arsenal-item-card > div:first-child > * {
   max-width: 100%;
   max-height: 100%;
 }
-.inventory-classic-card > div:first-child b {
+.arsenal-item-card > div:first-child b {
   position: absolute;
   right: 4px;
   bottom: 3px;
 }
-.inventory-classic-card > small {
+.arsenal-item-card > small {
   color: var(--wl-text-inverse-muted);
   font-size: 0.56rem;
   text-transform: uppercase;
 }
-.inventory-classic-card > strong {
+.arsenal-item-card > strong {
   overflow-wrap: anywhere;
   font-size: 0.75rem;
   line-height: 1.2;
 }
-.inventory-card-effect {
+.arsenal-card-effect {
   color: var(--wl-gold-soft);
   font-size: 0.62rem;
 }
-.inventory-card-effect small {
+.arsenal-card-effect small {
   display: block;
   color: var(--wl-text-inverse-muted);
 }
-.inventory-classic-card footer {
+.arsenal-item-card footer {
   display: flex;
   justify-content: space-between;
   gap: 5px;
@@ -373,7 +376,7 @@
   color: var(--wl-text-inverse-muted);
   font-size: 0.58rem;
 }
-.inventory-inspector {
+.arsenal-inspector {
   position: sticky;
   top: 76px;
   display: grid;
@@ -383,17 +386,17 @@
   padding: 14px;
   color: var(--wl-text-inverse);
 }
-.inventory-inspector header span,
-.inventory-inspector header b {
+.arsenal-inspector header span,
+.arsenal-inspector header b {
   color: var(--wl-gold-soft);
   font-size: 0.66rem;
 }
-.inventory-inspector h3 {
+.arsenal-inspector h3 {
   margin: 5px 0;
   overflow-wrap: anywhere;
   font-size: 1.25rem;
 }
-.inventory-inspector__glyph {
+.arsenal-inspector__glyph {
   display: grid;
   place-items: center;
   height: 120px;
@@ -401,57 +404,57 @@
   border: 1px solid var(--wl-gold);
   background: var(--wl-surface-dark);
 }
-.inventory-inspector__glyph > * {
+.arsenal-inspector__glyph > * {
   max-width: 100%;
   max-height: 100%;
 }
-.inventory-inspector > p {
+.arsenal-inspector > p {
   margin: 0;
   color: var(--wl-text-inverse-muted);
   font-size: 0.72rem;
   line-height: 1.45;
 }
-.inventory-inspector dl {
+.arsenal-inspector dl {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 5px;
   margin: 0;
 }
-.inventory-inspector dl > div,
-.inventory-inspector > article {
+.arsenal-inspector dl > div,
+.arsenal-inspector > article {
   padding: 8px;
   border: 1px solid color-mix(in srgb, var(--wl-border) 38%, transparent);
   background: var(--wl-surface-dark);
 }
-.inventory-inspector dt,
-.inventory-inspector article small {
+.arsenal-inspector dt,
+.arsenal-inspector article small {
   color: var(--wl-text-inverse-muted);
   font-size: 0.6rem;
 }
-.inventory-inspector dd {
+.arsenal-inspector dd {
   margin: 2px 0 0;
   color: var(--wl-gold-soft);
   font-weight: 900;
 }
-.inventory-inspector article :where(strong, p) {
+.arsenal-inspector article :where(strong, p) {
   display: block;
   margin: 3px 0 0;
   overflow-wrap: anywhere;
 }
-.inventory-inspector footer {
+.arsenal-inspector footer {
   display: grid;
   gap: 7px;
 }
-.inventory-inspector footer form,
-.inventory-inspector footer button,
-.inventory-inspector footer label {
+.arsenal-inspector footer form,
+.arsenal-inspector footer button,
+.arsenal-inspector footer label {
   width: 100%;
 }
-.inventory-inspector footer label {
+.arsenal-inspector footer label {
   display: grid;
   gap: 4px;
 }
-.inventory-empty {
+.arsenal-empty {
   display: grid;
   place-items: center;
   align-content: center;
@@ -460,50 +463,50 @@
   color: var(--wl-text-inverse-muted);
   text-align: center;
 }
-.inventory-cosmetics {
+.arsenal-cosmetics {
   display: grid;
   gap: 14px;
   margin-top: 12px;
 }
-.inventory-cosmetics__intro,
-.inventory-cosmetics__grid article {
+.arsenal-cosmetics__intro,
+.arsenal-cosmetics__grid article {
   padding: 14px;
   border: 1px solid color-mix(in srgb, var(--wl-border) 45%, transparent);
   background: var(--wl-surface-dark);
 }
-.inventory-cosmetics__intro h3,
-.inventory-cosmetics__grid h4,
-.inventory-cosmetics__grid p {
+.arsenal-cosmetics__intro h3,
+.arsenal-cosmetics__grid h4,
+.arsenal-cosmetics__grid p {
   margin: 3px 0;
 }
-.inventory-cosmetics__grid {
+.arsenal-cosmetics__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 8px;
 }
-.inventory-cosmetics__grid article {
+.arsenal-cosmetics__grid article {
   display: grid;
   gap: 7px;
   color: var(--wl-text-inverse);
 }
-.inventory-cosmetics__preview {
+.arsenal-cosmetics__preview {
   display: grid;
   place-items: center;
   min-height: 160px;
   background: var(--wl-surface-dark-strong);
 }
-.inventory-cosmetics__preview > div {
+.arsenal-cosmetics__preview > div {
   width: 120px;
 }
 @media (max-width: 1180px) {
-  .inventory-command {
+  .arsenal-shell {
     grid-template-columns: 1fr;
   }
-  .inventory-command__loadout {
+  .arsenal-loadout {
     border-right: 0;
     border-bottom: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
   }
-  .inventory-browser {
+  .arsenal-browser {
     min-height: 620px;
   }
 }
@@ -511,21 +514,21 @@
   .inventory-hud > header {
     display: grid;
   }
-  .inventory-command__loadout {
+  .arsenal-loadout {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas: "head head" "hero hero" "left right" "stats stats";
   }
-  .inventory-character-card.has-official-character-card > div:first-child {
+  .arsenal-character-card > div:first-child {
     width: min(100%, 260px);
   }
-  .inventory-browser {
+  .arsenal-browser {
     grid-template-columns: 1fr;
   }
-  .inventory-browser__catalog {
+  .arsenal-catalog {
     border-right: 0;
     border-bottom: 1px solid color-mix(in srgb, var(--wl-border) 42%, transparent);
   }
-  .inventory-inspector {
+  .arsenal-inspector {
     position: static;
   }
 }
@@ -534,25 +537,25 @@
     border-radius: var(--wl-radius-sm);
   }
   .inventory-hud > header,
-  .inventory-command__loadout,
-  .inventory-browser__catalog,
-  .inventory-inspector {
+  .arsenal-loadout,
+  .arsenal-catalog,
+  .arsenal-inspector {
     padding: 10px;
   }
-  .inventory-command__loadout {
+  .arsenal-loadout {
     grid-template-columns: 1fr;
     grid-template-areas: "head" "hero" "left" "right" "stats";
   }
-  .inventory-loadout-heading {
+  .arsenal-loadout-heading {
     display: grid;
   }
   .inventory-loadout-summary__attributes {
     grid-template-columns: repeat(2, 1fr);
   }
-  .inventory-classic-grid {
+  .arsenal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .inventory-classic-card {
+  .arsenal-item-card {
     min-height: 160px;
   }
 }

@@ -198,7 +198,7 @@ export function InventoryWorkbench({
         onClick={() => selectSlot(slot)}
         type="button"
       >
-        <span className="inventory-slot-art" aria-hidden="true">
+        <span className="arsenal-slot-art" aria-hidden="true">
           {item?.imageUrl ? (
             <ItemArtwork
               imageUrl={item.imageUrl}
@@ -221,9 +221,9 @@ export function InventoryWorkbench({
   };
 
   return (
-    <div className="inventory-command">
-      <section className="inventory-command__loadout">
-        <header className="inventory-loadout-heading">
+    <div className="arsenal-shell">
+      <section className="arsenal-loadout">
+        <header className="arsenal-loadout-heading">
           <div>
             <span className="eyebrow">Conjunto equipado</span>
             <h3>Espaços de combate</h3>
@@ -231,11 +231,11 @@ export function InventoryWorkbench({
           <small>Clique em um espaço para trocar o equipamento.</small>
         </header>
 
-        <div className="inventory-slot-column is-left">
+        <div className="arsenal-slot-column is-left">
           {slots.filter((slot) => leftSlotKeys.has(slot.key)).map(renderSlot)}
         </div>
 
-        <aside className="inventory-character-card is-centered has-official-character-card">
+        <aside className="arsenal-character-card">
           <CharacterPortraitCard
             imageUrl={character.imageUrl}
             level={character.level}
@@ -245,7 +245,7 @@ export function InventoryWorkbench({
             cosmetics={character.cosmetics}
             variant="inventory"
           />
-          <div className="inventory-character-card__caption">
+          <div className="arsenal-character-card__caption">
             <strong>{character.name}</strong>
             <small>
               {occupied} / {slots.length} espaços ocupados
@@ -253,7 +253,7 @@ export function InventoryWorkbench({
           </div>
         </aside>
 
-        <div className="inventory-slot-column is-right">
+        <div className="arsenal-slot-column is-right">
           {slots.filter((slot) => !leftSlotKeys.has(slot.key)).map(renderSlot)}
         </div>
 
@@ -289,8 +289,8 @@ export function InventoryWorkbench({
         </footer>
       </section>
 
-      <section className="inventory-browser">
-        <div className="inventory-browser__catalog">
+      <section className="arsenal-browser">
+        <div className="arsenal-catalog">
           <header>
             <div>
               <span className="eyebrow">Inventário</span>
@@ -343,19 +343,19 @@ export function InventoryWorkbench({
           </header>
 
           {view === "cosmetics" ? (
-            <div className="inventory-cosmetics">
-              <div className="inventory-cosmetics__intro">
+            <div className="arsenal-cosmetics">
+              <div className="arsenal-cosmetics__intro">
                 <span className="eyebrow">Guarda-roupa mágico</span>
                 <h3>Seus cosméticos</h3>
                 <p>Ative aqui as peças que já foram adicionadas ao inventário deste personagem.</p>
               </div>
               {cosmetics.length ? (
-                <div className="inventory-cosmetics__grid">
+                <div className="arsenal-cosmetics__grid">
                   {cosmetics.map((cosmetic) => {
                     const active = character.cosmetics[cosmetic.slot] === cosmetic.key;
                     return (
                       <article key={cosmetic.id} data-rarity={cosmetic.rarity}>
-                        <div className="inventory-cosmetics__preview">
+                        <div className="arsenal-cosmetics__preview">
                           <CharacterPortraitCard
                             imageUrl={character.imageUrl}
                             level={character.level}
@@ -394,7 +394,7 @@ export function InventoryWorkbench({
                   })}
                 </div>
               ) : (
-                <div className="inventory-empty">
+                <div className="arsenal-empty">
                   <strong>Nenhum cosmético neste inventário</strong>
                   <p>
                     Quando uma peça for adquirida ou concedida pela administração, ela aparecerá
@@ -405,7 +405,7 @@ export function InventoryWorkbench({
             </div>
           ) : (
             <>
-              <div className="inventory-search">
+              <div className="arsenal-search">
                 <label>
                   <span>⌕</span>
                   <input
@@ -423,10 +423,10 @@ export function InventoryWorkbench({
               </div>
 
               {visible.length ? (
-                <div className="inventory-classic-grid">
+                <div className="arsenal-grid">
                   {visible.map((item) => (
                     <button
-                      className={`inventory-classic-card ${item.id === selected?.id ? "is-selected" : ""} ${item.effects.length ? "has-effect" : ""}`}
+                      className={`arsenal-item-card ${item.id === selected?.id ? "is-selected" : ""} ${item.effects.length ? "has-effect" : ""}`}
                       data-rarity={item.rarity}
                       key={item.id}
                       onClick={() => setSelectedId(item.id)}
@@ -446,10 +446,10 @@ export function InventoryWorkbench({
                       </small>
                       <strong>{item.name}</strong>
                       {item.slot === "title" ? (
-                        <em className="inventory-reward-tag">Presente ADM</em>
+                        <em className="arsenal-reward-tag">Presente ADM</em>
                       ) : null}
                       {item.effects.slice(0, 1).map((effect) => (
-                        <span className="inventory-card-effect" key={effect.key}>
+                        <span className="arsenal-card-effect" key={effect.key}>
                           ✦ {effect.name}
                           <small>{effect.description}</small>
                         </span>
@@ -468,7 +468,7 @@ export function InventoryWorkbench({
                   ))}
                 </div>
               ) : (
-                <div className="inventory-empty">
+                <div className="arsenal-empty">
                   <ItemGlyph slot="necklace" />
                   <strong>Nenhum item neste filtro</strong>
                   <button
@@ -488,7 +488,7 @@ export function InventoryWorkbench({
         </div>
 
         {view !== "cosmetics" ? (
-          <aside className="inventory-inspector">
+          <aside className="arsenal-inspector">
             {selected ? (
               <>
                 <header>
@@ -508,7 +508,7 @@ export function InventoryWorkbench({
                     </b>
                   )}
                 </header>
-                <div className="inventory-inspector__glyph">
+                <div className="arsenal-inspector__glyph">
                   <ItemArtwork
                     imageUrl={selected.imageUrl}
                     name={selected.name}
@@ -587,7 +587,7 @@ export function InventoryWorkbench({
                 </footer>
               </>
             ) : (
-              <div className="inventory-empty">
+              <div className="arsenal-empty">
                 <strong>Selecione um item</strong>
                 <p>Os atributos e ações aparecerão aqui.</p>
               </div>
@@ -727,7 +727,7 @@ export function InventoryWorkbench({
                       );
                     })
                   ) : (
-                    <div className="inventory-empty">
+                    <div className="arsenal-empty">
                       <ItemGlyph slot={activeSlot.key} />
                       <strong>
                         Nenhum {activeSlot.label.toLocaleLowerCase("pt-BR")} na mochila

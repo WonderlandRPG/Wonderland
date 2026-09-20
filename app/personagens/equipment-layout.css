@@ -8,10 +8,11 @@
   color: var(--wl-text-inverse);
   box-shadow: var(--wl-shadow);
 }
-.sheet-page__inner.is-inventory-mode {
+.inventory-page-container {
   width: min(1760px, calc(100% - 48px));
   max-width: none;
   margin-inline: auto;
+  padding-top: 24px;
 }
 .inventory-hud > header {
   display: flex;
@@ -514,7 +515,7 @@
   }
 }
 @media (max-width: 900px) {
-  .sheet-page__inner.is-inventory-mode {
+  .inventory-page-container {
     width: min(100% - 24px, 1760px);
   }
   .inventory-hud > header {

@@ -56,10 +56,7 @@ export function buildCombatantTurnOrder(fighters: Record<string, CombatantState>
   );
 }
 
-export function getLivingTurnOrder(
-  turnOrder: string[],
-  fighters: Record<string, CombatantState>,
-) {
+export function getLivingTurnOrder(turnOrder: string[], fighters: Record<string, CombatantState>) {
   return turnOrder.filter((id) => (fighters[id]?.hp ?? 0) > 0);
 }
 
@@ -106,7 +103,7 @@ export function livingFighterIds(fighters: Record<string, CombatantState>) {
 export function isTurnBlocked(combatant: CombatantState) {
   return Object.entries(combatant.statuses).some(([key, status]) => {
     const text = `${key} ${status.name}`.toLowerCase();
-    return /stun|atordo|fear|medo|incapacit/.test(text);
+    return /stun|atordo|fear|medo|incapacit|paralis/.test(text);
   });
 }
 
@@ -118,7 +115,10 @@ export function isSilenced(combatant: CombatantState) {
 }
 
 export function getForcedTargetId(combatant: CombatantState) {
-  return Object.values(combatant.statuses).find((status) => status.forcedTargetId)?.forcedTargetId ?? null;
+  return (
+    Object.values(combatant.statuses).find((status) => status.forcedTargetId)?.forcedTargetId ??
+    null
+  );
 }
 
 export function resolveWinner(

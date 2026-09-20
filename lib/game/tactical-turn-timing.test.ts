@@ -4,6 +4,7 @@ import { createCombatant } from "@/lib/game/combat";
 import {
   completeEnemyTacticalTurn,
   prepareEnemyTacticalTurn,
+  resolveTacticalPeriodicDamage,
   tickTacticalCooldownValues,
 } from "@/lib/game/tactical-turn-timing";
 
@@ -125,5 +126,77 @@ describe("tactical turn timing", () => {
     const ticked = tickTacticalCooldownValues(combatant);
 
     expect(ticked.cooldowns).toEqual({ ready: 0, almost: 0, long: 2 });
+  });
+
+  it("applies physical bleeding at the end of the affected fighter turn", () => {
+    const base = fighter();
+    const bleeding = {
+      ...base,
+      statuses: {
+        bleed: {
+          name: "Sangramento",
+          duration: 2,
+          stacks: 1,
+          modifiers: {},
+          beneficial: false,
+          periodicDamage: 40,
+          periodicDamageType: "physical" as const,
+        },
+      },
+    };
+
+    const prepared = prepareEnemyTacticalTurn(bleeding, fighter());
+
+    expect(prepared.player.hp).toBe(base.hp - 27);
+    expect(prepared.player.statuses.bleed?.duration).toBe(1);
+    expect(prepared.messages).toEqual(["Sangramento causou 27 de dano."]);
+  });
+
+  it("lets shields absorb periodic damage before HP", () => {
+    const base = fighter();
+    const poisoned = {
+      ...base,
+      shield: 15,
+      statuses: {
+        poison: {
+          name: "Envenenamento",
+          duration: 2,
+          stacks: 1,
+          modifiers: {},
+          beneficial: false,
+          periodicDamage: 20,
+          periodicDamageType: "true" as const,
+        },
+      },
+    };
+
+    const result = resolveTacticalPeriodicDamage(poisoned);
+
+    expect(result.combatant.shield).toBe(0);
+    expect(result.combatant.hp).toBe(base.hp - 5);
+  });
+
+  it("resolves enemy periodic damage before expiring its harmful status", () => {
+    const base = fighter();
+    const burning = {
+      ...base,
+      statuses: {
+        burn: {
+          name: "Queimadura",
+          duration: 1,
+          stacks: 1,
+          modifiers: {},
+          beneficial: false,
+          periodicDamage: 10,
+          periodicDamageType: "true" as const,
+        },
+      },
+    };
+
+    const completed = completeEnemyTacticalTurn(fighter(), burning);
+
+    expect(completed.enemy.hp).toBe(base.hp - 10);
+    expect(completed.enemy.statuses.burn).toBeUndefined();
+    expect(completed.messages).toEqual(["Queimadura causou 10 de dano."]);
   });
 });

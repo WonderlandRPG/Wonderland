@@ -55,6 +55,20 @@ describe("tactical control status helpers", () => {
     expect(canUseTacticalOffense(combatant)).toBe(false);
   });
 
+  it("treats paralysis as a full turn disable", () => {
+    const combatant = fighter();
+    combatant.statuses.paralisia = {
+      name: "Paralisia",
+      duration: 2,
+      stacks: 1,
+      modifiers: {},
+      beneficial: false,
+    };
+
+    expect(getTacticalStunTurns(combatant)).toBe(2);
+    expect(isTacticalTurnDisabled(combatant)).toBe(true);
+  });
+
   it("silence blocks skills but not basic offense", () => {
     const combatant = fighter();
     combatant.statuses["silence-arcano"] = {

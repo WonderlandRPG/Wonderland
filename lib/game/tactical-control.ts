@@ -7,10 +7,7 @@ function normalizedStatusText(key: string, name: string) {
     .toLowerCase();
 }
 
-function longestMatchingStatus(
-  combatant: CombatantState,
-  matches: (text: string) => boolean,
-) {
+function longestMatchingStatus(combatant: CombatantState, matches: (text: string) => boolean) {
   return Object.entries(combatant.statuses).reduce((longest, [key, status]) => {
     const text = normalizedStatusText(key, status.name);
     return matches(text) ? Math.max(longest, status.duration) : longest;
@@ -25,20 +22,16 @@ export function getTacticalRootTurns(combatant: CombatantState) {
 
 export function getTacticalStunTurns(combatant: CombatantState) {
   return longestMatchingStatus(combatant, (text) =>
-    /\bstun\b|atordo|aturdid|incapacit/.test(text),
+    /\bstun\b|atordo|aturdid|incapacit|paralis/.test(text),
   );
 }
 
 export function getTacticalSilenceTurns(combatant: CombatantState) {
-  return longestMatchingStatus(combatant, (text) =>
-    /\bsilence\b|silencio|silenciad/.test(text),
-  );
+  return longestMatchingStatus(combatant, (text) => /\bsilence\b|silencio|silenciad/.test(text));
 }
 
 export function getTacticalFearTurns(combatant: CombatantState) {
-  return longestMatchingStatus(combatant, (text) =>
-    /\bfear\b|\bmedo\b|amedront/.test(text),
-  );
+  return longestMatchingStatus(combatant, (text) => /\bfear\b|\bmedo\b|amedront/.test(text));
 }
 
 export function getTacticalTaunt(combatant: CombatantState) {

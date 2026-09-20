@@ -1,4 +1,17 @@
-import type { CombatantState } from "@/lib/game/combat";
+import { calculateDamage, getEffectiveAttributes, type CombatantState } from "@/lib/game/combat";
+import { resolvePeriodicItemDamage } from "@/lib/game/item-effects";
+
+export type TacticalTurnTransition = {
+  player: CombatantState;
+  enemy: CombatantState;
+  messages: string[];
+};
+
+export function resolveTacticalPeriodicDamage(combatant: CombatantState) {
+  return resolvePeriodicItemDamage(combatant, (amount, type) =>
+    calculateDamage(amount, type, getEffectiveAttributes(combatant)),
+  );
+}
 
 export function tickTacticalCooldownValues(combatant: CombatantState): CombatantState {
   return {
@@ -26,16 +39,26 @@ export function tickTacticalStatusGroup(
   };
 }
 
-export function prepareEnemyTacticalTurn(player: CombatantState, enemy: CombatantState) {
+export function prepareEnemyTacticalTurn(
+  player: CombatantState,
+  enemy: CombatantState,
+): TacticalTurnTransition {
+  const periodic = resolveTacticalPeriodicDamage(player);
   return {
-    player: tickTacticalStatusGroup(player, false),
+    player: tickTacticalStatusGroup(periodic.combatant, false),
     enemy: tickTacticalStatusGroup(enemy, true),
+    messages: periodic.messages,
   };
 }
 
-export function completeEnemyTacticalTurn(player: CombatantState, enemy: CombatantState) {
+export function completeEnemyTacticalTurn(
+  player: CombatantState,
+  enemy: CombatantState,
+): TacticalTurnTransition {
+  const periodic = resolveTacticalPeriodicDamage(enemy);
   return {
     player: tickTacticalCooldownValues(tickTacticalStatusGroup(player, true)),
-    enemy: tickTacticalCooldownValues(tickTacticalStatusGroup(enemy, false)),
+    enemy: tickTacticalCooldownValues(tickTacticalStatusGroup(periodic.combatant, false)),
+    messages: periodic.messages,
   };
 }

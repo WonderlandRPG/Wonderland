@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import styles from "@/app/arena/mapa-tatico/tactical-lab.module.css";
+import { CombatStatusDock } from "@/components/arena/combat-status-dock";
 import {
   createCombatant,
   resolveBasicAttack,
@@ -68,6 +69,12 @@ import {
   type TacticalPathTracker,
 } from "@/lib/game/tactical-path-passives";
 import { applyTacticalRacialReaction } from "@/lib/game/tactical-race-reactions";
+import {
+  getTacticalActionAvailability,
+  initialTacticalActionUsage,
+  markTacticalActionUsed,
+  resetTacticalActionUsage,
+} from "@/lib/game/tactical-action-economy";
 import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
 import { applyTacticalSpatialSkill } from "@/lib/game/tactical-spatial-skill";
 import {
@@ -226,10 +233,7 @@ export function TacticalLabV9({
   const [movement, setMovement] = useState(PLAYER_MOVE);
   const [action, setAction] = useState<PlayerAction | null>(null);
   const [areaCenter, setAreaCenter] = useState<TacticalPosition | null>(null);
-  const [usedBasic, setUsedBasic] = useState(false);
-  const [usedClass, setUsedClass] = useState(false);
-  const [usedRace, setUsedRace] = useState(false);
-  const [usedItem, setUsedItem] = useState(false);
+  const [actionUsage, setActionUsage] = useState(initialTacticalActionUsage);
   const [round, setRound] = useState(1);
   const [message, setMessage] = useState(`${tacticalMap.name}: combate pronto.`);
   const [log, setLog] = useState<string[]>([
@@ -289,6 +293,21 @@ export function TacticalLabV9({
   const outcome = getTacticalCombatOutcome(player, enemy);
   const finished = isTacticalCombatFinished(outcome);
   const rankMismatch = character.rank !== creature.rank;
+  const usedBasic = actionUsage.basic;
+  const usedClass = actionUsage.classSkill;
+  const usedRace = actionUsage.raceSkill;
+  const usedItem = actionUsage.item;
+  const actionAvailability = getTacticalActionAvailability({
+    outcome,
+    usage: actionUsage,
+    restrictions: {
+      stunned: playerStun > 0,
+      silenced: playerSilence > 0,
+      feared: playerFear > 0,
+      rooted: playerRoot > 0,
+    },
+    hasItem: character.items.length > 0,
+  });
 
   function addLog(text: string) {
     setLog((current) => [text, ...current].slice(0, 24));
@@ -312,10 +331,7 @@ export function TacticalLabV9({
 
   function resetTurnActions() {
     setMovement(PLAYER_MOVE);
-    setUsedBasic(false);
-    setUsedClass(false);
-    setUsedRace(false);
-    setUsedItem(false);
+    setActionUsage(resetTacticalActionUsage());
     clearAction();
   }
 
@@ -511,8 +527,9 @@ export function TacticalLabV9({
     setEnemyState(pathResult.target);
     setPlayerPosition(spatial.playerPosition);
     setEnemyPosition(spatial.enemyPosition);
-    if (selected.source === "class") setUsedClass(true);
-    else setUsedRace(true);
+    setActionUsage((current) =>
+      markTacticalActionUsed(current, selected.source === "class" ? "classSkill" : "raceSkill"),
+    );
 
     const traitText = damageTraits.neutralized
       ? ` FRAQUEZA/RESISTÊNCIA ANULADAS (${damageTraits.weakness} × ${damageTraits.resistance}).`
@@ -649,7 +666,7 @@ export function TacticalLabV9({
       setClassTracker(classGeneration.tracker);
       setPathTracker(pathResult.tracker);
       setEnemyState(pathResult.target);
-      setUsedBasic(true);
+      setActionUsage((current) => markTacticalActionUsed(current, "basic"));
       const endText = outcomeMessage(pathResult.actor, pathResult.target);
       const finalText = endText ? `${text} ${endText}` : text;
       setMessage(finalText);
@@ -705,7 +722,8 @@ export function TacticalLabV9({
     const itemDoctrine = consumeTacticalPathItemAction(character.classPathKey, pathTracker);
     setPathTracker(itemDoctrine.tracker);
     setPlayerState(nextPlayer);
-    if (itemDoctrine.consumeAction) setUsedItem(true);
+    if (itemDoctrine.consumeAction)
+      setActionUsage((current) => markTacticalActionUsed(current, "item"));
     const text = `${player.name} usou ${item.name} e recuperou ${healed} HP.${reaction.message ? ` ${reaction.message}` : ""}${itemDoctrine.message ? ` ${itemDoctrine.message}` : ""}`;
     setMessage(text);
     addLog(text);
@@ -752,6 +770,25 @@ export function TacticalLabV9({
     let nextPlayerPosition = playerPosition;
     let nextEnemyPosition = enemyPosition;
     const notes = [`Rodada ${round}: ${creature.name} (${profile.aiProfile}).`];
+    if (prepared.messages.length) {
+      notes.push(...prepared.messages.map((entry) => `${player.name}: ${entry}`));
+    }
+
+    const periodicOutcome = getTacticalCombatOutcome(nextPlayer, nextEnemy);
+    if (isTacticalCombatFinished(periodicOutcome)) {
+      const endText = getTacticalCombatOutcomeMessage({
+        outcome: periodicOutcome,
+        playerName: nextPlayer.name,
+        enemyName: nextEnemy.name,
+      });
+      setPlayerState(nextPlayer);
+      setEnemyState(nextEnemy);
+      clearAction();
+      notes.forEach(addLog);
+      addLog(endText);
+      setMessage(`${notes.join(" ")} ${endText}`);
+      return;
+    }
 
     const currentEnemyStun = getTacticalStunTurns(nextEnemy);
     const currentEnemyFear = getTacticalFearTurns(nextEnemy);
@@ -944,6 +981,9 @@ export function TacticalLabV9({
 
     const beforeCompletion = nextPlayer;
     const completed = completeEnemyTacticalTurn(nextPlayer, nextEnemy);
+    if (completed.messages.length) {
+      notes.push(...completed.messages.map((entry) => `${enemy.name}: ${entry}`));
+    }
     const didSummonExpire = summonExpired(beforeCompletion.statuses, completed.player.statuses);
     const necromancerExpiry = applyNecromancerSummonExpiry(
       completed.player,
@@ -1000,7 +1040,6 @@ export function TacticalLabV9({
   }
 
   const playerSkillBlocked = playerStun > 0 || playerSilence > 0;
-  const playerOffenseBlocked = playerStun > 0 || playerFear > 0;
 
   return (
     <section className={styles.lab} aria-label="Laboratório do mapa tático V8" data-tactical-core>
@@ -1084,6 +1123,7 @@ export function TacticalLabV9({
           {playerSilence > 0 ? <span>SILENCE: {playerSilence}</span> : null}
           {playerFear > 0 ? <span>FEAR: {playerFear}</span> : null}
           {playerTaunt ? <span>TAUNT: {playerTaunt.turns}</span> : null}
+          <CombatStatusDock fighter={player} />
         </article>
         <article data-enemy="true">
           <small>BESTIÁRIO · RANK {creature.rank}</small>
@@ -1109,13 +1149,14 @@ export function TacticalLabV9({
           {enemySilence > 0 ? <span>SILENCE: {enemySilence}</span> : null}
           {enemyFear > 0 ? <span>FEAR: {enemyFear}</span> : null}
           {enemyTaunt ? <span>TAUNT: {enemyTaunt.turns}</span> : null}
+          <CombatStatusDock fighter={enemy} />
         </article>
       </section>
 
       <div className={styles.toolbar} data-wl-surface="raised">
         <button
           type="button"
-          disabled={playerRoot > 0 || playerStun > 0 || finished}
+          disabled={!actionAvailability.movement || movement <= 0}
           onClick={() => {
             clearAction();
             setMessage(`Movimento: ${movement}/${PLAYER_MOVE}.`);
@@ -1125,7 +1166,7 @@ export function TacticalLabV9({
         </button>
         <button
           type="button"
-          disabled={usedBasic || playerOffenseBlocked || finished}
+          disabled={!actionAvailability.basic}
           data-wl-action={action?.kind === "basic" ? "primary" : undefined}
           onClick={() =>
             selectAction({
@@ -1138,7 +1179,7 @@ export function TacticalLabV9({
         >
           Ataque · {usedBasic ? "USADO" : playerFear > 0 ? "BLOQUEADO" : "DISPONÍVEL"}
         </button>
-        <button type="button" disabled={finished} onClick={executeEnemyTurn}>
+        <button type="button" disabled={!actionAvailability.endTurn} onClick={executeEnemyTurn}>
           Encerrar turno → IA
         </button>
         <button type="button" onClick={() => resetBoard()}>
@@ -1150,7 +1191,7 @@ export function TacticalLabV9({
         {character.skills.map(({ source, skill }) => {
           const cooldown = player.cooldowns[skill.key] ?? 0;
           const blocked =
-            sourceUsed(source) ||
+            !actionAvailability[source === "class" ? "classSkill" : "raceSkill"] ||
             cooldown > 0 ||
             playerSkillBlocked ||
             (playerFear > 0 && affectsEnemy(skill)) ||
@@ -1197,7 +1238,7 @@ export function TacticalLabV9({
           <button
             key={item.id}
             type="button"
-            disabled={usedItem || playerStun > 0 || finished}
+            disabled={!actionAvailability.item}
             onClick={() => consumeItem(item)}
           >
             <strong>{item.name}</strong>
@@ -1308,4 +1349,3 @@ export function TacticalLabV9({
     </section>
   );
 }
-

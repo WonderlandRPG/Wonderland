@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { buildTurnOrder, createBattleState, getNextTurn } from "@/lib/game/turn-engine";
+import {
+  buildTurnOrder,
+  createBattleState,
+  getNextTurn,
+  isTurnBlocked,
+} from "@/lib/game/turn-engine";
 import { createCombatant } from "@/lib/game/combat";
 
 const attrs = { FOR: 20, DEF: 20, RES: 20, INI: 20, INT: 20, ARC: 20 };
@@ -27,7 +32,9 @@ describe("JRPG turn engine", () => {
   });
 
   it("creates a battle with the fastest fighter active", () => {
-    const state = createBattleState({ fighters: { slow: fighter("slow", 10), fast: fighter("fast", 40) } });
+    const state = createBattleState({
+      fighters: { slow: fighter("slow", 10), fast: fighter("fast", 40) },
+    });
     expect(state.activeCharacterId).toBe("fast");
     expect(state.turnOrder).toEqual(["fast", "slow"]);
     expect(state.round).toBe(1);
@@ -58,5 +65,18 @@ describe("JRPG turn engine", () => {
         fighters,
       }).activeCharacterId,
     ).toBe("c");
+  });
+
+  it("skips a fighter affected by paralysis", () => {
+    const paralyzed = fighter("a", 20);
+    paralyzed.statuses.paralisia = {
+      name: "Paralisia",
+      duration: 1,
+      stacks: 1,
+      modifiers: {},
+      beneficial: false,
+    };
+
+    expect(isTurnBlocked(paralyzed)).toBe(true);
   });
 });

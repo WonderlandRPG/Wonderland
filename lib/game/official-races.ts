@@ -1,5 +1,6 @@
 import { classSkillSchema, racePayloadSchema, type AttributeKey } from "@/lib/game/schemas";
 import type { RacePayload } from "@/lib/game/races";
+import { repairTacticalInertSkill } from "@/lib/game/tactical-skill-repair";
 
 export interface OfficialRaceDefinition {
   name: string;
@@ -65,49 +66,51 @@ function buildAbility(seed: AbilitySeed) {
     ? [{ attribute: seed.attribute, multiplier: seed.multiplier ?? 1 }]
     : [];
   const passive = seed.type === "Passiva";
-  return classSkillSchema.parse({
-    key: seed.key,
-    name: seed.name,
-    level: seed.level,
-    type: seed.type ?? "Ativa",
-    category: seed.category,
-    effect: seed.description,
-    kind: seed.kind,
-    damageType: seed.damageType ?? "none",
-    target: seed.target,
-    resource: passive ? "none" : "special",
-    resourceKey: "race",
-    cost: passive ? 0 : (seed.cost ?? 1),
-    cooldown: seed.cooldown ?? 0,
-    range: seed.range ?? 0,
-    area: seed.area ?? 0,
-    duration: seed.duration ?? 0,
-    scaling,
-    reachText: seed.area
-      ? `${seed.range ?? 0} casas; área ${seed.area}`
-      : `${seed.range ?? 0} casa(s)`,
-    conditions: passive ? ["Resolve automaticamente quando o gatilho descrito ocorrer."] : [],
-    systemRule: `Valide custo, alvo, alcance e recarga. Execute ${seed.operation}. Arredonde o resultado final para o inteiro mais próximo; empate .5 arredonda para cima.`,
-    playerDescription: seed.description,
-    chance: 100,
-    maxStacks: 1,
-    operations: [
-      {
-        operation: seed.operation,
-        target: seed.target,
-        base: 0,
-        scaling,
-        damageType: seed.damageType ?? "none",
-        status: seed.status ?? "",
-        duration: seed.duration ?? 0,
-        chance: 100,
-        stacks: seed.status ? 1 : 0,
-        maxStacks: seed.status ? 1 : 0,
-        distance: ["MOVE", "TELEPORT", "PUSH"].includes(seed.operation) ? (seed.range ?? 2) : 0,
-        modifiers: [],
-      },
-    ],
-  });
+  return repairTacticalInertSkill(
+    classSkillSchema.parse({
+      key: seed.key,
+      name: seed.name,
+      level: seed.level,
+      type: seed.type ?? "Ativa",
+      category: seed.category,
+      effect: seed.description,
+      kind: seed.kind,
+      damageType: seed.damageType ?? "none",
+      target: seed.target,
+      resource: passive ? "none" : "special",
+      resourceKey: "race",
+      cost: passive ? 0 : (seed.cost ?? 1),
+      cooldown: seed.cooldown ?? 0,
+      range: seed.range ?? 0,
+      area: seed.area ?? 0,
+      duration: seed.duration ?? 0,
+      scaling,
+      reachText: seed.area
+        ? `${seed.range ?? 0} casas; área ${seed.area}`
+        : `${seed.range ?? 0} casa(s)`,
+      conditions: passive ? ["Resolve automaticamente quando o gatilho descrito ocorrer."] : [],
+      systemRule: `Valide custo, alvo, alcance e recarga. Execute ${seed.operation}. Arredonde o resultado final para o inteiro mais próximo; empate .5 arredonda para cima.`,
+      playerDescription: seed.description,
+      chance: 100,
+      maxStacks: 1,
+      operations: [
+        {
+          operation: seed.operation,
+          target: seed.target,
+          base: 0,
+          scaling,
+          damageType: seed.damageType ?? "none",
+          status: seed.status ?? "",
+          duration: seed.duration ?? 0,
+          chance: 100,
+          stacks: seed.status ? 1 : 0,
+          maxStacks: seed.status ? 1 : 0,
+          distance: ["MOVE", "TELEPORT", "PUSH"].includes(seed.operation) ? (seed.range ?? 2) : 0,
+          modifiers: [],
+        },
+      ],
+    }),
+  );
 }
 
 function buildRace(seed: RaceSeed): OfficialRaceDefinition {

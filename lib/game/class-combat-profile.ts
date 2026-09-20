@@ -1,5 +1,6 @@
 import type { ClassPayload, ClassSkill } from "@/lib/game/classes";
 import type { AttributeKey } from "@/lib/game/schemas";
+import { repairTacticalInertSkill } from "@/lib/game/tactical-skill-repair";
 
 export type BasicAttackDamageType = "physical" | "magic";
 
@@ -37,10 +38,14 @@ export function getClassBasicAttackDamageType(
 
   const physicalAffinity = payload.affinities.FOR;
   const magicalAffinity = Math.max(payload.affinities.INT, payload.affinities.ARC);
-  if (physicalAffinity !== magicalAffinity) return physicalAffinity > magicalAffinity ? "physical" : "magic";
+  if (physicalAffinity !== magicalAffinity)
+    return physicalAffinity > magicalAffinity ? "physical" : "magic";
 
   const specialization = payload.specialization.toLowerCase();
-  if (/mágic|magic|suporte|invocador|controle/.test(specialization) && !/físic|fisic/.test(specialization)) {
+  if (
+    /mágic|magic|suporte|invocador|controle/.test(specialization) &&
+    !/físic|fisic/.test(specialization)
+  ) {
     return "magic";
   }
   return "physical";
@@ -51,7 +56,10 @@ function inferredDamageAttribute(skill: ClassSkill, fallback: AttributeKey): Att
   return strongest ?? fallback;
 }
 
-function inferredDamageType(skill: ClassSkill, attribute: AttributeKey): "physical" | "magic" | "true" {
+function inferredDamageType(
+  skill: ClassSkill,
+  attribute: AttributeKey,
+): "physical" | "magic" | "true" {
   if (skill.damageType !== "none") return skill.damageType;
   return attribute === "FOR" ? "physical" : "magic";
 }
@@ -65,8 +73,12 @@ function describesDamage(skill: ClassSkill) {
   return /\b(dano|causa|causar|causando|sofre|atinge|golpe|ataca|ataque|explod|drena)\b/.test(text);
 }
 
-export function repairCombatSkill(skill: ClassSkill, fallbackAttribute: AttributeKey = "FOR"): ClassSkill {
-  const offensiveIntent = skill.kind === "damage" || (skill.target === "enemy" && describesDamage(skill));
+export function repairCombatSkill(
+  skill: ClassSkill,
+  fallbackAttribute: AttributeKey = "FOR",
+): ClassSkill {
+  const offensiveIntent =
+    skill.kind === "damage" || (skill.target === "enemy" && describesDamage(skill));
   if (!offensiveIntent || hasDamageOperation(skill)) return skill;
 
   const attribute = inferredDamageAttribute(skill, fallbackAttribute);
@@ -111,7 +123,10 @@ export function rebalanceCombatSkill(skill: ClassSkill): ClassSkill {
     const minimumModifier = Math.min(28, 10 + tier * 2);
     return {
       ...operation,
-      base: isDamage || isHealing ? Math.round(operation.base * scalingFactor + tier * 3) : operation.base,
+      base:
+        isDamage || isHealing
+          ? Math.round(operation.base * scalingFactor + tier * 3)
+          : operation.base,
       scaling: operation.scaling.map((entry) => ({
         ...entry,
         multiplier: Number((entry.multiplier * scalingFactor).toFixed(2)),
@@ -120,7 +135,8 @@ export function rebalanceCombatSkill(skill: ClassSkill): ClassSkill {
       modifiers: operation.modifiers.map((modifier) => ({
         ...modifier,
         value: isModifier
-          ? Math.sign(modifier.value || 1) * Math.max(minimumModifier, Math.round(Math.abs(modifier.value) * 1.55))
+          ? Math.sign(modifier.value || 1) *
+            Math.max(minimumModifier, Math.round(Math.abs(modifier.value) * 1.55))
           : modifier.value,
       })),
     };
@@ -188,15 +204,19 @@ const offensiveNames: Record<string, string> = {
 };
 
 function normalizeName(value: string) {
-  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
 function buildOffensiveFallback(className: string, payload: ClassPayload): ClassSkill {
   const normalized = normalizeName(className);
   const name = offensiveNames[normalized] ?? `Investida de ${className}`;
   const primary = payload.primaryAttributes;
-  const usesPhysical = primary.includes("FOR") && !primary.includes("INT") && !primary.includes("ARC");
-  const damageType = usesPhysical ? "physical" as const : "magic" as const;
+  const usesPhysical =
+    primary.includes("FOR") && !primary.includes("INT") && !primary.includes("ARC");
+  const damageType = usesPhysical ? ("physical" as const) : ("magic" as const);
   const scaling = usesPhysical
     ? [{ attribute: "FOR" as const, multiplier: 0.9 }]
     : primary.includes("INT") && primary.includes("ARC")
@@ -226,7 +246,8 @@ function buildOffensiveFallback(className: string, payload: ClassPayload): Class
     scaling,
     reachText: "Alvo selecionado",
     conditions: [],
-    systemRule: "Habilidade ofensiva de segurança do kit JRPG. Garante que a classe consiga causar dano mesmo em uma construção focada em suporte.",
+    systemRule:
+      "Habilidade ofensiva de segurança do kit JRPG. Garante que a classe consiga causar dano mesmo em uma construção focada em suporte.",
     playerDescription: `${name}: opção ofensiva confiável para quando cura, escudo ou suporte não forem necessários.`,
     chance: 100,
     maxStacks: 0,
@@ -260,14 +281,22 @@ export function prepareClassCombatSkills(
       ? "INT"
       : "ARC";
   const repaired = dedupeCombatSkills(
-    unlockedSkills.map((skill) => rebalanceCombatSkill(repairCombatSkill(skill, fallbackAttribute))),
+    unlockedSkills.map((skill) =>
+      rebalanceCombatSkill(repairTacticalInertSkill(repairCombatSkill(skill, fallbackAttribute))),
+    ),
   );
   const hasOffensiveSkill = repaired.some(
-    (skill) => skill.kind === "damage" && skill.operations.some((operation) => operation.operation === "DAMAGE"),
+    (skill) =>
+      skill.kind === "damage" &&
+      skill.operations.some((operation) => operation.operation === "DAMAGE"),
   );
   return hasOffensiveSkill ? repaired : [...repaired, buildOffensiveFallback(className, payload)];
 }
 
 export function prepareRaceCombatSkills(skills: ClassSkill[]) {
-  return dedupeCombatSkills(skills.map((skill) => rebalanceCombatSkill(repairCombatSkill(skill, "INT"))));
+  return dedupeCombatSkills(
+    skills.map((skill) =>
+      rebalanceCombatSkill(repairTacticalInertSkill(repairCombatSkill(skill, "INT"))),
+    ),
+  );
 }

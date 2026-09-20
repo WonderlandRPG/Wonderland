@@ -10,6 +10,10 @@ import type { RaceActionState } from "@/lib/game/race-forms";
 import { officialRaces } from "@/lib/game/official-races";
 import { createRaceSlug } from "@/lib/game/races";
 import { racePayloadSchema } from "@/lib/game/schemas";
+import {
+  auditRaceForPublication,
+  formatSkillAuditIssues,
+} from "@/lib/game/skill-publication-audit";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const raceSubmissionSchema = z.object({
@@ -56,6 +60,9 @@ function refreshRaceRoutes(id?: string) {
 
 export async function importOfficialRacesAction() {
   const account = await requireAdministrativeAccount();
+  if (officialRaces.some((race) => !auditRaceForPublication(race.payload).publishable)) {
+    redirect("/admin/racas?notice=auditoria-reprovada");
+  }
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/racas?notice=erro");
 
@@ -118,6 +125,16 @@ export async function saveRaceAction(
     );
   }
 
+  if (submission.data.intent === "publish") {
+    const audit = auditRaceForPublication(parsedPayload.data);
+    if (!audit.publishable) {
+      return actionError(
+        `Publicação bloqueada: ${audit.issues.length} falha(s) encontrada(s) na auditoria das habilidades. O rascunho continua disponível para correção.`,
+        { payload: formatSkillAuditIssues(audit) },
+      );
+    }
+  }
+
   const client = await createServerSupabaseClient();
   if (!client) return configurationError();
 
@@ -142,13 +159,13 @@ export async function saveRaceAction(
       );
     }
 
-    const status = existing.status === "archived" ? "draft" : existing.status;
     const { data: updated, error } = await client
       .from("v2_content")
       .update({
         name,
         slug,
-        status,
+        status: "draft",
+        published_at: null,
         payload: parsedPayload.data as unknown as Json,
         updated_by: account.id,
       })

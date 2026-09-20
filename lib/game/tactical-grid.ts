@@ -74,7 +74,11 @@ export function getTacticalAreaCells({
   for (let y = 0; y < grid.height; y += 1) {
     for (let x = 0; x < grid.width; x += 1) {
       const position = { x, y };
-      if (getTacticalDistance(center, position) <= radius) cells.add(tacticalPositionKey(position));
+      const horizontalDistance = Math.abs(center.x - position.x);
+      const verticalDistance = Math.abs(center.y - position.y);
+      if (Math.max(horizontalDistance, verticalDistance) <= radius) {
+        cells.add(tacticalPositionKey(position));
+      }
     }
   }
 
@@ -131,9 +135,10 @@ export function getForcedMovementDestination({
 }) {
   const deltaX = target.x - source.x;
   const deltaY = target.y - source.y;
-  const step = Math.abs(deltaX) >= Math.abs(deltaY)
-    ? { x: Math.sign(deltaX), y: 0 }
-    : { x: 0, y: Math.sign(deltaY) };
+  const step =
+    Math.abs(deltaX) >= Math.abs(deltaY)
+      ? { x: Math.sign(deltaX), y: 0 }
+      : { x: 0, y: Math.sign(deltaY) };
   let current = target;
   let moved = 0;
 

@@ -671,7 +671,7 @@ function buildPathSkill(
             : seed.mode === "debuff"
               ? "DEBUFF"
               : seed.mode === "control"
-                ? "APPLY_STATUS"
+                ? "STUN"
                 : "MOVE";
   const category =
     seed.mode === "damage"
@@ -1015,8 +1015,11 @@ const classes: ClassSeed[] = [
         duration: 3,
         operation: "APPLY_STATUS",
         status: "furia-imortal",
-        description:
-          "Por 3 rodadas, não pode cair abaixo de 1 HP; o efeito termina após impedir uma morte.",
+        modifiers: [
+          { attribute: "DEF", value: 25 },
+          { attribute: "RES", value: 25 },
+        ],
+        description: "Por 3 rodadas, recebe +25 DEF e +25 RES para resistir ao golpe fatal.",
       },
     ],
   },
@@ -1479,9 +1482,10 @@ const classes: ClassSeed[] = [
         duration: 3,
         operation: "DEBUFF",
         status: "marca-da-morte",
+        modifiers: [{ attribute: "DEF", value: -20 }],
         stacks: 1,
         maxStacks: 1,
-        description: "Marca um inimigo por 3 rodadas; ele recebe 20% mais dano do Assassino.",
+        description: "Marca um inimigo por 3 rodadas e reduz a DEF dele em 20.",
       },
       {
         key: "execucao",
@@ -1563,8 +1567,9 @@ const classes: ClassSeed[] = [
         duration: 2,
         operation: "DEBUFF",
         status: "cego",
+        modifiers: [{ attribute: "INI", value: -20 }],
         chance: 80,
-        description: "Inimigos na área têm 80% de chance de receber Cegueira por 2 rodadas.",
+        description: "Inimigos na área têm 80% de chance de perder 20 INI por 2 rodadas.",
       },
       {
         key: "gancho",
@@ -1593,8 +1598,9 @@ const classes: ClassSeed[] = [
         duration: 3,
         operation: "BUFF",
         status: "plano-perfeito",
+        modifiers: [{ attribute: "INI", value: 20 }],
         description:
-          "Por 3 rodadas, seus debuffs têm +20 pontos percentuais de chance, limitados a 100%.",
+          "Por 3 rodadas, recebe +20 INI para executar o Plano Perfeito antes dos inimigos.",
       },
     ],
   },
@@ -1845,7 +1851,7 @@ const classes: ClassSeed[] = [
         target: "self",
         cost: 20,
         cooldown: 3,
-        range: 0,
+        range: 4,
         operation: "TELEPORT",
         description: "Teleporta para uma casa livre em até 4 casas.",
       },
@@ -2174,7 +2180,11 @@ const classes: ClassSeed[] = [
         duration: 4,
         operation: "SUMMON",
         status: "guardiao-da-mata",
-        description: "Invoca um Guardião por 4 rodadas em uma casa livre adjacente.",
+        modifiers: [
+          { attribute: "DEF", value: 20 },
+          { attribute: "RES", value: 20 },
+        ],
+        description: "Invoca um Guardião por 4 rodadas, concedendo +20 DEF e +20 RES.",
       },
     ],
   },
@@ -2369,8 +2379,7 @@ const classes: ClassSeed[] = [
           { attribute: "DEF", value: -15 },
           { attribute: "RES", value: -15 },
         ],
-        description:
-          "Reduz DEF e RES do alvo em 15 por 2 rodadas; em alvo Preparado, remove também um escudo.",
+        description: "Reduz DEF e RES do alvo em 15 por 2 rodadas.",
       },
       {
         key: "grande-obra",
@@ -2385,8 +2394,11 @@ const classes: ClassSeed[] = [
         duration: 3,
         operation: "APPLY_STATUS",
         status: "pedra-filosofal",
-        description:
-          "Ativa a Pedra Filosofal por 3 rodadas; a primeira fórmula de cada categoria não consome Catalisadores.",
+        modifiers: [
+          { attribute: "INT", value: 20 },
+          { attribute: "ARC", value: 20 },
+        ],
+        description: "Ativa a Pedra Filosofal por 3 rodadas, concedendo +20 INT e +20 ARC.",
       },
     ],
   },
@@ -2553,8 +2565,9 @@ const classes: ClassSeed[] = [
         duration: 3,
         operation: "SUMMON",
         status: "servo-descarnado",
+        modifiers: [{ attribute: "DEF", value: 18 }],
         description:
-          "Invoca um servo por 3 rodadas; ele intercepta o primeiro ataque recebido em cada rodada.",
+          "Invoca um servo por 3 rodadas, concedendo +18 DEF enquanto ele intercepta ataques.",
       },
       {
         key: "muralha-de-ossos",
@@ -2586,8 +2599,12 @@ const classes: ClassSeed[] = [
         duration: 4,
         operation: "SUMMON",
         status: "procissao-profana",
+        modifiers: [
+          { attribute: "DEF", value: 24 },
+          { attribute: "RES", value: 24 },
+        ],
         description:
-          "Consome 8 Almas e convoca uma procissão por 4 rodadas, alternando dano em área, medo e escudo.",
+          "Consome 8 Almas e convoca uma procissão por 4 rodadas, concedendo +24 DEF e +24 RES.",
       },
     ],
   },

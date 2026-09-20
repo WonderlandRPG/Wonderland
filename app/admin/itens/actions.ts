@@ -5,43 +5,50 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { requireAdministrativeAccount } from "@/lib/auth/account";
+import { itemCatalogSlots, itemRarities } from "@/lib/game/equipment";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-const slotSchema = z.enum([
-  "head",
-  "torso",
-  "hands",
-  "legs",
-  "feet",
-  "main_weapon",
-  "off_weapon",
-  "necklace",
-  "ring",
-  "earring",
-  "cape",
-]);
-const schema = z.object({
-  id: z.uuid(),
-  name: z.string().trim().min(2).max(100),
-  description: z.string().trim().max(500),
-  category: z.string().trim().min(2).max(50),
-  slot: slotSchema,
-  price: z.coerce.number().int().min(0).max(999999999),
-  imageUrl: z.union([z.literal(""), z.url().refine((value) => /^https?:\/\//.test(value))]),
-  sortOrder: z.coerce.number().int().min(0).max(99999),
-  FOR: z.coerce.number().int().min(0).max(999),
-  DEF: z.coerce.number().int().min(0).max(999),
-  RES: z.coerce.number().int().min(0).max(999),
-  INI: z.coerce.number().int().min(0).max(999),
-  INT: z.coerce.number().int().min(0).max(999),
-  ARC: z.coerce.number().int().min(0).max(999),
-  rarity: z.enum(["common", "uncommon", "rare", "epic", "legendary", "mythic"]),
-  effectKind: z.enum(["", "POISON", "BLEED", "LIFE_STEAL", "COOLDOWN_REDUCTION", "FREEZE"]),
-  effectName: z.string().trim().max(100),
-  effectDescription: z.string().trim().max(500),
-  effectPower: z.coerce.number().min(0).max(1000),
-  effectDuration: z.coerce.number().int().min(0).max(20),
-});
+const slotSchema = z.enum(itemCatalogSlots);
+const schema = z
+  .object({
+    id: z.uuid(),
+    name: z.string().trim().min(2).max(100),
+    description: z.string().trim().max(500),
+    category: z.string().trim().min(2).max(50),
+    slot: slotSchema,
+    price: z.coerce.number().int().min(0).max(999999999),
+    imageUrl: z.union([z.literal(""), z.url().refine((value) => /^https?:\/\//.test(value))]),
+    sortOrder: z.coerce.number().int().min(0).max(99999),
+    FOR: z.coerce.number().int().min(0).max(999),
+    DEF: z.coerce.number().int().min(0).max(999),
+    RES: z.coerce.number().int().min(0).max(999),
+    INI: z.coerce.number().int().min(0).max(999),
+    INT: z.coerce.number().int().min(0).max(999),
+    ARC: z.coerce.number().int().min(0).max(999),
+    rarity: z.enum(itemRarities),
+    effectKind: z.enum(["", "POISON", "BLEED", "LIFE_STEAL", "COOLDOWN_REDUCTION", "FREEZE"]),
+    effectName: z.string().trim().max(100),
+    effectDescription: z.string().trim().max(500),
+    effectPower: z.coerce.number().min(0).max(1000),
+    effectDuration: z.coerce.number().int().min(0).max(20),
+    twoHanded: z.boolean(),
+  })
+  .superRefine((item, context) => {
+    if (item.twoHanded && !["main_weapon", "off_weapon"].includes(item.slot)) {
+      context.addIssue({
+        code: "custom",
+        path: ["twoHanded"],
+        message: "Somente armas podem ocupar as duas mãos.",
+      });
+    }
+    if (item.effectKind && !item.effectName) {
+      context.addIssue({
+        code: "custom",
+        path: ["effectName"],
+        message: "Informe o nome do efeito especial.",
+      });
+    }
+  });
 
 export async function updateItemAdminAction(formData: FormData) {
   const account = await requireAdministrativeAccount();
@@ -66,6 +73,7 @@ export async function updateItemAdminAction(formData: FormData) {
     effectDescription: formData.get("effectDescription") ?? "",
     effectPower: formData.get("effectPower") ?? 0,
     effectDuration: formData.get("effectDuration") ?? 0,
+    twoHanded: formData.get("twoHanded") === "on",
   });
   if (!parsed.success) redirect("/admin/itens?status=erro");
   const client = await createServerSupabaseClient();
@@ -88,9 +96,7 @@ export async function updateItemAdminAction(formData: FormData) {
       attributes,
       rarity: parsed.data.rarity,
       special_effects:
-        ["legendary", "mythic"].includes(parsed.data.rarity) &&
-        parsed.data.effectKind &&
-        parsed.data.effectName
+        parsed.data.effectKind && parsed.data.effectName
           ? [
               {
                 key: `${parsed.data.id}-admin-effect`,
@@ -108,7 +114,7 @@ export async function updateItemAdminAction(formData: FormData) {
               },
             ]
           : [],
-      two_handed: formData.get("twoHanded") === "on",
+      two_handed: parsed.data.twoHanded,
       active: formData.get("active") === "on",
       updated_at: new Date().toISOString(),
     })

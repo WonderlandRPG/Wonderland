@@ -13,7 +13,12 @@ import { InventoryWorkbench } from "@/components/inventory/inventory-workbench";
 import { getAdventureRank } from "@/lib/game/ranks";
 import { defaultCombatRules, getConvertedResourceBonus } from "@/lib/game/combat";
 import { getStructuredRaceAbilities } from "@/lib/game/races";
-import { compatibleEquipSlots, equipmentSlots, itemSlotLabel } from "@/lib/game/equipment";
+import {
+  compatibleEquipSlots,
+  equipmentSlots,
+  itemSlotLabel,
+  occupiedEquipmentSlots,
+} from "@/lib/game/equipment";
 import { updateCharacterImageAction } from "./equipment-actions";
 import { completePathQuestAction } from "./path-actions";
 import { getOwnedCosmetics } from "@/lib/content/cosmetics";
@@ -42,20 +47,6 @@ export default async function CharacterSheetPage({
   const futureRaceSkills = getStructuredRaceAbilities(character.race.payload)
     .filter((skill) => skill.level > character.level)
     .sort((a, b) => a.level - b.level);
-  const equippedItems = new Map(
-    character.inventory
-      .filter((item) => item.equippedSlot)
-      .map((item) => [item.equippedSlot, item]),
-  );
-  const twoHandedWeapon = equippedItems.get("main_weapon")?.twoHanded
-    ? equippedItems.get("main_weapon")
-    : equippedItems.get("off_weapon")?.twoHanded
-      ? equippedItems.get("off_weapon")
-      : null;
-  if (twoHandedWeapon) {
-    equippedItems.set("main_weapon", twoHandedWeapon);
-    equippedItems.set("off_weapon", twoHandedWeapon);
-  }
   const rank = getAdventureRank(character.adventure_rank);
   const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
   const classPath = character.characterClass.payload.paths?.find(
@@ -590,13 +581,13 @@ export default async function CharacterSheetPage({
               }}
               slots={equipmentSlots.map((slot) => {
                 const item = character.inventory.find((entry) =>
-                  entry.equippedSlots.includes(slot.key),
+                  occupiedEquipmentSlots(entry).includes(slot.key),
                 );
                 return {
                   key: slot.key,
                   label: slot.label,
                   itemId: item?.id ?? null,
-                  reserved: Boolean(item?.twoHanded && item.equippedSlot !== slot.key),
+                  reserved: Boolean(item?.twoHanded && !item.equippedSlots.includes(slot.key)),
                 };
               })}
               items={character.inventory.map((entry) => ({

@@ -10,6 +10,7 @@ import {
   prepareRaceCombatSkills,
 } from "@/lib/game/class-combat-profile";
 import { applySkillBalanceOverrides } from "@/lib/game/skill-loadout";
+import { equippedItemCopies } from "@/lib/game/equipment";
 
 export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
   const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
@@ -35,6 +36,9 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
     character.skillBalanceOverrides,
   ).map(prepareArenaSkill);
   const usesMana = [...skills, ...raceAbilities].some((skill) => skill.resource === "mana");
+  const equipmentEffects = character.inventory.flatMap((item) =>
+    Array.from({ length: equippedItemCopies(item) }, () => item.specialEffects).flat(),
+  );
 
   return {
     id: character.id,
@@ -71,18 +75,12 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
       ...character.passiveOptions
         .filter((passive) => character.skillLoadout.passiveKeys.includes(passive.key))
         .map(({ name, description }) => ({ name, description })),
-      ...character.inventory
-        .filter((item) => item.equippedSlot)
-        .flatMap((item) =>
-          item.specialEffects.map((effect) => ({
-            name: effect.name,
-            description: effect.description,
-          })),
-        ),
+      ...equipmentEffects.map((effect) => ({
+        name: effect.name,
+        description: effect.description,
+      })),
     ],
-    equipmentEffects: character.inventory
-      .filter((item) => item.equippedSlot)
-      .flatMap((item) => item.specialEffects),
+    equipmentEffects,
     items: character.inventory
       .filter((item) => /consum|poção|pocao/i.test(item.category))
       .map((item) => ({ id: item.id, name: item.name, description: item.description })),

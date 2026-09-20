@@ -19,4 +19,17 @@ describe("admin content studio schemas", () => {
     expect(simpleItemDraftSchema.safeParse({ ...simpleItemDefaults(), slot: "grid_cell" }).success).toBe(false);
     expect(simpleItemDraftSchema.safeParse({ ...simpleItemDefaults(), rarity: "admin" }).success).toBe(false);
   });
+
+  it("only permits the two-handed flag on weapons", () => {
+    expect(
+      simpleItemDraftSchema.safeParse({
+        ...simpleItemDefaults(),
+        slot: "torso",
+        twoHanded: true,
+      }).success,
+    ).toBe(false);
+    expect(
+      simpleItemDraftSchema.safeParse({ ...simpleItemDefaults(), twoHanded: true }).success,
+    ).toBe(true);
+  });
 });

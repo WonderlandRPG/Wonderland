@@ -1,5 +1,12 @@
+import Link from "next/link";
+
 import { attributesSchema } from "@/lib/game/schemas";
-import { itemSlotLabel } from "@/lib/game/equipment";
+import {
+  itemCatalogSlots,
+  itemRarities,
+  itemRarityLabels,
+  itemSlotLabel,
+} from "@/lib/game/equipment";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { updateItemAdminAction } from "./actions";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
@@ -7,20 +14,6 @@ import { ItemImageField } from "@/components/admin/item-image-field";
 
 export const metadata = { title: "Itens | Painel ADM" };
 export const dynamic = "force-dynamic";
-
-const slots = [
-  "head",
-  "torso",
-  "hands",
-  "legs",
-  "feet",
-  "main_weapon",
-  "off_weapon",
-  "necklace",
-  "ring",
-  "earring",
-  "cape",
-];
 
 export default async function AdminItemsPage({
   searchParams,
@@ -50,6 +43,9 @@ export default async function AdminItemsPage({
             Arena.
           </p>
         </div>
+        <Link className="button button--primary" href="/admin/estudio">
+          Criar novo item
+        </Link>
       </header>
       {query.status ? (
         <div className={`account-notice ${query.status === "erro" ? "is-warning" : ""}`}>
@@ -60,12 +56,11 @@ export default async function AdminItemsPage({
         <input name="busca" defaultValue={query.busca ?? ""} placeholder="Buscar pelo nome" />
         <select name="raridade" defaultValue={query.raridade ?? ""}>
           <option value="">Todas as raridades</option>
-          <option value="common">Comum</option>
-          <option value="uncommon">Incomum</option>
-          <option value="rare">Raro</option>
-          <option value="epic">Épico</option>
-          <option value="legendary">Lendário</option>
-          <option value="mythic">Mítico</option>
+          {itemRarities.map((rarity) => (
+            <option key={rarity} value={rarity}>
+              {itemRarityLabels[rarity]}
+            </option>
+          ))}
         </select>
         <button className="button button--primary">Filtrar itens</button>
         <span>{count ?? 0} resultados</span>
@@ -97,12 +92,11 @@ export default async function AdminItemsPage({
                 <label>
                   <span>Raridade</span>
                   <select name="rarity" defaultValue={item.rarity}>
-                    <option value="common">Comum</option>
-                    <option value="uncommon">Incomum</option>
-                    <option value="rare">Raro</option>
-                    <option value="epic">Épico</option>
-                    <option value="legendary">Lendário</option>
-                    <option value="mythic">Mítico</option>
+                    {itemRarities.map((rarity) => (
+                      <option key={rarity} value={rarity}>
+                        {itemRarityLabels[rarity]}
+                      </option>
+                    ))}
                   </select>
                 </label>
                 <label>
@@ -116,7 +110,7 @@ export default async function AdminItemsPage({
                 <label>
                   <span>Slot</span>
                   <select name="slot" defaultValue={item.slot}>
-                    {slots.map((slot) => (
+                    {itemCatalogSlots.map((slot) => (
                       <option key={slot} value={slot}>
                         {itemSlotLabel(slot)}
                       </option>
@@ -201,7 +195,7 @@ export default async function AdminItemsPage({
                       defaultValue={effect?.duration ?? 0}
                     />
                   </label>
-                  <small>Somente itens Lendários e Míticos podem salvar efeitos especiais.</small>
+                  <small>O efeito é aplicado no combate sempre que o item estiver equipado.</small>
                 </fieldset>
                 <label>
                   <input name="twoHanded" type="checkbox" defaultChecked={item.two_handed} /> Ocupa

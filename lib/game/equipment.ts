@@ -4,18 +4,52 @@ export const equipmentSlots = [
   { key: "hands", label: "Mãos" },
   { key: "legs", label: "Pernas" },
   { key: "feet", label: "Pés" },
+  { key: "necklace", label: "Colar" },
+  { key: "cape", label: "Capa" },
   { key: "main_weapon", label: "Arma principal" },
   { key: "off_weapon", label: "Arma secundária" },
-  { key: "necklace", label: "Colar" },
-  { key: "ring_1", label: "Anel I" },
-  { key: "ring_2", label: "Anel II" },
-  { key: "earring_1", label: "Brinco I" },
-  { key: "earring_2", label: "Brinco II" },
-  { key: "cape", label: "Capa" },
+  { key: "ring_1", label: "Anel 1" },
+  { key: "ring_2", label: "Anel 2" },
+  { key: "earring_1", label: "Brinco 1" },
+  { key: "earring_2", label: "Brinco 2" },
   { key: "title", label: "Título" },
 ] as const;
 
 export type EquipmentSlot = (typeof equipmentSlots)[number]["key"];
+
+export const equipmentSlotKeys = equipmentSlots.map((slot) => slot.key) as [
+  EquipmentSlot,
+  ...EquipmentSlot[],
+];
+
+export const itemCatalogSlots = [
+  "head",
+  "torso",
+  "hands",
+  "legs",
+  "feet",
+  "necklace",
+  "cape",
+  "main_weapon",
+  "off_weapon",
+  "ring",
+  "earring",
+] as const;
+
+export type ItemCatalogSlot = (typeof itemCatalogSlots)[number];
+
+export const itemRarities = ["common", "uncommon", "rare", "epic", "legendary", "mythic"] as const;
+
+export type ItemRarity = (typeof itemRarities)[number];
+
+export const itemRarityLabels: Record<ItemRarity, string> = {
+  common: "Comum",
+  uncommon: "Incomum",
+  rare: "Raro",
+  epic: "Épico",
+  legendary: "Lendário",
+  mythic: "Mítico",
+};
 
 export type WeaponSlot = "main_weapon" | "off_weapon";
 
@@ -38,6 +72,21 @@ export function compatibleEquipSlots(itemSlot: string, twoHanded: boolean): Equi
   return equipmentSlots
     .map((slot) => slot.key)
     .filter((slot) => canEquipItemInSlot(itemSlot, twoHanded, slot));
+}
+
+export function occupiedEquipmentSlots(item: {
+  equippedSlots: string[];
+  twoHanded: boolean;
+}): string[] {
+  if (item.twoHanded && item.equippedSlots.some(isWeaponSlot)) {
+    return ["main_weapon", "off_weapon"];
+  }
+  return item.equippedSlots;
+}
+
+export function equippedItemCopies(item: { equippedSlots: string[]; twoHanded: boolean }): number {
+  if (item.twoHanded && item.equippedSlots.some(isWeaponSlot)) return 1;
+  return item.equippedSlots.length;
 }
 
 export function getBasicAttackRange(

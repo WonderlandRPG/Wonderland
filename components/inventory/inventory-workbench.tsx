@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import {
   equipItemAction,
   sellInventoryItemAction,
+  setInventoryLocationAction,
   unequipItemAction,
 } from "@/app/personagens/[id]/equipment-actions";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
@@ -13,6 +14,8 @@ import { ItemGlyph } from "@/components/items/item-glyph";
 import { ItemArtwork } from "@/components/items/item-artwork";
 import { equipOwnedCosmeticAction } from "@/app/personagens/[id]/cosmetic-actions";
 import type { CosmeticCatalogItem } from "@/lib/content/cosmetics";
+import { itemPower, itemPowerDelta } from "@/lib/game/item-attributes";
+import { equippedItemCopies } from "@/lib/game/equipment";
 
 type InventoryItem = {
   id: string;
@@ -24,6 +27,7 @@ type InventoryItem = {
   slot: string;
   slotLabel: string;
   quantity: number;
+  location: "bag" | "storage";
   equippedSlot: string | null;
   equippedSlots: string[];
   imageUrl: string | null;
@@ -40,13 +44,15 @@ export function InventoryWorkbench({
   slots,
   items,
   cosmetics,
+  currentPowerTotal,
 }: {
   character: { id: string; name: string; imageUrl: string | null; rank: string; level: number; cosmetics: CharacterCosmeticLoadout };
   slots: Slot[];
   items: InventoryItem[];
   cosmetics: CosmeticCatalogItem[];
+  currentPowerTotal: number;
 }) {
-  const [view, setView] = useState<"all" | "bag" | "equipped" | "rewards" | "cosmetics">("all");
+  const [view, setView] = useState<"all" | "bag" | "storage" | "equipped" | "rewards" | "cosmetics">("all");
   const [search, setSearch] = useState("");
   const [slotFilter, setSlotFilter] = useState("");
   const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
@@ -63,8 +69,9 @@ export function InventoryWorkbench({
         ? items
             .filter(
               (item) =>
-                item.compatibleSlots.includes(activeSlot.key) ||
-                item.equippedSlots.includes(activeSlot.key),
+                item.location === "bag" &&
+                (item.compatibleSlots.includes(activeSlot.key) ||
+                  item.equippedSlots.includes(activeSlot.key)),
             )
             .sort((left, right) => {
               const leftEquipped = left.id === activeSlot.itemId ? 1 : 0;
@@ -79,7 +86,9 @@ export function InventoryWorkbench({
       items.filter(
         (item) =>
           (view === "bag"
-            ? !item.equippedSlot
+            ? item.location === "bag" && !item.equippedSlot
+            : view === "storage"
+              ? item.location === "storage"
             : view === "equipped"
               ? Boolean(item.equippedSlot)
               : view === "rewards"
@@ -97,6 +106,19 @@ export function InventoryWorkbench({
   );
   const occupied = slots.filter((slot) => slot.itemId).length;
   const equippedTitle = items.find((item) => item.equippedSlot === "title") ?? null;
+  const selectedPower = selected ? itemPower(selected.attributes) : 0;
+  const comparisonItems = selected && !selected.equippedSlot
+    ? selected.twoHanded && selected.compatibleSlots.some((slot) => slot === "main_weapon" || slot === "off_weapon")
+      ? [...new Map(items.filter((item) => item.equippedSlots.some((slot) => slot === "main_weapon" || slot === "off_weapon")).map((item) => [item.id, item])).values()]
+      : items
+          .filter((item) => item.equippedSlots.some((slot) => selected.compatibleSlots.includes(slot)))
+          .sort((left, right) => itemPower(left.attributes) - itemPower(right.attributes))
+          .slice(0, 1)
+    : [];
+  const comparisonAttributeSets = comparisonItems.flatMap((item) =>
+    Array.from({ length: selected?.twoHanded ? equippedItemCopies(item) : 1 }, () => item.attributes),
+  );
+  const selectedPowerDelta = selected ? itemPowerDelta(selected.attributes, comparisonAttributeSets) : 0;
   const equippedTitleData = equippedTitle
     ? {
         name: equippedTitle.name,
@@ -206,6 +228,7 @@ export function InventoryWorkbench({
             <nav>
               <button className={view === "all" ? "is-active" : ""} onClick={() => setView("all")} type="button">Todos</button>
               <button className={view === "bag" ? "is-active" : ""} onClick={() => setView("bag")} type="button">Mochila</button>
+              <button className={view === "storage" ? "is-active" : ""} onClick={() => setView("storage")} type="button">Armazém</button>
               <button className={view === "equipped" ? "is-active" : ""} onClick={() => setView("equipped")} type="button">Equipados</button>
               <button className={view === "rewards" ? "is-active" : ""} onClick={() => setView("rewards")} type="button">Recompensas ADM</button>
               <button className={view === "cosmetics" ? "is-active" : ""} onClick={() => setView("cosmetics")} type="button">✦ Cosméticos</button>
@@ -262,7 +285,7 @@ export function InventoryWorkbench({
                     </span>
                   ))}
                   <footer>
-                    {item.equippedSlot ? <span>✓ Equipado</span> : <span>Na mochila</span>}
+                    {item.equippedSlot ? <span>✓ Equipado</span> : item.location === "storage" ? <span>No armazém</span> : <span>Na mochila</span>}
                     <i>Ver detalhes</i>
                   </footer>
                 </button>
@@ -296,7 +319,7 @@ export function InventoryWorkbench({
                 {selected.equippedSlot ? (
                   <b>Equipado em {slots.find((slot) => slot.key === selected.equippedSlot)?.label}</b>
                 ) : (
-                  <b>Disponível na mochila</b>
+                  <b>{selected.location === "storage" ? "Guardado no armazém" : "Disponível na mochila"}</b>
                 )}
               </header>
               <div className="inventory-inspector__glyph">
@@ -308,6 +331,15 @@ export function InventoryWorkbench({
                   <div key={key}><dt>{key}</dt><dd>+{value}</dd></div>
                 ))}
               </dl>
+              <article>
+                <small>COMPARAÇÃO DE PODER</small>
+                <strong>{selectedPower.toLocaleString("pt-BR")} de Poder no item</strong>
+                <p>
+                  {selected.equippedSlot
+                    ? `Poder Total atual: ${currentPowerTotal.toLocaleString("pt-BR")}.`
+                    : `${selectedPowerDelta >= 0 ? "+" : ""}${selectedPowerDelta} ao equipar · projeção ${Math.max(0, currentPowerTotal + selectedPowerDelta).toLocaleString("pt-BR")}.`}
+                </p>
+              </article>
               {selected.effects.map((effect) => (
                 <article key={effect.key}>
                   <small>EFEITO ESPECIAL</small>
@@ -321,7 +353,7 @@ export function InventoryWorkbench({
                     <input name="inventoryId" type="hidden" value={selected.id} />
                     <button className="button button--dark">Desequipar</button>
                   </form>
-                ) : (
+                ) : selected.location === "bag" ? (
                   <form action={equipItemAction.bind(null, character.id)}>
                     <input name="inventoryId" type="hidden" value={selected.id} />
                     <label>
@@ -334,7 +366,20 @@ export function InventoryWorkbench({
                     </label>
                     <button className="button button--primary">Equipar item</button>
                   </form>
+                ) : (
+                  <form action={setInventoryLocationAction.bind(null, character.id)}>
+                    <input name="inventoryId" type="hidden" value={selected.id} />
+                    <input name="location" type="hidden" value="bag" />
+                    <button className="button button--primary">Mover para mochila</button>
+                  </form>
                 )}
+                {!selected.equippedSlot && selected.location === "bag" ? (
+                  <form action={setInventoryLocationAction.bind(null, character.id)}>
+                    <input name="inventoryId" type="hidden" value={selected.id} />
+                    <input name="location" type="hidden" value="storage" />
+                    <button className="button button--dark">Armazenar</button>
+                  </form>
+                ) : null}
                 {!selected.equippedSlot && selected.slot !== "title" && selected.price > 0 ? (
                   <form action={sellInventoryItemAction.bind(null, character.id)}>
                     <input name="inventoryId" type="hidden" value={selected.id} />

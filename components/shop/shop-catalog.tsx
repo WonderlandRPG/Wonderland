@@ -25,6 +25,9 @@ export type ShopCatalogItem = {
   twoHanded: boolean;
   buildName: string | null;
   recommendedClasses: string[];
+  power: number;
+  powerDelta: number;
+  projectedPowerTotal: number;
 };
 
 const rarityTabs = [
@@ -443,6 +446,9 @@ export function ShopCatalog({
                             </b>
                           ))}
                       </div>
+                      <p className="classic-item-card__classes">
+                        Poder {item.power > 0 ? `+${item.power}` : item.power} · troca {item.powerDelta >= 0 ? "+" : ""}{item.powerDelta} · total projetado {item.projectedPowerTotal.toLocaleString("pt-BR")}
+                      </p>
                       {item.recommendedClasses.length ? (
                         <p className="classic-item-card__classes">
                           Ideal para: {item.recommendedClasses.join(", ")}
@@ -464,6 +470,7 @@ export function ShopCatalog({
                       <input name="itemId" type="hidden" value={item.id} />
                       <ShopBuyButton disabled={gold < item.price} itemName={item.name} compact />
                     </form>
+                    <small>{gold >= item.price ? "Disponível" : "Saldo insuficiente"}</small>
                     <button
                       className="shop-add-cart"
                       onClick={() => addToCart(item.id)}

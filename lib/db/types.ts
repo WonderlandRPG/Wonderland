@@ -255,6 +255,7 @@ export interface Database {
           character_id: string;
           item_id: string;
           quantity: number;
+          location: "bag" | "storage";
           equipped_slot: string | null;
           equipped_slots: string[];
           created_at: string;
@@ -265,6 +266,7 @@ export interface Database {
           character_id: string;
           item_id: string;
           quantity?: number;
+          location?: "bag" | "storage";
           equipped_slot?: string | null;
           equipped_slots?: string[];
           created_at?: string;
@@ -481,6 +483,40 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database["public"]["Tables"]["v2_shop_items"]["Insert"]>;
+        Relationships: [];
+      };
+      v2_shop_transactions: {
+        Row: {
+          id: string;
+          character_id: string;
+          user_id: string;
+          transaction_type: "purchase" | "sale";
+          item_id: string | null;
+          item_name: string;
+          rarity: string;
+          quantity: number;
+          unit_price: number;
+          total: number;
+          balance_after: number;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          character_id: string;
+          user_id: string;
+          transaction_type: "purchase" | "sale";
+          item_id?: string | null;
+          item_name: string;
+          rarity: string;
+          quantity?: number;
+          unit_price: number;
+          total: number;
+          balance_after: number;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["v2_shop_transactions"]["Insert"]>;
         Relationships: [];
       };
       v2_presence_rewards: {
@@ -1046,6 +1082,10 @@ export interface Database {
       };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
       v2_buy_shop_cart: { Args: { p_item_ids: string[] }; Returns: Json };
+      v2_set_inventory_location: {
+        Args: { p_inventory_id: string; p_location: "bag" | "storage" };
+        Returns: Database["public"]["Tables"]["v2_character_inventory"]["Row"];
+      };
       v2_select_character: { Args: { p_character_id: string }; Returns: undefined };
       v2_character_ranking: {
         Args: Record<PropertyKey, never>;

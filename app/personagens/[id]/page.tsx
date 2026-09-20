@@ -571,6 +571,7 @@ export default async function CharacterSheetPage({
             </header>
             <InventoryWorkbench
               cosmetics={ownedCosmetics}
+              currentPowerTotal={character.reworkStats.powerTotal}
               character={{
                 id: character.id,
                 name: character.name,
@@ -611,6 +612,7 @@ export default async function CharacterSheetPage({
                 slot: entry.slot,
                 slotLabel: itemSlotLabel(entry.slot),
                 quantity: entry.quantity,
+                location: entry.location,
                 equippedSlot: entry.equippedSlot,
                 equippedSlots: entry.equippedSlots,
                 imageUrl: entry.imageUrl,

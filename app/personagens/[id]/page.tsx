@@ -74,7 +74,11 @@ export default async function CharacterSheetPage({
     <main className="sheet-page">
       <PlayerNav />
       <div
-        className={`page-container sheet-page__inner ${tab === "equipamentos" ? "is-inventory-mode" : ""}`}
+        className={
+          tab === "equipamentos"
+            ? "sheet-page__inner is-inventory-mode"
+            : "page-container sheet-page__inner"
+        }
       >
         <nav className="sheet-breadcrumb" aria-label="Localização na jornada">
           <Link href="/personagens">Meus personagens</Link>
@@ -676,3 +680,4 @@ function SkillList({
     </div>
   );
 }
+

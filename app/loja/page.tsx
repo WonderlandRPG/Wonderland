@@ -2,15 +2,16 @@ import "./loja.css";
 import "./rarity-glow.css";
 import "./shop-rework.css";
 import "./cosmetics.css";
+import "./shop-history.css";
 import Link from "next/link";
 import { PlayerNav } from "@/components/player-nav";
 import { ShopCatalog, type ShopCatalogItem } from "@/components/shop/shop-catalog";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
-import { itemSlotLabel } from "@/lib/game/equipment";
+import { compatibleEquipSlots, equippedItemCopies, itemSlotLabel, occupiedEquipmentSlots } from "@/lib/game/equipment";
+import { itemPower, itemPowerDelta, normalizeItemAttributes } from "@/lib/game/item-attributes";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
 import { getShopItems } from "@/lib/game/player-portal";
-import { attributesSchema } from "@/lib/game/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getVisibleCosmetics } from "@/lib/content/cosmetics";
 
@@ -37,13 +38,21 @@ export default async function ShopPage({
   ]);
   const cosmetics = await getVisibleCosmetics(characterId);
   const client = await createServerSupabaseClient();
-  const { data: kingdomState } = client
-    ? await client
-        .from("v2_kingdom_states")
-        .select("market_stars,penalty_until,shop_markup_percent")
-        .eq("kingdom", character.kingdom)
-        .maybeSingle()
-    : { data: null };
+  const [{ data: kingdomState }, { data: transactionRows }] = client
+    ? await Promise.all([
+        client
+          .from("v2_kingdom_states")
+          .select("market_stars,penalty_until,shop_markup_percent")
+          .eq("kingdom", character.kingdom)
+          .maybeSingle(),
+        client
+          .from("v2_shop_transactions")
+          .select("id,transaction_type,item_name,rarity,quantity,total,balance_after,created_at")
+          .eq("character_id", character.id)
+          .order("created_at", { ascending: false })
+          .limit(12),
+      ])
+    : [{ data: null }, { data: [] }];
   const penaltyActive = Boolean(
     kingdomState?.penalty_until && new Date(kingdomState.penalty_until) > new Date(),
   );
@@ -52,7 +61,20 @@ export default async function ShopPage({
     (kingdomState?.market_stars ?? 0) * 0.03 +
     (penaltyActive ? (kingdomState?.shop_markup_percent ?? 0) * 0.01 : 0);
   const items: ShopCatalogItem[] = rows.map((item) => {
-    const parsed = attributesSchema.partial().safeParse(item.attributes);
+    const attributes = normalizeItemAttributes(item.attributes);
+    const compatibleSlots = compatibleEquipSlots(item.slot, item.two_handed);
+    const equippedCandidates = item.two_handed && compatibleSlots.includes("main_weapon")
+      ? [...new Map(character.inventory
+          .filter((owned) => occupiedEquipmentSlots(owned).some((slot) => slot === "main_weapon" || slot === "off_weapon"))
+          .map((owned) => [owned.id, owned])).values()]
+      : character.inventory
+          .filter((owned) => occupiedEquipmentSlots(owned).some((slot) => compatibleSlots.some((compatible) => compatible === slot)))
+          .sort((left, right) => itemPower(left.attributes) - itemPower(right.attributes))
+          .slice(0, 1);
+    const equippedAttributeSets = equippedCandidates.flatMap((owned) =>
+      Array.from({ length: item.two_handed ? equippedItemCopies(owned) : 1 }, () => owned.attributes),
+    );
+    const powerDelta = itemPowerDelta(attributes, equippedAttributeSets);
     return {
       id: item.id,
       name: item.name,
@@ -64,11 +86,14 @@ export default async function ShopPage({
       slotLabel: itemSlotLabel(item.slot),
       rarity: item.rarity,
       rarityLabel: rarityLabels[item.rarity] ?? item.rarity,
-      attributes: parsed.success ? (parsed.data as Record<string, number>) : {},
+      attributes,
       effects: parseItemSpecialEffects(item.special_effects),
       twoHanded: item.two_handed,
       buildName: item.build_name,
       recommendedClasses: item.recommended_classes ?? [],
+      power: itemPower(attributes),
+      powerDelta,
+      projectedPowerTotal: Math.max(0, character.reworkStats.powerTotal + powerDelta),
     };
   });
   return (
@@ -147,6 +172,25 @@ export default async function ShopPage({
             cosmetics: character.cosmetics,
           }}
         />
+        <section className="shop-history" aria-labelledby="shop-history-title">
+          <header>
+            <div><span className="eyebrow">Registro financeiro</span><h2 id="shop-history-title">Compras e vendas recentes</h2></div>
+            <small>Os valores e o saldo final ficam registrados automaticamente.</small>
+          </header>
+          {transactionRows?.length ? (
+            <div>
+              {transactionRows.map((transaction) => (
+                <article key={transaction.id}>
+                  <span>{transaction.transaction_type === "purchase" ? "Compra" : "Venda"}</span>
+                  <strong>{transaction.item_name}{transaction.quantity > 1 ? ` ×${transaction.quantity}` : ""}</strong>
+                  <small>{new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(transaction.created_at))}</small>
+                  <b>{transaction.transaction_type === "purchase" ? "−" : "+"}{transaction.total.toLocaleString("pt-BR")} WG</b>
+                  <em>Saldo: {transaction.balance_after.toLocaleString("pt-BR")} WG</em>
+                </article>
+              ))}
+            </div>
+          ) : <p>Nenhuma compra ou venda registrada para este personagem.</p>}
+        </section>
       </div>
     </main>
   );

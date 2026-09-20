@@ -18,7 +18,7 @@ import {
   type AllocatedAttributes,
 } from "@/lib/game/characters";
 import { parseRacePayload, type RacePayload } from "@/lib/game/races";
-import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
+import { attributeKeys } from "@/lib/game/schemas";
 import { reworkRaces } from "@/lib/game/rework-catalog";
 import {
   calculateReworkSheet,
@@ -48,12 +48,13 @@ import {
   type CharacterCosmeticLoadout,
 } from "@/lib/content/character-cosmetics";
 import { equippedItemCopies } from "@/lib/game/equipment";
+import { normalizeItemAttributes, type ItemAttributes } from "@/lib/game/item-attributes";
 
 type CharacterRow = Database["public"]["Tables"]["v2_characters"]["Row"];
 type ContentRow = Database["public"]["Tables"]["v2_content"]["Row"];
 type InventoryRow = Pick<
   Database["public"]["Tables"]["v2_character_inventory"]["Row"],
-  "id" | "character_id" | "item_id" | "quantity" | "equipped_slot"
+  "id" | "character_id" | "item_id" | "quantity" | "location" | "equipped_slot"
 >;
 type InventoryRowWithSlots = InventoryRow & { equipped_slots?: string[] | null };
 
@@ -95,7 +96,8 @@ export interface CharacterSheet extends CharacterRecord {
     equippedSlot: string | null;
     equippedSlots: string[];
     imageUrl: string | null;
-    attributes: Partial<AllocatedAttributes>;
+    location: "bag" | "storage";
+    attributes: ItemAttributes;
     specialEffects: ItemSpecialEffect[];
     titleStyle: { primary: string; secondary: string; glow: string } | null;
     twoHanded: boolean;
@@ -172,7 +174,7 @@ async function loadSheets(
     : ((
         await client
           .from("v2_character_inventory")
-          .select("id,character_id,item_id,quantity,equipped_slot,equipped_slots")
+          .select("id,character_id,item_id,quantity,location,equipped_slot,equipped_slots")
           .in("character_id", characterIds)
       ).data ?? []);
   const itemIds = [...new Set((inventoryRows ?? []).map((entry) => entry.item_id))];
@@ -198,7 +200,6 @@ async function loadSheets(
       .flatMap((entry) => {
         const item = shop.get(entry.item_id);
         if (!item) return [];
-        const parsed = attributesSchema.partial().safeParse(item.attributes);
         return [
           {
             id: entry.id,
@@ -210,6 +211,7 @@ async function loadSheets(
             price: item.price,
             slot: item.slot,
             quantity: entry.quantity,
+            location: entry.location ?? "bag",
             equippedSlot: entry.equipped_slot,
             equippedSlots: entry.equipped_slots?.length
               ? entry.equipped_slots
@@ -217,7 +219,7 @@ async function loadSheets(
                 ? [entry.equipped_slot]
                 : [],
             imageUrl: item.image_url,
-            attributes: parsed.success ? parsed.data : {},
+            attributes: normalizeItemAttributes(item.attributes),
             specialEffects: parseItemSpecialEffects(item.special_effects),
             titleStyle:
               item.title_style &&
@@ -232,11 +234,10 @@ async function loadSheets(
     const equipmentBonuses = Object.fromEntries(
       attributeKeys.map((attribute) => [
         attribute,
-        inventory.reduce(
-          (total, entry) =>
-            total + (entry.attributes[attribute] ?? 0) * equippedItemCopies(entry),
-          0,
-        ),
+        inventory.reduce((total, entry) => {
+          const officialAttribute = attribute === "ARC" ? "HP" : attribute;
+          return total + (entry.attributes[officialAttribute] ?? 0) * equippedItemCopies(entry);
+        }, 0),
       ]),
     );
     const reworkRace = reworkRaces.find(
@@ -255,7 +256,10 @@ async function loadSheets(
       INT: equipmentBonuses.INT,
       DEF: equipmentBonuses.DEF,
       RES: equipmentBonuses.RES,
-      HP: equipmentBonuses.ARC,
+      HP: inventory.reduce(
+        (total, entry) => total + (entry.attributes.HP ?? 0) * equippedItemCopies(entry),
+        0,
+      ),
       INI: equipmentBonuses.INI,
     };
     const unlockedRaceAbilities = getUnlockedRaceAbilities(race.data, record.level);

@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { attributesSchema, type AttributeKey } from "@/lib/game/schemas";
+import { type AttributeKey } from "@/lib/game/schemas";
+import { reworkAttributesSchema } from "@/lib/game/rework-attributes";
 
 export const itemEffectKinds = [
   "BATTLE_START",
@@ -20,7 +21,7 @@ export const itemSpecialEffectSchema = z.object({
   trigger: z.enum(["BATTLE_START", "ON_DAMAGE_DEALT", "ON_SKILL_USE"]).default("BATTLE_START"),
   duration: z.number().int().min(0).default(0),
   power: z.number().min(0).default(0),
-  modifiers: attributesSchema.partial().default({}),
+  modifiers: reworkAttributesSchema.partial().default({}),
   shield: z.number().int().min(0).default(0),
   maxHpPercent: z.number().min(0).max(100).default(0),
   mana: z.number().int().min(0).default(0),
@@ -67,6 +68,7 @@ export function sumItemEffectModifiers(effects: ItemSpecialEffect[]) {
   for (const effect of effects) {
     if (effect.kind !== "BATTLE_START" || effect.trigger !== "BATTLE_START") continue;
     for (const [attribute, value] of Object.entries(effect.modifiers)) {
+      if (attribute === "HP") continue;
       total[attribute as AttributeKey] = (total[attribute as AttributeKey] ?? 0) + (value ?? 0);
     }
   }
@@ -79,7 +81,7 @@ export function applyBattleStartItemEffects<T extends ItemEffectCombatant>(
 ): T {
   return effects.reduce((state, effect) => {
     if (effect.kind !== "BATTLE_START" || effect.trigger !== "BATTLE_START") return state;
-    const extraHp = Math.round(state.maxHp * (effect.maxHpPercent / 100));
+    const extraHp = Math.round(state.maxHp * (effect.maxHpPercent / 100)) + (effect.modifiers.HP ?? 0);
     return {
       ...state,
       maxHp: state.maxHp + extraHp,

@@ -6,7 +6,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { parseClassPayload } from "@/lib/game/classes";
 import { parseRacePayload } from "@/lib/game/races";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
-import { attributesSchema } from "@/lib/game/schemas";
+import { normalizeItemAttributes } from "@/lib/game/item-attributes";
 import { simpleDraftFromClassSkill } from "@/lib/admin/simple-skill-reader";
 import type { SimpleClassDraft, SimpleItemDraft, SimpleRaceDraft, SimpleTitleDraft } from "@/lib/admin/simple-content-builder";
 import type { SimpleMissionDraft } from "@/lib/admin/simple-operations-builder";
@@ -57,8 +57,8 @@ export default async function AdminCreationStudioPage() {
   const items: SimpleItemDraft[] = [];
   const titles: SimpleTitleDraft[] = [];
   for (const row of itemResult.data ?? []) {
-    const attrs = attributesSchema.safeParse(row.attributes);
-    const attributes = attrs.success ? attrs.data : { FOR:0,DEF:0,RES:0,INI:0,INT:0,ARC:0 };
+    const normalized = normalizeItemAttributes(row.attributes);
+    const attributes = { FOR:0,DEF:0,RES:0,INI:0,INT:0,HP:0,...normalized };
     const effect = parseItemSpecialEffects(row.special_effects)[0];
     if (row.slot === "title") {
       const style = objectValue(row.title_style);

@@ -6,6 +6,10 @@ import { z } from "zod";
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import type { Json } from "@/lib/db/types";
 import { classPayloadSchema } from "@/lib/game/schemas";
+import {
+  auditClassForPublication,
+  formatSkillAuditIssues,
+} from "@/lib/game/skill-publication-audit";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type ClassActionState = {
@@ -54,6 +58,15 @@ export async function saveClassAction(
         payload: payload.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`),
       },
     };
+  if (submission.data.intent === "publish") {
+    const audit = auditClassForPublication(payload.data);
+    if (!audit.publishable)
+      return {
+        status: "error",
+        message: `Publicação bloqueada: ${audit.issues.length} falha(s) encontrada(s) na auditoria das habilidades. O rascunho pode ser salvo após trocar a ação para salvar.`,
+        fieldErrors: { payload: formatSkillAuditIssues(audit) },
+      };
+  }
   const client = await createServerSupabaseClient();
   if (!client) return { status: "error", message: "A conexão com o banco não está disponível." };
   const { id, expectedRevision, name, slug, intent } = submission.data;
@@ -62,7 +75,14 @@ export async function saveClassAction(
     if (classId) {
       const { data, error } = await client
         .from("v2_content")
-        .update({ name, slug, payload: payload.data as unknown as Json, updated_by: account.id })
+        .update({
+          name,
+          slug,
+          status: "draft",
+          published_at: null,
+          payload: payload.data as unknown as Json,
+          updated_by: account.id,
+        })
         .eq("id", classId)
         .eq("content_type", "class")
         .eq("revision", expectedRevision)

@@ -6,6 +6,7 @@ import { requireAdministrativeAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { parseClassPayload } from "@/lib/game/classes";
 import type { Json } from "@/lib/db/types";
+import { auditClassForPublication } from "@/lib/game/skill-publication-audit";
 import {
   buildClassSkillFromSimpleDraft,
   simpleSkillDraftSchema,
@@ -29,19 +30,47 @@ function draftJsonSchema() {
     type: "object",
     additionalProperties: false,
     required: [
-      "name","description","level","effectType","targetSide","targetCount","attribute","multiplier","baseValue","damageType","resource","resourceKey","cost","cooldown","duration","chance","modifierAttribute","modifierValue","statusName"
+      "name",
+      "description",
+      "level",
+      "effectType",
+      "targetSide",
+      "targetCount",
+      "attribute",
+      "multiplier",
+      "baseValue",
+      "damageType",
+      "resource",
+      "resourceKey",
+      "cost",
+      "cooldown",
+      "duration",
+      "chance",
+      "modifierAttribute",
+      "modifierValue",
+      "statusName",
     ],
     properties: {
-      name: { type: "string" }, description: { type: "string" }, level: { type: "integer", minimum: 1, maximum: 100 },
-      effectType: { type: "string", enum: ["damage","heal","shield","buff","debuff","stun"] },
-      targetSide: { type: "string", enum: ["self","ally","enemy"] }, targetCount: { type: "integer", minimum: 1, maximum: 4 },
-      attribute: { type: "string", enum: ["FOR","DEF","RES","INI","INT","ARC"] }, multiplier: { type: "number", minimum: 0, maximum: 10 },
-      baseValue: { type: "number", minimum: 0 }, damageType: { type: "string", enum: ["physical","magic","true","none"] },
-      resource: { type: "string", enum: ["mana","life","special","none"] }, resourceKey: { type: "string", enum: ["class","race"] },
-      cost: { type: "number", minimum: 0 }, cooldown: { type: "integer", minimum: 0, maximum: 20 }, duration: { type: "integer", minimum: 0, maximum: 20 },
-      chance: { type: "number", minimum: 1, maximum: 100 }, modifierAttribute: { type: "string", enum: ["FOR","DEF","RES","INI","INT","ARC"] },
-      modifierValue: { type: "number", minimum: 0 }, statusName: { type: "string" }
-    }
+      name: { type: "string" },
+      description: { type: "string" },
+      level: { type: "integer", minimum: 1, maximum: 100 },
+      effectType: { type: "string", enum: ["damage", "heal", "shield", "buff", "debuff", "stun"] },
+      targetSide: { type: "string", enum: ["self", "ally", "enemy"] },
+      targetCount: { type: "integer", minimum: 1, maximum: 4 },
+      attribute: { type: "string", enum: ["FOR", "DEF", "RES", "INI", "INT", "ARC"] },
+      multiplier: { type: "number", minimum: 0, maximum: 10 },
+      baseValue: { type: "number", minimum: 0 },
+      damageType: { type: "string", enum: ["physical", "magic", "true", "none"] },
+      resource: { type: "string", enum: ["mana", "life", "special", "none"] },
+      resourceKey: { type: "string", enum: ["class", "race"] },
+      cost: { type: "number", minimum: 0 },
+      cooldown: { type: "integer", minimum: 0, maximum: 20 },
+      duration: { type: "integer", minimum: 0, maximum: 20 },
+      chance: { type: "number", minimum: 1, maximum: 100 },
+      modifierAttribute: { type: "string", enum: ["FOR", "DEF", "RES", "INI", "INT", "ARC"] },
+      modifierValue: { type: "number", minimum: 0 },
+      statusName: { type: "string" },
+    },
   } as const;
 }
 
@@ -54,7 +83,12 @@ function extractOutputText(payload: unknown) {
     const content = (item as { content?: unknown }).content;
     if (!Array.isArray(content)) continue;
     for (const part of content) {
-      if (part && typeof part === "object" && "text" in part && typeof (part as { text?: unknown }).text === "string") {
+      if (
+        part &&
+        typeof part === "object" &&
+        "text" in part &&
+        typeof (part as { text?: unknown }).text === "string"
+      ) {
         return (part as { text: string }).text;
       }
     }
@@ -68,17 +102,28 @@ export async function generateSkillWithAiAction(
 ): Promise<StudioAiState> {
   await requireAdministrativeAccount();
   const prompt = String(formData.get("prompt") ?? "").trim();
-  if (prompt.length < 5) return { status: "error", message: "Descreva melhor a habilidade que deseja criar." };
+  if (prompt.length < 5)
+    return { status: "error", message: "Descreva melhor a habilidade que deseja criar." };
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return { status: "error", message: "A IA está instalada, mas falta configurar OPENAI_API_KEY na Vercel." };
+  if (!apiKey)
+    return {
+      status: "error",
+      message: "A IA está instalada, mas falta configurar OPENAI_API_KEY na Vercel.",
+    };
 
   const content: Array<Record<string, unknown>> = [{ type: "input_text", text: prompt }];
   const image = formData.get("image");
   if (image instanceof File && image.size > 0) {
-    if (image.size > 4_000_000) return { status: "error", message: "A imagem deve ter no máximo 4 MB." };
-    if (!image.type.startsWith("image/")) return { status: "error", message: "Envie um arquivo de imagem válido." };
+    if (image.size > 4_000_000)
+      return { status: "error", message: "A imagem deve ter no máximo 4 MB." };
+    if (!image.type.startsWith("image/"))
+      return { status: "error", message: "Envie um arquivo de imagem válido." };
     const base64 = Buffer.from(await image.arrayBuffer()).toString("base64");
-    content.push({ type: "input_image", image_url: `data:${image.type};base64,${base64}`, detail: "auto" });
+    content.push({
+      type: "input_image",
+      image_url: `data:${image.type};base64,${base64}`,
+      detail: "auto",
+    });
   }
 
   const instruction = [
@@ -90,7 +135,7 @@ export async function generateSkillWithAiAction(
     "Curas, buffs e debuffs devem escolher alvo coerente.",
     "FOR é físico, INT é mágico, ARC fortalece cura/escudo/buff/debuff, INI controla velocidade/ordem.",
     "Escreva uma descrição clara, temática e boa para o jogador.",
-    "Se o pedido for ambíguo, faça uma escolha equilibrada e conservadora."
+    "Se o pedido for ambíguo, faça uma escolha equilibrada e conservadora.",
   ].join("\n");
 
   try {
@@ -101,7 +146,14 @@ export async function generateSkillWithAiAction(
         model: process.env.OPENAI_ADMIN_MODEL || "gpt-5",
         instructions: instruction,
         input: [{ role: "user", content }],
-        text: { format: { type: "json_schema", name: "wonderland_skill_draft", strict: true, schema: draftJsonSchema() } },
+        text: {
+          format: {
+            type: "json_schema",
+            name: "wonderland_skill_draft",
+            strict: true,
+            schema: draftJsonSchema(),
+          },
+        },
       }),
       cache: "no-store",
     });
@@ -112,8 +164,16 @@ export async function generateSkillWithAiAction(
     }
     const raw = extractOutputText(await response.json());
     const parsed = simpleSkillDraftSchema.safeParse(JSON.parse(raw));
-    if (!parsed.success) return { status: "error", message: "A IA respondeu, mas a proposta não passou pela validação do Wonderland." };
-    return { status: "success", message: "Proposta criada. Revise os campos antes de adicionar à classe.", draft: parsed.data };
+    if (!parsed.success)
+      return {
+        status: "error",
+        message: "A IA respondeu, mas a proposta não passou pela validação do Wonderland.",
+      };
+    return {
+      status: "success",
+      message: "Proposta criada. Revise os campos antes de adicionar à classe.",
+      draft: parsed.data,
+    };
   } catch (error) {
     console.error("OpenAI admin studio failure", error);
     return { status: "error", message: "Não foi possível conectar ao Assistente de Wonderland." };
@@ -126,18 +186,63 @@ export async function addSkillToClassAction(input: unknown) {
   if (!parsed.success) return { ok: false as const, message: "Revise os campos da habilidade." };
   const client = await createServerSupabaseClient();
   if (!client) return { ok: false as const, message: "Banco indisponível." };
-  const { data: row, error } = await client.from("v2_content").select("id,name,payload,revision,status").eq("id", parsed.data.classId).eq("content_type", "class").maybeSingle();
+  const { data: row, error } = await client
+    .from("v2_content")
+    .select("id,name,payload,revision,status")
+    .eq("id", parsed.data.classId)
+    .eq("content_type", "class")
+    .maybeSingle();
   if (error || !row) return { ok: false as const, message: "Classe não encontrada." };
   const classPayload = parseClassPayload(row.payload);
-  if (!classPayload.success) return { ok: false as const, message: "A classe possui dados inválidos e precisa ser revisada antes." };
+  if (!classPayload.success)
+    return {
+      ok: false as const,
+      message: "A classe possui dados inválidos e precisa ser revisada antes.",
+    };
   const skill = buildClassSkillFromSimpleDraft(parsed.data.draft);
-  if (classPayload.data.progression.some((entry) => entry.key === skill.key)) return { ok: false as const, message: "Já existe uma habilidade com essa chave na classe." };
-  const nextPayload = { ...classPayload.data, progression: [...classPayload.data.progression, skill].sort((a, b) => a.level - b.level || a.name.localeCompare(b.name)) };
-  const { data: updated, error: updateError } = await client.from("v2_content").update({ payload: nextPayload as unknown as Json, updated_by: account.id }).eq("id", row.id).eq("revision", row.revision).select("id").maybeSingle();
-  if (updateError || !updated) return { ok: false as const, message: "A classe foi alterada em outra tela. Atualize e tente novamente." };
-  await client.from("v2_admin_history").insert({ actor_id: account.id, action: "class.skill.created_from_studio", target_type: "class", target_id: row.id, details: { className: row.name, skillName: skill.name, skillKey: skill.key } });
+  if (classPayload.data.progression.some((entry) => entry.key === skill.key))
+    return { ok: false as const, message: "Já existe uma habilidade com essa chave na classe." };
+  const nextPayload = {
+    ...classPayload.data,
+    progression: [...classPayload.data.progression, skill].sort(
+      (a, b) => a.level - b.level || a.name.localeCompare(b.name),
+    ),
+  };
+  const audit = auditClassForPublication(nextPayload);
+  if (!audit.publishable)
+    return {
+      ok: false as const,
+      message: `A habilidade foi recusada pela auditoria: ${audit.issues[0]?.message ?? "efeito incompleto"}.`,
+    };
+  const { data: updated, error: updateError } = await client
+    .from("v2_content")
+    .update({
+      payload: nextPayload as unknown as Json,
+      status: "draft",
+      published_at: null,
+      updated_by: account.id,
+    })
+    .eq("id", row.id)
+    .eq("revision", row.revision)
+    .select("id")
+    .maybeSingle();
+  if (updateError || !updated)
+    return {
+      ok: false as const,
+      message: "A classe foi alterada em outra tela. Atualize e tente novamente.",
+    };
+  await client.from("v2_admin_history").insert({
+    actor_id: account.id,
+    action: "class.skill.created_from_studio",
+    target_type: "class",
+    target_id: row.id,
+    details: { className: row.name, skillName: skill.name, skillKey: skill.key },
+  });
   revalidatePath("/admin/classes");
   revalidatePath(`/admin/classes/${row.id}`);
   revalidatePath("/classes");
-  return { ok: true as const, message: `${skill.name} foi adicionada a ${row.name}.` };
+  return {
+    ok: true as const,
+    message: `${skill.name} foi adicionada a ${row.name} como rascunho auditado. Revise e publique a classe para ativar a alteração.`,
+  };
 }

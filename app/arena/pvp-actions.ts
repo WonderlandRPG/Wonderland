@@ -22,6 +22,7 @@ export type QueueState = {
   matchId?: string | null;
   rank: string;
   format: "solo" | "duo" | "trio";
+  mode?: "casual" | "ranked";
   secondaryCharacter?: QueueCharacter | null;
   tertiaryCharacter?: QueueCharacter | null;
   opponent?: QueueCharacter | null;
@@ -32,6 +33,36 @@ export type QueueState = {
   acceptedCount?: number;
   requiredCount?: number;
   acceptDeadline?: string | null;
+};
+
+export type RankedProfile = {
+  available: boolean;
+  season?: { id: string; name: string; endsAt: string };
+  rating?: {
+    pdl: number;
+    tier: string;
+    division: string | null;
+    placementMatches: number;
+    placementRequired: number;
+    wins: number;
+    losses: number;
+    abandons: number;
+    penaltyUntil: string | null;
+  };
+  history?: Array<{
+    matchId: string;
+    result: "victory" | "defeat" | "draw" | "abandonment";
+    delta: number;
+    pdlAfter: number;
+    createdAt: string;
+  }>;
+  standings?: Array<{
+    position: number;
+    characterId: string;
+    name: string;
+    pdl: number;
+    tier: string;
+  }>;
 };
 
 export type PvpPartyInvite = {
@@ -116,6 +147,40 @@ export async function joinPvpQueueAction(
   if (error || !validResult(data))
     return { ok: false as const, message: error?.message ?? "Não foi possível entrar na fila." };
   return { ok: true as const, data };
+}
+
+export async function joinRankedQueueAction(characterId: string) {
+  await requireCurrentAccount("/arena?modo=pvp");
+  const parsed = idSchema.safeParse(characterId);
+  if (!parsed.success) return { ok: false as const, message: "Personagem inválido." };
+  const context = await rpcClient();
+  if (!context) return { ok: false as const, message: "Arena indisponível." };
+  const { data, error } = await context.rpc("v2_join_ranked_queue", {
+    p_character_id: parsed.data,
+  });
+  if (error || !validResult(data))
+    return {
+      ok: false as const,
+      message: error?.message ?? "Não foi possível entrar na ranqueada.",
+    };
+  return { ok: true as const, data: { ...data, mode: "ranked" as const } };
+}
+
+export async function getRankedProfileAction(characterId: string) {
+  await requireCurrentAccount("/arena?modo=pvp");
+  const parsed = idSchema.safeParse(characterId);
+  if (!parsed.success) return { ok: false as const, message: "Personagem inválido." };
+  const context = await rpcClient();
+  if (!context) return { ok: false as const, message: "Arena indisponível." };
+  const { data, error } = await context.rpc("v2_get_ranked_profile", {
+    p_character_id: parsed.data,
+  });
+  if (error || !isObject(data) || typeof data.available !== "boolean")
+    return {
+      ok: false as const,
+      message: error?.message ?? "Não foi possível carregar a ranqueada.",
+    };
+  return { ok: true as const, data: data as RankedProfile };
 }
 
 export async function pollPvpQueueAction(queueId: string) {

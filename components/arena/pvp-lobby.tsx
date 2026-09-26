@@ -8,13 +8,16 @@ import {
   cancelPvpQueueAction,
   disbandPvpPartyAction,
   getPvpPartyStateAction,
+  getRankedProfileAction,
   invitePvpPartnerAction,
   joinPvpQueueAction,
+  joinRankedQueueAction,
   pollPvpQueueAction,
   respondPvpMatchAction,
   respondPvpPartyInviteAction,
   searchPvpPartnerAction,
   type PvpPartyState,
+  type RankedProfile,
   type QueueCharacter,
   type QueueState,
 } from "@/app/arena/pvp-actions";
@@ -33,6 +36,8 @@ export function PvpLobby({
   const [message, setMessage] = useState("");
   const [partyState, setPartyState] = useState<PvpPartyState | null>(null);
   const [partyOpen, setPartyOpen] = useState(false);
+  const [rankedOpen, setRankedOpen] = useState(false);
+  const [rankedProfile, setRankedProfile] = useState<RankedProfile | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<QueueCharacter[]>([]);
   const [pending, startTransition] = useTransition();
@@ -54,11 +59,17 @@ export function PvpLobby({
     }
   }, [characterId]);
 
+  const refreshRanked = useCallback(async () => {
+    const result = await getRankedProfileAction(characterId);
+    if (result.ok) setRankedProfile(result.data);
+  }, [characterId]);
+
   useEffect(() => {
     void refreshParty();
+    void refreshRanked();
     const timer = window.setInterval(() => void refreshParty(), 2500);
     return () => window.clearInterval(timer);
-  }, [refreshParty]);
+  }, [refreshParty, refreshRanked]);
 
   useEffect(() => {
     if (queue?.status === "matched" && queue.matchId && queue.acceptanceStatus === "ready") {
@@ -104,6 +115,19 @@ export function PvpLobby({
       if (result.ok) {
         setQueue(result.data);
         if (selectedFormat !== "solo") await refreshParty();
+      } else setMessage(result.message);
+    });
+  }
+
+  function joinRanked() {
+    setMessage("");
+    setFormat("duo");
+    startTransition(async () => {
+      const result = await joinRankedQueueAction(characterId);
+      if (result.ok) {
+        setQueue(result.data);
+        setRankedOpen(true);
+        await refreshParty();
       } else setMessage(result.message);
     });
   }
@@ -269,7 +293,89 @@ export function PvpLobby({
             </small>
             <b>{partyMembers.length === 3 ? "Abrir trio" : "Formar trio"}</b>
           </button>
+          <button
+            className={`pvp-format-card is-ranked ${rankedOpen ? "is-selected" : ""}`}
+            disabled={pending}
+            onClick={() => {
+              setRankedOpen(true);
+              setPartyOpen(true);
+              setFormat("duo");
+            }}
+            type="button"
+          >
+            <span>{rankedProfile?.rating?.tier === "Lenda" ? "✦" : "♛"}</span>
+            <strong>Ranqueada 2 × 2</strong>
+            <small>
+              {rankedProfile?.rating
+                ? `${rankedProfile.rating.tier}${rankedProfile.rating.division ? ` ${rankedProfile.rating.division}` : ""} · ${rankedProfile.rating.pdl} PdL`
+                : "Temporadas, divisões e classificação competitiva."}
+            </small>
+            <b>Abrir ranqueada</b>
+          </button>
         </div>
+      ) : null}
+
+      {rankedOpen && (!queue || queue.status === "cancelled" || queue.status === "expired") ? (
+        <section className="pvp-ranked-panel">
+          <header>
+            <div className="pvp-ranked-crest" aria-hidden="true">
+              {rankedProfile?.rating?.tier === "Lenda" ? "✦" : "♛"}
+            </div>
+            <div>
+              <span className="eyebrow">
+                {rankedProfile?.season?.name ?? "Temporada ranqueada"}
+              </span>
+              <h2>
+                {rankedProfile?.rating?.tier ?? "Ferro"} {rankedProfile?.rating?.division ?? ""}
+              </h2>
+              <p>
+                {rankedProfile?.rating?.placementMatches ?? 0} de 5 partidas de posicionamento ·{" "}
+                {rankedProfile?.rating?.pdl ?? 0} PdL
+              </p>
+            </div>
+          </header>
+          <div className="pvp-ranked-stats">
+            <span>
+              <small>Vitórias</small>
+              <strong>{rankedProfile?.rating?.wins ?? 0}</strong>
+            </span>
+            <span>
+              <small>Derrotas</small>
+              <strong>{rankedProfile?.rating?.losses ?? 0}</strong>
+            </span>
+            <span>
+              <small>Abandonos</small>
+              <strong>{rankedProfile?.rating?.abandons ?? 0}</strong>
+            </span>
+          </div>
+          <p className="pvp-ranked-rule">
+            Exclusivamente 2×2. O pareamento aceita apenas seu elo e os elos adjacentes; confrontos
+            repetidos e manipulação de equipes são bloqueados.
+          </p>
+          <button
+            className="button button--dark"
+            disabled={pending || partyMembers.length !== 2 || !partyUsesActiveCharacter}
+            onClick={joinRanked}
+            type="button"
+          >
+            {pending ? "Preparando…" : "Buscar partida ranqueada"}
+          </button>
+          {partyMembers.length !== 2 ? (
+            <small>Forme uma dupla com exatamente dois jogadores.</small>
+          ) : null}
+          {rankedProfile?.standings?.length ? (
+            <details className="pvp-ranked-standing">
+              <summary>Classificação da temporada</summary>
+              {rankedProfile.standings.slice(0, 10).map((entry) => (
+                <div key={entry.characterId}>
+                  <b>#{entry.position}</b>
+                  <span>{entry.name}</span>
+                  <strong>{entry.pdl} PdL</strong>
+                </div>
+              ))}
+            </details>
+          ) : null}
+        </section>
       ) : null}
 
       {partyOpen &&

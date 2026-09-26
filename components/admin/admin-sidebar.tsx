@@ -41,6 +41,7 @@ const navigation = [
       { label: "Controle de Reinos", glyph: "♛", href: "/admin/reinos" },
       { label: "Títulos", glyph: "✦", href: "/admin/titulos" },
       { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
+      { label: "Temporadas", glyph: "♜", href: "/admin/temporadas" },
       { label: "Migração do Rework", glyph: "↺", href: "/admin/migracao-rework" },
       { label: "Presença", glyph: "07", href: "/admin/presenca" },
       { label: "Temas", glyph: "◐", href: "/admin/temas" },

@@ -165,7 +165,7 @@ function TitleForm({ title }: { title?: TitleFormData }) {
       </fieldset>
       <fieldset>
         <legend>Atributos</legend>
-        {(["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const).map((key) => (
+        {(["FOR", "DEF", "RES", "INI", "INT"] as const).map((key) => (
           <label key={key}>
             <span>{key}</span>
             <input

@@ -4,6 +4,7 @@ import type { ItemSpecialEffect } from "@/lib/game/item-effects";
 import type { EquippedTitleData } from "@/components/characters/equipped-title";
 import type { SharedBattleState } from "@/lib/game/turn-engine";
 import type { CharacterCosmeticLoadout } from "@/lib/content/character-cosmetics";
+import type { TacticalPosition } from "@/lib/game/tactical-grid";
 
 export interface ArenaCharacter {
   id: string;
@@ -32,9 +33,11 @@ export interface ArenaCharacter {
   usesMana: boolean;
   basicAttackRange: number;
   basicAttackDamageType?: "physical" | "magic";
+  basicAttackName?: string;
+  basicAttackIconUrl?: string;
   attributes: CombatAttributes;
-  skills: ClassSkill[];
-  raceAbilities: ClassSkill[];
+  skills: Array<ClassSkill & { iconUrl?: string }>;
+  raceAbilities: Array<ClassSkill & { iconUrl?: string }>;
   items: Array<{ id: string; name: string; description: string }>;
   combatLore: Array<{ name: string; description: string }>;
   equipmentEffects: ItemSpecialEffect[];
@@ -43,6 +46,12 @@ export interface ArenaCharacter {
 export interface PvpBattleState extends Omit<SharedBattleState, "fighters" | "turnEndsAt"> {
   fighters: Record<string, CombatantState>;
   turnEndsAt: string;
+  format?: "solo" | "duo" | "trio";
+  mapId?: string;
+  teamOne?: string[];
+  teamTwo?: string[];
+  positions?: Record<string, TacticalPosition>;
+  movement?: number;
 }
 
 export interface PvpRoomSnapshot {

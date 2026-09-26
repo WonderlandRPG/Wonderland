@@ -1,16 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { expirePvpTurnAction, getPvpMatchStateAction, performPvpAction } from "@/app/arena/pvp-match-actions";
+import {
+  expirePvpTurnAction,
+  getPvpMatchStateAction,
+  performPvpAction,
+} from "@/app/arena/pvp-match-actions";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
-import { CombatSkillCard } from "@/components/arena/combat-skill-card";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
 import { CombatResultModal } from "@/components/arena/combat-result-modal";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 import type { ArenaCharacter, PvpRoomSnapshot } from "@/lib/game/arena-types";
-import { defaultCombatRules, type CombatantState } from "@/lib/game/combat";
+import type { CombatantState } from "@/lib/game/combat";
 import { createTurnActionUsage, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
+import { getReachableTacticalCells, tacticalPositionKey } from "@/lib/game/tactical-grid";
+import { getTacticalMapById } from "@/lib/game/tactical-maps";
+import styles from "./pvp-tactical-battle.module.css";
 
 type Fx = { target: "own" | "enemy"; kind: "damage" | "heal" | "shield"; token: number } | null;
 
@@ -27,8 +34,6 @@ export function PvpBattle({
 }) {
   const [room, setRoom] = useState(initialRoom as PvpRoomSnapshot);
   const [error, setError] = useState("");
-  const [panel, setPanel] = useState<"root" | "class" | "race" | "item">("root");
-  const [selectedTargetId, setSelectedTargetId] = useState("");
   const [pending, startTransition] = useTransition();
   const [clock, setClock] = useState(() => Date.now());
   const [fx, setFx] = useState<Fx>(null);
@@ -50,20 +55,47 @@ export function PvpBattle({
   const seconds = Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
   const commandsBlocked = isTurnBlocked(own);
   const silenced = isSilenced(own);
-  const chosenTargetId = selectedTargetId || enemyId;
-  const chosenTarget = chosenTargetId === ownId ? own : enemy;
+  const map = getTacticalMapById(state.mapId ?? "ruinas-centrais");
+  const ownPosition = state.positions?.[ownId] ?? map.playerStart;
+  const enemyPosition = state.positions?.[enemyId] ?? map.enemyStart;
+  const blockedCells = new Set([
+    ...map.obstacles,
+    ...(enemy.hp > 0 ? [tacticalPositionKey(enemyPosition)] : []),
+  ]);
+  const reachable =
+    isMyTurn && !commandsBlocked
+      ? getReachableTacticalCells({
+          start: ownPosition,
+          blocked: blockedCells,
+          movement: state.movement ?? 4,
+          grid: map.grid,
+        })
+      : new Map<string, number>();
+  const cells = Array.from({ length: map.grid.width * map.grid.height }, (_, index) => ({
+    x: index % map.grid.width,
+    y: Math.floor(index / map.grid.width),
+  }));
 
   const refresh = useCallback(async () => {
     const result = await getPvpMatchStateAction(matchId);
     if (result.ok) {
       setRoom((current) => (result.data.version > current.version ? result.data : current));
-      if (result.data.state.status === "active" && Date.parse(result.data.state.turnEndsAt) <= Date.now() && !timeoutInFlight.current) {
+      if (
+        result.data.state.status === "active" &&
+        Date.parse(result.data.state.turnEndsAt) <= Date.now() &&
+        !timeoutInFlight.current
+      ) {
         timeoutInFlight.current = true;
         void expirePvpTurnAction(matchId)
           .then((advance) => {
-            if (advance.ok) setRoom((current) => advance.data.version > current.version ? advance.data : current);
+            if (advance.ok)
+              setRoom((current) =>
+                advance.data.version > current.version ? advance.data : current,
+              );
           })
-          .finally(() => { timeoutInFlight.current = false; });
+          .finally(() => {
+            timeoutInFlight.current = false;
+          });
       }
     } else setError(result.message);
   }, [matchId]);
@@ -113,8 +145,8 @@ export function PvpBattle({
 
   useEffect(() => {
     if (seconds !== 0 || finished) return;
-    void refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const timer = window.setTimeout(() => void refresh(), 0);
+    return () => window.clearTimeout(timer);
   }, [seconds, room.version, finished, refresh]);
 
   function submit(action: Record<string, unknown>) {
@@ -124,7 +156,6 @@ export function PvpBattle({
       const result = await performPvpAction(matchId, room.version, action);
       if (result.data) setRoom(result.data);
       if (!result.ok) setError(result.message);
-      else setPanel("root");
     });
   }
 
@@ -171,7 +202,7 @@ export function PvpBattle({
         </div>
       ) : null}
 
-      <div className="pvp-fighters jrpg-stage">
+      <div className={styles.battleLayout}>
         <Fighter
           fighter={own}
           character={character}
@@ -179,9 +210,66 @@ export function PvpBattle({
           label="VOCÊ"
           fx={fx?.target === "own" ? fx : null}
         />
-        <span className="pvp-versus">
-          VS<small>turnos</small>
-        </span>
+        <div className={styles.boardWrap}>
+          <div
+            className={styles.board}
+            style={{
+              gridTemplateColumns: `repeat(${map.grid.width}, minmax(0, 1fr))`,
+              gridTemplateRows: `repeat(${map.grid.height}, minmax(0, 1fr))`,
+              aspectRatio: `${map.grid.width} / ${map.grid.height}`,
+            }}
+            aria-label="Tabuleiro PvP tático"
+          >
+            {cells.map((position) => {
+              const key = tacticalPositionKey(position);
+              const isOwn = key === tacticalPositionKey(ownPosition);
+              const isEnemy = key === tacticalPositionKey(enemyPosition);
+              const obstacle = map.obstacles.includes(key);
+              const canMove = reachable.has(key);
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-label={
+                    isOwn
+                      ? character.name
+                      : isEnemy
+                        ? opponent.name
+                        : obstacle
+                          ? "Obstáculo"
+                          : `Casa ${position.x + 1}, ${position.y + 1}`
+                  }
+                  data-state={
+                    isOwn
+                      ? "own"
+                      : isEnemy
+                        ? "enemy"
+                        : obstacle
+                          ? "obstacle"
+                          : canMove
+                            ? "reachable"
+                            : undefined
+                  }
+                  disabled={obstacle || isOwn || isEnemy || !canMove || pending}
+                  onClick={() => submit({ kind: "move", x: position.x, y: position.y })}
+                >
+                  {isOwn ? (
+                    <span>♞</span>
+                  ) : isEnemy ? (
+                    <span>♜</span>
+                  ) : obstacle ? (
+                    <span>◆</span>
+                  ) : canMove ? (
+                    <i />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+          <small className={styles.boardHint}>
+            Casas iluminadas podem ser alcançadas · movimento restante {state.movement ?? 4}
+          </small>
+        </div>
         <Fighter
           fighter={enemy}
           character={opponent}
@@ -198,157 +286,82 @@ export function PvpBattle({
       {error ? <p className="arena-result__error pvp-sync-error">{error}</p> : null}
 
       {!finished ? (
-        <section className="arena-command-panel pvp-command-panel jrpg-command-panel">
-          <header>
-            <div>
-              <span className="eyebrow">Comandos</span>
-              <h2>
-                {isMyTurn
-                  ? commandsBlocked
-                    ? "Turno incapacitado"
-                    : "Monte sua sequência"
-                  : "Aguardando o adversário"}
-              </h2>
-            </div>
-            <small>
-              {silenced
-                ? "Silenciado: habilidades estão bloqueadas."
-                : "Curas e buffs usam seu personagem; debuffs e ataques usam o oponente."}
-            </small>
-          </header>
-
-          {isMyTurn ? (
-            <label className="combat-target-select">
-              <span>Alvo da habilidade</span>
-              <select
-                value={chosenTargetId}
-                onChange={(event) => setSelectedTargetId(event.target.value)}
-              >
-                <option value={ownId}>Você · {character.name}</option>
-                <option value={enemyId}>Oponente · {opponent.name}</option>
-              </select>
-            </label>
-          ) : null}
-
-          {panel === "root" ? (
-            <div className="pvp-actions-grid jrpg-actions">
-              <Command
-                used={usage.basic}
-                disabled={!isMyTurn || pending || commandsBlocked || usage.basic}
-                name="Atacar"
-                detail={usage.basic ? "Já usado neste turno" : "Ataque básico"}
-                onClick={() => submit({ kind: "basic" })}
-              />
-              <Command
-                used={usage.class}
-                disabled={
-                  !isMyTurn ||
-                  pending ||
-                  commandsBlocked ||
-                  silenced ||
-                  character.skills.length === 0 ||
-                  usage.class
-                }
-                name="Habilidades"
-                detail={usage.class ? "Classe já usada" : `${character.skills.length} de classe`}
-                onClick={() => setPanel("class")}
-              />
-              <Command
-                used={usage.race}
-                disabled={
-                  !isMyTurn ||
-                  pending ||
-                  commandsBlocked ||
-                  silenced ||
-                  character.raceAbilities.length === 0 ||
-                  usage.race
-                }
-                name="Raça"
-                detail={
-                  usage.race ? "Racial já usada" : `${character.raceAbilities.length} racial(is)`
-                }
-                onClick={() => setPanel("race")}
-              />
-              <Command
-                disabled={!isMyTurn || pending || commandsBlocked || character.items.length === 0}
-                name="Item"
-                detail={`${character.items.length} disponível(is) · encerra turno`}
-                onClick={() => setPanel("item")}
-              />
-              <Command
-                disabled={!isMyTurn || pending || commandsBlocked}
-                name="Encerrar turno"
-                detail="Finaliza sua sequência"
-                onClick={() => submit({ kind: "end" })}
-              />
-            </div>
-          ) : (
-            <div className="jrpg-submenu combat-skill-list">
-              <button
-                className="button button--ghost"
-                type="button"
-                onClick={() => setPanel("root")}
-              >
-                ← Voltar
-              </button>
-              {panel === "class"
-                ? character.skills.map((skill) => (
-                    <CombatSkillCard
-                      key={skill.key}
-                      fighter={own}
-                      target={skill.target === "self" ? own : chosenTarget}
-                      rules={defaultCombatRules}
-                      skill={skill}
-                      disabled={!isMyTurn || pending || commandsBlocked || silenced}
-                      used={usage.class}
-                      onClick={() =>
-                        submit({ kind: "class", key: skill.key, targetId: chosenTargetId })
-                      }
-                    />
-                  ))
-                : null}
-              {panel === "race"
-                ? character.raceAbilities.map((skill) => (
-                    <CombatSkillCard
-                      key={skill.key}
-                      fighter={own}
-                      target={skill.target === "self" ? own : chosenTarget}
-                      rules={defaultCombatRules}
-                      skill={skill}
-                      disabled={!isMyTurn || pending || commandsBlocked || silenced}
-                      used={usage.race}
-                      onClick={() =>
-                        submit({ kind: "race", key: skill.key, targetId: chosenTargetId })
-                      }
-                    />
-                  ))
-                : null}
-              {panel === "item"
-                ? character.items.map((item) => (
-                    <Command
-                      key={item.id}
-                      disabled={!isMyTurn || pending || commandsBlocked}
-                      name={item.name}
-                      detail={`${item.description || "Usar item"} · encerra turno`}
-                      onClick={() => submit({ kind: "item", id: item.id })}
-                    />
-                  ))
-                : null}
-            </div>
-          )}
+        <section className={styles.actionDock} aria-label="Ações PvP do Rework">
+          <IconAction
+            name={character.basicAttackName ?? "Ataque básico"}
+            detail={usage.basic ? "Usado" : `Alcance ${character.basicAttackRange}`}
+            iconUrl={character.basicAttackIconUrl}
+            disabled={!isMyTurn || pending || commandsBlocked || usage.basic}
+            onClick={() => submit({ kind: "basic" })}
+          />
+          {character.skills.map((skill) => (
+            <IconAction
+              key={skill.key}
+              name={skill.name}
+              detail={usage.class ? "Classe usada" : `Classe · alcance ${skill.range}`}
+              iconUrl={skill.iconUrl}
+              disabled={!isMyTurn || pending || commandsBlocked || silenced || usage.class}
+              onClick={() =>
+                submit({
+                  kind: "class",
+                  key: skill.key,
+                  targetId: skill.target === "self" ? ownId : enemyId,
+                })
+              }
+            />
+          ))}
+          {character.raceAbilities.map((skill) => (
+            <IconAction
+              key={skill.key}
+              name={skill.name}
+              detail={usage.race ? "Racial usada" : `Raça · alcance ${skill.range}`}
+              iconUrl={skill.iconUrl}
+              disabled={!isMyTurn || pending || commandsBlocked || silenced || usage.race}
+              onClick={() =>
+                submit({
+                  kind: "race",
+                  key: skill.key,
+                  targetId: skill.target === "self" ? ownId : enemyId,
+                })
+              }
+            />
+          ))}
+          {character.items.map((item) => (
+            <IconAction
+              key={item.id}
+              name={item.name}
+              detail="Item · encerra turno"
+              disabled={!isMyTurn || pending || commandsBlocked}
+              onClick={() => submit({ kind: "item", id: item.id })}
+            />
+          ))}
+          <IconAction
+            name="Encerrar turno"
+            detail="Passar a vez"
+            disabled={!isMyTurn || pending || commandsBlocked}
+            onClick={() => submit({ kind: "end" })}
+          />
         </section>
       ) : (
         <CombatResultModal
           victory={state.winnerCharacterId === ownId}
           eyebrow="DUELO OFICIAL ENCERRADO"
-          title={state.winnerCharacterId === ownId
+          title={
+            state.winnerCharacterId === ownId
               ? `${character.name} venceu!`
               : state.winnerCharacterId
                 ? `${opponent.name} venceu.`
-                : "O duelo terminou em derrota por desistência."}
-          description={state.winnerCharacterId === ownId ? "Vitória registrada no histórico da Arena." : "A derrota foi registrada. Prepare-se para o próximo duelo."}
+                : "O duelo terminou em derrota por desistência."
+          }
+          description={
+            state.winnerCharacterId === ownId
+              ? "Vitória registrada no histórico da Arena."
+              : "A derrota foi registrada. Prepare-se para o próximo duelo."
+          }
         >
-          <Link className="button button--primary" href="/arena">Voltar à Arena</Link>
+          <Link className="button button--primary" href="/arena">
+            Voltar à Arena
+          </Link>
         </CombatResultModal>
       )}
     </section>
@@ -465,26 +478,33 @@ function Meter({
   );
 }
 
-function Command({
+function IconAction({
   name,
   detail,
+  iconUrl,
   disabled,
   used = false,
   onClick,
 }: {
   name: string;
   detail: string;
+  iconUrl?: string;
   disabled: boolean;
   used?: boolean;
   onClick(): void;
 }) {
   return (
     <button
-      className={`arena-action-card jrpg-action ${used ? "is-used" : ""}`}
+      className={`${styles.actionButton} ${used ? styles.used : ""}`}
       disabled={disabled}
       onClick={onClick}
       type="button"
     >
+      {iconUrl ? (
+        <Image src={iconUrl} alt="" width={58} height={58} />
+      ) : (
+        <span aria-hidden="true">◆</span>
+      )}
       <strong>{name}</strong>
       <small>{detail}</small>
     </button>

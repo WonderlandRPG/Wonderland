@@ -57,6 +57,8 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
     usesMana,
     basicAttackRange: basicAttack?.range ?? 1,
     basicAttackDamageType: basicAttack?.damageType === "magic" ? "magic" : "physical",
+    basicAttackName: basicAttack?.name ?? "Ataque básico",
+    basicAttackIconUrl: basicAttack?.iconUrl,
     attributes: {
       FOR: character.reworkStats.attributes.FOR,
       INT: character.reworkStats.attributes.INT,

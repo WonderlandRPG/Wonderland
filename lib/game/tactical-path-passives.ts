@@ -284,7 +284,7 @@ export function applyTacticalPathAfterAction({
 }) {
   let actor = actorAfter;
   let target = targetAfter;
-  let next = { ...tracker };
+  const next = { ...tracker };
   const messages: string[] = [];
   const dealt = Math.max(0, context.dealtDamage ?? 0);
   const operations = successfulOperations(context.skill, context.successfulOperationIndexes);
@@ -502,7 +502,7 @@ export function applyTacticalPathIncoming({
   basicAttack?: boolean;
 }) {
   let combatant = after;
-  let next = { ...tracker };
+  const next = { ...tracker };
   const messages: string[] = [];
   const hpLost = Math.max(0, before.hp - after.hp);
   const durabilityLost = Math.max(0, before.hp + before.shield - (after.hp + after.shield));

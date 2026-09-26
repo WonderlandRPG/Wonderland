@@ -1,6 +1,6 @@
 import { TacticalCombatShell } from "@/components/arena/tactical-combat-shell";
 import { PlayerNav } from "@/components/player-nav";
-import { getCharacterSheets } from "@/lib/content/characters";
+import { getCharacterSheets, getPvpOpponentSheet } from "@/lib/content/characters";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { arenaRewards, type ArenaMode } from "@/lib/game/arena";
 import Link from "next/link";
@@ -18,6 +18,11 @@ import { CombatExitGuard } from "@/components/arena/combat-exit-guard";
 import { getCreatureImageUrl, parseTextList } from "@/lib/game/bestiary";
 import { parseCreatureCombatProfile } from "@/lib/game/creature-tactical-combat";
 import { toTacticalArenaCharacter } from "@/lib/game/arena-character";
+import { toArenaCharacter } from "@/lib/game/arena-character";
+import { PvpLobby } from "@/components/arena/pvp-lobby";
+import { PvpBattle } from "@/components/arena/pvp-battle";
+import { createInitialPvpCasualState } from "@/lib/game/pvp-casual";
+import type { Json } from "@/lib/db/types";
 
 export const metadata = { title: "Arena" };
 export const dynamic = "force-dynamic";
@@ -150,6 +155,31 @@ export default async function ArenaPage({
     typeof rawBattleState.mapId === "string"
       ? (rawBattleState as unknown as TacticalBattleSnapshot)
       : null;
+  const opponent =
+    mode === "pvp" && query.partida ? await getPvpOpponentSheet(query.partida) : null;
+  const pvpMatchError =
+    mode === "pvp" && query.partida && !opponent
+      ? "A partida foi encontrada, mas os combatentes não puderam ser carregados."
+      : null;
+  const arenaCharacter = activeCharacter ? toArenaCharacter(activeCharacter) : null;
+  const arenaOpponent = opponent ? toArenaCharacter(opponent) : null;
+  let pvpRoom: unknown = null;
+  if (client && mode === "pvp" && query.partida && arenaCharacter && arenaOpponent) {
+    const initialState = createInitialPvpCasualState({
+      format: "solo",
+      mapId: "ruinas-centrais",
+      teamOne: [arenaCharacter],
+      teamTwo: [arenaOpponent],
+    });
+    await client.rpc("v2_initialize_pvp_match", {
+      p_match_id: query.partida,
+      p_state: initialState as unknown as Json,
+    });
+    const roomResult = await client.rpc("v2_get_pvp_match_state", {
+      p_match_id: query.partida,
+    });
+    pvpRoom = roomResult.data;
+  }
 
   return (
     <main className="arena-page">
@@ -230,14 +260,14 @@ export default async function ArenaPage({
                   </button>
                 </form>
               )}
-              <article className="arena-mode-locked is-pvp">
+              <Link className="arena-mode-card is-pvp" href="/arena?modo=pvp">
                 <span className="arena-mode-card__sigil">対</span>
                 <i>02</i>
-                <small>Conversão tática em andamento</small>
+                <small>Combate casual tático</small>
                 <strong>PvP</strong>
-                <p>O combate legado foi desativado. O novo PvP tático chegará no item 11.</p>
-                <b>Indisponível temporariamente</b>
-              </article>
+                <p>Forme sua equipe, confirme a partida e lute no tabuleiro do Rework.</p>
+                <b>Escolher fila →</b>
+              </Link>
             </div>
           </section>
         ) : null}
@@ -254,18 +284,36 @@ export default async function ArenaPage({
             <Link href="/arena">Voltar aos modos</Link>
           </section>
         ) : null}
-        {mode === "pvp" ? (
+        {mode === "pvp" && pvpMatchError ? (
           <section className="arena-load-error" role="alert">
             <span>!</span>
             <div>
-              <strong>PvP antigo desativado</strong>
-              <p>
-                O modo competitivo será reaberto somente com o mapa e as regras do Rework no item
-                11.
-              </p>
+              <strong>Partida PvP indisponível</strong>
+              <p>{pvpMatchError}</p>
             </div>
-            <Link href="/arena">Voltar aos modos</Link>
+            <Link href="/arena?modo=pvp">Voltar para a fila</Link>
           </section>
+        ) : null}
+        {mode === "pvp" && activeCharacter && !query.partida ? (
+          <PvpLobby
+            characterId={activeCharacter.id}
+            characterName={activeCharacter.name}
+            rank={activeCharacter.adventure_rank}
+          />
+        ) : null}
+        {mode === "pvp" && query.partida && arenaCharacter && arenaOpponent && pvpRoom ? (
+          <>
+            <Link className="arena-mode-back" href="/arena?modo=pvp">
+              ← Voltar para a fila
+            </Link>
+            <CombatExitGuard kind="pvp" combatId={query.partida} />
+            <PvpBattle
+              matchId={query.partida}
+              initialRoom={pvpRoom}
+              character={arenaCharacter}
+              opponent={arenaOpponent}
+            />
+          </>
         ) : null}
         {mode === "pve" && !arenaSessionError ? (
           <>

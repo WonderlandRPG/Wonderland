@@ -6,6 +6,7 @@ describe("portão de publicação", () => {
     expect(existsSync(".github/workflows/release-gate.yml")).toBe(true);
     expect(existsSync("app/admin/homologacao/page.tsx")).toBe(true);
     expect(readFileSync("app/api/health/route.ts", "utf8")).toContain("checkedAt");
+    expect(readFileSync("lib/supabase/proxy.ts", "utf8")).toContain('pathname === "/api/health"');
     expect(existsSync("app/admin/migracao-rework/page.tsx")).toBe(true);
   });
 

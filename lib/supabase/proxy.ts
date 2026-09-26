@@ -46,6 +46,7 @@ export async function refreshSupabaseSession(request: NextRequest) {
     const administrative = roleRecord?.role === "admin" || roleRecord?.role === "founder";
     const publicDuringMaintenance =
       request.nextUrl.pathname === maintenancePath ||
+      request.nextUrl.pathname === "/api/health" ||
       request.nextUrl.pathname.startsWith("/entrar") ||
       request.nextUrl.pathname.startsWith("/auth/");
 

@@ -39,5 +39,8 @@ export async function GET() {
     status: "ok",
     application: "wonderland-v2",
     supabase: "connected",
+    release: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) ?? "local",
+    environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV,
+    checkedAt: new Date().toISOString(),
   });
 }

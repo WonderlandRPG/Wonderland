@@ -48,7 +48,13 @@ const navigation = [
       { label: "Importador técnico", glyph: "AI", href: "/admin/importar" },
     ],
   },
-  { group: "Auditoria", items: [{ label: "Histórico", glyph: "08", href: "/admin/historico" }] },
+  {
+    group: "Auditoria",
+    items: [
+      { label: "Homologação", glyph: "✓", href: "/admin/homologacao" },
+      { label: "Histórico", glyph: "08", href: "/admin/historico" },
+    ],
+  },
 ];
 
 export function AdminSidebar({ account }: { account: CurrentAccount }) {

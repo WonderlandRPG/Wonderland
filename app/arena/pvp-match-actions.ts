@@ -26,10 +26,17 @@ import {
 } from "@/lib/game/turn-engine";
 import { resolveJrpgAreaSkill, resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import { applyEventResourceGeneration } from "@/lib/game/combat-resources";
+import {
+  getReachableTacticalCells,
+  getTacticalDistance,
+  tacticalPositionKey,
+} from "@/lib/game/tactical-grid";
+import { getTacticalMapById } from "@/lib/game/tactical-maps";
 
 const matchSchema = z.uuid();
 const targetSchema = z.uuid().optional();
 const actionSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("move"), x: z.number().int(), y: z.number().int() }),
   z.object({ kind: z.literal("basic") }),
   z.object({ kind: z.literal("race"), key: z.string().min(1).max(160), targetId: targetSchema }),
   z.object({ kind: z.literal("class"), key: z.string().min(1).max(160), targetId: targetSchema }),
@@ -52,7 +59,8 @@ function parseRoom(data: unknown): PvpRoomSnapshot | null {
     typeof row.opponentCharacterId !== "string" ||
     !row.state ||
     typeof row.state !== "object"
-  ) return null;
+  )
+    return null;
   return row as unknown as PvpRoomSnapshot;
 }
 
@@ -79,7 +87,10 @@ export async function expirePvpTurnAction(matchId: string) {
   if (!parsed.success) return { ok: false as const, message: "Partida inválida." };
   const client = await createServerSupabaseClient();
   if (!client) return { ok: false as const, message: "Arena indisponível." };
-  const { data, error } = await client.rpc("v2_expire_pvp_turn" as never, { p_match_id: parsed.data } as never);
+  const { data, error } = await client.rpc(
+    "v2_expire_pvp_turn" as never,
+    { p_match_id: parsed.data } as never,
+  );
   const room = parseRoom(data);
   if (error || !room)
     return { ok: false as const, message: error?.message ?? "Não foi possível avançar o turno." };
@@ -94,6 +105,7 @@ function advancePvpTurn(state: PvpBattleState) {
   state.activeCharacterId = next.activeCharacterId;
   state.turnEndsAt = new Date(Date.now() + 60_000).toISOString();
   state.turnActions = createTurnActionUsage();
+  state.movement = 4;
 }
 
 function skipBlockedTurns(state: PvpBattleState) {
@@ -109,7 +121,11 @@ function skipBlockedTurns(state: PvpBattleState) {
 }
 
 function remainingActions(usage: TurnActionUsage) {
-  return [!usage.basic ? "Ataque" : null, !usage.class ? "Classe" : null, !usage.race ? "Raça" : null]
+  return [
+    !usage.basic ? "Ataque" : null,
+    !usage.class ? "Classe" : null,
+    !usage.race ? "Raça" : null,
+  ]
     .filter(Boolean)
     .join(" + ");
 }
@@ -144,8 +160,7 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
   const opponentCharacter = toArenaCharacter(opponentSheet);
   let actor = state.fighters[ownId];
   let enemy = state.fighters[enemyId];
-  if (!actor || !enemy)
-    return { ok: false as const, message: "Estado da batalha inválido." };
+  if (!actor || !enemy) return { ok: false as const, message: "Estado da batalha inválido." };
   actor = { ...actor, basicAttackDamageType: character.basicAttackDamageType };
 
   let message = "";
@@ -157,8 +172,45 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
   const nextUsage = { ...usage };
   let endsTurn = actionData.kind === "end" || actionData.kind === "item";
 
-  if (actionData.kind === "basic") {
-    if (usage.basic) return { ok: false as const, message: "O Ataque Básico já foi usado neste turno.", data: room };
+  if (actionData.kind === "move") {
+    const map = state.mapId ? getTacticalMapById(state.mapId) : null;
+    const origin = state.positions?.[ownId];
+    const destination = { x: actionData.x, y: actionData.y };
+    const movement = state.movement ?? 4;
+    if (!map || !origin || !state.positions)
+      return { ok: false as const, message: "Esta partida não possui um tabuleiro válido." };
+    const occupied = new Set(
+      Object.entries(state.positions)
+        .filter(([id, position]) => id !== ownId && (state.fighters[id]?.hp ?? 0) > 0 && position)
+        .map(([, position]) => tacticalPositionKey(position)),
+    );
+    const reachable = getReachableTacticalCells({
+      start: origin,
+      movement,
+      grid: map.grid,
+      blocked: new Set([...map.obstacles, ...occupied]),
+    });
+    const cost = reachable.get(tacticalPositionKey(destination));
+    if (typeof cost !== "number")
+      return { ok: false as const, message: "Essa casa não pode ser alcançada neste turno." };
+    state.positions[ownId] = destination;
+    state.movement = Math.max(0, movement - cost);
+    message = `${actor.name} avançou ${cost} casa(s).`;
+  } else if (actionData.kind === "basic") {
+    if (usage.basic)
+      return {
+        ok: false as const,
+        message: "O Ataque Básico já foi usado neste turno.",
+        data: room,
+      };
+    const actorPosition = state.positions?.[ownId];
+    const enemyPosition = state.positions?.[enemyId];
+    if (
+      actorPosition &&
+      enemyPosition &&
+      getTacticalDistance(actorPosition, enemyPosition) > character.basicAttackRange
+    )
+      return { ok: false as const, message: "O adversário está fora do alcance do ataque básico." };
     const result = resolveBasicAttack(actor, enemy, defaultCombatRules);
     actor = result.actor;
     enemy = result.target;
@@ -167,22 +219,40 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
     nextUsage.basic = true;
   } else if (actionData.kind === "race" || actionData.kind === "class") {
     if (usage[actionData.kind])
-      return { ok: false as const, message: `${actionData.kind === "race" ? "A habilidade racial" : "A habilidade de classe"} já foi usada neste turno.`, data: room };
+      return {
+        ok: false as const,
+        message: `${actionData.kind === "race" ? "A habilidade racial" : "A habilidade de classe"} já foi usada neste turno.`,
+        data: room,
+      };
     if (isSilenced(actor))
-      return { ok: false as const, message: `${actor.name} está silenciado e não pode usar habilidades.` };
+      return {
+        ok: false as const,
+        message: `${actor.name} está silenciado e não pode usar habilidades.`,
+      };
     const list = actionData.kind === "race" ? character.raceAbilities : character.skills;
     const skill = list.find((entry) => entry.key === actionData.key);
-    if (!skill) return { ok: false as const, message: "Habilidade indisponível para este personagem." };
+    if (!skill)
+      return { ok: false as const, message: "Habilidade indisponível para este personagem." };
 
     const wantsAlly = skill.target === "self" || skill.target === "ally";
     const targetId = actionData.targetId ?? (wantsAlly ? ownId : enemyId);
     if ((wantsAlly && targetId !== ownId) || (!wantsAlly && targetId !== enemyId))
       return { ok: false as const, message: "O alvo escolhido não é válido para esta habilidade." };
+    const actorPosition = state.positions?.[ownId];
+    const targetPosition = state.positions?.[targetId];
+    if (
+      !wantsAlly &&
+      actorPosition &&
+      targetPosition &&
+      getTacticalDistance(actorPosition, targetPosition) > skill.range
+    )
+      return { ok: false as const, message: `${skill.name} está fora de alcance.` };
 
     areaAction = skill.area > 0;
     if (wantsAlly) {
       const result = resolveJrpgSkill(actor, actor, skill, defaultCombatRules);
-      if (result.event.kind === "error") return { ok: false as const, message: result.event.message };
+      if (result.event.kind === "error")
+        return { ok: false as const, message: result.event.message };
       actor = result.target.id === ownId ? result.target : result.actor;
       resourceEvent = result.event;
       message = result.event.message;
@@ -195,7 +265,10 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
           })()
         : resolveJrpgSkill(actor, enemy, skill, defaultCombatRules);
       if (!result.event || result.event.kind === "error")
-        return { ok: false as const, message: result.event?.message ?? "A habilidade não encontrou um alvo." };
+        return {
+          ok: false as const,
+          message: result.event?.message ?? "A habilidade não encontrou um alvo.",
+        };
       actor = result.actor;
       enemy = result.target;
       resourceEvent = result.event;

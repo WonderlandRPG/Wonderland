@@ -1,21 +1,15 @@
 import "server-only";
 
-import { getCharacterRules } from "@/lib/content/character-settings";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { defaultCombatRules } from "@/lib/game/combat";
 import {
   getUnlockedClassSkills,
   getUnlockedPathSkills,
   parseClassPayload,
   prepareArenaSkill,
 } from "@/lib/game/classes";
-import {
-  allocatedAttributesSchema,
-  buildCharacterStats,
-  getUnlockedRaceAbilities,
-} from "@/lib/game/characters";
+import { allocatedAttributesSchema, getUnlockedRaceAbilities } from "@/lib/game/characters";
 import { parseRacePayload } from "@/lib/game/races";
-import { attributeKeys, attributesSchema } from "@/lib/game/schemas";
+import { attributeKeys } from "@/lib/game/schemas";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
 import { parseTitleStyle } from "@/lib/game/title-style";
 import { getClassBasicAttackRange } from "@/lib/game/class-range";
@@ -26,6 +20,18 @@ import {
 } from "@/lib/game/class-combat-profile";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import { parseCharacterCosmetics } from "@/lib/content/character-cosmetics";
+import { reworkClasses, reworkRaces } from "@/lib/game/rework-catalog";
+import {
+  getReworkBasicAttack,
+  getReworkClassCombatSkills,
+  getReworkRaceCombatSkills,
+} from "@/lib/game/rework-combat";
+import {
+  calculateReworkSheet,
+  migrateLegacyAllocation,
+  reworkAttributesSchema,
+} from "@/lib/game/rework-attributes";
+import { normalizeItemAttributes } from "@/lib/game/item-attributes";
 
 type RawMember = {
   team: number;
@@ -40,8 +46,13 @@ type RawMember = {
     image_url: string | null;
     adventure_rank: string;
     allocated_attributes: unknown;
+    rework_attributes?: unknown;
     cosmetics?: unknown;
   };
+  loadout?: {
+    equipped_class_skill_keys?: string[];
+    equipped_race_skill_keys?: string[];
+  } | null;
   equipment: Array<{
     id: string;
     character_id: string;
@@ -58,7 +69,9 @@ type UntypedRpc = (fn: string, args: Record<string, unknown>) => Promise<RpcRepl
 function isRawRoster(value: unknown): value is RawRoster {
   if (!value || Array.isArray(value) || typeof value !== "object") return false;
   const row = value as Record<string, unknown>;
-  return typeof row.format === "string" && typeof row.ownTeam === "number" && Array.isArray(row.members);
+  return (
+    typeof row.format === "string" && typeof row.ownTeam === "number" && Array.isArray(row.members)
+  );
 }
 
 export async function getPvpTeamRoster(matchId: string) {
@@ -68,26 +81,34 @@ export async function getPvpTeamRoster(matchId: string) {
   const { data, error } = await rpc("v2_get_pvp_team_roster", { p_match_id: matchId });
   if (error || !isRawRoster(data)) return null;
 
-  const rawMembers = data.members.filter(
-    (member): member is RawMember => Boolean(member && member.character && Array.isArray(member.equipment)),
+  const rawMembers = data.members.filter((member): member is RawMember =>
+    Boolean(member && member.character && Array.isArray(member.equipment)),
   );
   if (rawMembers.length < 2) return null;
 
   const contentIds = [
-    ...new Set(rawMembers.flatMap((member) => [member.character.race_id, member.character.class_id])),
+    ...new Set(
+      rawMembers.flatMap((member) => [member.character.race_id, member.character.class_id]),
+    ),
   ];
-  const { data: contentRows } = await client.from("v2_content").select("id,name,payload").in("id", contentIds);
+  const { data: contentRows } = await client
+    .from("v2_content")
+    .select("id,slug,name,payload")
+    .in("id", contentIds);
   const content = new Map((contentRows ?? []).map((entry) => [entry.id, entry]));
 
-  const itemIds = [...new Set(rawMembers.flatMap((member) => member.equipment.map((item) => item.item_id)))];
+  const itemIds = [
+    ...new Set(rawMembers.flatMap((member) => member.equipment.map((item) => item.item_id))),
+  ];
   const { data: shopRows } = itemIds.length
     ? await client
         .from("v2_shop_items")
-        .select("id,name,description,category,price,rarity,slot,attributes,special_effects,title_style,two_handed")
+        .select(
+          "id,name,description,category,price,rarity,slot,attributes,special_effects,title_style,two_handed",
+        )
         .in("id", itemIds)
     : { data: [] };
   const shop = new Map((shopRows ?? []).map((entry) => [entry.id, entry]));
-  const characterRules = await getCharacterRules();
 
   const members = rawMembers.flatMap((member) => {
     const raw = member.character;
@@ -102,39 +123,89 @@ export async function getPvpTeamRoster(matchId: string) {
     const inventory = member.equipment.flatMap((entry) => {
       const item = shop.get(entry.item_id);
       if (!item) return [];
-      const parsedAttributes = attributesSchema.partial().safeParse(item.attributes);
-      return [{
-        id: entry.id,
-        name: item.name,
-        description: item.description,
-        category: item.category,
-        rarity: item.rarity,
-        equippedSlot: entry.equipped_slot,
-        attributes: parsedAttributes.success ? parsedAttributes.data : {},
-        specialEffects: parseItemSpecialEffects(item.special_effects),
-        titleStyle:
-          item.title_style && typeof item.title_style === "object" && !Array.isArray(item.title_style)
-            ? parseTitleStyle(item.title_style)
-            : null,
-      }];
+      return [
+        {
+          id: entry.id,
+          name: item.name,
+          description: item.description,
+          category: item.category,
+          rarity: item.rarity,
+          equippedSlot: entry.equipped_slot,
+          attributes: normalizeItemAttributes(item.attributes),
+          specialEffects: parseItemSpecialEffects(item.special_effects),
+          titleStyle:
+            item.title_style &&
+            typeof item.title_style === "object" &&
+            !Array.isArray(item.title_style)
+              ? parseTitleStyle(item.title_style)
+              : null,
+        },
+      ];
     });
 
     const equipmentBonuses = Object.fromEntries(
       attributeKeys.map((attribute) => [
         attribute,
-        inventory.reduce((total, entry) => total + (entry.attributes[attribute] ?? 0), 0),
+        inventory.reduce(
+          (total, entry) => total + (entry.attributes[attribute === "ARC" ? "HP" : attribute] ?? 0),
+          0,
+        ),
       ]),
     );
-    const stats = buildCharacterStats(allocated.data, race.data, characterRules, defaultCombatRules, equipmentBonuses);
     const unlockedClassSkills = [
       ...getUnlockedClassSkills(characterClass.data, raw.level),
       ...getUnlockedPathSkills(characterClass.data, raw.class_path_key, raw.level),
     ].sort((left, right) => left.level - right.level || left.name.localeCompare(right.name));
     const unlockedRaceAbilities = getUnlockedRaceAbilities(race.data, raw.level);
     const rawClassSkills = unlockedClassSkills.filter((skill) => !/passiva/i.test(skill.type));
-    const skills = prepareClassCombatSkills(classRow.name, characterClass.data, rawClassSkills).map(prepareArenaSkill);
-    const raceAbilities = prepareRaceCombatSkills(unlockedRaceAbilities).map(prepareArenaSkill);
+    const reworkClass = reworkClasses.find(
+      (entry) => entry.id === classRow.slug || entry.name === classRow.name,
+    );
+    const reworkRace = reworkRaces.find(
+      (entry) => entry.id === raceRow.slug || entry.name === raceRow.name,
+    );
+    const allClassSkills = reworkClass
+      ? getReworkClassCombatSkills(reworkClass, raw.level, raw.class_path_key)
+      : prepareClassCombatSkills(classRow.name, characterClass.data, rawClassSkills).map(
+          prepareArenaSkill,
+        );
+    const allRaceAbilities = reworkRace
+      ? getReworkRaceCombatSkills(reworkRace, raw.level)
+      : prepareRaceCombatSkills(unlockedRaceAbilities).map(prepareArenaSkill);
+    const selectedClass = new Set(member.loadout?.equipped_class_skill_keys ?? []);
+    const selectedRace = new Set(member.loadout?.equipped_race_skill_keys ?? []);
+    const skills = selectedClass.size
+      ? allClassSkills.filter((skill) => selectedClass.has(skill.key))
+      : allClassSkills;
+    const raceAbilities = selectedRace.size
+      ? allRaceAbilities.filter((skill) => selectedRace.has(skill.key))
+      : allRaceAbilities;
     const equippedTitle = inventory.find((item) => item.equippedSlot === "title") ?? null;
+    const reworkAllocation = reworkAttributesSchema.safeParse(raw.rework_attributes);
+    const base = reworkRace?.baseStats ?? {
+      FOR: 0,
+      INT: 0,
+      DEF: 0,
+      RES: 0,
+      HP: race.data.baseHp,
+      INI: 0,
+    };
+    const reworkEquipment = {
+      FOR: equipmentBonuses.FOR,
+      INT: equipmentBonuses.INT,
+      DEF: equipmentBonuses.DEF,
+      RES: equipmentBonuses.RES,
+      HP: inventory.reduce((total, entry) => total + (entry.attributes.HP ?? 0), 0),
+      INI: equipmentBonuses.INI,
+    };
+    const reworkStats = calculateReworkSheet(
+      base,
+      reworkAllocation.success
+        ? reworkAllocation.data
+        : migrateLegacyAllocation(raw.allocated_attributes),
+      reworkEquipment,
+    );
+    const basicAttack = reworkClass ? getReworkBasicAttack(reworkClass) : null;
 
     const character: ArenaCharacter = {
       id: raw.id,
@@ -144,27 +215,53 @@ export async function getPvpTeamRoster(matchId: string) {
       imageUrl: raw.image_url ?? "",
       cosmetics: parseCharacterCosmetics(raw.cosmetics),
       equippedTitle: equippedTitle
-        ? { name: equippedTitle.name, rarity: equippedTitle.rarity, titleStyle: equippedTitle.titleStyle, description: equippedTitle.description, attributes: equippedTitle.attributes }
+        ? {
+            name: equippedTitle.name,
+            rarity: equippedTitle.rarity,
+            titleStyle: equippedTitle.titleStyle,
+            description: equippedTitle.description,
+            attributes: equippedTitle.attributes,
+          }
         : null,
       raceName: raceRow.name,
       className: classRow.name,
-      baseHp: race.data.baseHp,
+      baseHp: Math.max(1, reworkStats.attributes.HP - reworkStats.attributes.RES * 5),
       baseMana: race.data.baseMana,
       classResource: characterClass.data.resource,
       raceResource: race.data.resource,
       usesMana: [...skills, ...raceAbilities].some((skill) => skill.resource === "mana"),
-      basicAttackRange: getClassBasicAttackRange(classRow.name),
-      basicAttackDamageType: getClassBasicAttackDamageType(classRow.name, characterClass.data),
-      attributes: stats.attributes,
+      basicAttackRange: basicAttack?.range ?? getClassBasicAttackRange(classRow.name),
+      basicAttackDamageType:
+        basicAttack?.damageType === "magic"
+          ? "magic"
+          : getClassBasicAttackDamageType(classRow.name, characterClass.data),
+      basicAttackName: basicAttack?.name ?? "Ataque básico",
+      basicAttackIconUrl: basicAttack?.iconUrl,
+      attributes: {
+        FOR: reworkStats.attributes.FOR,
+        INT: reworkStats.attributes.INT,
+        DEF: reworkStats.attributes.DEF,
+        RES: reworkStats.attributes.RES,
+        INI: reworkStats.attributes.INI,
+        ARC: reworkStats.attributes.INT,
+      },
       skills,
       raceAbilities,
       combatLore: [
-        { name: characterClass.data.passive.name, description: characterClass.data.passive.description },
-        { name: characterClass.data.mechanic.name, description: characterClass.data.mechanic.description },
+        {
+          name: characterClass.data.passive.name,
+          description: characterClass.data.passive.description,
+        },
+        {
+          name: characterClass.data.mechanic.name,
+          description: characterClass.data.mechanic.description,
+        },
         ...race.data.traits,
         ...race.data.mechanics,
       ],
-      equipmentEffects: inventory.filter((item) => item.equippedSlot).flatMap((item) => item.specialEffects),
+      equipmentEffects: inventory
+        .filter((item) => item.equippedSlot)
+        .flatMap((item) => item.specialEffects),
       items: inventory
         .filter((item) => /consum|poção|pocao/i.test(item.category))
         .map((item) => ({ id: item.id, name: item.name, description: item.description })),
@@ -173,5 +270,5 @@ export async function getPvpTeamRoster(matchId: string) {
   });
 
   if (!members.length) return null;
-  return { format: data.format as "solo" | "duo", ownTeam: data.ownTeam, members };
+  return { format: data.format as "solo" | "duo" | "trio", ownTeam: data.ownTeam, members };
 }

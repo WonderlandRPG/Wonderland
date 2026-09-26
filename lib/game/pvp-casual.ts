@@ -29,6 +29,7 @@ export interface PvpCasualBattleState<
   teamOne: string[];
   teamTwo: string[];
   positions: Record<string, TacticalPosition>;
+  movement: number;
 }
 
 function collectFormation(
@@ -126,6 +127,7 @@ export function createInitialPvpCasualState<Format extends PvpCasualFormat>({
     teamOne: teamOneIds,
     teamTwo: teamTwoIds,
     positions,
+    movement: 4,
     round: 1,
     turn: 1,
     turnOrder,

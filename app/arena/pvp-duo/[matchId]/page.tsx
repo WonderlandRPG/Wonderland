@@ -9,21 +9,31 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/db/types";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "PvP 2x2 — Wonderland" };
+export const metadata = { title: "PvP em equipes — Wonderland" };
 
 export default async function PvpDuoPage({ params }: { params: Promise<{ matchId: string }> }) {
   const { matchId } = await params;
   await requireCurrentAccount(`/arena/pvp-duo/${matchId}`);
-  const [roster, client] = await Promise.all([getPvpTeamRoster(matchId), createServerSupabaseClient()]);
-  if (!roster || roster.format !== "duo" || !client) notFound();
+  const [roster, client] = await Promise.all([
+    getPvpTeamRoster(matchId),
+    createServerSupabaseClient(),
+  ]);
+  if (!roster || !["duo", "trio"].includes(roster.format) || !client) notFound();
 
-  const teamOne = roster.members.filter((member) => member.team === 1).sort((a, b) => a.slot - b.slot);
-  const teamTwo = roster.members.filter((member) => member.team === 2).sort((a, b) => a.slot - b.slot);
-  if (teamOne.length !== 2 || teamTwo.length !== 2) notFound();
+  const teamOne = roster.members
+    .filter((member) => member.team === 1)
+    .sort((a, b) => a.slot - b.slot);
+  const teamTwo = roster.members
+    .filter((member) => member.team === 2)
+    .sort((a, b) => a.slot - b.slot);
+  const expectedSize = roster.format === "trio" ? 3 : 2;
+  if (teamOne.length !== expectedSize || teamTwo.length !== expectedSize) notFound();
 
+  const teamFormat = roster.format === "trio" ? "trio" : "duo";
   const initialState = createInitialPvpDuoState(
     teamOne.map((member) => member.character),
     teamTwo.map((member) => member.character),
+    teamFormat,
   );
   await client.rpc("v2_initialize_pvp_match", {
     p_match_id: matchId,

@@ -8,15 +8,16 @@ import {
   type PvpCasualBattleState,
 } from "@/lib/game/pvp-casual";
 
-export type PvpDuoBattleState = PvpCasualBattleState<"duo">;
+export type PvpDuoBattleState = PvpCasualBattleState<"duo" | "trio">;
 
 export function createInitialPvpDuoState(
   teamOne: ArenaCharacter[],
   teamTwo: ArenaCharacter[],
+  format: "duo" | "trio" = "duo",
   rules: CombatRules = defaultCombatRules,
 ): PvpDuoBattleState {
   return createInitialPvpCasualState({
-    format: "duo",
+    format,
     mapId: "ruinas-centrais",
     teamOne,
     teamTwo,

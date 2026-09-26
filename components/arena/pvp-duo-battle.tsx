@@ -1,23 +1,29 @@
 "use client";
-/* eslint-disable react-hooks/immutability -- the turn timeout invokes the stable component command below. */
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
-import { CombatSkillCard } from "@/components/arena/combat-skill-card";
-import { CombatStatusDock } from "@/components/arena/combat-status-dock";
+import {
+  expirePvpDuoTurnAction,
+  getPvpDuoMatchStateAction,
+  performPvpDuoAction,
+} from "@/app/arena/pvp-duo/[matchId]/actions";
 import { CombatResultModal } from "@/components/arena/combat-result-modal";
+import { CombatStatusDock } from "@/components/arena/combat-status-dock";
+import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
-import { defaultCombatRules, type CombatantState } from "@/lib/game/combat";
-import { createTurnActionUsage, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
+import type { CombatantState } from "@/lib/game/combat";
 import type { PvpDuoBattleState } from "@/lib/game/pvp-duo-state";
-import { expirePvpDuoTurnAction, getPvpDuoMatchStateAction, performPvpDuoAction } from "@/app/arena/pvp-duo/[matchId]/actions";
+import { createTurnActionUsage, isSilenced, isTurnBlocked } from "@/lib/game/turn-engine";
+import { getReachableTacticalCells, tacticalPositionKey } from "@/lib/game/tactical-grid";
+import { getTacticalMapById } from "@/lib/game/tactical-maps";
+import styles from "./pvp-tactical-battle.module.css";
 
-type DuoRoom = {
+type TeamRoom = {
   matchId: string;
   version: number;
-  format: "duo";
+  format: "duo" | "trio";
   ownCharacterId: string;
   opponentCharacterId: string;
   ownCharacterIds: string[];
@@ -25,9 +31,7 @@ type DuoRoom = {
   controllableCharacterIds: string[];
   state: PvpDuoBattleState;
 };
-
 type Member = { team: number; slot: number; character: ArenaCharacter };
-type Fx = { id: string; kind: "damage" | "heal" | "shield"; amount: number; token: number };
 
 export function PvpDuoBattle({
   matchId,
@@ -36,147 +40,110 @@ export function PvpDuoBattle({
   ownTeam,
 }: {
   matchId: string;
-  initialRoom: DuoRoom;
+  initialRoom: TeamRoom;
   members: Member[];
   ownTeam: number;
 }) {
   const [room, setRoom] = useState(initialRoom);
-  const [panel, setPanel] = useState<"root" | "class" | "race" | "item">("root");
-  const [selectedTargetId, setSelectedTargetId] = useState("");
+  const [targetId, setTargetId] = useState("");
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
-  // O primeiro HTML precisa ser idêntico no servidor e no navegador. O relógio
-  // real começa apenas após a hidratação para não remontar a interface do turno.
-  const [clock, setClock] = useState<number | null>(null);
-  const [effects, setEffects] = useState<Fx[]>([]);
+  const [clock, setClock] = useState(() => Date.now());
   const [realtimeReady, setRealtimeReady] = useState(false);
-  const refreshInFlight = useRef(false);
   const timeoutInFlight = useRef(false);
   const state = room.state;
   const meta = useMemo(
-    () => Object.fromEntries(members.map((member) => [member.character.id, member.character])),
+    () => Object.fromEntries(members.map((entry) => [entry.character.id, entry.character])),
     [members],
   );
-  const ownIds = room.ownCharacterIds.filter(Boolean);
-  const enemyIds = room.opponentCharacterIds.filter(Boolean);
-  const controllableIds = room.controllableCharacterIds.filter(Boolean);
   const activeId = state.activeCharacterId;
   const activeCharacter = meta[activeId];
   const activeFighter = state.fighters[activeId];
-  const isMyTurn = state.status === "active" && controllableIds.includes(activeId);
   const usage = state.turnActions ?? createTurnActionUsage();
-  const seconds = clock === null
-    ? 60
-    : Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
+  const isMyTurn = state.status === "active" && room.controllableCharacterIds.includes(activeId);
+  const blocked = activeFighter ? isTurnBlocked(activeFighter) : false;
+  const silenced = activeFighter ? isSilenced(activeFighter) : false;
   const finished = state.status !== "active";
+  const seconds = Math.max(0, Math.ceil((Date.parse(state.turnEndsAt) - clock) / 1000));
+  const ownIds = room.ownCharacterIds.filter(Boolean);
+  const enemyIds = room.opponentCharacterIds.filter(Boolean);
   const livingTargets = [...ownIds, ...enemyIds].filter((id) => (state.fighters[id]?.hp ?? 0) > 0);
-  const chosenTargetId =
-    selectedTargetId && livingTargets.includes(selectedTargetId)
-      ? selectedTargetId
+  const selectedTarget =
+    targetId && livingTargets.includes(targetId)
+      ? targetId
       : (enemyIds.find((id) => (state.fighters[id]?.hp ?? 0) > 0) ?? activeId);
-  const chosenTarget = state.fighters[chosenTargetId] ?? activeFighter;
-  const previousHp = useRef<Record<string, { hp: number; shield: number }>>(
-    Object.fromEntries(
-      Object.values(state.fighters).map((fighter) => [
-        fighter.id,
-        { hp: fighter.hp, shield: fighter.shield },
-      ]),
-    ),
+  const map = getTacticalMapById(state.mapId ?? "ruinas-centrais");
+  const activePosition = state.positions?.[activeId];
+  const occupied = new Set(
+    Object.entries(state.positions ?? {})
+      .filter(([id]) => id !== activeId && (state.fighters[id]?.hp ?? 0) > 0)
+      .map(([, position]) => tacticalPositionKey(position)),
   );
+  const reachable =
+    isMyTurn && !blocked && activePosition
+      ? getReachableTacticalCells({
+          start: activePosition,
+          blocked: new Set([...map.obstacles, ...occupied]),
+          movement: state.movement ?? 4,
+          grid: map.grid,
+        })
+      : new Map<string, number>();
+  const cells = Array.from({ length: map.grid.width * map.grid.height }, (_, index) => ({
+    x: index % map.grid.width,
+    y: Math.floor(index / map.grid.width),
+  }));
 
   const refresh = useCallback(async () => {
-    if (refreshInFlight.current) return;
-    refreshInFlight.current = true;
-    try {
-      const result = await getPvpDuoMatchStateAction(matchId);
-      if (result.ok) {
-        setRoom((current) => (result.data.version > current.version ? result.data : current));
-        const expired = result.data.state.status === "active" && Date.parse(result.data.state.turnEndsAt) <= Date.now();
-        if (expired && !timeoutInFlight.current) {
-          timeoutInFlight.current = true;
-          void expirePvpDuoTurnAction(matchId)
-            .then((advance) => { if (advance.data) setRoom((current) => advance.data!.version > current.version ? advance.data! : current); })
-            .finally(() => { timeoutInFlight.current = false; });
-        }
-      } else setError(result.message);
-    } finally {
-      refreshInFlight.current = false;
+    const result = await getPvpDuoMatchStateAction(matchId);
+    if (!result.ok) return setError(result.message);
+    setRoom((current) => (result.data.version > current.version ? result.data : current));
+    if (
+      result.data.state.status === "active" &&
+      Date.parse(result.data.state.turnEndsAt) <= Date.now() &&
+      !timeoutInFlight.current
+    ) {
+      timeoutInFlight.current = true;
+      void expirePvpDuoTurnAction(matchId)
+        .then((next) => {
+          if (next.ok)
+            setRoom((current) => (next.data.version > current.version ? next.data : current));
+        })
+        .finally(() => {
+          timeoutInFlight.current = false;
+        });
     }
   }, [matchId]);
 
   useEffect(() => {
     const client = createBrowserSupabaseClient();
     const channel = client
-      ?.channel(`pvp-duo:${matchId}`)
+      ?.channel(`pvp-team:${matchId}`)
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "v2_pvp_matches", filter: `id=eq.${matchId}` },
-        (payload) => {
-          const update = payload.new as { version?: unknown; state?: unknown };
-          if (typeof update.version === "number" && update.state && typeof update.state === "object") {
-            const nextVersion = update.version;
-            const nextState = update.state as PvpDuoBattleState;
-            setRoom((current) =>
-              nextVersion > current.version
-                ? { ...current, version: nextVersion, state: nextState }
-                : current,
-            );
-          }
-          void refresh();
-        },
+        () => void refresh(),
       )
-      .subscribe((status) => {
-        setRealtimeReady(status === "SUBSCRIBED");
-        if (status === "SUBSCRIBED") void refresh();
-      });
-    const syncNow = () => void refresh();
-    const onVisibility = () => { if (document.visibilityState === "visible") syncNow(); };
-    window.addEventListener("focus", syncNow);
-    document.addEventListener("visibilitychange", onVisibility);
-    const fallback = window.setInterval(() => {
-      if (document.visibilityState === "visible") syncNow();
-    }, 700);
+      .subscribe((status) => setRealtimeReady(status === "SUBSCRIBED"));
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") void refresh();
+    }, 1200);
+    const onFocus = () => void refresh();
+    window.addEventListener("focus", onFocus);
     return () => {
-      window.clearInterval(fallback);
-      window.removeEventListener("focus", syncNow);
-      document.removeEventListener("visibilitychange", onVisibility);
+      window.clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
       if (client && channel) void client.removeChannel(channel);
     };
   }, [matchId, refresh]);
-
   useEffect(() => {
-    setClock(Date.now());
     const timer = window.setInterval(() => setClock(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    const old = previousHp.current;
-    const next: Fx[] = [];
-    for (const fighter of Object.values(state.fighters)) {
-      const before = old[fighter.id];
-      if (!before) continue;
-      if (fighter.hp < before.hp) {
-        next.push({ id: fighter.id, kind: "damage", amount: before.hp - fighter.hp, token: Date.now() + next.length });
-      }
-      if (fighter.hp > before.hp) {
-        next.push({ id: fighter.id, kind: "heal", amount: fighter.hp - before.hp, token: Date.now() + next.length });
-      }
-      if (fighter.shield > before.shield) {
-        next.push({ id: fighter.id, kind: "shield", amount: fighter.shield - before.shield, token: Date.now() + next.length });
-      }
-    }
-    if (next.length) setEffects(next);
-    previousHp.current = Object.fromEntries(
-      Object.values(state.fighters).map((fighter) => [fighter.id, { hp: fighter.hp, shield: fighter.shield }]),
-    );
-  }, [room.version, state.fighters]);
-
   useEffect(() => {
     if (seconds !== 0 || finished) return;
-    void refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seconds, room.version, finished, refresh]);
+    const timer = window.setTimeout(() => void refresh(), 0);
+    return () => window.clearTimeout(timer);
+  }, [seconds, finished, refresh]);
 
   function submit(action: Record<string, unknown>) {
     if (!isMyTurn || pending || finished) return;
@@ -185,99 +152,348 @@ export function PvpDuoBattle({
       const result = await performPvpDuoAction(matchId, room.version, action);
       if (result.data) setRoom(result.data);
       if (!result.ok) setError(result.message);
-      else setPanel("root");
     });
   }
 
-  const activeBlocked = activeFighter ? isTurnBlocked(activeFighter) : false;
-  const silenced = activeFighter ? isSilenced(activeFighter) : false;
   const winnerTeam = state.winnerCharacterId
-    ? members.find((member) => member.character.id === state.winnerCharacterId)?.team
+    ? members.find((entry) => entry.character.id === state.winnerCharacterId)?.team
     : null;
-
   return (
     <section className="arena-console jrpg-battle pvp-duo-battle">
       <header className="arena-toolbar arena-game-header">
         <div>
-          <span className="eyebrow">PvP · Duplas 2 × 2</span>
-          <h1>Confronto de equipes</h1>
-          <p>Cada jogador real controla apenas o próprio personagem. INI organiza os quatro turnos.</p>
+          <span className="eyebrow">PvP casual · {room.format === "trio" ? "3 × 3" : "2 × 2"}</span>
+          <h1>Confronto tático de equipes</h1>
+          <p>
+            Movimento, alcance, habilidades equipadas e turnos sincronizados para todos os
+            jogadores.
+          </p>
         </div>
         <strong className={`arena-turn-timer ${seconds <= 10 ? "is-ending" : ""}`}>
-          <small>Tempo</small>{String(seconds).padStart(2, "0")}s
+          <small>Tempo</small>
+          {String(seconds).padStart(2, "0")}s
         </strong>
-        <strong className="arena-turn-counter"><small>Rodada</small>{String(state.round).padStart(2, "0")}</strong>
+        <strong className="arena-turn-counter">
+          <small>Rodada</small>
+          {String(state.round).padStart(2, "0")}
+        </strong>
       </header>
-      <div className={`pvp-live-state ${isMyTurn ? "is-own-turn" : ""}`} role="status" aria-live="assertive"><i aria-hidden="true" /><strong>{finished ? "Combate encerrado" : isMyTurn ? "É a sua vez" : `Turno de ${state.fighters[activeId]?.name ?? "outro jogador"}`}</strong><small>{realtimeReady ? "Sincronização ao vivo" : "Reconectando automaticamente…"}</small></div>
-
+      <div className={`pvp-live-state ${isMyTurn ? "is-own-turn" : ""}`} role="status">
+        <i />
+        <strong>
+          {finished
+            ? "Combate encerrado"
+            : isMyTurn
+              ? "É a sua vez"
+              : `Turno de ${state.fighters[activeId]?.name ?? "outro jogador"}`}
+        </strong>
+        <small>{realtimeReady ? "Sincronização ao vivo" : "Reconectando automaticamente…"}</small>
+      </div>
       <div className="jrpg-turn-order">
-        {state.turnOrder.filter((id) => (state.fighters[id]?.hp ?? 0) > 0).map((id, index) => (
-          <span className={activeId === id ? "is-active" : ""} key={id}>{index + 1}. {state.fighters[id]?.name}</span>
-        ))}
+        {state.turnOrder
+          .filter((id) => (state.fighters[id]?.hp ?? 0) > 0)
+          .map((id, index) => (
+            <span className={activeId === id ? "is-active" : ""} key={id}>
+              {index + 1}. {state.fighters[id]?.name}
+            </span>
+          ))}
       </div>
-
-      {isMyTurn ? <div className="turn-action-economy"><ActionSlot label="Ataque" used={usage.basic} /><ActionSlot label="Classe" used={usage.class} /><ActionSlot label="Raça" used={usage.race} /></div> : null}
-
-      <div className="jrpg-stage jrpg-duo-stage combat-stage-pvp">
-        <div className="duo-team duo-team--enemy">
-          {enemyIds.map((id) => <DuoFighter key={id} fighter={state.fighters[id]} character={meta[id]} active={activeId === id} fx={effects.find((effect) => effect.id === id)} />)}
+      {isMyTurn ? (
+        <div className="turn-action-economy">
+          <ActionSlot label="Ataque" used={usage.basic} />
+          <ActionSlot label="Classe" used={usage.class} />
+          <ActionSlot label="Raça" used={usage.race} />
         </div>
-        <span className="pvp-versus">VS<small>2x2</small></span>
-        <div className="duo-team duo-team--own">
-          {ownIds.map((id) => <DuoFighter key={id} fighter={state.fighters[id]} character={meta[id]} active={activeId === id} controlled={controllableIds.includes(id)} fx={effects.find((effect) => effect.id === id)} />)}
-        </div>
-      </div>
-
-      <p className="arena-message" role="status"><span>Combate</span>{state.message}</p>
-      {error ? <p className="arena-result__error">{error}</p> : null}
-
-      {!finished && activeCharacter && activeFighter ? (
-        <section className="arena-command-panel jrpg-command-panel">
-          <header>
-            <div><span className="eyebrow">Comandos · {activeCharacter.name}</span><h2>{isMyTurn ? activeBlocked ? "Turno incapacitado" : "Monte sua sequência" : `Turno de ${state.fighters[activeId]?.name}`}</h2></div>
-            <small>{isMyTurn ? silenced ? "Silenciado: habilidades bloqueadas." : "Selecione aliado ou inimigo conforme a habilidade." : controllableIds.length ? "Aguardando o turno do seu personagem." : "Você está assistindo esta equipe."}</small>
-          </header>
-
-          {isMyTurn ? <label className="combat-target-select"><span>Alvo da habilidade</span><select value={chosenTargetId} onChange={(event) => setSelectedTargetId(event.target.value)}>{livingTargets.map((id) => <option key={id} value={id}>{ownIds.includes(id) ? "Aliado" : "Inimigo"} · {state.fighters[id]?.name}</option>)}</select></label> : null}
-
-          {panel === "root" ? (
-            <div className="pvp-actions-grid jrpg-actions">
-              <Command used={usage.basic} disabled={!isMyTurn || pending || activeBlocked || usage.basic} name="Atacar" detail={usage.basic ? "Já usado" : "Ataque básico"} onClick={() => submit({ kind: "basic" })} />
-              <Command used={usage.class} disabled={!isMyTurn || pending || activeBlocked || silenced || usage.class || activeCharacter.skills.length === 0} name="Habilidades" detail={`${activeCharacter.skills.length} de classe`} onClick={() => setPanel("class")} />
-              <Command used={usage.race} disabled={!isMyTurn || pending || activeBlocked || silenced || usage.race || activeCharacter.raceAbilities.length === 0} name="Raça" detail={`${activeCharacter.raceAbilities.length} racial(is)`} onClick={() => setPanel("race")} />
-              <Command disabled={!isMyTurn || pending || activeBlocked || activeCharacter.items.length === 0} name="Item" detail={`${activeCharacter.items.length} disponível(is) · encerra turno`} onClick={() => setPanel("item")} />
-              <Command disabled={!isMyTurn || pending || activeBlocked} name="Encerrar turno" detail="Finaliza a sequência" onClick={() => submit({ kind: "end" })} />
-            </div>
-          ) : (
-            <div className="jrpg-submenu combat-skill-list">
-              <button className="button button--ghost" type="button" onClick={() => setPanel("root")}>← Voltar</button>
-              {panel === "class" ? activeCharacter.skills.map((skill) => <CombatSkillCard key={skill.key} fighter={activeFighter} target={skill.target === "self" ? activeFighter : chosenTarget} rules={defaultCombatRules} skill={skill} disabled={!isMyTurn || pending || activeBlocked || silenced} used={usage.class} onClick={() => submit({ kind: "class", key: skill.key, targetId: chosenTargetId })} />) : null}
-              {panel === "race" ? activeCharacter.raceAbilities.map((skill) => <CombatSkillCard key={skill.key} fighter={activeFighter} target={skill.target === "self" ? activeFighter : chosenTarget} rules={defaultCombatRules} skill={skill} disabled={!isMyTurn || pending || activeBlocked || silenced} used={usage.race} onClick={() => submit({ kind: "race", key: skill.key, targetId: chosenTargetId })} />) : null}
-              {panel === "item" ? activeCharacter.items.map((item) => <Command key={item.id} disabled={!isMyTurn || pending || activeBlocked} name={item.name} detail={`${item.description || "Usar item"} · encerra turno`} onClick={() => submit({ kind: "item", id: item.id })} />) : null}
-            </div>
-          )}
-        </section>
       ) : null}
-
-      {finished ? <CombatResultModal victory={winnerTeam === ownTeam} eyebrow="CONFRONTO EM DUPLA ENCERRADO" title={winnerTeam === ownTeam ? "Sua dupla venceu o confronto." : state.winnerCharacterId ? "A dupla adversária venceu." : "A partida terminou em derrota por desistência."} description={winnerTeam === ownTeam ? "A vitória da equipe foi registrada na Arena." : "Reúna sua dupla, ajuste a estratégia e tente novamente."}><Link className="button button--primary" href="/arena?modo=pvp">Buscar nova partida</Link><Link className="button button--ghost" href="/arena">Voltar à Arena</Link></CombatResultModal> : null}
+      <div className={styles.teamBattleLayout}>
+        <TeamRoster
+          label="SUA EQUIPE"
+          ids={ownIds}
+          state={state}
+          meta={meta}
+          activeId={activeId}
+          controlled={room.controllableCharacterIds}
+          onSelect={setTargetId}
+        />
+        <div className={styles.boardWrap}>
+          <div
+            className={styles.board}
+            style={{
+              gridTemplateColumns: `repeat(${map.grid.width}, minmax(0, 1fr))`,
+              gridTemplateRows: `repeat(${map.grid.height}, minmax(0, 1fr))`,
+              aspectRatio: `${map.grid.width} / ${map.grid.height}`,
+            }}
+            aria-label="Tabuleiro PvP tático"
+          >
+            {cells.map((position) => {
+              const key = tacticalPositionKey(position);
+              const occupantId = Object.entries(state.positions ?? {}).find(
+                ([, value]) => tacticalPositionKey(value) === key,
+              )?.[0];
+              const obstacle = map.obstacles.includes(key);
+              const canMove = reachable.has(key);
+              const own = occupantId ? ownIds.includes(occupantId) : false;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  aria-label={
+                    occupantId
+                      ? state.fighters[occupantId]?.name
+                      : obstacle
+                        ? "Obstáculo"
+                        : `Casa ${position.x + 1}, ${position.y + 1}`
+                  }
+                  data-state={
+                    occupantId
+                      ? own
+                        ? "own"
+                        : "enemy"
+                      : obstacle
+                        ? "obstacle"
+                        : canMove
+                          ? "reachable"
+                          : undefined
+                  }
+                  disabled={Boolean(occupantId) || obstacle || !canMove || pending}
+                  onClick={() => submit({ kind: "move", x: position.x, y: position.y })}
+                >
+                  {occupantId ? (
+                    <span>{own ? "♞" : "♜"}</span>
+                  ) : obstacle ? (
+                    <span>◆</span>
+                  ) : canMove ? (
+                    <i />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+          <small className={styles.boardHint}>
+            Casas iluminadas podem ser alcançadas · movimento restante {state.movement ?? 4}
+          </small>
+        </div>
+        <TeamRoster
+          label="EQUIPE ADVERSÁRIA"
+          ids={enemyIds}
+          state={state}
+          meta={meta}
+          activeId={activeId}
+          controlled={[]}
+          onSelect={setTargetId}
+        />
+      </div>
+      <p className="arena-message" role="status">
+        <span>Combate</span>
+        {state.message}
+      </p>
+      {error ? <p className="arena-result__error">{error}</p> : null}
+      {!finished && activeCharacter && activeFighter ? (
+        <>
+          {isMyTurn ? (
+            <label className="combat-target-select">
+              <span>Alvo da habilidade</span>
+              <select value={selectedTarget} onChange={(event) => setTargetId(event.target.value)}>
+                {livingTargets.map((id) => (
+                  <option key={id} value={id}>
+                    {ownIds.includes(id) ? "Aliado" : "Inimigo"} · {state.fighters[id]?.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <section className={styles.actionDock} aria-label="Ações PvP do Rework">
+            <IconAction
+              name={activeCharacter.basicAttackName ?? "Ataque básico"}
+              detail={usage.basic ? "Usado" : `Alcance ${activeCharacter.basicAttackRange}`}
+              iconUrl={activeCharacter.basicAttackIconUrl}
+              disabled={!isMyTurn || pending || blocked || usage.basic}
+              onClick={() => submit({ kind: "basic" })}
+            />
+            {activeCharacter.skills.map((skill) => (
+              <IconAction
+                key={skill.key}
+                name={skill.name}
+                detail={usage.class ? "Classe usada" : `Classe · alcance ${skill.range}`}
+                iconUrl={skill.iconUrl}
+                disabled={!isMyTurn || pending || blocked || silenced || usage.class}
+                onClick={() =>
+                  submit({
+                    kind: "class",
+                    key: skill.key,
+                    targetId: skill.target === "self" ? activeId : selectedTarget,
+                  })
+                }
+              />
+            ))}
+            {activeCharacter.raceAbilities.map((skill) => (
+              <IconAction
+                key={skill.key}
+                name={skill.name}
+                detail={usage.race ? "Racial usada" : `Raça · alcance ${skill.range}`}
+                iconUrl={skill.iconUrl}
+                disabled={!isMyTurn || pending || blocked || silenced || usage.race}
+                onClick={() =>
+                  submit({
+                    kind: "race",
+                    key: skill.key,
+                    targetId: skill.target === "self" ? activeId : selectedTarget,
+                  })
+                }
+              />
+            ))}
+            {activeCharacter.items.map((item) => (
+              <IconAction
+                key={item.id}
+                name={item.name}
+                detail="Item · encerra turno"
+                disabled={!isMyTurn || pending || blocked}
+                onClick={() => submit({ kind: "item", id: item.id })}
+              />
+            ))}
+            <IconAction
+              name="Encerrar turno"
+              detail="Passar a vez"
+              disabled={!isMyTurn || pending || blocked}
+              onClick={() => submit({ kind: "end" })}
+            />
+          </section>
+        </>
+      ) : null}
+      {finished ? (
+        <CombatResultModal
+          victory={winnerTeam === ownTeam}
+          eyebrow="CONFRONTO DE EQUIPES ENCERRADO"
+          title={
+            winnerTeam === ownTeam
+              ? "Sua equipe venceu o confronto."
+              : state.winnerCharacterId
+                ? "A equipe adversária venceu."
+                : "A partida terminou sem vencedor."
+          }
+          description="O resultado foi registrado na Arena."
+        >
+          <Link className="button button--primary" href="/arena?modo=pvp">
+            Buscar nova partida
+          </Link>
+          <Link className="button button--ghost" href="/arena">
+            Voltar à Arena
+          </Link>
+        </CombatResultModal>
+      ) : null}
     </section>
   );
 }
 
-function DuoFighter({ fighter, character, active, controlled = false, fx }: { fighter?: CombatantState; character?: ArenaCharacter; active: boolean; controlled?: boolean; fx?: Fx }) {
-  if (!fighter || !character) return null;
+function TeamRoster({
+  label,
+  ids,
+  state,
+  meta,
+  activeId,
+  controlled,
+  onSelect,
+}: {
+  label: string;
+  ids: string[];
+  state: PvpDuoBattleState;
+  meta: Record<string, ArenaCharacter>;
+  activeId: string;
+  controlled: string[];
+  onSelect(id: string): void;
+}) {
   return (
-    <article className={`pvp-fighter jrpg-fighter duo-fighter ${active ? "is-active" : ""} ${controlled ? "is-controlled" : ""} ${fighter.hp <= 0 ? "is-down" : ""} ${fx ? `fx-${fx.kind}` : ""}`}>
-      <div className="combat-hp-float"><span>HP <b>{fighter.hp.toLocaleString("pt-BR")} / {fighter.maxHp.toLocaleString("pt-BR")}</b></span><progress max={fighter.maxHp} value={fighter.hp} /></div>
-      <div className="combat-identity-frame">
-        <CharacterPortraitCard name={character.name} imageUrl={character.imageUrl || null} rank={character.adventureRank} level={character.level} title={character.equippedTitle} cosmetics={character.cosmetics} variant="compact" className="combat-official-character-card" />
-        {controlled ? <span className="duo-control-badge">SEU PERSONAGEM</span> : null}
-        {fx ? <span key={fx.token} data-fx-label={fx.kind === "heal" ? "CURA" : fx.kind === "shield" ? "ESCUDO" : "DANO"} className={`combat-fx combat-fx--${fx.kind}`}>{fx.kind === "damage" ? "−" : "+"}{fx.amount.toLocaleString("pt-BR")}</span> : null}
-      </div>
-      <div className="combat-hud-panel"><h3>{character.name}</h3><p>{character.raceName} · {character.className}</p><CombatStatusDock fighter={fighter} /></div>
-    </article>
+    <aside className={styles.teamRoster}>
+      <strong>{label}</strong>
+      {ids.map((id) => (
+        <Fighter
+          key={id}
+          fighter={state.fighters[id]}
+          character={meta[id]}
+          active={id === activeId}
+          controlled={controlled.includes(id)}
+          onSelect={() => onSelect(id)}
+        />
+      ))}
+    </aside>
   );
 }
-
-function ActionSlot({ label, used }: { label: string; used: boolean }) { return <span className={used ? "is-used" : ""}><i>{used ? "✓" : "•"}</i>{label}<small>{used ? "usado" : "disponível"}</small></span>; }
-function Command({ name, detail, disabled, used = false, onClick }: { name: string; detail: string; disabled: boolean; used?: boolean; onClick(): void }) { return <button className={`arena-action-card jrpg-action ${used ? "is-used" : ""}`} disabled={disabled} onClick={onClick} type="button"><strong>{name}</strong><small>{detail}</small></button>; }
+function Fighter({
+  fighter,
+  character,
+  active,
+  controlled,
+  onSelect,
+}: {
+  fighter?: CombatantState;
+  character?: ArenaCharacter;
+  active: boolean;
+  controlled: boolean;
+  onSelect(): void;
+}) {
+  if (!fighter || !character) return null;
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`${styles.teamFighter} ${active ? styles.activeFighter : ""}`}
+      disabled={fighter.hp <= 0}
+    >
+      <CharacterPortraitCard
+        name={character.name}
+        imageUrl={character.imageUrl || null}
+        rank={character.adventureRank}
+        level={character.level}
+        title={character.equippedTitle}
+        cosmetics={character.cosmetics}
+        variant="compact"
+        className="combat-official-character-card"
+      />
+      <span>
+        <b>{character.name}</b>
+        <small>
+          {controlled ? "SEU PERSONAGEM" : `${character.raceName} · ${character.className}`}
+        </small>
+        <progress max={fighter.maxHp} value={fighter.hp} />
+        <em>
+          {fighter.hp.toLocaleString("pt-BR")} / {fighter.maxHp.toLocaleString("pt-BR")} HP
+        </em>
+        <CombatStatusDock fighter={fighter} />
+      </span>
+    </button>
+  );
+}
+function ActionSlot({ label, used }: { label: string; used: boolean }) {
+  return (
+    <span className={used ? "is-used" : ""}>
+      <i>{used ? "✓" : "•"}</i>
+      {label}
+      <small>{used ? "usado" : "disponível"}</small>
+    </span>
+  );
+}
+function IconAction({
+  name,
+  detail,
+  iconUrl,
+  disabled,
+  onClick,
+}: {
+  name: string;
+  detail: string;
+  iconUrl?: string;
+  disabled: boolean;
+  onClick(): void;
+}) {
+  return (
+    <button className={styles.actionButton} disabled={disabled} onClick={onClick} type="button">
+      {iconUrl ? (
+        <Image src={iconUrl} alt="" width={58} height={58} />
+      ) : (
+        <span aria-hidden="true">◆</span>
+      )}
+      <strong>{name}</strong>
+      <small>{detail}</small>
+    </button>
+  );
+}

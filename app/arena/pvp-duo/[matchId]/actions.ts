@@ -32,10 +32,17 @@ import {
 } from "@/lib/game/pvp-duo-state";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import type { Json } from "@/lib/db/types";
+import {
+  getReachableTacticalCells,
+  getTacticalDistance,
+  tacticalPositionKey,
+} from "@/lib/game/tactical-grid";
+import { getTacticalMapById } from "@/lib/game/tactical-maps";
 
 const idSchema = z.uuid();
 const targetSchema = z.uuid().optional();
 const actionSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("move"), x: z.number().int(), y: z.number().int() }),
   z.object({ kind: z.literal("basic") }),
   z.object({ kind: z.literal("race"), key: z.string().min(1).max(160), targetId: targetSchema }),
   z.object({ kind: z.literal("class"), key: z.string().min(1).max(160), targetId: targetSchema }),
@@ -46,7 +53,7 @@ const actionSchema = z.discriminatedUnion("kind", [
 type DuoRoom = {
   matchId: string;
   version: number;
-  format: "duo";
+  format: "duo" | "trio";
   ownCharacterId: string;
   opponentCharacterId: string;
   ownCharacterIds: string[];
@@ -64,14 +71,16 @@ function parseRoom(value: unknown): DuoRoom | null {
   if (!value || Array.isArray(value) || typeof value !== "object") return null;
   const row = value as Record<string, unknown>;
   if (
-    row.format !== "duo" ||
+    (row.format !== "duo" && row.format !== "trio") ||
     typeof row.matchId !== "string" ||
     typeof row.version !== "number" ||
     !Array.isArray(row.ownCharacterIds) ||
     !Array.isArray(row.opponentCharacterIds) ||
     !Array.isArray(row.controllableCharacterIds) ||
-    !row.state || typeof row.state !== "object"
-  ) return null;
+    !row.state ||
+    typeof row.state !== "object"
+  )
+    return null;
   return row as unknown as DuoRoom;
 }
 
@@ -97,7 +106,11 @@ function metadataMap(members: Array<{ character: ArenaCharacter }>) {
 }
 
 function remainingActions(usage: TurnActionUsage) {
-  return [!usage.basic ? "Ataque" : null, !usage.class ? "Classe" : null, !usage.race ? "Raça" : null]
+  return [
+    !usage.basic ? "Ataque" : null,
+    !usage.class ? "Classe" : null,
+    !usage.race ? "Raça" : null,
+  ]
     .filter(Boolean)
     .join(" + ");
 }
@@ -110,6 +123,7 @@ function advanceTurn(state: PvpDuoBattleState) {
   const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % living.length;
   state.turn += 1;
   state.turnActions = createTurnActionUsage();
+  state.movement = 4;
   state.turnEndsAt = new Date(Date.now() + 60_000).toISOString();
 
   if (nextIndex === 0) {
@@ -128,7 +142,7 @@ function advanceTurn(state: PvpDuoBattleState) {
 
 function skipBlocked(state: PvpDuoBattleState) {
   const messages: string[] = [];
-  for (let safety = 0; safety < 4 && state.status === "active"; safety += 1) {
+  for (let safety = 0; safety < 6 && state.status === "active"; safety += 1) {
     const fighter = state.fighters[state.activeCharacterId];
     if (!fighter || fighter.hp <= 0 || !isTurnBlocked(fighter)) break;
     messages.push(`${fighter.name} está incapacitado e perdeu o turno.`);
@@ -156,7 +170,10 @@ function chosenTarget(
   }
   if (skill.target === "enemy") {
     const forced = getForcedTargetId(state.fighters[actorId]);
-    const targetId = forced && livingEnemies.includes(forced) ? forced : (requestedId ?? chooseDuoTarget(state, actorId));
+    const targetId =
+      forced && livingEnemies.includes(forced)
+        ? forced
+        : (requestedId ?? chooseDuoTarget(state, actorId));
     return targetId && livingEnemies.includes(targetId) ? targetId : null;
   }
   return null;
@@ -168,9 +185,12 @@ function areaTargetIds(
   skill: ArenaCharacter["skills"][number],
 ) {
   const operationTarget = skill.operations[0]?.target;
-  const allied = operationTarget === "ally" || operationTarget === "self" || operationTarget === "source";
+  const allied =
+    operationTarget === "ally" || operationTarget === "self" || operationTarget === "source";
   const team = allied
-    ? (state.teamOne.includes(actorId) ? state.teamOne : state.teamTwo)
+    ? state.teamOne.includes(actorId)
+      ? state.teamOne
+      : state.teamTwo
     : opposingTeam(state, actorId);
   return livingTeamMembers(state, team);
 }
@@ -190,8 +210,8 @@ export async function performPvpDuoAction(
     readRoom(parsedId.data),
     getPvpTeamRoster(parsedId.data),
   ]);
-  if (!client || !room || !roster || roster.format !== "duo")
-    return { ok: false as const, message: "Sala 2x2 indisponível." };
+  if (!client || !room || !roster || !["duo", "trio"].includes(roster.format))
+    return { ok: false as const, message: "Sala de equipes indisponível." };
   // A tela pode estar alguns milissegundos atrás do Realtime. A versão enviada
   // pelo navegador é apenas uma dica: a jogada sempre parte do estado
   // autoritativo recém-lido. As validações abaixo impedem ação duplicada ou fora
@@ -221,11 +241,62 @@ export async function performPvpDuoAction(
   let affectedTargetId: string | null = null;
   let target = state.fighters[chooseDuoTarget(state, actorId) ?? ""];
 
+  if (action.kind === "move") {
+    const map = getTacticalMapById(state.mapId ?? "ruinas-centrais");
+    const origin = state.positions?.[actorId];
+    if (!origin) return { ok: false as const, message: "Posição do personagem não encontrada." };
+    const destination = { x: action.x, y: action.y };
+    const occupied = new Set(
+      Object.entries(state.positions ?? {})
+        .filter(([id]) => id !== actorId && (state.fighters[id]?.hp ?? 0) > 0)
+        .map(([, position]) => tacticalPositionKey(position)),
+    );
+    const reachable = getReachableTacticalCells({
+      start: origin,
+      blocked: new Set([...map.obstacles, ...occupied]),
+      movement: state.movement ?? 4,
+      grid: map.grid,
+    });
+    const cost = reachable.get(tacticalPositionKey(destination));
+    if (cost == null || cost <= 0)
+      return { ok: false as const, message: "Esta casa não pode ser alcançada agora." };
+    state.positions = { ...state.positions, [actorId]: destination };
+    state.movement = Math.max(0, (state.movement ?? 4) - cost);
+    message = `${actor.name} avançou ${cost} casa${cost === 1 ? "" : "s"}.`;
+    state.message = message;
+    state.log = appendBattleLog(state.log, message, 80);
+    const { data, error } = await client.rpc("v2_update_pvp_match_state", {
+      p_match_id: parsedId.data,
+      p_expected_version: authoritativeVersion,
+      p_state: state as unknown as Json,
+    });
+    const updated = parseRoom(data);
+    if (error || !updated)
+      return {
+        ok: false as const,
+        message: error?.message ?? "O movimento não pôde ser sincronizado.",
+      };
+    return { ok: true as const, data: updated, synchronized: false as const };
+  }
+
   if (action.kind === "basic") {
-    if (usage.basic) return { ok: false as const, message: "O Ataque Básico já foi usado neste turno." };
+    if (usage.basic)
+      return { ok: false as const, message: "O Ataque Básico já foi usado neste turno." };
     const forced = getForcedTargetId(actor);
-    const targetId = forced && (state.fighters[forced]?.hp ?? 0) > 0 ? forced : chooseDuoTarget(state, actorId);
+    const targetId =
+      forced && (state.fighters[forced]?.hp ?? 0) > 0 ? forced : chooseDuoTarget(state, actorId);
     if (!targetId) return { ok: false as const, message: "Não há alvo adversário disponível." };
+    const origin = state.positions?.[actorId];
+    const destination = state.positions?.[targetId];
+    if (
+      origin &&
+      destination &&
+      getTacticalDistance(origin, destination) > character.basicAttackRange
+    )
+      return {
+        ok: false as const,
+        message: `Alvo fora do alcance de ${character.basicAttackRange} casa(s).`,
+      };
     target = state.fighters[targetId];
     const result = resolveBasicAttack(actor, target, defaultCombatRules);
     actor = result.actor;
@@ -250,15 +321,32 @@ export async function performPvpDuoAction(
       if (area.events[0]?.kind === "error")
         return { ok: false as const, message: area.events[0].message };
       actor = area.actor;
-      area.targets.forEach((changed) => { state.fighters[changed.id] = changed; });
+      area.targets.forEach((changed) => {
+        state.fighters[changed.id] = changed;
+      });
       resourceEvent = area.events[0] ?? null;
-      message = area.events.map((event) => event.message).filter(Boolean).join(" ");
+      message = area.events
+        .map((event) => event.message)
+        .filter(Boolean)
+        .join(" ");
       affectedTargetId = area.targets[0]?.id ?? null;
       target = affectedTargetId ? state.fighters[affectedTargetId] : actor;
     } else {
       const targetId = chosenTarget(state, actorId, skill, action.targetId);
       if (!targetId)
-        return { ok: false as const, message: "O alvo escolhido não é válido para esta habilidade." };
+        return {
+          ok: false as const,
+          message: "O alvo escolhido não é válido para esta habilidade.",
+        };
+      const origin = state.positions?.[actorId];
+      const destination = state.positions?.[targetId];
+      if (
+        origin &&
+        destination &&
+        skill.target !== "self" &&
+        getTacticalDistance(origin, destination) > Math.max(1, skill.range)
+      )
+        return { ok: false as const, message: `Alvo fora do alcance de ${skill.range} casa(s).` };
       target = state.fighters[targetId];
       const result = resolveJrpgSkill(actor, target, skill, defaultCombatRules);
       if (result.event.kind === "error")
@@ -302,7 +390,7 @@ export async function performPvpDuoAction(
   if (livingTeamMembers(state, enemyTeam).length === 0) {
     state.status = "finished";
     state.winnerCharacterId = actorId;
-    message = `${message} A equipe de ${actor.name} venceu o 2x2.`;
+    message = `${message} A equipe de ${actor.name} venceu o ${state.format === "trio" ? "3x3" : "2x2"}.`;
   } else if (endsTurn) {
     const periodic = resolvePeriodicItemDamage(actor, (amount, type) =>
       calculateDamage(amount, type, getEffectiveAttributes(actor), defaultCombatRules),
@@ -312,7 +400,10 @@ export async function performPvpDuoAction(
     if (state.fighters[actorId].hp <= 0 && livingTeamMembers(state, state.teamOne).length === 0) {
       state.status = "finished";
       state.winnerCharacterId = livingTeamMembers(state, state.teamTwo)[0] ?? affectedTargetId;
-    } else if (state.fighters[actorId].hp <= 0 && livingTeamMembers(state, state.teamTwo).length === 0) {
+    } else if (
+      state.fighters[actorId].hp <= 0 &&
+      livingTeamMembers(state, state.teamTwo).length === 0
+    ) {
       state.status = "finished";
       state.winnerCharacterId = livingTeamMembers(state, state.teamOne)[0] ?? affectedTargetId;
     } else {
@@ -347,7 +438,10 @@ export async function expirePvpDuoTurnAction(matchId: string) {
   if (!parsed.success) return { ok: false as const, message: "Partida inválida." };
   const client = await createServerSupabaseClient();
   if (!client) return { ok: false as const, message: "Arena indisponível." };
-  const { data, error } = await client.rpc("v2_expire_pvp_turn" as never, { p_match_id: parsed.data } as never);
+  const { data, error } = await client.rpc(
+    "v2_expire_pvp_turn" as never,
+    { p_match_id: parsed.data } as never,
+  );
   const room = parseRoom(data);
   if (error || !room)
     return { ok: false as const, message: error?.message ?? "Não foi possível avançar o turno." };

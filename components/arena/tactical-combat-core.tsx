@@ -5,6 +5,7 @@ import Image from "next/image";
 
 import styles from "@/components/arena/tactical-combat-core.module.css";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
+import { CombatFeedbackLayer } from "@/components/arena/combat-feedback-layer";
 import {
   createCombatant,
   resolveBasicAttack,
@@ -1173,6 +1174,14 @@ export function TacticalCombatCore({
 
   return (
     <section className={styles.lab} aria-label="Combate tático" data-tactical-core>
+      <CombatFeedbackLayer
+        message={message}
+        iconUrls={[
+          character.basicAttack.iconUrl,
+          ...character.skills.map(({ skill }) => skill.iconUrl),
+          ...character.passives.map((passive) => passive.iconUrl),
+        ]}
+      />
       <header className={styles.header}>
         <div>
           <span className={styles.eyebrow}>Combate tático · Rework</span>

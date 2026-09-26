@@ -9,6 +9,7 @@ import {
   performPvpDuoAction,
 } from "@/app/arena/pvp-duo/[matchId]/actions";
 import { CombatResultModal } from "@/components/arena/combat-result-modal";
+import { CombatFeedbackLayer } from "@/components/arena/combat-feedback-layer";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
 import { CharacterPortraitCard } from "@/components/characters/character-portrait-card";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
@@ -92,6 +93,15 @@ export function PvpDuoBattle({
     x: index % map.grid.width,
     y: Math.floor(index / map.grid.width),
   }));
+  const abilityIconUrls = useMemo(
+    () =>
+      members.flatMap(({ character }) => [
+        character.basicAttackIconUrl,
+        ...character.skills.map((skill) => skill.iconUrl),
+        ...character.raceAbilities.map((skill) => skill.iconUrl),
+      ]),
+    [members],
+  );
 
   const refresh = useCallback(async () => {
     const result = await getPvpDuoMatchStateAction(matchId);
@@ -160,6 +170,7 @@ export function PvpDuoBattle({
     : null;
   return (
     <section className="arena-console jrpg-battle pvp-duo-battle">
+      <CombatFeedbackLayer message={state.message} iconUrls={abilityIconUrls} />
       <header className="arena-toolbar arena-game-header">
         <div>
           <span className="eyebrow">PvP casual · {room.format === "trio" ? "3 × 3" : "2 × 2"}</span>

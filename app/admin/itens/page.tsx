@@ -138,7 +138,7 @@ export default async function AdminItemsPage({
                 </label>
                 <fieldset>
                   <legend>Atributos</legend>
-                  {(["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const).map((attribute) => (
+                  {(["FOR", "DEF", "RES", "INI", "INT"] as const).map((attribute) => (
                     <label key={attribute}>
                       <span>{attribute}</span>
                       <input

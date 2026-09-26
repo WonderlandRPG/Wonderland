@@ -10,16 +10,19 @@ const controlOperations = ["ROOT", "STUN", "SILENCE", "FEAR", "TAUNT"] as const;
 
 function skillEffect(skill: ReturnType<typeof parseCreatureCombatProfile>["skills"][number]) {
   for (const operation of controlOperations) {
-    if (skill.operations.some((entry) => entry.operation === operation)) return operation.toLowerCase();
+    if (skill.operations.some((entry) => entry.operation === operation))
+      return operation.toLowerCase();
   }
   if (skill.operations.some((operation) => operation.operation === "PUSH")) return "push";
   return "none";
 }
 
 function effectDuration(skill: ReturnType<typeof parseCreatureCombatProfile>["skills"][number]) {
-  return skill.operations.find((operation) =>
-    controlOperations.includes(operation.operation as (typeof controlOperations)[number]),
-  )?.duration ?? 0;
+  return (
+    skill.operations.find((operation) =>
+      controlOperations.includes(operation.operation as (typeof controlOperations)[number]),
+    )?.duration ?? 0
+  );
 }
 
 function effectDistance(skill: ReturnType<typeof parseCreatureCombatProfile>["skills"][number]) {
@@ -40,7 +43,8 @@ export default async function AdminBestiaryPage({
   const client = await createServerSupabaseClient();
   let creatureQuery = client?.from("v2_creatures").select("*", { count: "exact" });
   if (query.busca) creatureQuery = creatureQuery?.ilike("name", `%${query.busca}%`);
-  if (query.rank && ranks.includes(query.rank)) creatureQuery = creatureQuery?.eq("rank", query.rank);
+  if (query.rank && ranks.includes(query.rank))
+    creatureQuery = creatureQuery?.eq("rank", query.rank);
   const { data, count } = creatureQuery
     ? await creatureQuery
         .order("rank")
@@ -55,8 +59,8 @@ export default async function AdminBestiaryPage({
           <span className="eyebrow">Combate tático</span>
           <h2>Bestiário</h2>
           <p>
-            Edite os números usados pelo mapa tático sem alterar a lore da criatura. HP,
-            atributos, movimento, IA, resistências e até três habilidades ficam centralizados aqui.
+            Edite os números usados pelo mapa tático sem alterar a lore da criatura. HP, atributos,
+            movimento, IA, resistências e até três habilidades ficam centralizados aqui.
           </p>
         </div>
       </header>
@@ -74,7 +78,9 @@ export default async function AdminBestiaryPage({
         <select name="rank" defaultValue={query.rank ?? ""}>
           <option value="">Todos os Ranks</option>
           {ranks.map((rank) => (
-            <option key={rank} value={rank}>Rank {rank}</option>
+            <option key={rank} value={rank}>
+              Rank {rank}
+            </option>
           ))}
         </select>
         <button className="button button--primary">Filtrar criaturas</button>
@@ -89,24 +95,65 @@ export default async function AdminBestiaryPage({
             <details className="admin-editor-card" key={row.id}>
               <summary>
                 <span>
-                  <small>Rank {row.rank} · {row.category} · IA {profile.aiProfile}</small>
+                  <small>
+                    Rank {row.rank} · {row.category} · IA {profile.aiProfile}
+                  </small>
                   <strong>{row.name}</strong>
-                  <small>HP {profile.hp} · Movimento {profile.movement} · {profile.skills.length} habilidade(s) própria(s)</small>
+                  <small>
+                    HP {profile.hp} · Movimento {profile.movement} · {profile.skills.length}{" "}
+                    habilidade(s) própria(s)
+                  </small>
                 </span>
                 <b>{row.active ? "Ativa" : "Oculta"}</b>
               </summary>
 
-              <form action={updateCreatureCombatProfileAdminAction} className="admin-form admin-item-form">
+              <form
+                action={updateCreatureCombatProfileAdminAction}
+                className="admin-form admin-item-form"
+              >
                 <input type="hidden" name="id" value={row.id} />
 
                 <fieldset>
                   <legend>Perfil tático</legend>
-                  <label><span>HP</span><input name="hp" type="number" min="1" max="999999" defaultValue={profile.hp} required /></label>
-                  <label><span>Movimento por turno</span><input name="movement" type="number" min="0" max="20" defaultValue={profile.movement} required /></label>
-                  <label><span>Alcance do Ataque Básico</span><input name="basicAttackRange" type="number" min="1" max="20" defaultValue={profile.basicAttackRange} required /></label>
+                  <label>
+                    <span>HP</span>
+                    <input
+                      name="hp"
+                      type="number"
+                      min="1"
+                      max="999999"
+                      defaultValue={profile.hp}
+                      required
+                    />
+                  </label>
+                  <label>
+                    <span>Movimento por turno</span>
+                    <input
+                      name="movement"
+                      type="number"
+                      min="0"
+                      max="20"
+                      defaultValue={profile.movement}
+                      required
+                    />
+                  </label>
+                  <label>
+                    <span>Alcance do Ataque Básico</span>
+                    <input
+                      name="basicAttackRange"
+                      type="number"
+                      min="1"
+                      max="20"
+                      defaultValue={profile.basicAttackRange}
+                      required
+                    />
+                  </label>
                   <label>
                     <span>Tipo do Ataque Básico</span>
-                    <select name="basicAttackDamageType" defaultValue={profile.basicAttackDamageType}>
+                    <select
+                      name="basicAttackDamageType"
+                      defaultValue={profile.basicAttackDamageType}
+                    >
                       <option value="physical">Físico</option>
                       <option value="magic">Mágico</option>
                     </select>
@@ -121,17 +168,31 @@ export default async function AdminBestiaryPage({
                   </label>
                   <label>
                     <span>Resistências</span>
-                    <textarea name="resistances" rows={3} defaultValue={profile.resistances.join(", ")} placeholder="Ex.: fogo, dano mágico, veneno, medo, stun" />
-                    <small>Dano/afinidade reduz 25%. Resistência a controle reduz sua duração em 1 turno.</small>
+                    <textarea
+                      name="resistances"
+                      rows={3}
+                      defaultValue={profile.resistances.join(", ")}
+                      placeholder="Ex.: fogo, dano mágico, veneno, medo, stun"
+                    />
+                    <small>
+                      Dano/afinidade reduz 25%. Resistência a controle reduz sua duração em 1 turno.
+                    </small>
                   </label>
                 </fieldset>
 
                 <fieldset>
                   <legend>Atributos</legend>
-                  {(["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const).map((attribute) => (
+                  {(["FOR", "DEF", "RES", "INI", "INT"] as const).map((attribute) => (
                     <label key={attribute}>
                       <span>{attribute}</span>
-                      <input name={attribute} type="number" min="0" max="9999" defaultValue={profile.attributes[attribute]} required />
+                      <input
+                        name={attribute}
+                        type="number"
+                        min="0"
+                        max="9999"
+                        defaultValue={profile.attributes[attribute]}
+                        required
+                      />
                     </label>
                   ))}
                 </fieldset>
@@ -142,21 +203,67 @@ export default async function AdminBestiaryPage({
                   return (
                     <fieldset key={index}>
                       <legend>Habilidade {index}</legend>
-                      <label><span>Nome</span><input name={`skill${index}Name`} defaultValue={skill?.name ?? ""} placeholder="Deixe vazio para não usar este slot" /></label>
-                      <label><span>Dano base</span><input name={`skill${index}Base`} type="number" min="0" max="99999" defaultValue={skill ? damageBase(skill) : 0} /></label>
+                      <label>
+                        <span>Nome</span>
+                        <input
+                          name={`skill${index}Name`}
+                          defaultValue={skill?.name ?? ""}
+                          placeholder="Deixe vazio para não usar este slot"
+                        />
+                      </label>
+                      <label>
+                        <span>Dano base</span>
+                        <input
+                          name={`skill${index}Base`}
+                          type="number"
+                          min="0"
+                          max="99999"
+                          defaultValue={skill ? damageBase(skill) : 0}
+                        />
+                      </label>
                       <label>
                         <span>Tipo de dano</span>
-                        <select name={`skill${index}DamageType`} defaultValue={skill?.damageType === "true" ? "true" : skill?.damageType === "magic" ? "magic" : "physical"}>
+                        <select
+                          name={`skill${index}DamageType`}
+                          defaultValue={
+                            skill?.damageType === "true"
+                              ? "true"
+                              : skill?.damageType === "magic"
+                                ? "magic"
+                                : "physical"
+                          }
+                        >
                           <option value="physical">Físico</option>
                           <option value="magic">Mágico</option>
                           <option value="true">Verdadeiro</option>
                         </select>
                       </label>
-                      <label><span>Alcance</span><input name={`skill${index}Range`} type="number" min="1" max="20" defaultValue={skill?.range ?? 1} /></label>
-                      <label><span>Cooldown</span><input name={`skill${index}Cooldown`} type="number" min="0" max="20" defaultValue={skill?.cooldown ?? 0} /></label>
+                      <label>
+                        <span>Alcance</span>
+                        <input
+                          name={`skill${index}Range`}
+                          type="number"
+                          min="1"
+                          max="20"
+                          defaultValue={skill?.range ?? 1}
+                        />
+                      </label>
+                      <label>
+                        <span>Cooldown</span>
+                        <input
+                          name={`skill${index}Cooldown`}
+                          type="number"
+                          min="0"
+                          max="20"
+                          defaultValue={skill?.cooldown ?? 0}
+                        />
+                      </label>
                       <label>
                         <span>Efeito secundário</span>
-                        <select name={`skill${index}Effect`} defaultValue={skill ? skillEffect(skill) : "none"}>
+                        <select
+                          name={`skill${index}Effect`}
+                          defaultValue={skill ? skillEffect(skill) : "none"}
+                        >
                           <option value="none">Nenhum</option>
                           <option value="root">Root — bloqueia movimento</option>
                           <option value="stun">Stun — perde o turno</option>
@@ -166,14 +273,33 @@ export default async function AdminBestiaryPage({
                           <option value="push">Push — empurra no mapa</option>
                         </select>
                       </label>
-                      <label><span>Duração do controle</span><input name={`skill${index}Duration`} type="number" min="0" max="20" defaultValue={skill ? effectDuration(skill) : 0} /></label>
-                      <label><span>Distância do Push</span><input name={`skill${index}Distance`} type="number" min="0" max="20" defaultValue={skill ? effectDistance(skill) : 0} /></label>
+                      <label>
+                        <span>Duração do controle</span>
+                        <input
+                          name={`skill${index}Duration`}
+                          type="number"
+                          min="0"
+                          max="20"
+                          defaultValue={skill ? effectDuration(skill) : 0}
+                        />
+                      </label>
+                      <label>
+                        <span>Distância do Push</span>
+                        <input
+                          name={`skill${index}Distance`}
+                          type="number"
+                          min="0"
+                          max="20"
+                          defaultValue={skill ? effectDistance(skill) : 0}
+                        />
+                      </label>
                     </fieldset>
                   );
                 })}
 
                 <small>
-                  Fraquezas, descrição, comportamento e habitats continuam sendo os dados oficiais do Bestiário e não são alterados por este formulário.
+                  Fraquezas, descrição, comportamento e habitats continuam sendo os dados oficiais
+                  do Bestiário e não são alterados por este formulário.
                 </small>
                 <button className="button button--primary">Salvar perfil de combate</button>
               </form>
@@ -184,9 +310,17 @@ export default async function AdminBestiaryPage({
 
       {(count ?? 0) > 25 ? (
         <nav className="admin-pagination">
-          <a href={`/admin/bestiario?rank=${query.rank ?? ""}&busca=${query.busca ?? ""}&pagina=${Math.max(1, page - 1)}`}>← Anterior</a>
+          <a
+            href={`/admin/bestiario?rank=${query.rank ?? ""}&busca=${query.busca ?? ""}&pagina=${Math.max(1, page - 1)}`}
+          >
+            ← Anterior
+          </a>
           <span>Página {page}</span>
-          <a href={`/admin/bestiario?rank=${query.rank ?? ""}&busca=${query.busca ?? ""}&pagina=${page + 1}`}>Próxima →</a>
+          <a
+            href={`/admin/bestiario?rank=${query.rank ?? ""}&busca=${query.busca ?? ""}&pagina=${page + 1}`}
+          >
+            Próxima →
+          </a>
         </nav>
       ) : null}
     </div>

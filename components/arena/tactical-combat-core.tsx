@@ -1240,7 +1240,7 @@ export function TacticalCombatCore({
         </div>
       </section>
 
-      <section className={styles.combatHud}>
+      <section className={styles.combatHud} data-combat-fighters>
         <article>
           <small>AVENTUREIRO</small>
           <strong>{player.name}</strong>
@@ -1300,7 +1300,7 @@ export function TacticalCombatCore({
         </article>
       </section>
 
-      <div className={styles.toolbar} data-wl-surface="raised">
+      <div className={styles.toolbar} data-wl-surface="raised" data-combat-actions>
         <button
           type="button"
           disabled={!actionAvailability.movement || movement <= 0}
@@ -1338,7 +1338,7 @@ export function TacticalCombatCore({
         <p role="status">{settling ? "Registrando resultado..." : settlement}</p>
       ) : null}
 
-      <div className={styles.skillBar} data-wl-surface="raised">
+      <div className={styles.skillBar} data-wl-surface="raised" data-combat-skills>
         <button
           type="button"
           className={styles.actionTile}
@@ -1476,7 +1476,7 @@ export function TacticalCombatCore({
         ))}
       </div>
 
-      <div className={styles.workspace}>
+      <div className={styles.workspace} data-combat-board>
         <div className={styles.boardShell} data-wl-surface="dark">
           <div
             className={styles.board}

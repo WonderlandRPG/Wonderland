@@ -237,25 +237,26 @@
   margin: 0;
 }
 .shell[data-combat-mode="battle"] {
-  height: calc(100svh - 142px);
-  min-height: 590px;
+  min-height: calc(100svh - 142px);
 }
 .shell[data-combat-mode="battle"] .identityWrap {
   display: none;
 }
 .shell[data-combat-mode="battle"] .combatWrap {
-  height: calc(100% - 56px);
   min-height: 0;
 }
 .shell[data-combat-mode="battle"] [aria-label="Combate tático"] {
   position: relative;
   display: grid;
   grid-template-columns: 204px minmax(0, 1fr) 224px;
-  grid-template-rows: minmax(0, 1fr) 82px;
-  grid-template-areas: "player board enemy" "player actions enemy";
+  grid-template-rows: auto auto auto;
+  grid-template-areas:
+    "player board enemy"
+    ". skills ."
+    ". actions .";
   gap: 12px;
-  height: 100%;
   min-height: 0;
+  align-items: start;
 }
 .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > section:nth-of-type(1) {
   display: none;
@@ -378,7 +379,7 @@
   > span {
   border-color: color-mix(in srgb, var(--wl-danger-border) 38%, var(--wl-border-strong));
 }
-.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(3) {
+.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-board] {
   grid-area: board;
   display: grid;
   min-width: 0;
@@ -394,43 +395,46 @@
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(3)
+  > [data-combat-board]
   > div:first-child {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: auto;
   place-items: center;
   width: 100%;
-  height: 100%;
   min-height: 0;
-  padding: 0;
+  padding: 8px;
   overflow: hidden;
   border-radius: 19px;
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(3)
+  > [data-combat-board]
   > div:first-child::before {
   display: none;
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(3)
+  > [data-combat-board]
   > div:first-child
   > div {
-  width: 100%;
+  width: min(100%, 920px);
   height: auto;
-  max-width: none;
+  max-width: 100%;
   min-width: 0;
-  max-height: none;
+  max-height: min(62svh, 690px);
   min-height: 0;
   margin: 0;
 }
-.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(3) aside {
+.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-board] aside {
   display: none;
+}
+.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > p[role="status"] {
+  grid-column: 2;
+  margin: 0;
 }
 .shell[data-combat-mode="battle"][data-details-open="true"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(3)
+  > [data-combat-board]
   aside {
   display: block;
   position: fixed;
@@ -445,10 +449,10 @@
   background: var(--wl-surface-raised);
   box-shadow: var(--wl-shadow);
 }
-.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(1) {
+.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-actions] {
   grid-area: actions;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   align-items: stretch;
   margin: 0;
@@ -464,7 +468,7 @@
     0 14px 34px color-mix(in srgb, var(--wl-surface-dark-strong) 46%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--wl-gold) 12%, transparent);
 }
-.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(1) > button {
+.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-actions] > button {
   min-width: 0;
   min-height: 64px;
   padding: 8px 10px;
@@ -487,7 +491,7 @@
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(1)
+  > [data-combat-actions]
   > button:not(:disabled):hover {
   transform: translateY(-2px);
   border-color: var(--wl-gold);
@@ -495,70 +499,61 @@
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(1)
+  > [data-combat-actions]
   > button:first-child {
-  position: absolute;
-  z-index: 6;
-  top: 8px;
-  left: 50%;
-  width: max-content;
-  min-height: 30px;
-  padding: 4px 11px;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--wl-surface-dark-strong) 94%, transparent);
-  color: var(--wl-text-inverse-muted);
-  font-size: 0.62rem;
+  position: static;
+  width: auto;
+  min-height: 64px;
+  padding: 8px 10px;
+  transform: none;
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(1)
+  > [data-combat-actions]
   > button:nth-child(2) {
-  grid-column: 1;
+  grid-column: auto;
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(1)
+  > [data-combat-actions]
   > button:nth-child(3) {
-  grid-column: 5;
+  grid-column: auto;
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(1)
+  > [data-combat-actions]
   > button:nth-child(4) {
   display: none;
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(1)
+  > [data-combat-actions]
   > button:disabled {
   opacity: 0.28;
   filter: saturate(0.25) brightness(0.66);
   cursor: not-allowed;
 }
-.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(2) {
-  display: flex;
-  position: absolute;
-  z-index: 30;
-  right: 236px;
-  bottom: 92px;
-  left: 216px;
+.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-skills] {
+  grid-area: skills;
+  display: grid;
+  position: static;
+  grid-template-columns: repeat(auto-fit, minmax(104px, 1fr));
   gap: 8px;
-  min-height: 100px;
-  max-height: 154px;
+  min-width: 0;
+  min-height: 0;
+  max-height: none;
   margin: 0;
   padding: 9px;
-  overflow-x: auto;
+  overflow: visible;
   border: 1px solid color-mix(in srgb, var(--wl-gold) 46%, var(--wl-border-strong));
   border-radius: 15px;
   background: color-mix(in srgb, var(--wl-surface-dark-strong) 98%, transparent);
   box-shadow: 0 18px 42px color-mix(in srgb, var(--wl-surface-dark-strong) 66%, transparent);
-  scrollbar-width: thin;
 }
-.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(2) button {
+.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-skills] button {
   display: grid;
-  flex: 0 0 108px;
-  min-height: 126px;
+  min-width: 0;
+  min-height: 118px;
   align-content: center;
   gap: 4px;
   padding: 10px 12px;
@@ -572,14 +567,22 @@
   color: var(--wl-text-inverse);
   text-align: left;
 }
-.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(2) button strong {
+.shell[data-combat-mode="battle"]
+  [aria-label="Combate tático"]
+  > [data-combat-skills]
+  button
+  strong {
   font-size: 0.76rem;
   line-height: 1.15;
 }
-.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(2) button > span,
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(2)
+  > [data-combat-skills]
+  button
+  > span,
+.shell[data-combat-mode="battle"]
+  [aria-label="Combate tático"]
+  > [data-combat-skills]
   button
   > small {
   font-size: 0.64rem;
@@ -587,21 +590,21 @@
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(2)
+  > [data-combat-skills]
   button
   > small:last-child {
   display: none;
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(2)
+  > [data-combat-skills]
   button[data-selected="true"] {
   border-color: var(--wl-accent);
   box-shadow: 0 0 24px color-mix(in srgb, var(--wl-accent) 18%, transparent);
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
-  > div:nth-of-type(2)
+  > [data-combat-skills]
   button:disabled {
   opacity: 0.3;
   filter: saturate(0.25) brightness(0.68);
@@ -630,10 +633,6 @@
     article::after {
     height: 116px;
   }
-  .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(2) {
-    left: 184px;
-    right: 196px;
-  }
 }
 @media (max-width: 860px) {
   .preparationHeader {
@@ -651,6 +650,7 @@
   }
   .shell[data-combat-mode="battle"] [aria-label="Combate tático"] {
     display: flex;
+    flex-direction: column;
     height: auto;
   }
   .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > section:nth-of-type(2) {
@@ -669,14 +669,14 @@
     article::after {
     height: 84px;
   }
-  .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(3) {
+  .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-board] {
     order: 2;
     display: grid;
     min-height: 430px;
   }
   .shell[data-combat-mode="battle"]
     [aria-label="Combate tático"]
-    > div:nth-of-type(3)
+    > [data-combat-board]
     > div:first-child {
     height: auto;
     min-height: 430px;
@@ -684,12 +684,12 @@
   }
   .shell[data-combat-mode="battle"]
     [aria-label="Combate tático"]
-    > div:nth-of-type(3)
+    > [data-combat-board]
     > div:first-child
     > div {
     min-width: 620px;
   }
-  .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(1) {
+  .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-actions] {
     order: 4;
     grid-template-columns: 1fr 1fr;
     position: sticky;
@@ -698,7 +698,7 @@
   }
   .shell[data-combat-mode="battle"]
     [aria-label="Combate tático"]
-    > div:nth-of-type(1)
+    > [data-combat-actions]
     > button:first-child {
     position: static;
     width: auto;
@@ -707,19 +707,20 @@
   }
   .shell[data-combat-mode="battle"]
     [aria-label="Combate tático"]
-    > div:nth-of-type(1)
+    > [data-combat-actions]
     > button:nth-child(2),
   .shell[data-combat-mode="battle"]
     [aria-label="Combate tático"]
-    > div:nth-of-type(1)
+    > [data-combat-actions]
     > button:nth-child(3) {
     grid-column: auto;
   }
-  .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > div:nth-of-type(2) {
+  .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-skills] {
     position: static;
     order: 3;
     max-height: none;
     min-height: 0;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
   }
   .battleTopbar {
     height: auto;

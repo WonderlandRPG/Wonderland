@@ -225,7 +225,7 @@
   text-transform: uppercase;
   text-shadow: 0 0 18px color-mix(in srgb, var(--wl-gold) 16%, transparent);
 }
-.shell [aria-label="Combate tático"] > header:first-child {
+.shell[data-combat-mode="battle"] [aria-label="Combate tático"] > header {
   display: none;
 }
 .shell[data-combat-mode="preparation"] [aria-label="Combate tático"] > section:nth-of-type(2),

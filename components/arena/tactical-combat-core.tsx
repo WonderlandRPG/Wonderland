@@ -2,10 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 import styles from "@/components/arena/tactical-combat-core.module.css";
 import { CombatStatusDock } from "@/components/arena/combat-status-dock";
 import { CombatFeedbackLayer } from "@/components/arena/combat-feedback-layer";
+import { CombatResultModal } from "@/components/arena/combat-result-modal";
 import {
   createCombatant,
   resolveBasicAttack,
@@ -318,6 +320,11 @@ export function TacticalCombatCore({
   );
   const [settling, startSettlement] = useTransition();
   const [settlement, setSettlement] = useState<string | null>(null);
+  const [resultSummary, setResultSummary] = useState<{
+    victory: boolean;
+    xp?: number;
+    wg?: number;
+  } | null>(null);
   const settledOutcome = useRef<string | null>(null);
   const liveOutcome =
     playerState && enemyState ? getTacticalCombatOutcome(playerState, enemyState) : "ongoing";
@@ -330,13 +337,17 @@ export function TacticalCombatCore({
     if (!settle) return;
     startSettlement(async () => {
       const result = await settle();
-      setSettlement(
-        result.ok
-          ? liveOutcome === "victory"
-            ? `Vitória confirmada: +${result.xp ?? 0} XP e +${result.wg ?? 0} WG.`
-            : "Resultado registrado no histórico."
-          : (result.message ?? "Não foi possível registrar o resultado."),
-      );
+      if (!result.ok) {
+        setSettlement(result.message ?? "Não foi possível registrar o resultado.");
+        return;
+      }
+      if (liveOutcome === "victory") {
+        setSettlement(`Vitória confirmada: +${result.xp ?? 0} XP e +${result.wg ?? 0} WG.`);
+        setResultSummary({ victory: true, xp: result.xp ?? 0, wg: result.wg ?? 0 });
+        return;
+      }
+      setSettlement("Resultado registrado no histórico.");
+      setResultSummary({ victory: false });
     });
   }, [liveOutcome, onDefeat, onVictory]);
 
@@ -1226,6 +1237,38 @@ export function TacticalCombatCore({
           ...character.passives.map((passive) => passive.iconUrl),
         ]}
       />
+      {resultSummary ? (
+        <CombatResultModal
+          victory={resultSummary.victory}
+          eyebrow={resultSummary.victory ? "EXPEDIÇÃO CONCLUÍDA" : "EXPEDIÇÃO ENCERRADA"}
+          title={
+            resultSummary.victory
+              ? `${player.name} venceu a batalha!`
+              : `${player.name} foi derrotado.`
+          }
+          description={
+            resultSummary.victory
+              ? "As recompensas já foram adicionadas ao seu personagem."
+              : "A derrota foi registrada no histórico da Arena."
+          }
+        >
+          {resultSummary.victory ? (
+            <div className="combat-result-modal__rewards" aria-label="Recompensas recebidas">
+              <span>
+                <small>Experiência</small>
+                <strong>+{resultSummary.xp?.toLocaleString("pt-BR")} XP</strong>
+              </span>
+              <span>
+                <small>Moedas</small>
+                <strong>+{resultSummary.wg?.toLocaleString("pt-BR")} WG</strong>
+              </span>
+            </div>
+          ) : null}
+          <Link className="button button--primary" href="/arena">
+            Voltar à Arena
+          </Link>
+        </CombatResultModal>
+      ) : null}
       <header className={styles.header}>
         <div>
           <span className={styles.eyebrow}>Combate tático · Rework</span>

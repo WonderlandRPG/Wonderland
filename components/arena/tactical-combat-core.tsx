@@ -157,6 +157,18 @@ type PlayerAction =
       skill: TacticalSkill;
     };
 
+type SkillInspection = {
+  name: string;
+  source: string;
+  description: string;
+  range: number;
+  area: number;
+  cooldown: number;
+  costLabel: string;
+  targetLabel: string;
+  iconUrl?: string;
+};
+
 const PLAYER_MOVE = 4;
 
 function makePlayer(character: TacticalCharacter) {
@@ -288,6 +300,7 @@ export function TacticalCombatCore({
   );
   const [movement, setMovement] = useState(canResume ? initialState.movement : PLAYER_MOVE);
   const [action, setAction] = useState<PlayerAction | null>(null);
+  const [inspectedSkill, setInspectedSkill] = useState<SkillInspection | null>(null);
   const [areaCenter, setAreaCenter] = useState<TacticalPosition | null>(null);
   const [actionUsage, setActionUsage] = useState(
     canResume ? initialState.actionUsage : initialTacticalActionUsage,
@@ -437,6 +450,37 @@ export function TacticalCombatCore({
     },
     hasItem: character.items.length > 0,
   });
+
+  const inspectSkill = (source: SkillSource, skill: TacticalSkill) => {
+    const resourceName =
+      skill.resource === "mana"
+        ? "Mana"
+        : skill.resource === "life"
+          ? "HP"
+          : skill.resource === "special"
+            ? skill.resourceKey === "race"
+              ? player.raceResourceName
+              : player.classResourceName
+            : "";
+    setInspectedSkill({
+      name: skill.name,
+      source: source === "class" ? "Habilidade de classe" : "Habilidade racial",
+      description: skill.playerDescription || skill.effect,
+      range: skill.range,
+      area: skill.area,
+      cooldown: skill.cooldown,
+      costLabel: skill.cost ? `${skill.cost} ${resourceName}` : "Sem custo",
+      targetLabel:
+        skill.target === "self"
+          ? "Em você"
+          : skill.target === "ally"
+            ? "Aliado"
+            : skill.target === "area"
+              ? "Área selecionada"
+              : "Inimigo",
+      iconUrl: skill.iconUrl,
+    });
+  };
 
   function addLog(text: string) {
     setLog((current) => [text, ...current].slice(0, 24));
@@ -1257,12 +1301,14 @@ export function TacticalCombatCore({
           ) : null}
           {player.maxClassResource > 0 ? (
             <span>
-              {player.classResourceName} {player.classResource}/{player.maxClassResource}
+              Recurso de classe · {player.classResourceName}: {player.classResource}/
+              {player.maxClassResource}
             </span>
           ) : null}
           {player.maxRaceResource > 0 ? (
             <span>
-              {player.raceResourceName} {player.raceResource}/{player.maxRaceResource}
+              Recurso racial · {player.raceResourceName}: {player.raceResource}/
+              {player.maxRaceResource}
             </span>
           ) : null}
           {playerRoot > 0 ? <span>ROOT: {playerRoot}</span> : null}
@@ -1305,6 +1351,17 @@ export function TacticalCombatCore({
           type="button"
           disabled={!actionAvailability.movement || movement <= 0}
           onClick={() => {
+            setInspectedSkill({
+              name: "Mover",
+              source: "Ação de movimento",
+              description:
+                "Escolha uma casa destacada para se mover. Mover não consome seu ataque nem uma habilidade.",
+              range: movement,
+              area: 0,
+              cooldown: 0,
+              costLabel: "Até 4 pontos de movimento",
+              targetLabel: "Casa livre",
+            });
             clearAction();
             setMessage(`Movimento: ${movement}/${PLAYER_MOVE}.`);
           }}
@@ -1361,14 +1418,25 @@ export function TacticalCombatCore({
           disabled={!actionAvailability.basic}
           data-selected={action?.kind === "basic" ? "true" : "false"}
           data-action-kind="basic"
-          onClick={() =>
+          onClick={() => {
+            setInspectedSkill({
+              name: character.basicAttack.name,
+              source: "Ataque básico",
+              description: `Ataque físico ou mágico padrão do personagem. Pode ser usado uma vez por turno.`,
+              range: character.basicAttackRange,
+              area: 0,
+              cooldown: 0,
+              costLabel: "Sem custo",
+              targetLabel: "Inimigo",
+              iconUrl: character.basicAttack.iconUrl,
+            });
             selectAction({
               kind: "basic",
               name: character.basicAttack.name,
               range: character.basicAttackRange,
               area: 0,
-            })
-          }
+            });
+          }}
         >
           {character.basicAttack.iconUrl ? (
             <Image
@@ -1391,8 +1459,34 @@ export function TacticalCombatCore({
             key={`${passive.source}-${passive.key}`}
             type="button"
             className={styles.passiveTile}
-            disabled
+            aria-disabled="true"
             title={passive.description}
+            onFocus={() =>
+              setInspectedSkill({
+                name: passive.name,
+                source: passive.source === "class" ? "Passiva de classe" : "Passiva racial",
+                description: passive.description,
+                range: 0,
+                area: 0,
+                cooldown: 0,
+                costLabel: "Sempre ativa",
+                targetLabel: "Automático",
+                iconUrl: passive.iconUrl,
+              })
+            }
+            onMouseEnter={() =>
+              setInspectedSkill({
+                name: passive.name,
+                source: passive.source === "class" ? "Passiva de classe" : "Passiva racial",
+                description: passive.description,
+                range: 0,
+                area: 0,
+                cooldown: 0,
+                costLabel: "Sempre ativa",
+                targetLabel: "Automático",
+                iconUrl: passive.iconUrl,
+              })
+            }
           >
             {passive.iconUrl ? (
               <Image
@@ -1429,7 +1523,10 @@ export function TacticalCombatCore({
               data-selected={
                 action?.kind === "skill" && action.skill.key === skill.key ? "true" : "false"
               }
-              onClick={() =>
+              onFocus={() => inspectSkill(source, skill)}
+              onMouseEnter={() => inspectSkill(source, skill)}
+              onClick={() => {
+                inspectSkill(source, skill);
                 selectAction({
                   kind: "skill",
                   name: skill.name,
@@ -1437,8 +1534,8 @@ export function TacticalCombatCore({
                   area: skill.area,
                   source,
                   skill,
-                })
-              }
+                });
+              }}
             >
               {skill.iconUrl ? (
                 <Image
@@ -1475,6 +1572,34 @@ export function TacticalCombatCore({
           </button>
         ))}
       </div>
+
+      <section className={styles.skillDetail} data-combat-skill-detail aria-live="polite">
+        {inspectedSkill ? (
+          <>
+            {inspectedSkill.iconUrl ? (
+              <Image src={inspectedSkill.iconUrl} alt="" width={56} height={56} />
+            ) : null}
+            <div>
+              <small>{inspectedSkill.source}</small>
+              <strong>{inspectedSkill.name}</strong>
+              <p>{inspectedSkill.description}</p>
+            </div>
+            <ul aria-label={`Detalhes de ${inspectedSkill.name}`}>
+              <li>Alvo: {inspectedSkill.targetLabel}</li>
+              {inspectedSkill.range > 0 ? <li>Alcance: {inspectedSkill.range}</li> : null}
+              {inspectedSkill.area > 0 ? <li>Área: {inspectedSkill.area} casa(s)</li> : null}
+              <li>Custo: {inspectedSkill.costLabel}</li>
+              {inspectedSkill.cooldown > 0 ? (
+                <li>Recarga: {inspectedSkill.cooldown} turno(s)</li>
+              ) : null}
+            </ul>
+          </>
+        ) : (
+          <p>
+            Selecione ou passe o cursor sobre uma habilidade para ver exatamente como ela funciona.
+          </p>
+        )}
+      </section>
 
       <div className={styles.workspace} data-combat-board>
         <div className={styles.boardShell} data-wl-surface="dark">

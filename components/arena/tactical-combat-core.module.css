@@ -352,9 +352,11 @@
   color: var(--wl-gold);
   font-size: 1.7rem;
 }
-.skillBar .passiveTile:disabled {
+.skillBar .passiveTile:disabled,
+.skillBar .passiveTile[aria-disabled="true"] {
   opacity: 0.82;
   filter: none;
+  cursor: help;
 }
 .passiveTile::after {
   content: "PASSIVA";
@@ -372,6 +374,62 @@
 .skillBar p {
   margin: 0;
   color: var(--wl-text-muted);
+}
+.skillDetail {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid var(--wl-border);
+  border-radius: var(--wl-radius-md);
+  background: var(--wl-surface-raised);
+  box-shadow: var(--wl-shadow-soft);
+}
+.skillDetail > img {
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--wl-gold);
+  border-radius: 50%;
+  object-fit: cover;
+}
+.skillDetail div {
+  display: grid;
+  gap: 3px;
+}
+.skillDetail small {
+  color: var(--wl-gold-strong);
+  font-size: 0.65rem;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.skillDetail strong {
+  font-size: 1rem;
+}
+.skillDetail p {
+  margin: 0;
+  color: var(--wl-text-muted);
+  font-size: 0.82rem;
+  line-height: 1.42;
+}
+.skillDetail ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.skillDetail li {
+  padding: 5px 7px;
+  border: 1px solid var(--wl-border);
+  border-radius: 999px;
+  background: var(--wl-surface);
+  color: var(--wl-text-muted);
+  font-size: 0.68rem;
+  font-weight: 750;
 }
 .workspace {
   display: grid;
@@ -757,6 +815,13 @@
   }
   .skillBar {
     padding: 10px;
+  }
+  .skillDetail {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .skillDetail ul {
+    grid-column: 1/-1;
+    justify-content: flex-start;
   }
   .skillBar button {
     flex-basis: 102px;

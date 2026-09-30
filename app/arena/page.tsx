@@ -2,7 +2,7 @@ import { TacticalCombatShell } from "@/components/arena/tactical-combat-shell";
 import { PlayerNav } from "@/components/player-nav";
 import { getCharacterSheets, getPvpOpponentSheet } from "@/lib/content/characters";
 import { requireActiveCharacter } from "@/lib/content/active-character";
-import { arenaRewards, type ArenaMode } from "@/lib/game/arena";
+import { type ArenaMode } from "@/lib/game/arena";
 import Link from "next/link";
 import {
   claimArenaVictoryAction,
@@ -248,13 +248,11 @@ export default async function ArenaPage({
                       : "5 entradas por dia"}
                   </small>
                   <strong>PvE</strong>
-                  <p>Enfrente um monstro do seu nível e com o mesmo total de atributos.</p>
-                  <b>
-                    {activeCharacter
-                      ? `+${arenaRewards[activeCharacter.adventure_rank as keyof typeof arenaRewards].xp.toLocaleString("pt-BR")} XP`
-                      : "Entrar"}{" "}
-                    →
-                  </b>
+                  <p>
+                    Recompensas PvE temporariamente suspensas enquanto investigamos pagamentos e
+                    validamos resultados. Entrar ainda consome uma tentativa diária.
+                  </p>
+                  <b>Sem XP ou WG por enquanto →</b>
                   <button className="button button--primary" type="submit">
                     {pveStatus?.activeSessionId ? "Retomar PvE" : "Entrar no PvE"}
                   </button>

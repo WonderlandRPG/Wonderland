@@ -30,15 +30,50 @@ export async function startPveAction() {
   redirect(`/arena?modo=pve&sessao=${data}`);
 }
 
-export async function claimArenaVictoryAction(sessionId: string) {
+export async function claimArenaVictoryAction(sessionId: string, state: unknown) {
   await requireCurrentAccount("/arena");
-  const parsed = z.uuid().safeParse(sessionId);
-  if (!parsed.success) return { ok: false as const, message: "Sessão de combate inválida." };
-  return {
-    ok: false as const,
-    message:
-      "Recompensas PvE temporariamente suspensas para proteger o jogo. Esta vitória não será registrada automaticamente; estamos investigando os casos afetados.",
-  };
+  const parsedId = z.uuid().safeParse(sessionId);
+  const parsedState = z
+    .object({
+      version: z.literal(1),
+      mapId: z.string().min(1),
+      characterId: z.uuid(),
+      creatureId: z.uuid(),
+      playerState: z.object({ id: z.uuid(), hp: z.number().positive() }).passthrough(),
+      enemyState: z.object({ id: z.uuid(), hp: z.number().max(0) }).passthrough(),
+      classTracker: z.object({}).passthrough(),
+      actionUsage: z.object({}).passthrough(),
+      round: z.number().int().min(1).max(100),
+      log: z.array(z.string()).min(2),
+      outcome: z.literal("victory"),
+    })
+    .passthrough()
+    .safeParse(state);
+  if (
+    !parsedId.success ||
+    !parsedState.success ||
+    JSON.stringify(parsedState.data).length > 120_000
+  )
+    return { ok: false as const, message: "Resultado tático incompleto ou inválido." };
+  const client = await createServerSupabaseClient();
+  if (!client) return { ok: false as const, message: "Banco indisponível." };
+  const { error: stateError } = await client.rpc("v2_save_pve_battle_state", {
+    p_session_id: parsedId.data,
+    p_state: parsedState.data as Json,
+  });
+  const { data, error } = await client.rpc("v2_claim_arena_victory", {
+    p_session_id: parsedId.data,
+  });
+  if (error || !data || Array.isArray(data) || typeof data !== "object")
+    return {
+      ok: false as const,
+      message: stateError?.message ?? error?.message ?? "Não foi possível entregar a recompensa.",
+    };
+  revalidatePath("/personagens");
+  if (typeof data.character_id === "string") revalidatePath(`/personagens/${data.character_id}`);
+  revalidatePath("/ranking");
+  revalidatePath("/arena/historico");
+  return { ok: true as const, xp: Number(data.xp ?? 0), wg: Number(data.wg ?? 0) };
 }
 
 export async function finishArenaDefeatAction(sessionId: string) {

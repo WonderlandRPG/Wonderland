@@ -259,7 +259,9 @@ export function TacticalCombatCore({
   creatures: TacticalBestiaryCreature[];
   mapId: string;
   locked?: boolean;
-  onVictory?: () => Promise<{ ok: boolean; message?: string; xp?: number; wg?: number }>;
+  onVictory?: (
+    finalState: TacticalBattleSnapshot,
+  ) => Promise<{ ok: boolean; message?: string; xp?: number; wg?: number }>;
   onDefeat?: () => Promise<{ ok: boolean; message?: string; xp?: number; wg?: number }>;
   initialState?: TacticalBattleSnapshot | null;
   onCheckpoint?: (state: TacticalBattleSnapshot) => Promise<void>;
@@ -320,6 +322,8 @@ export function TacticalCombatCore({
   );
   const [settling, startSettlement] = useTransition();
   const [settlement, setSettlement] = useState<string | null>(null);
+  const [settlementFailed, setSettlementFailed] = useState(false);
+  const [settlementAttempt, setSettlementAttempt] = useState(0);
   const [resultSummary, setResultSummary] = useState<{
     victory: boolean;
     xp?: number;
@@ -333,12 +337,39 @@ export function TacticalCombatCore({
     if (liveOutcome !== "victory" && liveOutcome !== "defeat" && liveOutcome !== "draw") return;
     if (settledOutcome.current === liveOutcome) return;
     settledOutcome.current = liveOutcome;
-    const settle = liveOutcome === "victory" ? onVictory : onDefeat;
-    if (!settle) return;
+    if (liveOutcome === "victory" ? !onVictory : !onDefeat) return;
     startSettlement(async () => {
-      const result = await settle();
+      let result;
+      try {
+        result =
+          liveOutcome === "victory" && playerState && enemyState && onVictory
+            ? await onVictory({
+                version: 1,
+                mapId,
+                characterId,
+                creatureId,
+                playerState,
+                enemyState,
+                playerPosition,
+                enemyPosition,
+                classTracker,
+                pathTracker,
+                movement,
+                actionUsage,
+                round,
+                message,
+                log,
+                outcome: "victory",
+              })
+            : await onDefeat!();
+      } catch {
+        setSettlement("A conexão falhou ao registrar o resultado. Tente novamente.");
+        setSettlementFailed(true);
+        return;
+      }
       if (!result.ok) {
         setSettlement(result.message ?? "Não foi possível registrar o resultado.");
+        setSettlementFailed(true);
         return;
       }
       if (liveOutcome === "victory") {
@@ -349,7 +380,26 @@ export function TacticalCombatCore({
       setSettlement("Resultado registrado no histórico.");
       setResultSummary({ victory: false });
     });
-  }, [liveOutcome, onDefeat, onVictory]);
+  }, [
+    liveOutcome,
+    onDefeat,
+    onVictory,
+    playerState,
+    enemyState,
+    mapId,
+    characterId,
+    creatureId,
+    playerPosition,
+    enemyPosition,
+    classTracker,
+    pathTracker,
+    movement,
+    actionUsage,
+    round,
+    message,
+    log,
+    settlementAttempt,
+  ]);
 
   useEffect(() => {
     if (!onCheckpoint || !playerState || !enemyState || liveOutcome !== "ongoing") return;
@@ -522,6 +572,7 @@ export function TacticalCombatCore({
   function resetBoard(nextCharacter = character, nextCreature = creature) {
     settledOutcome.current = null;
     setSettlement(null);
+    setSettlementFailed(false);
     setPlayerPosition(tacticalMap.playerStart);
     setEnemyPosition(tacticalMap.enemyStart);
     setPlayerState(makePlayer(nextCharacter));
@@ -1436,6 +1487,19 @@ export function TacticalCombatCore({
 
       {settling || settlement ? (
         <p role="status">{settling ? "Registrando resultado..." : settlement}</p>
+      ) : null}
+      {settlementFailed ? (
+        <button
+          type="button"
+          disabled={settling}
+          onClick={() => {
+            settledOutcome.current = null;
+            setSettlementFailed(false);
+            setSettlementAttempt((attempt) => attempt + 1);
+          }}
+        >
+          Tentar registrar resultado novamente
+        </button>
       ) : null}
 
       <div className={styles.skillBar} data-wl-surface="raised" data-combat-skills>

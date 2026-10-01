@@ -31,13 +31,16 @@ export default async function CharacterSheetPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; tab?: string }>;
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   await requireActiveCharacter(`/personagens/${id}`);
   const character = await requireCharacterSheet(id);
   const ownedCosmetics = await getOwnedCosmetics(id);
   const progress = getLevelProgress(character.xp);
+  const tab = ["resumo", "habilidades", "equipamentos"].includes(query.tab ?? "")
+    ? query.tab!
+    : "resumo";
   const futureClassSkills = character.characterClass.payload.progression
     .filter((skill) => skill.level > character.level)
     .sort((a, b) => a.level - b.level);
@@ -64,10 +67,17 @@ export default async function CharacterSheetPage({
     character.race.payload.resource?.maximum ?? 0,
   );
   const xpRemaining = Math.max(progress.next - character.xp, 0);
+  const tabHref = (nextTab: "resumo" | "habilidades" | "equipamentos") =>
+    `/personagens/${character.id}?tab=${nextTab}`;
+
   return (
     <main className="sheet-page">
       <PlayerNav />
-      <div className="page-container sheet-page__inner character-profile-page">
+      <div
+        className={
+          tab === "equipamentos" ? "inventory-page-container" : "page-container sheet-page__inner"
+        }
+      >
         <nav className="sheet-breadcrumb" aria-label="Localização na jornada">
           <Link href="/personagens">Meus personagens</Link>
           <span aria-hidden="true">/</span>
@@ -106,7 +116,8 @@ export default async function CharacterSheetPage({
           </div>
         ) : null}
 
-        <>
+        {tab !== "equipamentos" ? (
+          <>
             <section
               className="character-command-hero"
               style={{ "--character-rank": rank.color } as React.CSSProperties}
@@ -191,8 +202,8 @@ export default async function CharacterSheetPage({
                   >
                     ⚔ Entrar na Arena
                   </Link>
-                  <Link className="button button--dark" href="#equipamentos">
-                    ◈ Ver equipamentos
+                  <Link className="button button--dark" href={tabHref("equipamentos")}>
+                    ◈ Preparar equipamentos
                   </Link>
                   <Link className="character-command-hero__shop" href="/loja">
                     Visitar mercado →
@@ -256,18 +267,23 @@ export default async function CharacterSheetPage({
                 <strong>◆ {character.gold.toLocaleString("pt-BR")} WG</strong>
               </div>
             </section>
-        </>
+          </>
+        ) : null}
 
         <nav className="sheet-tabs" aria-label="Seções da ficha">
           <Link
-            href="#resumo"
+            aria-current={tab === "resumo" ? "page" : undefined}
+            className={tab === "resumo" ? "is-active" : ""}
+            href={tabHref("resumo")}
           >
             <span>01</span>
             <strong>Ficha</strong>
             <small>Atributos e identidade</small>
           </Link>
           <Link
-            href="#habilidades"
+            aria-current={tab === "habilidades" ? "page" : undefined}
+            className={tab === "habilidades" ? "is-active" : ""}
+            href={tabHref("habilidades")}
           >
             <span>02</span>
             <strong>Habilidades</strong>
@@ -279,7 +295,9 @@ export default async function CharacterSheetPage({
             </small>
           </Link>
           <Link
-            href="#equipamentos"
+            aria-current={tab === "equipamentos" ? "page" : undefined}
+            className={tab === "equipamentos" ? "is-active" : ""}
+            href={tabHref("equipamentos")}
           >
             <span>03</span>
             <strong>Equipamentos</strong>
@@ -289,7 +307,8 @@ export default async function CharacterSheetPage({
           </Link>
         </nav>
 
-        <section className="character-profile-section" id="resumo">
+        {tab === "resumo" ? (
+          <>
             <section className="sheet-stat-grid" aria-label="Resumo de combate">
               <article data-stat="hp">
                 <span>HP máximo</span>
@@ -503,9 +522,11 @@ export default async function CharacterSheetPage({
                 </div>
               </section>
             </div>
-        </section>
+          </>
+        ) : null}
 
-        <section className="character-profile-section" id="habilidades">
+        {tab === "habilidades" ? (
+          <>
             <SkillLoadoutBuilder character={character} />
             <section className="sheet-section grimoire">
               <header>
@@ -546,13 +567,14 @@ export default async function CharacterSheetPage({
                 />
               </div>
             </section>
-        </section>
+          </>
+        ) : null}
 
-        <section
-          className="inventory-hud character-profile-section"
-          id="equipamentos"
-          style={{ "--character-rank": rank.color } as React.CSSProperties}
-        >
+        {tab === "equipamentos" ? (
+          <section
+            className="inventory-hud"
+            style={{ "--character-rank": rank.color } as React.CSSProperties}
+          >
             <header>
               <span className="eyebrow">Arsenal do personagem</span>
               <h2>Equipamentos de {character.name}</h2>
@@ -616,7 +638,8 @@ export default async function CharacterSheetPage({
                 compatibleSlots: compatibleEquipSlots(entry.slot, entry.twoHanded),
               }))}
             />
-        </section>
+          </section>
+        ) : null}
       </div>
     </main>
   );

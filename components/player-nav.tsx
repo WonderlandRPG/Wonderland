@@ -64,25 +64,14 @@ export async function PlayerNav() {
       </nav>
       <div className={styles.character}>
         {activeCharacter ? (
-          <>
-            <Link className={styles.characterSummary} href={`/personagens/${activeCharacter.id}`}>
-              <span>{activeCharacter.name}</span>
-              <small>
-                Nível {activeCharacter.level} · Rank {activeCharacter.adventure_rank}
-              </small>
-            </Link>
-            <Link
-              className={styles.inventoryLink}
-              href={`/personagens/${activeCharacter.id}#equipamentos`}
-            >
-              Inventário
-            </Link>
-          </>
+          <Link href="/personagens">
+            <span>{activeCharacter.name}</span>
+            <small>
+              Nível {activeCharacter.level} · Rank {activeCharacter.adventure_rank}
+            </small>
+          </Link>
         ) : (
-          <Link
-            className={styles.characterSummary}
-            href={account ? "/personagens?selecionar=1" : "/entrar"}
-          >
+          <Link href={account ? "/personagens?selecionar=1" : "/entrar"}>
             {account ? "Escolher personagem" : "Entrar"}
           </Link>
         )}

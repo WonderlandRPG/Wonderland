@@ -88,6 +88,23 @@
 .sheet-page .sheet-columns { align-items: start; }
 .sheet-page .sheet-lore-block > article { background: color-mix(in srgb, var(--wl-surface) 72%, transparent); }
 
+.character-profile-page { scroll-behavior: smooth; }
+.character-profile-section { scroll-margin-top: 112px; }
+.character-profile-section + .character-profile-section { margin-top: 24px; }
+.character-profile-page > .sheet-tabs a:hover,
+.character-profile-page > .sheet-tabs a:focus-visible {
+  border-color: var(--wl-accent);
+  background: var(--wl-surface-raised);
+  outline: none;
+}
+.character-profile-page > .sheet-tabs a > span { color: var(--wl-accent); }
+.character-profile-page > .sheet-tabs a > small { color: var(--wl-text-muted); }
+.character-profile-page #habilidades,
+.character-profile-page #equipamentos {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+}
+
 @media (max-width: 1120px) {
   .sheet-page .character-command-hero { grid-template-columns: 340px minmax(0, 1fr); }
   .sheet-page .character-command-hero__identity { padding: 34px; }

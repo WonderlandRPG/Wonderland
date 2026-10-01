@@ -1,571 +1,91 @@
-/* Arsenal do personagem · interface do rework de inventário. */
-.inventory-hud {
-  overflow: hidden;
-  padding: 0;
-  border: 1px solid var(--wl-border-strong);
-  border-radius: var(--wl-radius-lg);
-  background: var(--wl-surface-dark-strong);
-  color: var(--wl-text-inverse);
-  box-shadow: var(--wl-shadow);
+.inventory-page-container { width:min(100% - 40px,1440px); margin:0 auto; }
+.inventory-hud { overflow:hidden; border:1px solid var(--wl-border); border-radius:var(--wl-radius-lg); background:var(--wl-surface-dark-strong); box-shadow:var(--wl-shadow); }
+.inventory-hud>header { display:flex; align-items:center; justify-content:space-between; gap:24px; padding:20px 24px; border-bottom:1px solid color-mix(in srgb,var(--wl-border) 48%,transparent); color:var(--wl-text-inverse); }
+.inventory-hud>header :where(h2,p) { margin:0; }
+.inventory-hud>header p { max-width:560px; color:var(--wl-text-inverse-muted); text-align:right; }
+.arsenal-shell { position:relative; display:grid; grid-template-columns:340px minmax(0,1fr); min-height:680px; }
+.arsenal-loadout { min-width:0; padding:20px; border-right:1px solid color-mix(in srgb,var(--wl-border) 48%,transparent); background:var(--wl-surface-dark); color:var(--wl-text-inverse); }
+.arsenal-loadout-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.arsenal-loadout-heading h3,.arsenal-catalog>header h3 { margin:3px 0 0; color:var(--wl-text-inverse); font-size:clamp(1.3rem,2vw,1.7rem); }
+.arsenal-loadout-heading__count { display:grid; place-items:center; min-width:52px; min-height:38px; border:1px solid var(--wl-border); border-radius:var(--wl-radius-sm); color:var(--wl-gold-soft); font-weight:800; }
+.arsenal-loadout__hint { margin:8px 0 16px; color:var(--wl-text-inverse-muted); font-size:.88rem; }
+.arsenal-slot-column { display:grid; gap:7px; }
+.arsenal-slot-column>button { display:grid; grid-template-columns:48px minmax(0,1fr); gap:10px; align-items:center; min-height:62px; padding:7px; border:1px solid color-mix(in srgb,var(--wl-border) 45%,transparent); border-radius:var(--wl-radius-sm); background:var(--wl-surface-dark-strong); color:var(--wl-text-inverse); text-align:left; cursor:pointer; }
+.arsenal-slot-column>button:hover,.arsenal-slot-column>button:focus-visible { border-color:var(--wl-gold); outline:none; }
+.arsenal-slot-column>button.is-reserved { opacity:.72; }
+.arsenal-slot-art { display:grid; place-items:center; width:48px; height:48px; overflow:hidden; border-radius:calc(var(--wl-radius-sm) - 2px); background:var(--wl-surface-raised); }
+.arsenal-slot-art>* { max-width:100%; max-height:100%; }
+.arsenal-slot-column button>span:last-child { display:grid; min-width:0; }
+.arsenal-slot-column :where(small,em) { color:var(--wl-text-inverse-muted); font-size:.72rem; font-style:normal; }
+.arsenal-slot-column strong { overflow:hidden; font-size:.82rem; text-overflow:ellipsis; white-space:nowrap; }
+.inventory-loadout-summary { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:16px; }
+.inventory-loadout-summary__power,.inventory-loadout-summary__wallet { display:grid; gap:3px; padding:10px; border:1px solid color-mix(in srgb,var(--wl-border) 40%,transparent); border-radius:var(--wl-radius-sm); background:var(--wl-surface-dark-strong); }
+.inventory-loadout-summary span { color:var(--wl-text-inverse-muted); font-size:.72rem; }
+.inventory-loadout-summary strong { color:var(--wl-gold-soft); font-size:.9rem; }
+.arsenal-browser { min-width:0; background:var(--wl-surface-dark-strong); }
+.arsenal-catalog { min-width:0; padding:22px; }
+.arsenal-catalog>header { display:flex; align-items:end; justify-content:space-between; gap:20px; }
+.arsenal-catalog>header nav { display:flex; gap:6px; padding:4px; border:1px solid color-mix(in srgb,var(--wl-border) 40%,transparent); border-radius:var(--wl-radius-sm); background:var(--wl-surface-dark); }
+.arsenal-catalog>header nav button { min-height:40px; padding:7px 13px; border:0; border-radius:calc(var(--wl-radius-sm) - 2px); background:transparent; color:var(--wl-text-inverse-muted); cursor:pointer; }
+.arsenal-catalog>header nav button.is-active { background:var(--wl-action-bg); color:var(--wl-action-text); }
+.arsenal-search { display:flex; align-items:center; gap:10px; margin-top:18px; }
+.arsenal-search label { display:flex; flex:1; align-items:center; gap:8px; min-width:0; min-height:46px; padding:0 14px; border:1px solid color-mix(in srgb,var(--wl-border) 48%,transparent); border-radius:var(--wl-radius-sm); background:var(--wl-surface-dark); color:var(--wl-text-inverse-muted); }
+.arsenal-search input { width:100%; min-width:0; border:0; outline:0; background:transparent; color:var(--wl-text-inverse); font-size:1rem; }
+.arsenal-search>small { color:var(--wl-text-inverse-muted); white-space:nowrap; }
+.arsenal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:10px; margin-top:16px; }
+.arsenal-item-card { display:grid; grid-template-rows:116px auto auto 1fr; gap:7px; min-width:0; min-height:218px; padding:9px; overflow:hidden; border:1px solid color-mix(in srgb,var(--wl-border) 46%,transparent); border-radius:var(--wl-radius-sm); background:var(--wl-surface-dark); color:var(--wl-text-inverse); text-align:left; cursor:pointer; }
+.arsenal-item-card:hover,.arsenal-item-card:focus-visible,.arsenal-item-card.is-selected { border-color:var(--wl-gold); outline:none; box-shadow:0 0 0 1px var(--wl-gold); }
+.arsenal-item-card>div:first-child { position:relative; display:grid; place-items:center; overflow:hidden; border-radius:calc(var(--wl-radius-sm) - 2px); background:var(--wl-surface-raised); }
+.arsenal-item-card>div:first-child>* { max-width:100%; max-height:100%; }
+.arsenal-item-card>div:first-child b { position:absolute; right:5px; bottom:4px; }
+.arsenal-item-card>small { color:var(--wl-text-inverse-muted); font-size:.72rem; text-transform:uppercase; }
+.arsenal-item-card>strong { overflow-wrap:anywhere; font-size:.92rem; line-height:1.3; }
+.arsenal-item-card footer { display:flex; align-items:end; justify-content:space-between; gap:6px; margin-top:auto; color:var(--wl-text-inverse-muted); font-size:.72rem; }
+.arsenal-item-card footer i { color:var(--wl-gold-soft); font-style:normal; }
+.arsenal-inspector { position:fixed; z-index:900; top:0; right:0; display:grid; align-content:start; gap:14px; width:min(420px,100%); height:100dvh; padding:24px; overflow-y:auto; border-left:1px solid var(--wl-border); background:var(--wl-surface-dark-strong); color:var(--wl-text-inverse); box-shadow:var(--wl-shadow); transform:translateX(105%); transition:transform 180ms ease; }
+.arsenal-inspector.is-open { transform:translateX(0); }
+.arsenal-inspector>header { display:flex; align-items:start; justify-content:space-between; gap:16px; }
+.arsenal-inspector header span { color:var(--wl-gold-soft); font-size:.78rem; }
+.arsenal-inspector h3 { margin:5px 0; overflow-wrap:anywhere; font-size:1.5rem; }
+.arsenal-inspector__close { flex:0 0 42px; width:42px; height:42px; border:1px solid var(--wl-border); border-radius:50%; background:var(--wl-surface-dark); color:var(--wl-text-inverse); font-size:1.4rem; cursor:pointer; }
+.arsenal-inspector__glyph { display:grid; place-items:center; height:210px; overflow:hidden; border:1px solid var(--wl-border); border-radius:var(--wl-radius-sm); background:var(--wl-surface-raised); }
+.arsenal-inspector__glyph>* { max-width:100%; max-height:100%; }
+.arsenal-inspector>p { margin:0; color:var(--wl-text-inverse-muted); line-height:1.55; }
+.arsenal-inspector dl { display:grid; grid-template-columns:repeat(2,1fr); gap:7px; margin:0; }
+.arsenal-inspector dl>div,.arsenal-inspector>article { padding:10px; border:1px solid color-mix(in srgb,var(--wl-border) 42%,transparent); border-radius:var(--wl-radius-sm); background:var(--wl-surface-dark); }
+.arsenal-inspector dt,.arsenal-inspector article small { color:var(--wl-text-inverse-muted); font-size:.72rem; }
+.arsenal-inspector dd { margin:3px 0 0; color:var(--wl-gold-soft); font-weight:900; }
+.arsenal-inspector article :where(strong,p) { display:block; margin:4px 0 0; }
+.arsenal-inspector footer { display:grid; gap:8px; padding-top:8px; }
+.arsenal-inspector footer :where(form,button,label) { width:100%; }
+.arsenal-inspector footer label { display:grid; gap:5px; }
+.arsenal-empty { display:grid; place-items:center; align-content:center; min-height:240px; padding:24px; color:var(--wl-text-inverse-muted); text-align:center; }
+.arsenal-cosmetics { display:grid; gap:14px; margin-top:18px; }
+.arsenal-cosmetics__intro,.arsenal-cosmetics__grid article { padding:14px; border:1px solid color-mix(in srgb,var(--wl-border) 45%,transparent); border-radius:var(--wl-radius-sm); background:var(--wl-surface-dark); color:var(--wl-text-inverse); }
+.arsenal-cosmetics__intro :where(h3,p),.arsenal-cosmetics__grid :where(h4,p) { margin:3px 0; }
+.arsenal-cosmetics__grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px; }
+.arsenal-cosmetics__grid article { display:grid; gap:8px; }
+.arsenal-cosmetics__preview { display:grid; place-items:center; min-height:170px; background:var(--wl-surface-dark-strong); }
+.arsenal-cosmetics__preview>div { width:120px; }
+@media (max-width:980px) {
+  .inventory-page-container { width:min(100% - 24px,1440px); }
+  .arsenal-shell { grid-template-columns:1fr; }
+  .arsenal-loadout { border-right:0; border-bottom:1px solid color-mix(in srgb,var(--wl-border) 48%,transparent); }
+  .arsenal-slot-column { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width:700px) {
+  .inventory-page-container { width:min(100% - 16px,1440px); }
+  .inventory-hud>header,.arsenal-catalog>header { align-items:stretch; flex-direction:column; }
+  .inventory-hud>header p { text-align:left; }
+  .arsenal-catalog>header nav { display:grid; grid-template-columns:repeat(3,1fr); }
+  .arsenal-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .arsenal-inspector { top:auto; bottom:0; width:100%; height:min(84dvh,760px); border-top:1px solid var(--wl-border); border-left:0; border-radius:var(--wl-radius-lg) var(--wl-radius-lg) 0 0; transform:translateY(105%); }
+  .arsenal-inspector.is-open { transform:translateY(0); }
+}
+@media (max-width:480px) {
+  .inventory-hud>header,.arsenal-loadout,.arsenal-catalog,.arsenal-inspector { padding:14px; }
+  .arsenal-slot-column { grid-template-columns:1fr; }
+  .arsenal-grid { gap:8px; }
+  .arsenal-item-card { grid-template-rows:94px auto auto 1fr; min-height:190px; }
+  .arsenal-search { flex-wrap:wrap; }
 }
-.inventory-page-container {
-  width: min(1760px, calc(100% - 48px));
-  max-width: none;
-  margin-inline: auto;
-  padding-top: 24px;
-}
-.inventory-hud > header {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 28px;
-  padding: 22px 28px;
-  border-bottom: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
-  background: var(--wl-surface-dark);
-}
-.inventory-hud > header h2 {
-  margin: 3px 0;
-  color: var(--wl-text-inverse);
-  font-size: clamp(1.45rem, 3vw, 2.15rem);
-}
-.inventory-hud > header p,
-.inventory-hud > header .eyebrow {
-  margin: 0;
-  color: var(--wl-text-inverse-muted);
-}
-.arsenal-shell {
-  display: grid;
-  grid-template-columns: minmax(690px, 0.95fr) minmax(780px, 1.15fr);
-  min-width: 0;
-  min-height: 780px;
-}
-.arsenal-loadout {
-  display: grid;
-  grid-template-columns: minmax(170px, 1fr) minmax(250px, 1.35fr) minmax(170px, 1fr);
-  grid-template-areas: "head head head" "left hero right" "stats stats stats";
-  align-content: start;
-  gap: 16px;
-  min-width: 0;
-  padding: 22px;
-  border-right: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
-  background: color-mix(in srgb, var(--wl-surface-dark) 76%, var(--wl-surface-dark-strong));
-}
-.arsenal-loadout-heading {
-  grid-area: head;
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 12px;
-  min-width: 0;
-  padding-bottom: 12px;
-  border-bottom: 1px solid color-mix(in srgb, var(--wl-border) 42%, transparent);
-}
-.arsenal-loadout-heading h3 {
-  margin: 2px 0 0;
-  color: var(--wl-text-inverse);
-  font-size: 1.35rem;
-}
-.arsenal-loadout-heading small,
-.arsenal-loadout-heading .eyebrow {
-  color: var(--wl-text-inverse-muted);
-}
-.arsenal-slot-column {
-  display: grid;
-  grid-template-rows: repeat(7, minmax(72px, auto));
-  gap: 9px;
-  min-width: 0;
-}
-.arsenal-slot-column.is-left {
-  grid-area: left;
-}
-.arsenal-slot-column.is-right {
-  grid-area: right;
-}
-.arsenal-slot-column > button {
-  display: grid;
-  grid-template-columns: 50px minmax(0, 1fr);
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  min-width: 0;
-  min-height: 72px;
-  padding: 9px;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 55%, transparent);
-  border-radius: var(--wl-radius-sm);
-  background: color-mix(in srgb, var(--wl-surface-dark) 78%, var(--wl-surface-raised));
-  color: var(--wl-text-inverse);
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color 160ms ease,
-    background 160ms ease,
-    transform 160ms ease;
-}
-.arsenal-slot-column > button:hover,
-.arsenal-slot-column > button:focus-visible {
-  border-color: var(--wl-gold-soft);
-  background: color-mix(in srgb, var(--wl-surface-dark) 68%, var(--wl-gold));
-  transform: translateY(-1px);
-}
-.arsenal-slot-column > button.is-equipped {
-  border-color: var(--character-rank, var(--wl-gold));
-  background: color-mix(in srgb, var(--wl-surface-dark) 76%, var(--wl-gold));
-}
-.arsenal-slot-column > button.is-reserved {
-  opacity: var(--wl-disabled-opacity);
-}
-.arsenal-slot-art {
-  display: grid;
-  place-items: center;
-  width: 50px;
-  height: 50px;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 66%, transparent);
-  border-radius: var(--wl-radius-sm);
-  background: var(--wl-surface-dark-strong);
-}
-.arsenal-slot-art > * {
-  max-width: 100%;
-  max-height: 100%;
-}
-.arsenal-slot-column > button > span:not(.arsenal-slot-art) {
-  min-width: 0;
-}
-.arsenal-slot-column :where(small, strong, em) {
-  display: block;
-  min-width: 0;
-  margin: 0;
-  overflow-wrap: anywhere;
-  line-height: 1.15;
-}
-.arsenal-slot-column small {
-  color: var(--wl-text-inverse-muted);
-  font-size: 0.72rem;
-}
-.arsenal-slot-column strong {
-  margin-top: 2px;
-  color: var(--wl-text-inverse);
-  font-size: 0.86rem;
-  line-height: 1.2;
-}
-.arsenal-slot-column em {
-  margin-top: 2px;
-  color: var(--wl-gold-soft);
-  font-size: 0.68rem;
-}
-.arsenal-character-card {
-  grid-area: hero;
-  align-self: center;
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  min-width: 0;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-.arsenal-character-card > div:first-child {
-  width: min(100%, 290px);
-}
-.arsenal-character-card__caption {
-  display: grid;
-  width: 100%;
-  gap: 2px;
-  padding: 8px;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 55%, transparent);
-  border-radius: var(--wl-radius-sm);
-  background: var(--wl-surface-dark-strong);
-  text-align: center;
-}
-.arsenal-character-card__caption small {
-  color: var(--wl-text-inverse-muted);
-}
-.inventory-loadout-summary {
-  grid-area: stats;
-  display: grid;
-  gap: 10px;
-  padding-top: 4px;
-}
-.inventory-loadout-summary__identity,
-.inventory-loadout-summary__power,
-.inventory-loadout-summary__wallet {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 44%, transparent);
-  background: var(--wl-surface-dark-strong);
-}
-.inventory-loadout-summary__identity span {
-  display: grid;
-  gap: 2px;
-}
-.inventory-loadout-summary__identity span:last-child {
-  text-align: right;
-}
-.inventory-loadout-summary__identity small,
-.inventory-loadout-summary__power span,
-.inventory-loadout-summary__wallet span {
-  color: var(--wl-text-inverse-muted);
-  font-size: 0.78rem;
-}
-.inventory-loadout-summary__power strong,
-.inventory-loadout-summary__wallet strong {
-  color: var(--wl-gold-soft);
-}
-.inventory-loadout-summary__attributes {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  margin: 0;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 44%, transparent);
-  background: color-mix(in srgb, var(--wl-border) 36%, transparent);
-}
-.inventory-loadout-summary__attributes > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  padding: 8px;
-  background: var(--wl-surface-dark-strong);
-}
-.inventory-loadout-summary__attributes dt {
-  color: var(--wl-text-inverse-muted);
-}
-.inventory-loadout-summary__attributes dd {
-  margin: 0;
-  color: var(--wl-text-inverse);
-  font-weight: 800;
-}
-.arsenal-browser {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(290px, 31%);
-  align-content: start;
-  min-width: 0;
-  background: var(--wl-surface-dark-strong);
-}
-.arsenal-catalog {
-  min-width: 0;
-  padding: 18px;
-  border-right: 1px solid color-mix(in srgb, var(--wl-border) 42%, transparent);
-}
-.arsenal-catalog > header {
-  display: grid;
-  gap: 10px;
-}
-.arsenal-catalog > header h3 {
-  margin: 2px 0;
-  color: var(--wl-text-inverse);
-  font-size: 1.5rem;
-}
-.arsenal-catalog > header .eyebrow {
-  color: var(--wl-text-inverse-muted);
-}
-.arsenal-catalog > header nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-.arsenal-catalog > header nav button {
-  min-height: 42px;
-  padding: 8px 12px;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 50%, transparent);
-  background: var(--wl-surface-dark);
-  color: var(--wl-text-inverse-muted);
-  cursor: pointer;
-}
-.arsenal-catalog > header nav button.is-active,
-.arsenal-catalog > header nav button:hover {
-  border-color: var(--wl-gold);
-  color: var(--wl-text-inverse);
-}
-.arsenal-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  padding: 10px 12px;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 38%, transparent);
-  background: var(--wl-surface-dark);
-}
-.arsenal-search label {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  gap: 6px;
-  min-width: 0;
-}
-.arsenal-search input {
-  width: 100%;
-  min-width: 0;
-  border: 0;
-  background: transparent;
-  color: var(--wl-text-inverse);
-}
-.arsenal-search small {
-  color: var(--wl-text-inverse-muted);
-  white-space: nowrap;
-}
-.arsenal-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(150px, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-}
-.arsenal-item-card {
-  display: grid;
-  align-content: start;
-  gap: 7px;
-  min-width: 0;
-  min-height: 238px;
-  padding: 10px;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
-  background: var(--wl-surface-dark);
-  color: var(--wl-text-inverse);
-  text-align: left;
-  cursor: pointer;
-}
-.arsenal-item-card:hover,
-.arsenal-item-card.is-selected {
-  border-color: var(--wl-gold);
-}
-.arsenal-item-card.is-selected {
-  background: color-mix(in srgb, var(--wl-surface-dark) 78%, var(--wl-gold));
-}
-.arsenal-item-card > div:first-child {
-  position: relative;
-  display: grid;
-  place-items: center;
-  height: 112px;
-  overflow: hidden;
-  background: var(--wl-surface-dark-strong);
-}
-.arsenal-item-card > div:first-child > * {
-  max-width: 100%;
-  max-height: 100%;
-}
-.arsenal-item-card > div:first-child b {
-  position: absolute;
-  right: 4px;
-  bottom: 3px;
-}
-.arsenal-item-card > small {
-  color: var(--wl-text-inverse-muted);
-  font-size: 0.68rem;
-  text-transform: uppercase;
-}
-.arsenal-item-card > strong {
-  overflow-wrap: anywhere;
-  font-size: 0.9rem;
-  line-height: 1.25;
-}
-.arsenal-card-effect {
-  color: var(--wl-gold-soft);
-  font-size: 0.72rem;
-}
-.arsenal-card-effect small {
-  display: block;
-  color: var(--wl-text-inverse-muted);
-}
-.arsenal-item-card footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 5px;
-  margin-top: auto;
-  padding-top: 5px;
-  border-top: 1px solid color-mix(in srgb, var(--wl-border) 35%, transparent);
-  color: var(--wl-text-inverse-muted);
-  font-size: 0.68rem;
-}
-.arsenal-inspector {
-  position: sticky;
-  top: 76px;
-  display: grid;
-  align-content: start;
-  gap: 14px;
-  min-width: 0;
-  padding: 20px;
-  color: var(--wl-text-inverse);
-}
-.arsenal-inspector header span,
-.arsenal-inspector header b {
-  color: var(--wl-gold-soft);
-  font-size: 0.74rem;
-}
-.arsenal-inspector h3 {
-  margin: 5px 0;
-  overflow-wrap: anywhere;
-  font-size: 1.5rem;
-}
-.arsenal-inspector__glyph {
-  display: grid;
-  place-items: center;
-  height: 170px;
-  overflow: hidden;
-  border: 1px solid var(--wl-gold);
-  background: var(--wl-surface-dark);
-}
-.arsenal-inspector__glyph > * {
-  max-width: 100%;
-  max-height: 100%;
-}
-.arsenal-inspector > p {
-  margin: 0;
-  color: var(--wl-text-inverse-muted);
-  font-size: 0.84rem;
-  line-height: 1.55;
-}
-.arsenal-inspector dl {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
-  margin: 0;
-}
-.arsenal-inspector dl > div,
-.arsenal-inspector > article {
-  padding: 8px;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 38%, transparent);
-  background: var(--wl-surface-dark);
-}
-.arsenal-inspector dt,
-.arsenal-inspector article small {
-  color: var(--wl-text-inverse-muted);
-  font-size: 0.7rem;
-}
-.arsenal-inspector dd {
-  margin: 2px 0 0;
-  color: var(--wl-gold-soft);
-  font-weight: 900;
-}
-.arsenal-inspector article :where(strong, p) {
-  display: block;
-  margin: 3px 0 0;
-  overflow-wrap: anywhere;
-}
-.arsenal-inspector footer {
-  display: grid;
-  gap: 7px;
-}
-.arsenal-inspector footer form,
-.arsenal-inspector footer button,
-.arsenal-inspector footer label {
-  width: 100%;
-}
-.arsenal-inspector footer label {
-  display: grid;
-  gap: 4px;
-}
-.arsenal-empty {
-  display: grid;
-  place-items: center;
-  align-content: center;
-  min-height: 180px;
-  padding: 20px;
-  color: var(--wl-text-inverse-muted);
-  text-align: center;
-}
-.arsenal-cosmetics {
-  display: grid;
-  gap: 14px;
-  margin-top: 12px;
-}
-.arsenal-cosmetics__intro,
-.arsenal-cosmetics__grid article {
-  padding: 14px;
-  border: 1px solid color-mix(in srgb, var(--wl-border) 45%, transparent);
-  background: var(--wl-surface-dark);
-}
-.arsenal-cosmetics__intro h3,
-.arsenal-cosmetics__grid h4,
-.arsenal-cosmetics__grid p {
-  margin: 3px 0;
-}
-.arsenal-cosmetics__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 8px;
-}
-.arsenal-cosmetics__grid article {
-  display: grid;
-  gap: 7px;
-  color: var(--wl-text-inverse);
-}
-.arsenal-cosmetics__preview {
-  display: grid;
-  place-items: center;
-  min-height: 160px;
-  background: var(--wl-surface-dark-strong);
-}
-.arsenal-cosmetics__preview > div {
-  width: 120px;
-}
-@media (max-width: 1480px) {
-  .arsenal-shell {
-    grid-template-columns: 1fr;
-  }
-  .arsenal-loadout {
-    border-right: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--wl-border) 52%, transparent);
-  }
-  .arsenal-browser {
-    min-height: 620px;
-  }
-}
-@media (max-width: 900px) {
-  .inventory-page-container {
-    width: min(100% - 24px, 1760px);
-  }
-  .inventory-hud > header {
-    display: grid;
-  }
-  .arsenal-browser {
-    grid-template-columns: 1fr;
-  }
-  .arsenal-catalog {
-    border-right: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--wl-border) 42%, transparent);
-  }
-  .arsenal-inspector {
-    position: static;
-  }
-}
-@media (max-width: 760px) {
-  .arsenal-loadout {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-areas: "head head" "hero hero" "left right" "stats stats";
-  }
-  .arsenal-character-card > div:first-child {
-    width: min(100%, 260px);
-  }
-}
-@media (max-width: 520px) {
-  .inventory-hud {
-    border-radius: var(--wl-radius-sm);
-  }
-  .inventory-hud > header,
-  .arsenal-loadout,
-  .arsenal-catalog,
-  .arsenal-inspector {
-    padding: 10px;
-  }
-  .arsenal-loadout {
-    grid-template-columns: 1fr;
-    grid-template-areas: "head" "hero" "left" "right" "stats";
-  }
-  .arsenal-loadout-heading {
-    display: grid;
-  }
-  .inventory-loadout-summary__attributes {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .arsenal-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .arsenal-item-card {
-    min-height: 160px;
-  }
-}
-

@@ -69,7 +69,6 @@ import {
   initialTacticalPathTracker,
   markTacticalPathMovement,
   prepareTacticalPathSkill,
-  tacticalPathIgnoresLineOfSight,
   type TacticalPathTracker,
 } from "@/lib/game/tactical-path-passives";
 import { applyTacticalRacialReaction } from "@/lib/game/tactical-race-reactions";
@@ -106,6 +105,7 @@ export type TacticalCharacter = {
   className: string;
   classPathKey: string | null;
   baseHp: number;
+  maxHp?: number;
   baseMana: number;
   attributes: CombatAttributes;
   classResource: {
@@ -179,6 +179,7 @@ function makePlayer(character: TacticalCharacter) {
     name: character.name,
     attributes: character.attributes,
     baseHp: character.baseHp,
+    maxHp: character.maxHp,
     baseMana: character.baseMana,
     classResource: { ...character.classResource, generationEvents: [] },
     raceResource: character.raceResource
@@ -671,7 +672,7 @@ export function TacticalCombatCore({
     const beforeEnemy = enemy;
     const targetMarked = isMarked(beforeEnemy);
     const preparedPath = prepareTacticalPathSkill({
-      pathKey: character.classPathKey,
+      pathKey: null,
       tracker: pathTracker,
       actor: player,
       target: affectsEnemy(selected.skill) ? enemy : player,
@@ -718,7 +719,7 @@ export function TacticalCombatCore({
     const shieldGranted = Math.max(0, result.actor.shield - beforePlayer.shield);
     const classGeneration = applyTacticalClassResourceGeneration({
       combatant: result.actor,
-      className: character.className,
+      className: "",
       tracker: classTracker,
       context: {
         action: "skill",
@@ -737,7 +738,7 @@ export function TacticalCombatCore({
       },
     });
     const pathResult = applyTacticalPathAfterAction({
-      pathKey: character.classPathKey,
+      pathKey: null,
       tracker: pathTracker,
       actorBefore: beforePlayer,
       targetBefore: beforeEnemy,
@@ -828,7 +829,7 @@ export function TacticalCombatCore({
         to: enemyPosition,
         blocked: obstacles,
       });
-      if (!sight && !tacticalPathIgnoresLineOfSight(character.classPathKey, enemy)) {
+      if (!sight) {
         return setMessage("Linha de visão bloqueada.");
       }
 
@@ -866,7 +867,7 @@ export function TacticalCombatCore({
       const basicDistance = getTacticalDistance(playerPosition, enemyPosition);
       const classGeneration = applyTacticalClassResourceGeneration({
         combatant: reactions.actor,
-        className: character.className,
+        className: "",
         tracker: classTracker,
         context: {
           action: "basic",
@@ -880,7 +881,7 @@ export function TacticalCombatCore({
         },
       });
       const pathResult = applyTacticalPathAfterAction({
-        pathKey: character.classPathKey,
+        pathKey: null,
         tracker: pathTracker,
         actorBefore: player,
         targetBefore: beforeEnemy,
@@ -927,7 +928,7 @@ export function TacticalCombatCore({
       to: position,
       blocked: obstacles,
     });
-    if (targetsEnemy && !sight && !tacticalPathIgnoresLineOfSight(character.classPathKey, enemy)) {
+    if (targetsEnemy && !sight) {
       return setMessage(`${action.name}: linha de visão bloqueada.`);
     }
     if (
@@ -956,7 +957,7 @@ export function TacticalCombatCore({
       firstSuccessfulActionThisRound: isFirstAction(usedBasic, usedClass, usedRace, usedItem),
     });
     nextPlayer = reaction.combatant;
-    const itemDoctrine = consumeTacticalPathItemAction(character.classPathKey, pathTracker);
+    const itemDoctrine = consumeTacticalPathItemAction(null, pathTracker);
     setPathTracker(itemDoctrine.tracker);
     setPlayerState(nextPlayer);
     if (itemDoctrine.consumeAction)
@@ -975,7 +976,7 @@ export function TacticalCombatCore({
     const shieldAbsorbed = Math.max(0, before.shield - after.shield);
     return applyTacticalClassResourceGeneration({
       combatant: after,
-      className: character.className,
+      className: "",
       tracker,
       context: {
         action: "incoming",
@@ -1119,7 +1120,7 @@ export function TacticalCombatCore({
         );
         nextTracker = incomingClass.tracker;
         const incomingPath = applyTacticalPathIncoming({
-          pathKey: character.classPathKey,
+          pathKey: null,
           tracker: nextPathTracker,
           before: beforePlayer,
           after: incomingClass.combatant,
@@ -1174,7 +1175,7 @@ export function TacticalCombatCore({
           );
           nextTracker = incomingClass.tracker;
           const incomingPath = applyTacticalPathIncoming({
-            pathKey: character.classPathKey,
+            pathKey: null,
             tracker: nextPathTracker,
             before: beforePlayer,
             after: incomingClass.combatant,
@@ -1224,14 +1225,14 @@ export function TacticalCombatCore({
     const didSummonExpire = summonExpired(beforeCompletion.statuses, completed.player.statuses);
     const necromancerExpiry = applyNecromancerSummonExpiry(
       completed.player,
-      character.className,
+      "",
       beforeCompletion.statuses,
       completed.player.statuses,
     );
     let afterExpiry = necromancerExpiry.combatant;
     if (necromancerExpiry.message) notes.push(necromancerExpiry.message);
     const pathSummon = applyTacticalPathSummonExpiry({
-      pathKey: character.classPathKey,
+      pathKey: null,
       tracker: nextPathTracker,
       combatant: afterExpiry,
       expired: didSummonExpire,
@@ -1240,7 +1241,7 @@ export function TacticalCombatCore({
     nextPathTracker = pathSummon.tracker;
     if (pathSummon.message) notes.push(pathSummon.message);
     const pathTurnEnd = applyTacticalPathTurnEnd({
-      pathKey: character.classPathKey,
+      pathKey: null,
       tracker: nextPathTracker,
       combatant: afterExpiry,
     });
@@ -1791,7 +1792,7 @@ export function TacticalCombatCore({
             <li>Classe: {usedClass ? "usada" : "disponível"}</li>
             <li>Raça: {usedRace ? "usada" : "disponível"}</li>
             <li>Item: {character.items.length ? (usedItem ? "usado" : "disponível") : "nenhum"}</li>
-            <li>Doutrina: {character.classPathKey ?? "nenhuma"}</li>
+            <li>Especialização: {character.classPathKey ?? "nenhuma"}</li>
             <li>IA: {profile.aiProfile}</li>
             <li>Skills da criatura: {creatureSkills.map((skill) => skill.name).join(" · ")}</li>
           </ul>

@@ -17,6 +17,7 @@ export interface ArenaCharacter {
   raceName: string;
   className: string;
   baseHp: number;
+  maxHp?: number;
   baseMana: number;
   classResource: {
     name: string;

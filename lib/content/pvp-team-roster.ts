@@ -227,9 +227,10 @@ export async function getPvpTeamRoster(matchId: string) {
       raceName: raceRow.name,
       className: classRow.name,
       baseHp: Math.max(1, reworkStats.attributes.HP - reworkStats.attributes.RES * 5),
-      baseMana: race.data.baseMana,
-      classResource: characterClass.data.resource,
-      raceResource: race.data.resource,
+      maxHp: reworkStats.attributes.HP,
+      baseMana: 0,
+      classResource: { name: "", initial: 0, maximum: 0 },
+      raceResource: null,
       usesMana: [...skills, ...raceAbilities].some((skill) => skill.resource === "mana"),
       basicAttackRange: basicAttack?.range ?? getClassBasicAttackRange(classRow.name),
       basicAttackDamageType:
@@ -249,16 +250,12 @@ export async function getPvpTeamRoster(matchId: string) {
       skills,
       raceAbilities,
       combatLore: [
-        {
-          name: characterClass.data.passive.name,
-          description: characterClass.data.passive.description,
-        },
-        {
-          name: characterClass.data.mechanic.name,
-          description: characterClass.data.mechanic.description,
-        },
-        ...race.data.traits,
-        ...race.data.mechanics,
+        ...(reworkClass?.abilities
+          .filter((ability) => ability.kind === "Passiva")
+          .map((ability) => ({ name: ability.name, description: ability.description })) ?? []),
+        ...(reworkRace?.powers
+          .filter((power) => power.kind === "Característica")
+          .map((power) => ({ name: power.name, description: power.description })) ?? []),
       ],
       equipmentEffects: inventory
         .filter((item) => item.equippedSlot)

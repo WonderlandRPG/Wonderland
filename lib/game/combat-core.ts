@@ -127,6 +127,7 @@ export function createCombatant(input: {
   name: string;
   attributes: CombatAttributes;
   baseHp: number;
+  maxHp?: number;
   baseMana: number;
   rules?: CombatRules;
   classResource?: {
@@ -145,6 +146,7 @@ export function createCombatant(input: {
   itemEffects?: ItemSpecialEffect[];
 }): CombatantState {
   const stats = deriveStats(input.attributes, input.baseHp, input.baseMana, input.rules);
+  const maxHp = input.maxHp === undefined ? stats.maxHp : Math.max(1, rounded(input.maxHp));
   const usesMana = input.usesMana ?? true;
   const classResourceBonus = usesMana
     ? 0
@@ -156,8 +158,8 @@ export function createCombatant(input: {
     id: input.id,
     name: input.name,
     attributes: input.attributes,
-    maxHp: stats.maxHp,
-    hp: stats.maxHp,
+    maxHp,
+    hp: maxHp,
     maxMana: usesMana ? stats.maxMana : 0,
     mana: usesMana ? stats.maxMana : 0,
     shield: 0,

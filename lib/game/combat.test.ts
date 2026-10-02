@@ -25,6 +25,19 @@ import {
 const attributes = { FOR: 100, DEF: 100, RES: 100, INI: 60, INT: 80, ARC: 70 };
 
 describe("motor de combate", () => {
+  it("usa o HP final do Rework sem somar RES novamente", () => {
+    const combatant = createCombatant({
+      id: "rework-hp",
+      name: "Aventureiro",
+      attributes,
+      baseHp: 1,
+      maxHp: 475,
+      baseMana: 0,
+      usesMana: false,
+    });
+    expect(combatant.maxHp).toBe(475);
+    expect(combatant.hp).toBe(475);
+  });
   it("classifica modificadores negativos como prejudiciais mesmo com alvo incorreto", () => {
     const bard = officialClasses.find((entry) => entry.slug === "bardo")!;
     const defenseBreak = bard.payload.progression.find(

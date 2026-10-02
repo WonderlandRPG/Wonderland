@@ -29,6 +29,14 @@ function fighter(id: string, initiative: number): ArenaCharacter {
 }
 
 describe("estado compartilhado do PvP", () => {
+  it("não inventa bônus de combate a partir do texto descritivo das passivas", () => {
+    const player = fighter("rework", 20);
+    player.combatLore = [{ name: "Força eterna", description: "Ataque e defesa" }];
+    player.maxHp = 475;
+    const state = createInitialPvpState(player, fighter("alvo", 10), defaultCombatRules);
+    expect(state.fighters[player.id].maxHp).toBe(475);
+    expect(state.fighters[player.id].statuses["passivas-do-personagem"]).toBeUndefined();
+  });
   it("cria uma única batalha com ordem de turnos por iniciativa", () => {
     const state = createInitialPvpState(
       fighter("jogador-a", 20),

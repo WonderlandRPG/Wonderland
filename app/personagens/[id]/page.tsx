@@ -55,8 +55,7 @@ export default async function CharacterSheetPage({
   const rank = getAdventureRank(character.adventure_rank);
   const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
   const classPath = reworkClass?.paths.find((path) => path.id === character.class_path_key);
-  const supportedPathKeys = new Set(character.characterClass.payload.paths.map((path) => path.key));
-  const selectablePaths = reworkClass?.paths.filter((path) => supportedPathKeys.has(path.id)) ?? [];
+  const selectablePaths = reworkClass?.paths ?? [];
   const attributes = character.reworkStats.attributes;
   const xpRemaining = Math.max(progress.next - character.xp, 0);
   const tabHref = (nextTab: "resumo" | "habilidades" | "equipamentos") =>

@@ -6,7 +6,7 @@ import { getCharacterRules } from "@/lib/content/character-settings";
 import { getCharacterSheets } from "@/lib/content/characters";
 import { getClassCatalog } from "@/lib/content/classes";
 import { getRaceCatalog } from "@/lib/content/races";
-import { getReworkRaces } from "@/lib/content/rework-catalog";
+import { getReworkClasses, getReworkRaces } from "@/lib/content/rework-catalog";
 import { reworkDistributableStars } from "@/lib/game/rework-attributes";
 
 export const metadata = { title: "Criar Personagem" };
@@ -14,12 +14,13 @@ export const dynamic = "force-dynamic";
 
 export default async function NewCharacterPage() {
   const account = await requireCurrentAccount("/personagens/novo");
-  const [races, classes, rules, characters, reworkRaces] = await Promise.all([
+  const [races, classes, rules, characters, reworkRaces, reworkClasses] = await Promise.all([
     getRaceCatalog(),
     getClassCatalog({ publishedOnly: true }),
     getCharacterRules(),
     getCharacterSheets(account.id),
     getReworkRaces(),
+    getReworkClasses(),
   ]);
   const publishedRaces = races.filter((entry) => entry.status === "published");
   if (characters.length >= rules.maximumSlots) {
@@ -48,10 +49,7 @@ export default async function NewCharacterPage() {
           <section className="character-empty">
             <span>!</span>
             <h1>Catálogo incompleto</h1>
-            <p>
-              Um Fundador precisa publicar pelo menos uma raça e sincronizar as 13 classes oficiais
-              no Painel ADM.
-            </p>
+            <p>Um administrador precisa publicar as raças e classes oficiais do Rework.</p>
           </section>
         </div>
       </main>
@@ -76,26 +74,48 @@ export default async function NewCharacterPage() {
         <CharacterCreator
           points={reworkDistributableStars}
           races={publishedRaces.flatMap((entry) => {
-            const rework = reworkRaces.find((race) => race.id === entry.slug || race.name === entry.name);
-            return rework ? [{
-            id: entry.id,
-            name: entry.name,
-            payload: entry.payload,
-            baseStats: rework.baseStats,
-          }] : [];
+            const rework = reworkRaces.find(
+              (race) => race.id === entry.slug || race.name === entry.name,
+            );
+            return rework
+              ? [
+                  {
+                    id: entry.id,
+                    name: entry.name,
+                    description: rework.description,
+                    epithet: rework.epithet,
+                    firstPowerName: rework.powers[0]?.name ?? "—",
+                    imageUrl: entry.payload.imageUrl,
+                    baseStats: rework.baseStats,
+                  },
+                ]
+              : [];
           })}
-          classes={classes.map((entry) => ({
-            id: entry.id,
-            name: entry.name,
-            description: entry.payload.description,
-            difficulty: entry.payload.difficulty,
-            specialization: entry.payload.specialization,
-            primaryAttributes: entry.payload.primaryAttributes,
-            resourceName: entry.payload.resource.name,
-            passiveName: entry.payload.passive.name,
-            passiveDescription: entry.payload.passive.description,
-            paths: entry.payload.paths.map((path) => ({ key: path.key, name: path.name, description: path.description })),
-          }))}
+          classes={classes.flatMap((entry) => {
+            const rework = reworkClasses.find(
+              (item) => item.id === entry.slug || item.name === entry.name,
+            );
+            if (!rework) return [];
+            const magic = rework.abilities.filter(
+              (ability) => ability.combat.damageType === "Mágico",
+            ).length;
+            const physical = rework.abilities.filter(
+              (ability) => ability.combat.damageType === "Físico",
+            ).length;
+            return [
+              {
+                id: entry.id,
+                name: entry.name,
+                description: rework.description,
+                role: rework.role,
+                magical: magic > physical,
+                passiveName:
+                  rework.abilities.find((ability) => ability.kind === "Passiva")?.name ?? "—",
+                passiveDescription:
+                  rework.abilities.find((ability) => ability.kind === "Passiva")?.description ?? "",
+              },
+            ];
+          })}
         />
       </div>
     </main>

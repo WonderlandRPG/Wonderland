@@ -6,13 +6,12 @@ import { SkillLoadoutBuilder } from "@/components/characters/skill-loadout-build
 import { PlayerNav } from "@/components/player-nav";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
+import { getReworkClasses, getReworkRaces } from "@/lib/content/rework-catalog";
 import { getLevelProgress } from "@/lib/game/experience";
 import { reworkAttributeKeys } from "@/lib/game/rework-attributes";
 import { kingdomName } from "@/lib/game/kingdoms";
 import { InventoryWorkbench } from "@/components/inventory/inventory-workbench";
 import { getAdventureRank } from "@/lib/game/ranks";
-import { defaultCombatRules, getConvertedResourceBonus } from "@/lib/game/combat";
-import { getStructuredRaceAbilities } from "@/lib/game/races";
 import {
   compatibleEquipSlots,
   equipmentSlots,
@@ -35,37 +34,30 @@ export default async function CharacterSheetPage({
 }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
   await requireActiveCharacter(`/personagens/${id}`);
-  const character = await requireCharacterSheet(id);
-  const ownedCosmetics = await getOwnedCosmetics(id);
+  const [character, ownedCosmetics, classes, races] = await Promise.all([
+    requireCharacterSheet(id),
+    getOwnedCosmetics(id),
+    getReworkClasses(),
+    getReworkRaces(),
+  ]);
+  const reworkClass = classes.find((entry) => entry.name === character.characterClass.name);
+  const reworkRace = races.find((entry) => entry.name === character.race.name);
   const progress = getLevelProgress(character.xp);
   const tab = ["resumo", "habilidades", "equipamentos"].includes(query.tab ?? "")
     ? query.tab!
     : "resumo";
-  const futureClassSkills = character.characterClass.payload.progression
-    .filter((skill) => skill.level > character.level)
-    .sort((a, b) => a.level - b.level);
-  const futureRaceSkills = getStructuredRaceAbilities(character.race.payload)
-    .filter((skill) => skill.level > character.level)
-    .sort((a, b) => a.level - b.level);
+  const futureClassSkills = (reworkClass?.abilities ?? [])
+    .filter((ability) => ability.unlockLevel > character.level)
+    .sort((a, b) => a.unlockLevel - b.unlockLevel);
+  const futureRaceSkills = (reworkRace?.powers ?? [])
+    .filter((power) => power.unlockLevel > character.level)
+    .sort((a, b) => a.unlockLevel - b.unlockLevel);
   const rank = getAdventureRank(character.adventure_rank);
   const equippedTitle = character.inventory.find((item) => item.equippedSlot === "title") ?? null;
-  const classPath = character.characterClass.payload.paths?.find(
-    (path) => path.key === character.class_path_key,
-  );
-  const unlockedPathSkills = (classPath?.skills ?? []).filter(
-    (skill) => skill.level <= character.level,
-  );
-  const futurePathSkills = (classPath?.skills ?? []).filter(
-    (skill) => skill.level > character.level,
-  );
-  const classResourceBonus = getConvertedResourceBonus(
-    character.stats.attributes.INT,
-    character.characterClass.payload.resource.maximum,
-  );
-  const raceResourceBonus = getConvertedResourceBonus(
-    character.stats.attributes.INT,
-    character.race.payload.resource?.maximum ?? 0,
-  );
+  const classPath = reworkClass?.paths.find((path) => path.id === character.class_path_key);
+  const supportedPathKeys = new Set(character.characterClass.payload.paths.map((path) => path.key));
+  const selectablePaths = reworkClass?.paths.filter((path) => supportedPathKeys.has(path.id)) ?? [];
+  const attributes = character.reworkStats.attributes;
   const xpRemaining = Math.max(progress.next - character.xp, 0);
   const tabHref = (nextTab: "resumo" | "habilidades" | "equipamentos") =>
     `/personagens/${character.id}?tab=${nextTab}`;
@@ -91,8 +83,7 @@ export default async function CharacterSheetPage({
         ) : null}
         {query.status === "caminho-escolhido" ? (
           <div className="account-notice" role="status">
-            <span>✓</span>Missão concluída. O caminho e a habilidade de nível 50 foram
-            desbloqueados.
+            <span>✓</span>Caminho escolhido. A especialização já está salva na ficha.
           </div>
         ) : null}
         {query.status === "caminho-erro" || query.status === "caminho-bloqueado" ? (
@@ -170,28 +161,22 @@ export default async function CharacterSheetPage({
                 <div className="character-readiness" aria-label="Prontidão para combate">
                   <div>
                     <small>Vitalidade</small>
-                    <strong>{character.stats.maxHp}</strong>
+                    <strong>{attributes.HP}</strong>
                     <span>HP máximo</span>
                   </div>
                   <div>
                     <small>Defesa</small>
-                    <strong>{character.stats.attributes.DEF}</strong>
+                    <strong>{attributes.DEF}</strong>
                     <span>Redução física</span>
                   </div>
                   <div>
                     <small>Iniciativa</small>
-                    <strong>{character.stats.initiative}</strong>
+                    <strong>{attributes.INI}</strong>
                     <span>Ordem de ação</span>
                   </div>
                   <div>
                     <small>Maior poder</small>
-                    <strong>
-                      {Math.max(
-                        character.stats.physicalPower,
-                        character.stats.magicalPower,
-                        character.stats.supportPower,
-                      )}
-                    </strong>
+                    <strong>{Math.max(attributes.FOR, attributes.INT)}</strong>
                     <span>Potência atual</span>
                   </div>
                 </div>
@@ -288,9 +273,7 @@ export default async function CharacterSheetPage({
             <span>02</span>
             <strong>Habilidades</strong>
             <small>
-              {character.unlockedRaceAbilities.length +
-                character.unlockedClassSkills.length +
-                unlockedPathSkills.length}{" "}
+              {character.unlockedRaceAbilities.length + character.unlockedClassSkills.length}{" "}
               técnicas disponíveis
             </small>
           </Link>
@@ -312,74 +295,62 @@ export default async function CharacterSheetPage({
             <section className="sheet-stat-grid" aria-label="Resumo de combate">
               <article data-stat="hp">
                 <span>HP máximo</span>
-                <strong>{character.stats.maxHp}</strong>
+                <strong>{attributes.HP}</strong>
                 <small>Sobrevivência total</small>
               </article>
               <article data-stat="resource">
-                <span>Recursos iniciais</span>
-                <strong>{`+${classResourceBonus} ${character.characterClass.payload.resource.name}${raceResourceBonus ? ` · +${raceResourceBonus} ${character.race.payload.resource?.name}` : ""}`}</strong>
-                <small>Disponíveis no início</small>
+                <span>Poder total</span>
+                <strong>{character.reworkStats.powerTotal}</strong>
+                <small>Soma dos seis atributos finais</small>
               </article>
               <article data-stat="initiative">
                 <span>Iniciativa</span>
-                <strong>{character.stats.initiative}</strong>
+                <strong>{attributes.INI}</strong>
                 <small>Prioridade de turno</small>
               </article>
               <article data-stat="physical">
-                <span>Poder físico</span>
-                <strong>{character.stats.physicalPower}</strong>
-                <small>Escala com FOR</small>
+                <span>Força</span>
+                <strong>{attributes.FOR}</strong>
+                <small>Base das técnicas físicas</small>
               </article>
               <article data-stat="magic">
-                <span>Poder mágico</span>
-                <strong>{character.stats.magicalPower}</strong>
-                <small>Escala com INT</small>
+                <span>Inteligência</span>
+                <strong>{attributes.INT}</strong>
+                <small>Base das técnicas mágicas</small>
               </article>
               <article data-stat="support">
-                <span>Poder de suporte</span>
-                <strong>{character.stats.supportPower}</strong>
-                <small>Escala com INT</small>
+                <span>Resistência</span>
+                <strong>{attributes.RES}</strong>
+                <small>Proteção contra magia</small>
               </article>
             </section>
 
-            {!classPath ? (
+            {!classPath && selectablePaths.length ? (
               <section className="sheet-section path-selection-board">
                 <header>
-                  <span className="eyebrow">Missão de classe · nível 50</span>
+                  <span className="eyebrow">Especialização · nível 50</span>
                   <h2>Escolha seu caminho</h2>
                   <p>
                     {character.level >= 50
-                      ? "Leia as missões e confirme a especialização que acompanhará este personagem."
-                      : `Faltam ${50 - character.level} níveis para abrir o Salão dos Caminhos.`}
+                      ? "Escolha a especialização da sua classe."
+                      : `A escolha fica disponível no nível 50. Faltam ${50 - character.level} níveis.`}
                   </p>
                 </header>
                 <div className="path-dossier-grid">
-                  {character.characterClass.payload.paths.map((path) => (
-                    <article key={path.key} className={character.level < 50 ? "is-locked" : ""}>
+                  {selectablePaths.map((path) => (
+                    <article key={path.id} className={character.level < 50 ? "is-locked" : ""}>
                       <header>
                         <span>{path.name.slice(0, 1)}</span>
                         <div>
                           <small>Nível 50</small>
-                          <h3>{path.quest.title}</h3>
+                          <h3>{path.name}</h3>
                         </div>
                       </header>
-                      <p>{path.quest.briefing}</p>
-                      <ol>
-                        {path.quest.objectives.map((objective) => (
-                          <li key={objective}>{objective}</li>
-                        ))}
-                      </ol>
-                      <div className="path-passive">
-                        <small>Doutrina recebida</small>
-                        <b>{path.passive.name}</b>
-                        <span>{path.passive.description}</span>
-                      </div>
+                      <p>{path.description}</p>
                       {character.level >= 50 ? (
                         <form action={completePathQuestAction.bind(null, character.id)}>
-                          <input name="pathKey" type="hidden" value={path.key} />
-                          <button className="button button--primary">
-                            Concluir missão e escolher {path.name}
-                          </button>
+                          <input name="pathKey" type="hidden" value={path.id} />
+                          <button className="button button--primary">Escolher {path.name}</button>
                         </form>
                       ) : (
                         <button className="button button--dark" disabled>
@@ -391,56 +362,6 @@ export default async function CharacterSheetPage({
                 </div>
               </section>
             ) : null}
-
-            <details className="sheet-section combat-formulas">
-              <summary>
-                <span>
-                  <small>Manual de combate</small>
-                  <strong>Como os cálculos funcionam</strong>
-                </span>
-                <em>Abrir fórmulas</em>
-              </summary>
-              <p className="combat-formulas__intro">
-                Os mesmos cálculos são usados no PvE e no PvP.
-              </p>
-              <div>
-                <article>
-                  <b>HP máximo</b>
-                  <code>HP base + RES × {defaultCombatRules.hpPerResistance}</code>
-                  <p>RES aumenta sua vida total antes do combate.</p>
-                </article>
-                <article>
-                  <b>Ataque básico</b>
-                  <code>
-                    maior valor entre FOR e INT × {defaultCombatRules.basicAttackMultiplier}
-                  </code>
-                  <p>FOR causa dano físico; INT causa dano mágico quando for maior.</p>
-                </article>
-                <article>
-                  <b>Dano físico recebido</b>
-                  <code>Dano bruto × 100 ÷ (100 + DEF)</code>
-                  <p>DEF reduz ataques e habilidades de dano físico.</p>
-                </article>
-                <article>
-                  <b>Dano mágico recebido</b>
-                  <code>Dano bruto × 100 ÷ (100 + RES)</code>
-                  <p>RES também reduz ataques e habilidades mágicas.</p>
-                </article>
-                <article>
-                  <b>Habilidades</b>
-                  <code>Σ atributo × multiplicador da habilidade</code>
-                  <p>Cada card informa quais atributos entram na escala.</p>
-                </article>
-                <article>
-                  <b>Escudo e defesa</b>
-                  <code>Escudo absorve primeiro · Defender bloqueia o próximo dano</code>
-                  <p>
-                    Dano verdadeiro ignora DEF e RES. O dano mínimo normal é{" "}
-                    {defaultCombatRules.minimumDamage}.
-                  </p>
-                </article>
-              </div>
-            </details>
 
             <section className="sheet-section">
               <header>
@@ -482,21 +403,13 @@ export default async function CharacterSheetPage({
                   <span className="eyebrow">Identidade racial</span>
                   <h2>{character.race.name}</h2>
                 </header>
+                <p>{reworkRace?.description ?? "Raça do personagem."}</p>
                 <div className="sheet-lore-block">
-                  <h3>Mecânica racial</h3>
-                  {character.race.payload.mechanics.map((entry) => (
-                    <article key={entry.name}>
-                      <strong>{entry.name}</strong>
-                      <p>{entry.description}</p>
-                    </article>
-                  ))}
-                </div>
-                <div className="sheet-lore-block">
-                  <h3>Traços passivos</h3>
-                  {character.race.payload.traits.map((entry) => (
-                    <article key={entry.name}>
-                      <strong>{entry.name}</strong>
-                      <p>{entry.description}</p>
+                  <h3>Habilidades e característica racial</h3>
+                  {reworkRace?.powers.map((power) => (
+                    <article key={power.id}>
+                      <strong>{power.name}</strong>
+                      <p>{power.description}</p>
                     </article>
                   ))}
                 </div>
@@ -506,19 +419,19 @@ export default async function CharacterSheetPage({
                   <span className="eyebrow">Identidade da classe</span>
                   <h2>{character.characterClass.name}</h2>
                 </header>
+                <p>{reworkClass?.description ?? "Classe do personagem."}</p>
                 <div className="sheet-lore-block">
-                  <h3>Mecânica exclusiva</h3>
-                  <article>
-                    <strong>{character.characterClass.payload.mechanic.name}</strong>
-                    <p>{character.characterClass.payload.mechanic.description}</p>
-                  </article>
-                </div>
-                <div className="sheet-lore-block">
-                  <h3>Passiva da classe</h3>
-                  <article>
-                    <strong>{character.characterClass.payload.passive.name}</strong>
-                    <p>{character.characterClass.payload.passive.description}</p>
-                  </article>
+                  <h3>Passiva e ataque básico</h3>
+                  {reworkClass?.abilities
+                    .filter(
+                      (ability) => ability.kind === "Passiva" || ability.kind === "Ataque básico",
+                    )
+                    .map((ability) => (
+                      <article key={ability.id}>
+                        <strong>{ability.name}</strong>
+                        <p>{ability.description}</p>
+                      </article>
+                    ))}
                 </div>
               </section>
             </div>
@@ -542,27 +455,18 @@ export default async function CharacterSheetPage({
                   title="Raça"
                   unlocked={[]}
                   locked={futureRaceSkills.map((entry) => ({
-                    level: entry.level,
+                    level: entry.unlockLevel,
                     name: entry.name,
-                    description: entry.playerDescription,
+                    description: entry.description,
                   }))}
                 />
                 <SkillList
                   title="Classe"
                   unlocked={[]}
                   locked={futureClassSkills.map((entry) => ({
-                    level: entry.level,
+                    level: entry.unlockLevel,
                     name: entry.name,
-                    description: entry.effect,
-                  }))}
-                />
-                <SkillList
-                  title={`Caminho · ${classPath?.name ?? "Não definido"}`}
-                  unlocked={[]}
-                  locked={futurePathSkills.map((entry) => ({
-                    level: entry.level,
-                    name: entry.name,
-                    description: entry.playerDescription,
+                    description: entry.description,
                   }))}
                 />
               </div>

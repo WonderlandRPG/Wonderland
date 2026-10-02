@@ -20,7 +20,7 @@ import {
 } from "@/lib/game/class-combat-profile";
 import type { ArenaCharacter } from "@/lib/game/arena-types";
 import { parseCharacterCosmetics } from "@/lib/content/character-cosmetics";
-import { reworkClasses, reworkRaces } from "@/lib/game/rework-catalog";
+import { getReworkClasses, getReworkRaces } from "@/lib/content/rework-catalog";
 import {
   getReworkBasicAttack,
   getReworkClassCombatSkills,
@@ -91,10 +91,11 @@ export async function getPvpTeamRoster(matchId: string) {
       rawMembers.flatMap((member) => [member.character.race_id, member.character.class_id]),
     ),
   ];
-  const { data: contentRows } = await client
-    .from("v2_content")
-    .select("id,slug,name,payload")
-    .in("id", contentIds);
+  const [{ data: contentRows }, reworkClasses, reworkRaces] = await Promise.all([
+    client.from("v2_content").select("id,slug,name,payload").in("id", contentIds),
+    getReworkClasses(),
+    getReworkRaces(),
+  ]);
   const content = new Map((contentRows ?? []).map((entry) => [entry.id, entry]));
 
   const itemIds = [

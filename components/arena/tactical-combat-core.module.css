@@ -836,7 +836,8 @@
     margin-bottom: 10px;
   }
   .board {
-    min-width: 560px;
+    width: 100%;
+    min-width: 0;
   }
   .sidePanel {
     padding: 16px;
@@ -850,7 +851,8 @@
     padding: 15px;
   }
   .board {
-    min-width: 520px;
+    width: 100%;
+    min-width: 0;
   }
   .skillBar button {
     flex-basis: 98px;

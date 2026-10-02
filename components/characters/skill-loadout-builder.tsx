@@ -39,7 +39,7 @@ export function SkillLoadoutBuilder({ character }: { character: CharacterSheet }
           <p>Somente as técnicas e passivas marcadas abaixo serão levadas para Arena, PvE e PvP.</p>
         </div>
         <div data-wl-status={selected.persisted ? "success" : "warning"}>
-          {selected.persisted ? "Loadout personalizado ativo" : "Configuração legada preservada"}
+          {selected.persisted ? "Loadout personalizado ativo" : "Seleção inicial ativa"}
         </div>
       </header>
 
@@ -114,13 +114,10 @@ export function SkillLoadoutBuilder({ character }: { character: CharacterSheet }
           </div>
         </fieldset>
 
-        <fieldset data-wl-component="panel">
-          <legend>Árvore de talentos</legend>
-          <p>
-            Ative até {character.skillLoadoutLimits.talents} nós em sequência. Um talento ativo
-            ainda precisa ser equipado acima para aparecer no combate.
-          </p>
-          {character.talentSkills.length ? (
+        {character.talentSkills.length ? (
+          <fieldset data-wl-component="panel">
+            <legend>Talentos do caminho</legend>
+            <p>Ative até {character.skillLoadoutLimits.talents} talentos em sequência.</p>
             <ol className="talent-tree">
               {character.talentSkills.map((skill, index) => (
                 <li key={skill.key}>
@@ -142,12 +139,8 @@ export function SkillLoadoutBuilder({ character }: { character: CharacterSheet }
                 </li>
               ))}
             </ol>
-          ) : (
-            <div className="loadout-empty" data-wl-status="warning">
-              Escolha e desbloqueie um caminho de classe para abrir esta árvore.
-            </div>
-          )}
-        </fieldset>
+          </fieldset>
+        ) : null}
       </div>
 
       <footer className="skill-loadout__footer">

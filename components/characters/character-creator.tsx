@@ -13,27 +13,25 @@ import {
   type ReworkAttributeKey,
   type ReworkAttributes,
 } from "@/lib/game/rework-attributes";
-import { type RacePayload } from "@/lib/game/races";
-import { type AttributeKey } from "@/lib/game/schemas";
 import { kingdoms } from "@/lib/game/kingdoms";
 
 interface RaceOption {
   id: string;
   name: string;
-  payload: RacePayload;
+  description: string;
+  epithet: string;
+  firstPowerName: string;
+  imageUrl: string;
   baseStats: ReworkAttributes;
 }
 interface ClassOption {
   id: string;
   name: string;
   description: string;
-  difficulty: number;
-  specialization: string;
-  primaryAttributes: AttributeKey[];
-  resourceName: string;
+  role: string;
+  magical: boolean;
   passiveName: string;
   passiveDescription: string;
-  paths: Array<{ key: string; name: string; description: string }>;
 }
 
 export function CharacterCreator({
@@ -75,8 +73,7 @@ export function CharacterCreator({
 
   function applyPreset(preset: Exclude<GrowthProfile, "custom">) {
     if (!selectedClass) return;
-    const magical = selectedClass.primaryAttributes.includes("INT") && !selectedClass.primaryAttributes.includes("FOR");
-    setAllocation(buildReworkPreset(preset, magical));
+    setAllocation(buildReworkPreset(preset, selectedClass.magical));
     setActivePreset(preset);
   }
 
@@ -88,8 +85,7 @@ export function CharacterCreator({
     setClassId(nextClassId);
     const nextClass = classes.find((entry) => entry.id === nextClassId);
     if (activePreset !== "custom" && nextClass) {
-      const magical = nextClass.primaryAttributes.includes("INT") && !nextClass.primaryAttributes.includes("FOR");
-      setAllocation(buildReworkPreset(activePreset, magical));
+      setAllocation(buildReworkPreset(activePreset, nextClass.magical));
     }
   }
 
@@ -204,22 +200,21 @@ export function CharacterCreator({
           </label>
         </div>
         <div className="account-notice">
-          <span>50</span> O personagem começa sem caminho. No nível 50, uma missão permitirá
-          escolher uma especialização definitiva.
+          <span>50</span> O personagem começa sem caminho. A especialização fica disponível no nível
+          50.
         </div>
         <div className="character-choice-summary">
           <article>
             <span>Raça escolhida</span>
             <strong>{selectedRace?.name ?? "Nenhuma"}</strong>
             <small>
-              HP {selectedRace?.payload.baseHp ?? 0} · Recurso{" "}
-              {selectedRace?.payload.resource?.name ?? "racial"}
+              HP base {selectedRace?.baseStats.HP ?? 0} · {selectedRace?.epithet ?? "Raça"}
             </small>
           </article>
           <article>
             <span>Classe escolhida</span>
             <strong>{selectedClass?.name ?? "Nenhuma"}</strong>
-            <small>{selectedClass?.specialization ?? "Sem especialização"}</small>
+            <small>{selectedClass?.role ?? "Classe"}</small>
           </article>
         </div>
         <div className="character-build-preview">
@@ -227,7 +222,7 @@ export function CharacterCreator({
           <strong>
             {selectedRace?.name} {selectedClass?.name}
           </strong>
-          <small>Afinidades da classe: {selectedClass?.primaryAttributes.join(" · ") || "—"}</small>
+          <small>{selectedClass?.role ?? "Escolha uma classe"}</small>
         </div>
         <section className="character-choice-codex">
           <header>
@@ -263,41 +258,35 @@ export function CharacterCreator({
           {codexTab === "race" ? (
             <div className="character-choice-codex__content" role="tabpanel">
               <div>
-                {selectedRace?.payload.imageUrl ? (
+                {selectedRace?.imageUrl ? (
                   <span
                     className="character-codex-portrait"
-                    style={{ backgroundImage: `url(${selectedRace.payload.imageUrl})` }}
+                    style={{ backgroundImage: `url(${selectedRace.imageUrl})` }}
                     role="img"
                     aria-label={`Arte oficial de ${selectedRace.name}`}
                   />
                 ) : null}
-                <small>
-                  Raça selecionada · {"★".repeat(selectedRace?.payload.difficulty ?? 1)}
-                </small>
+                <small>Raça selecionada · Rework</small>
                 <h3>{selectedRace?.name}</h3>
-                <p>{selectedRace?.payload.description}</p>
+                <p>{selectedRace?.description}</p>
               </div>
               <aside>
-                <span>Especialização</span>
-                <strong>{selectedRace?.payload.specialization}</strong>
-                <span>Recurso racial</span>
-                <strong>{selectedRace?.payload.resource?.name ?? "Nenhum"}</strong>
-                <span>Traço inicial</span>
-                <strong>{selectedRace?.payload.traits[0]?.name ?? "—"}</strong>
+                <span>Origem</span>
+                <strong>{selectedRace?.epithet}</strong>
+                <span>Característica inicial</span>
+                <strong>{selectedRace?.firstPowerName ?? "—"}</strong>
               </aside>
             </div>
           ) : (
             <div className="character-choice-codex__content" role="tabpanel">
               <div>
-                <small>Classe selecionada · {"★".repeat(selectedClass?.difficulty ?? 1)}</small>
+                <small>Classe selecionada · Rework</small>
                 <h3>{selectedClass?.name}</h3>
                 <p>{selectedClass?.description}</p>
               </div>
               <aside>
-                <span>Especialização</span>
-                <strong>{selectedClass?.specialization}</strong>
-                <span>Recurso de classe</span>
-                <strong>{selectedClass?.resourceName}</strong>
+                <span>Papel em combate</span>
+                <strong>{selectedClass?.role}</strong>
                 <span>Passiva inicial</span>
                 <strong>{selectedClass?.passiveName}</strong>
                 <small>{selectedClass?.passiveDescription}</small>
@@ -315,7 +304,8 @@ export function CharacterCreator({
           <div>
             <h2>Distribuição de atributos</h2>
             <p>
-              Distribua 20 estrelas. O resultado soma as bases raciais, sua distribuição e os equipamentos.
+              Distribua 20 estrelas. O resultado soma as bases raciais, sua distribuição e os
+              equipamentos.
             </p>
           </div>
           <div className={`character-points ${remaining === 0 ? "is-valid" : ""}`}>
@@ -327,9 +317,7 @@ export function CharacterCreator({
           <div>
             <span className="eyebrow">Distribuição automática</span>
             <strong>Escolha um estilo de combate</strong>
-            <small>
-              O perfil define a distribuição inicial e pode ser ajustado livremente.
-            </small>
+            <small>O perfil define a distribuição inicial e pode ser ajustado livremente.</small>
           </div>
           <div className="character-preset-buttons">
             <button
@@ -369,7 +357,18 @@ export function CharacterCreator({
               <article key={attribute}>
                 <div>
                   <span>{attribute}</span>
-                  <small>{{ FOR: "Força", INT: "Inteligência", DEF: "Defesa", RES: "Resistência", HP: "Vida", INI: "Iniciativa" }[attribute]}</small>
+                  <small>
+                    {
+                      {
+                        FOR: "Força",
+                        INT: "Inteligência",
+                        DEF: "Defesa",
+                        RES: "Resistência",
+                        HP: "Vida",
+                        INI: "Iniciativa",
+                      }[attribute]
+                    }
+                  </small>
                 </div>
                 <strong>{total}</strong>
                 <div className="character-stepper">

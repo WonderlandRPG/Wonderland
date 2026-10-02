@@ -352,11 +352,13 @@
   font-weight: 900;
   letter-spacing: 0.13em;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > section:nth-of-type(2) strong {
   color: var(--wl-text-inverse);
   font-size: 1rem;
   line-height: 1.08;
+  overflow-wrap: anywhere;
 }
 .shell[data-combat-mode="battle"]
   [aria-label="Combate tático"]
@@ -680,6 +682,16 @@
     gap: 8px;
     order: 1;
   }
+  .shell[data-combat-mode="battle"]
+    [aria-label="Combate tático"]
+    > section:nth-of-type(2)
+    article:first-child,
+  .shell[data-combat-mode="battle"]
+    [aria-label="Combate tático"]
+    > section:nth-of-type(2)
+    article[data-enemy="true"] {
+    grid-area: auto;
+  }
   .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > section:nth-of-type(2) article {
     min-height: 180px;
     padding: 92px 10px 10px;
@@ -693,22 +705,25 @@
   .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-board] {
     order: 2;
     display: grid;
-    min-height: 430px;
+    width: 100%;
+    min-height: 0;
   }
   .shell[data-combat-mode="battle"]
     [aria-label="Combate tático"]
     > [data-combat-board]
     > div:first-child {
     height: auto;
-    min-height: 430px;
-    overflow: auto;
+    min-height: 0;
+    overflow: hidden;
   }
   .shell[data-combat-mode="battle"]
     [aria-label="Combate tático"]
     > [data-combat-board]
     > div:first-child
     > div {
-    min-width: 620px;
+    width: 100%;
+    min-width: 0;
+    max-height: none;
   }
   .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-actions] {
     order: 4;
@@ -739,9 +754,10 @@
   .shell[data-combat-mode="battle"] [aria-label="Combate tático"] > [data-combat-skills] {
     position: static;
     order: 3;
+    width: 100%;
     max-height: none;
     min-height: 0;
-    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 112px), 1fr));
   }
   .battleTopbar {
     height: auto;

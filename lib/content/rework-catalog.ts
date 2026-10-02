@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   reworkClassSchema,
@@ -24,20 +26,20 @@ async function overrides() {
   return new Map((data ?? []).map((entry) => [entry.key, entry.value]));
 }
 
-export async function getReworkClasses(): Promise<ReworkClass[]> {
+export const getReworkClasses = cache(async (): Promise<ReworkClass[]> => {
   const values = await overrides();
   return reworkClasses.map((entry) => {
     const parsed = reworkClassSchema.safeParse(values.get(`rework.class.${entry.id}`));
     return parsed.success ? parsed.data : entry;
   });
-}
+});
 
-export async function getReworkRaces(): Promise<ReworkRace[]> {
+export const getReworkRaces = cache(async (): Promise<ReworkRace[]> => {
   const values = await overrides();
   return reworkRaces.map((entry) => {
     const parsed = reworkRaceSchema.safeParse(values.get(`rework.race.${entry.id}`));
     return parsed.success ? parsed.data : entry;
   });
-}
+});
 
 export const reworkCatalogCategory = category;

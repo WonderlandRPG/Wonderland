@@ -3,6 +3,7 @@ import "server-only";
 import { notFound } from "next/navigation";
 
 import { getCharacterRules } from "@/lib/content/character-settings";
+import { getReworkClasses, getReworkRaces } from "@/lib/content/rework-catalog";
 import { defaultCombatRules } from "@/lib/game/combat";
 import type { Database } from "@/lib/db/types";
 import {
@@ -19,7 +20,6 @@ import {
 } from "@/lib/game/characters";
 import { parseRacePayload, type RacePayload } from "@/lib/game/races";
 import { attributeKeys } from "@/lib/game/schemas";
-import { reworkClasses, reworkRaces } from "@/lib/game/rework-catalog";
 import {
   getReworkClassCombatSkills,
   getReworkPassiveOptions,
@@ -149,19 +149,22 @@ async function loadSheets(
   const { data } = await client.from("v2_content").select("*").in("id", ids);
   const content = new Map((data ?? []).map((entry) => [entry.id, entry as ContentRow]));
   const characterIds = records.map((entry) => entry.id);
-  const [{ data: loadoutRows }, { data: loadoutSettingRows }] = await Promise.all([
-    client
-      .from("v2_character_skill_loadouts")
-      .select(
-        "character_id,equipped_class_skill_keys,equipped_race_skill_keys,selected_passive_keys,selected_talent_keys",
-      )
-      .in("character_id", characterIds),
-    client
-      .from("v2_game_settings")
-      .select("key,value")
-      .in("key", ["combat.loadout_limits", "combat.skill_balance_overrides"])
-      .eq("status", "published"),
-  ]);
+  const [{ data: loadoutRows }, { data: loadoutSettingRows }, reworkClasses, reworkRaces] =
+    await Promise.all([
+      client
+        .from("v2_character_skill_loadouts")
+        .select(
+          "character_id,equipped_class_skill_keys,equipped_race_skill_keys,selected_passive_keys,selected_talent_keys",
+        )
+        .in("character_id", characterIds),
+      client
+        .from("v2_game_settings")
+        .select("key,value")
+        .in("key", ["combat.loadout_limits", "combat.skill_balance_overrides"])
+        .eq("status", "published"),
+      getReworkClasses(),
+      getReworkRaces(),
+    ]);
   const loadouts = new Map((loadoutRows ?? []).map((entry) => [entry.character_id, entry]));
   const loadoutSettings = new Map(
     (loadoutSettingRows ?? []).map((entry) => [entry.key, entry.value]),

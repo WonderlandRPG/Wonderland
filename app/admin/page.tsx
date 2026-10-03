@@ -11,8 +11,8 @@ const tools = [
   {
     href: "/admin/estudio",
     index: "✦",
-    title: "Studio de Criação",
-    text: "Crie habilidades com formulário simples ou Assistente de IA.",
+    title: "Studio de itens e missões",
+    text: "Crie itens, títulos e missões pelo painel.",
   },
   {
     href: "/admin/jogadores",
@@ -27,7 +27,7 @@ const tools = [
     text: "Ajuste progressão, WG, Rank, reino e caminho de classe.",
   },
   {
-    href: "/admin/racas",
+    href: "/admin/migracao-rework",
     index: "03",
     title: "Conteúdo do jogo",
     text: "Publique raças, habilidades e regras do mundo.",

@@ -14,7 +14,7 @@ const navigation = [
     group: "Comando",
     items: [
       { label: "Visão geral", glyph: "01", href: "/admin" },
-      { label: "Studio de Criação", glyph: "✦", href: "/admin/estudio" },
+      { label: "Studio de itens e missões", glyph: "✦", href: "/admin/estudio" },
     ],
   },
   {
@@ -32,8 +32,7 @@ const navigation = [
   {
     group: "Jogo e economia",
     items: [
-      { label: "Raças", glyph: "04", href: "/admin/racas" },
-      { label: "Classes", glyph: "CL", href: "/admin/classes" },
+      { label: "Classes e raças · Rework", glyph: "✦", href: "/admin/migracao-rework" },
       { label: "Bestiário", glyph: "BS", href: "/admin/bestiario" },
       { label: "Itens", glyph: "05", href: "/admin/itens" },
       { label: "Cosméticos", glyph: "◇", href: "/admin/cosmeticos" },
@@ -42,7 +41,6 @@ const navigation = [
       { label: "Títulos", glyph: "✦", href: "/admin/titulos" },
       { label: "Balanceamento", glyph: "06", href: "/admin/balanceamento" },
       { label: "Temporadas", glyph: "♜", href: "/admin/temporadas" },
-      { label: "Migração do Rework", glyph: "↺", href: "/admin/migracao-rework" },
       { label: "Presença", glyph: "07", href: "/admin/presenca" },
       { label: "Temas", glyph: "◐", href: "/admin/temas" },
       { label: "Importador técnico", glyph: "AI", href: "/admin/importar" },
@@ -91,28 +89,6 @@ export function AdminSidebar({ account }: { account: CurrentAccount }) {
             })}
           </div>
         ))}
-        {pathname.startsWith("/admin/racas") ? (
-          <div className={styles.subnav}>
-            <Link className="is-active" href="/admin/racas">
-              <span>RA</span>
-              Raças
-            </Link>
-            <Link href="/admin/racas/nova">
-              <span>＋</span>
-              Nova raça
-            </Link>
-          </div>
-        ) : null}
-        {pathname.startsWith("/admin/classes") ? (
-          <div className={styles.subnav}>
-            <Link className="is-active" href="/admin/classes">
-              <span>CL</span>Classes
-            </Link>
-            <Link href="/admin/classes/nova">
-              <span>＋</span>Nova classe
-            </Link>
-          </div>
-        ) : null}
       </nav>
 
       <div className={styles.footer}>

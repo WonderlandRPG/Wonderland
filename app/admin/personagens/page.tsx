@@ -4,7 +4,7 @@ import { updateCharacterAdminAction } from "./actions";
 import { kingdoms } from "@/lib/game/kingdoms";
 import { adventureRanks } from "@/lib/game/ranks";
 import { RankBadge } from "@/components/characters/rank-badge";
-import { parseClassPayload } from "@/lib/game/classes";
+import { getReworkClasses } from "@/lib/content/rework-catalog";
 import { ItemImageField } from "@/components/admin/item-image-field";
 import { DeleteCharacterButton } from "@/components/admin/delete-character-button";
 
@@ -17,7 +17,7 @@ export default async function AdminCharactersPage({
   searchParams: Promise<{ status?: string; mensagem?: string }>;
 }) {
   const client = await createServerSupabaseClient();
-  const [{ data: characters }, query] = await Promise.all([
+  const [{ data: characters }, query, reworkClasses] = await Promise.all([
     client
       ? client
           .from("v2_characters")
@@ -27,20 +27,23 @@ export default async function AdminCharactersPage({
           .order("name")
       : Promise.resolve({ data: [] }),
     searchParams,
+    getReworkClasses(),
   ]);
   const contentIds = [
     ...new Set((characters ?? []).flatMap((entry) => [entry.race_id, entry.class_id])),
   ];
   const { data: content } =
     client && contentIds.length
-      ? await client.from("v2_content").select("id,name,content_type,payload").in("id", contentIds)
+      ? await client.from("v2_content").select("id,name,slug,content_type").in("id", contentIds)
       : { data: [] };
   const names = new Map((content ?? []).map((entry) => [entry.id, entry.name]));
   const classPaths = new Map(
     (content ?? []).flatMap((entry) => {
       if (entry.content_type !== "class") return [];
-      const parsed = parseClassPayload(entry.payload);
-      return parsed.success ? [[entry.id, parsed.data.paths] as const] : [];
+      const reworkClass = reworkClasses.find(
+        (candidate) => candidate.id === entry.slug || candidate.name === entry.name,
+      );
+      return reworkClass ? [[entry.id, reworkClass.paths] as const] : [];
     }),
   );
   return (
@@ -127,7 +130,7 @@ export default async function AdminCharactersPage({
                   <select name="classPathKey" defaultValue={character.class_path_key ?? ""}>
                     <option value="">Nenhum caminho</option>
                     {(classPaths.get(character.class_id) ?? []).map((path) => (
-                      <option key={path.key} value={path.key}>{path.name}</option>
+                      <option key={path.id} value={path.id}>{path.name}</option>
                     ))}
                   </select>
                 </label>

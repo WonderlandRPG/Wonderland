@@ -3,8 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import type { Json } from "@/lib/db/types";
-import { createEmptyClassPayload, createClassSlug, parseClassPayload } from "@/lib/game/classes";
-import { createEmptyRacePayload, createRaceSlug, parseRacePayload } from "@/lib/game/races";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import {
   simpleClassDraftSchema, simpleRaceDraftSchema, simpleItemDraftSchema, simpleTitleDraftSchema,
@@ -27,41 +25,16 @@ async function history(actorId:string, action:string, targetType:string, targetI
   if (client) await client.from("v2_admin_history").insert({ actor_id:actorId, action, target_type:targetType, target_id:targetId, details: details as unknown as Json });
 }
 
-export async function saveSimpleClassAction(input: unknown) {
-  const account = await requireAdministrativeAccount();
-  const parsed = simpleClassDraftSchema.safeParse(input); if (!parsed.success) return { ok:false as const, message:"Revise os campos da classe." };
-  const client = await createServerSupabaseClient(); if (!client) return { ok:false as const, message:"Banco indisponível." };
-  const d = parsed.data; let id = d.id;
-  if (id) {
-    const { data:row } = await client.from("v2_content").select("id,payload,revision").eq("id",id).eq("content_type","class").maybeSingle();
-    if (!row) return { ok:false as const, message:"Classe não encontrada." };
-    const current = parseClassPayload(row.payload); if (!current.success) return { ok:false as const, message:"A classe atual possui dados inválidos." };
-    const payload = { ...current.data, description:d.description, imageUrl:d.imageUrl, difficulty:d.difficulty, specialization:d.specialization, primaryAttributes:[d.primaryAttribute], resource:{...current.data.resource,name:d.resourceName,maximum:d.resourceMaximum}, passive:{name:d.passiveName,description:d.passiveDescription} };
-    const { data:updated,error } = await client.from("v2_content").update({ name:d.name, slug:createClassSlug(d.name), payload:payload as unknown as Json, updated_by:account.id }).eq("id",id).eq("revision",row.revision).select("id").maybeSingle();
-    if (error || !updated) return { ok:false as const, message:"Não foi possível salvar. Atualize a tela e tente novamente." };
-  } else {
-    const payload = createEmptyClassPayload(); payload.description=d.description; payload.imageUrl=d.imageUrl; payload.difficulty=d.difficulty; payload.specialization=d.specialization; payload.primaryAttributes=[d.primaryAttribute]; payload.resource.name=d.resourceName; payload.resource.maximum=d.resourceMaximum; payload.passive={name:d.passiveName,description:d.passiveDescription};
-    const { data:created,error } = await client.from("v2_content").insert({ content_type:"class", name:d.name, slug:createClassSlug(d.name), status:"draft", payload:payload as unknown as Json, created_by:account.id, updated_by:account.id }).select("id").single();
-    if (error || !created) return { ok:false as const, message:"Não foi possível criar a classe. Verifique se o nome já existe." }; id=created.id;
-  }
-  await history(account.id,d.id?"class.updated_from_studio":"class.created_from_studio","class",id,{name:d.name}); revalidatePath("/admin/classes"); revalidatePath("/classes"); revalidatePath("/admin/estudio");
-  return { ok:true as const, message:`${d.name} foi ${d.id?"atualizada":"criada como rascunho"}.`, id };
+export async function saveSimpleClassAction(_input: unknown) {
+  void _input;
+  await requireAdministrativeAccount();
+  return { ok: false as const, message: "Edite as classes no catálogo do Rework." };
 }
 
-export async function saveSimpleRaceAction(input: unknown) {
-  const account = await requireAdministrativeAccount(); const parsed=simpleRaceDraftSchema.safeParse(input); if(!parsed.success) return {ok:false as const,message:parsed.error.issues[0]?.message || "Revise os campos da raça."};
-  const client=await createServerSupabaseClient(); if(!client) return {ok:false as const,message:"Banco indisponível."}; const d=parsed.data; let id=d.id;
-  if(id){
-    const {data:row}=await client.from("v2_content").select("id,payload,revision").eq("id",id).eq("content_type","race").maybeSingle(); if(!row) return {ok:false as const,message:"Raça não encontrada."};
-    const current=parseRacePayload(row.payload); if(!current.success) return {ok:false as const,message:"A raça atual possui dados inválidos."};
-    const traits=current.data.traits.length ? current.data.traits.map((t,i)=>i===0?{name:d.traitName,description:d.traitDescription}:t) : [{name:d.traitName,description:d.traitDescription}];
-    const payload={...current.data,description:d.description,specialization:d.specialization,difficulty:d.difficulty,baseHp:d.baseHp,baseMana:d.baseMana,imageUrl:d.imageUrl,attributeBonuses:d.bonuses,traits};
-    const {data:updated,error}=await client.from("v2_content").update({name:d.name,slug:createRaceSlug(d.name),payload:payload as unknown as Json,updated_by:account.id}).eq("id",id).eq("revision",row.revision).select("id").maybeSingle(); if(error||!updated) return {ok:false as const,message:"Não foi possível salvar a raça."};
-  } else {
-    const payload=createEmptyRacePayload(); payload.description=d.description; payload.specialization=d.specialization; payload.difficulty=d.difficulty; payload.baseHp=d.baseHp; payload.baseMana=d.baseMana; payload.imageUrl=d.imageUrl; payload.attributeBonuses=d.bonuses; payload.traits=[{name:d.traitName,description:d.traitDescription}];
-    const {data:created,error}=await client.from("v2_content").insert({content_type:"race",name:d.name,slug:createRaceSlug(d.name),status:"draft",payload:payload as unknown as Json,created_by:account.id,updated_by:account.id}).select("id").single(); if(error||!created) return {ok:false as const,message:"Não foi possível criar a raça. Verifique se o nome já existe."}; id=created.id;
-  }
-  await history(account.id,d.id?"race.updated_from_studio":"race.created_from_studio","race",id,{name:d.name}); revalidatePath("/admin/racas"); revalidatePath("/racas"); revalidatePath("/admin/estudio"); return {ok:true as const,message:`${d.name} foi ${d.id?"atualizada":"criada como rascunho"}.`,id};
+export async function saveSimpleRaceAction(_input: unknown) {
+  void _input;
+  await requireAdministrativeAccount();
+  return { ok: false as const, message: "Edite as raças no catálogo do Rework." };
 }
 
 export async function saveSimpleItemAction(input: unknown) {
@@ -90,7 +63,7 @@ function schemaFor(kind:StudioContentKind){
   return {type:"object",additionalProperties:false,required:["id","name","description","attributes","primary","secondary","glow","effectKind","effectName","effectDescription","effectPower","effectDuration"],properties:{id:{type:"string"},name:{type:"string"},description:{type:"string"},attributes:itemAttrs,primary:{type:"string"},secondary:{type:"string"},glow:{type:"string"},effectKind:{type:"string",enum:["","POISON","BLEED","LIFE_STEAL","COOLDOWN_REDUCTION","FREEZE"]},effectName:{type:"string"},effectDescription:{type:"string"},effectPower:{type:"number",minimum:0},effectDuration:{type:"integer",minimum:0,maximum:20}}};
 }
 export async function generateStudioContentWithAiAction(_previous:ContentAiState,formData:FormData):Promise<ContentAiState>{
-  await requireAdministrativeAccount(); const kind=String(formData.get("kind")||"") as StudioContentKind; if(!["class","race","item","title"].includes(kind))return{status:"error",message:"Escolha o tipo de conteúdo."}; const prompt=String(formData.get("prompt")||"").trim(); if(prompt.length<5)return{status:"error",message:"Descreva melhor o que deseja criar."}; const key=process.env.OPENAI_API_KEY;if(!key)return{status:"error",message:"Configure OPENAI_API_KEY na Vercel para ativar o Assistente."};
+  await requireAdministrativeAccount(); const kind=String(formData.get("kind")||"") as StudioContentKind; if(!["item","title"].includes(kind))return{status:"error",message:"Escolha o tipo de conteúdo."}; const prompt=String(formData.get("prompt")||"").trim(); if(prompt.length<5)return{status:"error",message:"Descreva melhor o que deseja criar."}; const key=process.env.OPENAI_API_KEY;if(!key)return{status:"error",message:"Configure OPENAI_API_KEY na Vercel para ativar o Assistente."};
   const content:Array<Record<string,unknown>>=[{type:"input_text",text:prompt}]; const image=formData.get("image"); if(image instanceof File&&image.size>0){if(image.size>4_000_000)return{status:"error",message:"A imagem deve ter no máximo 4 MB."};if(!image.type.startsWith("image/"))return{status:"error",message:"Envie uma imagem válida."};content.push({type:"input_image",image_url:`data:${image.type};base64,${Buffer.from(await image.arrayBuffer()).toString("base64")}`,detail:"auto"});}
   const instructions=`Você é o Assistente de conteúdo do RPG Wonderland. Gere uma proposta de ${kind} pronta para revisão de um ADM. Respeite fantasia medieval/mágica, equilíbrio e clareza. Não invente porcentagens de atributos quando multiplicadores ou valores inteiros forem mais adequados. Para raças, a soma dos bônus deve ser no máximo 25. Para itens, efeitos especiais fortes devem ser raros e coerentes com a raridade. Não publique nada: apenas produza a proposta estruturada.`;
   try{const response=await fetch("https://api.openai.com/v1/responses",{method:"POST",headers:{Authorization:`Bearer ${key}`,"Content-Type":"application/json"},body:JSON.stringify({model:process.env.OPENAI_ADMIN_MODEL||"gpt-5",instructions,input:[{role:"user",content}],text:{format:{type:"json_schema",name:`wonderland_${kind}_draft`,strict:true,schema:schemaFor(kind)}}}),cache:"no-store"});if(!response.ok){console.error("Studio content AI",response.status,(await response.text()).slice(0,300));return{status:"error",message:"A IA não conseguiu criar a proposta agora."};}const raw=extractOutputText(await response.json());const json=JSON.parse(raw);const parser=kind==="class"?simpleClassDraftSchema:kind==="race"?simpleRaceDraftSchema:kind==="item"?simpleItemDraftSchema:simpleTitleDraftSchema;const parsed=parser.safeParse(json);if(!parsed.success)return{status:"error",message:"A proposta da IA não passou pela validação do Wonderland."};return{status:"success",message:"Proposta criada. Revise antes de salvar.",kind,draft:parsed.data as StudioDraft};}catch(error){console.error("Studio content AI failure",error);return{status:"error",message:"Não foi possível conectar ao Assistente de Wonderland."};}

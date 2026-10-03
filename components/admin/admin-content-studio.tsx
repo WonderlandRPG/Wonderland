@@ -73,7 +73,7 @@ export function AdminContentStudio({
   existing: Existing;
   aiConfigured: boolean;
 }) {
-  const [kind, setKind] = useState<StudioContentKind>("class");
+  const [kind, setKind] = useState<StudioContentKind>("item");
   const [classDraft, setClassDraft] = useState(simpleClassDefaults());
   const [raceDraft, setRaceDraft] = useState(simpleRaceDefaults());
   const [itemDraft, setItemDraft] = useState(simpleItemDefaults());
@@ -86,9 +86,8 @@ export function AdminContentStudio({
   const [message, setMessage] = useState("");
   useEffect(() => {
     if (aiState.status !== "success" || !aiState.kind || !aiState.draft) return;
+    if (aiState.kind !== "item" && aiState.kind !== "title") return;
     setKind(aiState.kind);
-    if (aiState.kind === "class") setClassDraft(aiState.draft as SimpleClassDraft);
-    if (aiState.kind === "race") setRaceDraft(aiState.draft as SimpleRaceDraft);
     if (aiState.kind === "item") setItemDraft(aiState.draft as SimpleItemDraft);
     if (aiState.kind === "title") setTitleDraft(aiState.draft as SimpleTitleDraft);
   }, [aiState]);
@@ -152,7 +151,7 @@ export function AdminContentStudio({
         <p>Crie ou edite sem abrir contratos técnicos.</p>
       </div>
       <div className={styles.contentTabs}>
-        {(["class", "race", "item", "title"] as StudioContentKind[]).map((value) => (
+        {(["item", "title"] as StudioContentKind[]).map((value) => (
           <button
             key={value}
             className={kind === value ? styles.activeTab : ""}

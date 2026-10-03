@@ -6,6 +6,9 @@ create table if not exists public.v2_rework_class_paths (
 );
 alter table public.v2_rework_class_paths enable row level security;
 revoke all on table public.v2_rework_class_paths from public, anon, authenticated;
+grant select on table public.v2_rework_class_paths to authenticated;
+create policy "Authenticated players can read Rework class paths"
+  on public.v2_rework_class_paths for select to authenticated using (true);
 
 insert into public.v2_rework_class_paths (class_slug, path_id) values
   ('alquimista', 'bombardeiro'),
@@ -154,3 +157,25 @@ end;
 $function$;
 revoke all on function public.v2_choose_class_path(uuid,text) from public, anon;
 grant execute on function public.v2_choose_class_path(uuid,text) to authenticated;
+
+CREATE OR REPLACE FUNCTION public.v2_admin_update_character(p_character_id uuid, p_name text, p_xp bigint, p_gold bigint, p_image_url text, p_kingdom text, p_adventure_rank text, p_class_path_key text)
+ RETURNS v2_characters
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO ''
+AS $function$
+declare result public.v2_characters; clean_url text; chosen_class uuid; clean_path text;
+begin
+ if not public.v2_is_admin() then raise exception 'Acesso negado' using errcode='42501'; end if;
+ if p_xp is null or p_gold is null or char_length(trim(p_name)) not between 2 and 32 or p_xp<0 or p_gold<0 then raise exception 'XP e WG devem ser números inteiros não negativos'; end if;
+ if p_kingdom not in('aokigahara','darkya','oymyakon','lesedi','namida','skypiece') then raise exception 'Reino inválido'; end if;
+ if p_adventure_rank not in('E','D','C','B','A','S','EX') then raise exception 'Rank inválido'; end if;
+ select class_id into chosen_class from public.v2_characters where id=p_character_id;
+ clean_path:=nullif(trim(coalesce(p_class_path_key,'')),'');
+ if clean_path is not null and not exists(select 1 from public.v2_content c join public.v2_rework_class_paths p on p.class_slug=c.slug where c.id=chosen_class and p.path_id=clean_path) then raise exception 'Caminho de classe inválido'; end if;
+ clean_url:=nullif(trim(coalesce(p_image_url,'')),''); if clean_url is not null and clean_url!~'^https?://' then raise exception 'Link inválido'; end if;
+ update public.v2_characters set name=trim(p_name),xp=p_xp,gold=p_gold,image_url=clean_url,kingdom=p_kingdom,adventure_rank=p_adventure_rank,class_path_key=clean_path,updated_at=now() where id=p_character_id returning * into result;
+ if result.id is null then raise exception 'Personagem não encontrado' using errcode='P0002'; end if;
+ insert into public.v2_admin_history(actor_id,action,target_type,target_id,details) values((select auth.uid()),'character.updated','character',p_character_id::text,jsonb_build_object('name',p_name,'xp',p_xp,'gold',p_gold,'class_path_key',clean_path,'kingdom',p_kingdom));
+ return result;
+end; $function$;

@@ -126,7 +126,6 @@ const legacyColorFiles = new Set([
   "components/audio/audio-provider.module.css",
   "components/characters/character-portrait-card.module.css",
   "components/characters/equipped-title.module.css",
-  "components/grimoire/grimoire.module.css",
   "components/items/item-visuals.module.css",
   "components/world/realm-location-explorer.module.css",
 ]);

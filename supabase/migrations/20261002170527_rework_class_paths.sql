@@ -164,15 +164,15 @@ CREATE OR REPLACE FUNCTION public.v2_admin_update_character(p_character_id uuid,
  SECURITY DEFINER
  SET search_path TO ''
 AS $function$
-declare result public.v2_characters; clean_url text; chosen_class uuid; clean_path text;
+declare result public.v2_characters; clean_url text; chosen_class uuid; previous_path text; clean_path text;
 begin
  if not public.v2_is_admin() then raise exception 'Acesso negado' using errcode='42501'; end if;
  if p_xp is null or p_gold is null or char_length(trim(p_name)) not between 2 and 32 or p_xp<0 or p_gold<0 then raise exception 'XP e WG devem ser números inteiros não negativos'; end if;
  if p_kingdom not in('aokigahara','darkya','oymyakon','lesedi','namida','skypiece') then raise exception 'Reino inválido'; end if;
  if p_adventure_rank not in('E','D','C','B','A','S','EX') then raise exception 'Rank inválido'; end if;
- select class_id into chosen_class from public.v2_characters where id=p_character_id;
+ select class_id, class_path_key into chosen_class, previous_path from public.v2_characters where id=p_character_id;
  clean_path:=nullif(trim(coalesce(p_class_path_key,'')),'');
- if clean_path is not null and not exists(select 1 from public.v2_content c join public.v2_rework_class_paths p on p.class_slug=c.slug where c.id=chosen_class and p.path_id=clean_path) then raise exception 'Caminho de classe inválido'; end if;
+ if clean_path is not null and clean_path is distinct from previous_path and not exists(select 1 from public.v2_content c join public.v2_rework_class_paths p on p.class_slug=c.slug where c.id=chosen_class and p.path_id=clean_path) then raise exception 'Caminho de classe inválido'; end if;
  clean_url:=nullif(trim(coalesce(p_image_url,'')),''); if clean_url is not null and clean_url!~'^https?://' then raise exception 'Link inválido'; end if;
  update public.v2_characters set name=trim(p_name),xp=p_xp,gold=p_gold,image_url=clean_url,kingdom=p_kingdom,adventure_rank=p_adventure_rank,class_path_key=clean_path,updated_at=now() where id=p_character_id returning * into result;
  if result.id is null then raise exception 'Personagem não encontrado' using errcode='P0002'; end if;

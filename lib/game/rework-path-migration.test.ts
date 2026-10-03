@@ -19,5 +19,7 @@ describe("Rework class path migration", () => {
     ).sort();
     expect(migrated).toEqual(catalog);
     expect(migrated).toHaveLength(51);
+    expect(sql).toContain("clean_path is distinct from previous_path");
+    expect(sql).not.toMatch(/\b(?:delete|truncate)\s+(?:from\s+)?public\.v2_characters\b/i);
   });
 });

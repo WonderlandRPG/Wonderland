@@ -71,6 +71,11 @@ export default async function AdminCharactersPage({
       <section className="admin-character-grid">
         {(characters ?? []).map((character) => {
           const progress = getLevelProgress(character.xp);
+          const availablePaths = classPaths.get(character.class_id) ?? [];
+          const historicalPath = character.class_path_key &&
+            !availablePaths.some((path) => path.id === character.class_path_key)
+            ? character.class_path_key
+            : null;
           return (
             <article className="admin-character-card" key={character.id}>
               <header>
@@ -129,7 +134,10 @@ export default async function AdminCharactersPage({
                   <span>Caminho da classe</span>
                   <select name="classPathKey" defaultValue={character.class_path_key ?? ""}>
                     <option value="">Nenhum caminho</option>
-                    {(classPaths.get(character.class_id) ?? []).map((path) => (
+                    {historicalPath ? (
+                      <option value={historicalPath}>Caminho histórico: {historicalPath} (preservado)</option>
+                    ) : null}
+                    {availablePaths.map((path) => (
                       <option key={path.id} value={path.id}>{path.name}</option>
                     ))}
                   </select>

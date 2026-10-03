@@ -54,6 +54,9 @@ describe("contrato executável do combate Rework", () => {
   it("não envia habilidades ativas sem regra executável para o PvE tático", () => {
     const skills = [
       ...reworkClasses.flatMap((entry) => getReworkClassCombatSkills(entry, 100)),
+      ...reworkClasses.flatMap((entry) => entry.paths.flatMap((path) =>
+        getReworkClassCombatSkills(entry, 100, path.id),
+      )),
       ...reworkRaces.flatMap((entry) => getReworkRaceCombatSkills(entry, 100)),
     ];
     for (const skill of skills) {

@@ -70,7 +70,7 @@ function operationHasMechanicalEffect(operation: ClassSkill["operations"][number
   }
 
   if (["BUFF", "DEBUFF", "APPLY_STATUS", "SUMMON"].includes(operation.operation)) {
-    return operation.modifiers.length > 0;
+    return operation.modifiers.length > 0 || (operation.damageReductionPercent ?? 0) > 0;
   }
 
   return false;
@@ -302,7 +302,8 @@ export function resolveTacticalSkill(
 
     if (
       ["BUFF", "DEBUFF", "APPLY_STATUS", "SUMMON"].includes(operation.operation) &&
-      operation.modifiers.length === 0
+      operation.modifiers.length === 0 &&
+      !operation.damageReductionPercent
     ) {
       messages.push(`${skill.name}: ${operation.operation} não possui modificadores mecânicos cadastrados.`);
       continue;
@@ -323,6 +324,7 @@ export function resolveTacticalSkill(
         stacks: Math.min(maxStacks, (receiver.statuses[key]?.stacks ?? 0) + stacks),
         modifiers,
         beneficial: isBeneficialStatusOperation(operation),
+        damageReductionPercent: operation.damageReductionPercent,
         forcedTargetId: operation.operation === "TAUNT" ? nextActor.id : undefined,
       },
     };

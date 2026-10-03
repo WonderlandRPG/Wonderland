@@ -344,7 +344,7 @@ export async function performPvpDuoAction(
         origin &&
         destination &&
         skill.target !== "self" &&
-        getTacticalDistance(origin, destination) > Math.max(1, skill.range)
+        getTacticalDistance(origin, destination) > Math.max(1, skill.range, skill.range === 0 ? skill.area : 0)
       )
         return { ok: false as const, message: `Alvo fora do alcance de ${skill.range} casa(s).` };
       target = state.fighters[targetId];

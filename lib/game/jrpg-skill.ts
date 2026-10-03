@@ -151,6 +151,7 @@ function applySecondaryOperation(
         ),
         modifiers,
         beneficial,
+        damageReductionPercent: operation.damageReductionPercent,
         forcedTargetId: operation.operation === "TAUNT" ? actor.id : undefined,
       },
     },

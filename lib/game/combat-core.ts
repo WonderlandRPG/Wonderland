@@ -68,6 +68,7 @@ export interface ActiveCombatStatus {
   stacks: number;
   modifiers: Partial<CombatAttributes>;
   beneficial: boolean;
+  damageReductionPercent?: number;
   periodicDamage?: number;
   periodicDamageType?: DamageType;
   forcedTargetId?: string;
@@ -217,8 +218,13 @@ export function applyDamage(target: CombatantState, amount: number) {
     delete statuses[guardKey];
     return { ...target, statuses };
   }
-  const absorbed = Math.min(target.shield, amount);
-  const hpDamage = Math.max(0, amount - absorbed);
+  const reduction = Math.min(
+    100,
+    Math.max(0, ...Object.values(target.statuses).map((status) => status.damageReductionPercent ?? 0)),
+  );
+  const reducedAmount = Math.max(0, Math.round(amount * (1 - reduction / 100)));
+  const absorbed = Math.min(target.shield, reducedAmount);
+  const hpDamage = Math.max(0, reducedAmount - absorbed);
   return {
     ...target,
     shield: target.shield - absorbed,
@@ -475,6 +481,7 @@ export function resolveSkill(
             ),
             modifiers,
             beneficial: isBeneficialStatusOperation(primaryOperation),
+            damageReductionPercent: primaryOperation.damageReductionPercent,
             forcedTargetId: primaryOperation.operation === "TAUNT" ? actor.id : undefined,
           },
         },

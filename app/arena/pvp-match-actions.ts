@@ -5,6 +5,7 @@ import { requireCurrentAccount } from "@/lib/auth/account";
 import { getCharacterSheet, getPvpOpponentSheet } from "@/lib/content/characters";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { toArenaCharacter } from "@/lib/game/arena-character";
+import { getReworkSkillTargetReach } from "@/lib/game/rework-combat";
 import {
   defaultCombatRules,
   calculateDamage,
@@ -244,7 +245,7 @@ export async function performPvpAction(matchId: string, expectedVersion: number,
       !wantsAlly &&
       actorPosition &&
       targetPosition &&
-      getTacticalDistance(actorPosition, targetPosition) > skill.range
+      getTacticalDistance(actorPosition, targetPosition) > getReworkSkillTargetReach(skill)
     )
       return { ok: false as const, message: `${skill.name} está fora de alcance.` };
 

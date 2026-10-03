@@ -61,11 +61,21 @@ function damageType(value = ""): ClassSkill["damageType"] {
       : "none";
 }
 
+function parseDamageReduction(text: string) {
+  const match = text.match(/(?:reduz\s+em\s+|receb[ae]\s+)(\d+(?:[.,]\d+)?)%\s+(?:menos\s+)?(?:de\s+)?(?:redu[cç][aã]o\s+de\s+)?(?:o\s+)?dano/i)
+    ?? text.match(/(\d+(?:[.,]\d+)?)%\s+de\s+redu[cç][aã]o\s+de\s+dano/i);
+  return match ? Math.min(100, Number(match[1].replace(",", "."))) : 0;
+}
+
 function makeOperation(source: ReworkSource): ClassSkill["operations"] {
   const text = `${source.name} ${source.description} ${source.combat.power ?? ""} ${source.combat.adjustment ?? ""}`;
   const scaling = parseScaling(text);
   const duration = Math.max(0, Math.round(firstNumber(source.combat.duration, 1)));
   const type = damageType(`${source.combat.damageType ?? ""} ${text}`);
+  const damageReductionPercent = parseDamageReduction(source.description);
+  const supportTarget = /\baliado\b|efeito negativo do alvo|cura o alvo/i.test(source.description)
+    ? ("ally" as const)
+    : ("self" as const);
   const target = /cura|recuper|restaura|escudo|barreira|redu[cç][aã]o de dano|si mesmo/i.test(text)
     ? ("self" as const)
     : parseArea(source.combat.area) > 0
@@ -111,7 +121,11 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       distance: Math.max(1, Math.round(firstNumber(text, 1))),
     });
   if (/cura|recupera|restaura.*hp/i.test(text))
-    operations.push({ ...common, operation: "HEAL", target: "self", damageType: "none" });
+    operations.push({ ...common, operation: "HEAL", target: supportTarget, damageType: "none" });
+  if (/remove\s+(?:um\s+)?(?:efeito|penalidade)|remove\s+controle/i.test(text))
+    operations.push({
+      ...common, operation: "REMOVE_STATUS", target: supportTarget, damageType: "none", status: "negative",
+    });
   if (/escudo|barreira/i.test(text))
     operations.push({ ...common, operation: "SHIELD", target: "self", damageType: "none" });
   if (/paralis|atordoa|stun/i.test(text))
@@ -122,15 +136,7 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       damageType: "none",
       duration: Math.max(1, duration),
     });
-  if (/enra[ií]za|imobiliza|root/i.test(text))
-    operations.push({
-      ...common,
-      operation: "ROOT",
-      target: "enemy",
-      damageType: "none",
-      duration: Math.max(1, duration),
-    });
-  if (/silencia|silence/i.test(text))
+  if (/silencia|silence|impede o uso da pr[oó]xima habilidade/i.test(text))
     operations.push({
       ...common,
       operation: "SILENCE",
@@ -154,9 +160,26 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       damageType: "none",
       duration: Math.max(1, duration),
     });
+  if (/enra[ií]za|imobiliza|root|\bprend[ea]\b|prendem\s+inimigos/i.test(text))
+    operations.push({
+      ...common, operation: "ROOT", target: "enemy", damageType: "none", duration: Math.max(1, duration),
+    });
+  if (damageReductionPercent > 0) {
+    operations.push({
+      ...common,
+      operation: "BUFF",
+      target: "self",
+      damageType: "none",
+      status: `${source.id}-reducao-de-dano`,
+      duration: Math.max(1, duration),
+      scaling: [],
+      damageReductionPercent,
+    });
+  }
   if (
-    /dano|golpe|ataca|atinge|explode|dispara|expele|impacto|corta|perfura/i.test(text) ||
-    type !== "none"
+    !/ganh[ae]\s+\d+%\s+de\s+dano|reduz\s+em\s+\d+%\s+o\s+dano\s+recebido/i.test(source.description) &&
+    (/dano|golpe|ataca|atinge|explode|dispara|expele|impacto|corta|perfura/i.test(text) ||
+      type !== "none")
   ) {
     operations.unshift({
       ...common,
@@ -207,6 +230,10 @@ function toSkill(
       : "none",
     target: operations.some((entry) => entry.target === "area")
       ? "area"
+      : operations.some((entry) => entry.target === "enemy")
+        ? "enemy"
+        : operations.some((entry) => entry.target === "ally")
+          ? "ally"
       : operations.every((entry) => entry.target === "self")
         ? "self"
         : "enemy",
@@ -311,4 +338,9 @@ export function getReworkPassiveOptions(
 export function getReworkBasicAttack(entry: ReworkClass) {
   const ability = entry.abilities.find((candidate) => candidate.kind === "Ataque básico");
   return ability ? toSkill({ ...ability, combat: ability.combat }, "class") : null;
+}
+
+/** An area centered on the caster can hit units inside its radius even with range zero. */
+export function getReworkSkillTargetReach(skill: Pick<ClassSkill, "range" | "area">) {
+  return skill.range === 0 ? Math.max(1, skill.area) : skill.range;
 }

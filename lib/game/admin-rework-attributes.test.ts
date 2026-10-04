@@ -27,4 +27,14 @@ describe("editores administrativos de atributos Rework", () => {
     expect(existsSync("app/admin/importar/actions.ts")).toBe(false);
     expect(existsSync("components/admin/content-import-chat.tsx")).toBe(false);
   });
+
+  it("mantém o Studio restrito a itens e títulos do Rework", () => {
+    const actions = source("app/admin/estudio/content-actions.ts");
+    const builder = source("lib/admin/simple-content-builder.ts");
+    expect(actions).toContain('export type StudioContentKind = "item" | "title"');
+    expect(actions).not.toContain("saveSimpleClassAction");
+    expect(actions).not.toContain("saveSimpleRaceAction");
+    expect(builder).not.toContain("simpleClassDraftSchema");
+    expect(builder).not.toContain("simpleRaceDraftSchema");
+  });
 });

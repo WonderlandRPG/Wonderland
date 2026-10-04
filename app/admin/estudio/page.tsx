@@ -77,7 +77,7 @@ export default async function AdminCreationStudioPage() {
 
   return (
     <div className="admin-content">
-      <AdminContentStudio aiConfigured={aiConfigured} existing={{ classes: [], races: [], items, titles }} />
+      <AdminContentStudio aiConfigured={aiConfigured} existing={{ items, titles }} />
       <AdminOperationsStudio aiConfigured={aiConfigured} missions={missions} settings={settings} />
     </div>
   );

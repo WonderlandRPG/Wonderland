@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyDamage, createCombatant } from "@/lib/game/combat";
+import { applyDamage, createCombatant, getEffectiveAttributes } from "@/lib/game/combat";
 import { resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
 
@@ -151,10 +151,16 @@ describe("contrato executável do combate Rework", () => {
   it("Meditação de Combate cura 20% do HP máximo mais 40% de FOR no PvE e PvP", () => {
     const monk = reworkClasses.find((entry) => entry.id === "monge")!;
     const skill = getReworkClassCombatSkills(monk, 100).find((entry) => entry.name === "Meditação de Combate")!;
-    const actor = { ...fighter("monk"), hp: 200 };
+    const actor = { ...fighter("monk"), hp: 200, attributes: { ...fighter("monk").attributes, RES: 100 } };
     expect(skill.operations[0].healPercentOfMaxHp).toBe(20);
-    expect(resolveJrpgSkill(actor, fighter("enemy"), skill).actor.hp).toBe(340);
-    expect(resolveTacticalSkill(actor, fighter("enemy"), skill).actor.hp).toBe(340);
+    const versus = resolveJrpgSkill(actor, fighter("enemy"), skill).actor;
+    const tactical = resolveTacticalSkill(actor, fighter("enemy"), skill).actor;
+    expect(versus.hp).toBe(340);
+    expect(tactical.hp).toBe(340);
+    expect(getEffectiveAttributes(versus).RES).toBe(120);
+    expect(getEffectiveAttributes(tactical).RES).toBe(120);
+    expect(versus.statuses["monge-4-resistencia"].duration).toBe(2);
+    expect(tactical.statuses["monge-4-resistencia"].duration).toBe(2);
   });
 
   it("prende o alvo com Raízes do Primeiro Bosque", () => {

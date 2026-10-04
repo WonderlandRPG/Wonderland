@@ -318,7 +318,12 @@ export function resolveTacticalSkill(
     const stacks = Math.max(1, operation.stacks || 1);
     const maxStacks = Math.max(stacks, operation.maxStacks || 1);
     const modifiers = Object.fromEntries(
-      operation.modifiers.map((modifier) => [modifier.attribute, modifier.value]),
+      operation.modifiers.map((modifier) => [
+        modifier.attribute,
+        modifier.percent
+          ? Math.round(actorAttributes[modifier.attribute] * modifier.value / 100)
+          : modifier.value,
+      ]),
     );
     const nextStatuses = {
       ...receiver.statuses,

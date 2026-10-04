@@ -41,10 +41,10 @@ function parseArea(value = "") {
 function parseScaling(text: string) {
   const scaling: ClassSkill["scaling"] = [];
   for (const attribute of OFFICIAL_ATTRIBUTES) {
-    const direct = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,20}\\[?${attribute}\\]?`, "i").exec(
+    const direct = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,20}\\[?${attribute}\\]?(?!\\p{L})`, "iu").exec(
       text,
     );
-    const prose = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,25}(?:da|de)\\s+${attribute}`, "i").exec(
+    const prose = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,25}(?:da|de)\\s+${attribute}(?!\\p{L})`, "iu").exec(
       text,
     );
     const match = direct ?? prose;
@@ -75,7 +75,8 @@ function parseFixedPower(text: string) {
 function makeOperation(source: ReworkSource): ClassSkill["operations"] {
   const text = `${source.name} ${source.description} ${source.combat.power ?? ""} ${source.combat.adjustment ?? ""}`;
   const scaling = parseScaling(text);
-  const duration = Math.max(0, Math.round(firstNumber(source.combat.duration, 1)));
+  const describedDuration = /\bpor\s+(\d+)\s+turnos?/i.exec(source.description);
+  const duration = Math.max(0, Math.round(firstNumber(source.combat.duration, describedDuration ? Number(describedDuration[1]) : 1)));
   const type = damageType(`${source.combat.damageType ?? ""} ${text}`);
   const damageReductionPercent = parseDamageReduction(source.description);
   const lifeDrain = /cura\s+(\d+(?:[.,]\d+)?)%\s+do\s+dano\s+(?:efetivamente\s+)?causado/i.exec(source.description);
@@ -186,6 +187,19 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       duration: Math.max(1, duration),
       scaling: [],
       damageReductionPercent,
+    });
+  }
+  const resistanceBonus = /recebendo\s+(\d+(?:[.,]\d+)?)%\s+de\s+resist[eê]ncia/i.exec(source.description);
+  if (resistanceBonus) {
+    operations.push({
+      ...common,
+      operation: "BUFF",
+      target: "self",
+      damageType: "none",
+      status: `${source.id}-resistencia`,
+      scaling: [],
+      duration: Math.max(1, duration),
+      modifiers: [{ attribute: "RES", value: Number(resistanceBonus[1].replace(",", ".")), percent: true }],
     });
   }
   if (

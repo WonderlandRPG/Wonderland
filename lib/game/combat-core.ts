@@ -462,7 +462,12 @@ export function resolveSkill(
   const statusTarget = primaryOperation?.target === "self" ? paidActor : target;
   const status = primaryOperation?.status || skill.key;
   const modifiers = Object.fromEntries(
-    (primaryOperation?.modifiers ?? []).map((modifier) => [modifier.attribute, modifier.value]),
+    (primaryOperation?.modifiers ?? []).map((modifier) => [
+      modifier.attribute,
+      modifier.percent
+        ? Math.round(actorAttributes[modifier.attribute] * modifier.value / 100)
+        : modifier.value,
+    ]),
   ) as Partial<CombatAttributes>;
   const appliesStatus = Boolean(
     primaryOperation &&

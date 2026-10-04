@@ -191,7 +191,7 @@ export const engineOperationSchema = z.object({
   healPercentOfDamage: z.number().finite().min(0).max(100).optional(),
   healPercentOfMaxHp: z.number().finite().min(0).max(100).optional(),
   modifiers: z
-    .array(z.object({ attribute: z.enum(attributeKeys), value: finiteNumberSchema }))
+    .array(z.object({ attribute: z.enum(attributeKeys), value: finiteNumberSchema, percent: z.boolean().optional() }))
     .default([]),
 });
 

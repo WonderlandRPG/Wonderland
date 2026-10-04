@@ -136,7 +136,12 @@ function applySecondaryOperation(
   }
 
   const modifiers = Object.fromEntries(
-    operation.modifiers.map((modifier) => [modifier.attribute, modifier.value]),
+    operation.modifiers.map((modifier) => [
+      modifier.attribute,
+      modifier.percent
+        ? Math.round(actorAttributes[modifier.attribute] * modifier.value / 100)
+        : modifier.value,
+    ]),
   ) as Partial<CombatAttributes>;
   const duration = Math.max(1, operation.duration || skill.duration || 1);
   const key = statusKey(operation, skill);

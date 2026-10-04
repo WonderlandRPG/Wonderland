@@ -16,6 +16,7 @@ export interface ArenaCharacter {
   cosmetics?: CharacterCosmeticLoadout;
   raceName: string;
   className: string;
+  passiveKeys?: string[];
   baseHp: number;
   maxHp?: number;
   baseMana: number;

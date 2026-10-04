@@ -187,6 +187,7 @@ function makePlayer(character: TacticalCharacter) {
       : null,
     usesMana: character.usesMana,
     basicAttackDamageType: character.basicAttackDamageType,
+    passiveKeys: character.passives.map((passive) => passive.key),
   });
 }
 

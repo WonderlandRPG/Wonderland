@@ -42,6 +42,8 @@ export interface DerivedStats {
 export interface CombatantState {
   id: string;
   name: string;
+  passiveKeys?: string[];
+  passiveFlags?: Record<string, boolean>;
   basicAttackDamageType?: "physical" | "magic";
   attributes: CombatAttributes;
   maxHp: number;
@@ -145,6 +147,7 @@ export function createCombatant(input: {
   } | null;
   usesMana?: boolean;
   itemEffects?: ItemSpecialEffect[];
+  passiveKeys?: string[];
 }): CombatantState {
   const stats = deriveStats(input.attributes, input.baseHp, input.baseMana, input.rules);
   const maxHp = input.maxHp === undefined ? stats.maxHp : Math.max(1, rounded(input.maxHp));
@@ -158,6 +161,8 @@ export function createCombatant(input: {
   return {
     id: input.id,
     name: input.name,
+    passiveKeys: input.passiveKeys ?? [],
+    passiveFlags: {},
     attributes: input.attributes,
     maxHp,
     hp: maxHp,
@@ -225,6 +230,29 @@ export function applyDamage(target: CombatantState, amount: number) {
   const reducedAmount = Math.max(0, Math.round(amount * (1 - reduction / 100)));
   const absorbed = Math.min(target.shield, reducedAmount);
   const hpDamage = Math.max(0, reducedAmount - absorbed);
+  if (
+    target.passiveKeys?.includes("orc-0") &&
+    !target.passiveFlags?.orcDeathSaved &&
+    target.hp > 0 && hpDamage >= target.hp
+  ) {
+    return {
+      ...target,
+      shield: target.shield - absorbed,
+      hp: 1,
+      passiveFlags: { ...target.passiveFlags, orcDeathSaved: true },
+      statuses: {
+        ...target.statuses,
+        "orc-recusar-a-morte": {
+          name: "Recusar a Morte",
+          duration: 1,
+          stacks: 1,
+          modifiers: {},
+          beneficial: true,
+          damageReductionPercent: 25,
+        },
+      },
+    };
+  }
   return {
     ...target,
     shield: target.shield - absorbed,

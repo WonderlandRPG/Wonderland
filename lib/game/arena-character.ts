@@ -47,6 +47,7 @@ export function toArenaCharacter(character: CharacterSheet): ArenaCharacter {
       : null,
     raceName: character.race.name,
     className: character.characterClass.name,
+    passiveKeys: character.skillLoadout.passiveKeys,
     baseHp: Math.max(
       1,
       character.reworkStats.attributes.HP - character.reworkStats.attributes.RES * 5,

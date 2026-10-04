@@ -163,6 +163,19 @@ describe("contrato executável do combate Rework", () => {
     expect(tactical.statuses["monge-4-resistencia"].duration).toBe(2);
   });
 
+  it("Recusar a Morte salva o Orc somente uma vez em ambos os motores", () => {
+    const barbarian = reworkClasses.find((entry) => entry.id === "barbaro")!;
+    const attack = getReworkBasicAttack(barbarian)!;
+    const orc = { ...fighter("orc"), hp: 40, passiveKeys: ["orc-0"] };
+    for (const resolve of [resolveJrpgSkill, resolveTacticalSkill]) {
+      const first = resolve(fighter("attacker"), orc, attack).target;
+      expect(first.hp).toBe(1);
+      expect(first.passiveFlags?.orcDeathSaved).toBe(true);
+      expect(first.statuses["orc-recusar-a-morte"].damageReductionPercent).toBe(25);
+      expect(resolve(fighter("attacker"), first, attack).target.hp).toBe(0);
+    }
+  });
+
   it("prende o alvo com Raízes do Primeiro Bosque", () => {
     const elf = reworkRaces.find((entry) => entry.id === "elfo")!;
     const skill = getReworkRaceCombatSkills(elf, 100).find((entry) => entry.name === "Raízes do Primeiro Bosque")!;

@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const source = (path: string) => readFileSync(path, "utf8");
@@ -20,5 +20,11 @@ describe("editores administrativos de atributos Rework", () => {
     const actions = source("app/admin/bestiario/actions.ts");
     expect(actions).not.toContain('formData.get("ARC")');
     expect(actions).toContain("oldProfile.data.attributes.ARC");
+  });
+
+  it("impede que o importador antigo grave classes e raças", () => {
+    expect(source("app/admin/importar/page.tsx")).toContain('redirect("/admin/migracao-rework")');
+    expect(existsSync("app/admin/importar/actions.ts")).toBe(false);
+    expect(existsSync("components/admin/content-import-chat.tsx")).toBe(false);
   });
 });

@@ -43,7 +43,6 @@ const navigation = [
       { label: "Temporadas", glyph: "♜", href: "/admin/temporadas" },
       { label: "Presença", glyph: "07", href: "/admin/presenca" },
       { label: "Temas", glyph: "◐", href: "/admin/temas" },
-      { label: "Importador técnico", glyph: "AI", href: "/admin/importar" },
     ],
   },
   {

@@ -89,6 +89,9 @@ describe("contrato executável do combate Rework", () => {
     expect(getReworkSkillTargetReach({ range: 0, area: 2 })).toBe(2);
     expect(getReworkSkillTargetReach({ range: 0, area: 1 })).toBe(1);
     expect(getReworkSkillTargetReach({ range: 5, area: 2 })).toBe(5);
+    const tiefling = reworkRaces.find((entry) => entry.id === "tiefling")!;
+    const profanedGround = getReworkRaceCombatSkills(tiefling, 100).find((entry) => entry.name === "Chão Profanado")!;
+    expect(profanedGround.area).toBe(1);
   });
 
   it("aplica redução real de dano no PvE tático e no PvP", () => {

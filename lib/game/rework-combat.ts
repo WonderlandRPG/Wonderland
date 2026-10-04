@@ -32,7 +32,7 @@ function parseRange(value = "") {
 
 function parseArea(value = "") {
   const square = value.match(/(\d+)\s*[x×]\s*(\d+)/i);
-  if (square) return Math.max(0, Math.floor((Number(square[1]) - 1) / 2));
+  if (square) return Math.max(0, Math.ceil((Math.max(Number(square[1]), Number(square[2])) - 1) / 2));
   if (/cone|linha|cruz|adjacente|[aá]rea/i.test(value)) return 1;
   if (/raio/i.test(value)) return Math.max(1, Math.round(firstNumber(value, 1)));
   return 0;

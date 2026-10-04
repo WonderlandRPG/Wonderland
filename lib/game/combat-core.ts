@@ -216,6 +216,26 @@ export function calculateDamage(
   return Math.max(rules.minimumDamage, rounded(mitigated));
 }
 
+export function reworkOutgoingDamageMultiplier(
+  actor: CombatantState,
+  target: CombatantState,
+  type: DamageType,
+) {
+  const passiveKeys = actor.passiveKeys ?? [];
+  let multiplier = 1;
+  if (passiveKeys.includes("barbaro-0") && actor.maxHp > 0) {
+    const lostTens = Math.floor(((actor.maxHp - actor.hp) * 10) / actor.maxHp + 1e-9);
+    multiplier *= 1 + Math.min(0.15, Math.max(0, lostTens) * 0.03);
+  }
+  if (passiveKeys.includes("ladino-0") && Object.values(target.statuses).some((status) => !status.beneficial)) {
+    multiplier *= 1.15;
+  }
+  if (passiveKeys.includes("lobisomem-0") && type === "physical" && actor.hp < actor.maxHp / 2) {
+    multiplier *= 1.15;
+  }
+  return multiplier;
+}
+
 export function applyDamage(target: CombatantState, amount: number) {
   const guardKey = "defesa-total";
   if (amount > 0 && target.statuses[guardKey]) {
@@ -317,7 +337,12 @@ export function resolveBasicAttack(
   const isMagical = actorAttributes.INT > actorAttributes.FOR;
   const damageType: DamageType = isMagical ? "magic" : "physical";
   const raw = (isMagical ? actorAttributes.INT : actorAttributes.FOR) * rules.basicAttackMultiplier;
-  const amount = calculateDamage(raw, damageType, targetAttributes, rules);
+  const amount = calculateDamage(
+    raw * reworkOutgoingDamageMultiplier(actor, target, damageType),
+    damageType,
+    targetAttributes,
+    rules,
+  );
   const damagedTarget = applyDamage(target, amount);
   const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
   const itemResolution = applyOffensiveItemEffects(
@@ -409,7 +434,12 @@ export function resolveSkill(
   if (primaryOperation?.operation === "DAMAGE") {
     const type: DamageType =
       primaryOperation.damageType === "none" ? "physical" : primaryOperation.damageType;
-    const amount = calculateDamage(rawPower, type, getEffectiveAttributes(target), rules);
+    const amount = calculateDamage(
+      rawPower * reworkOutgoingDamageMultiplier(actor, target, type),
+      type,
+      getEffectiveAttributes(target),
+      rules,
+    );
     const damagedTarget = applyDamage(target, amount);
     const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
     const itemResolution = applyOffensiveItemEffects(paidActor, damagedTarget, damageDealt);

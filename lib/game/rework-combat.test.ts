@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyDamage, createCombatant, getEffectiveAttributes } from "@/lib/game/combat";
+import { applyDamage, createCombatant, getEffectiveAttributes, resolveBasicAttack, reworkOutgoingDamageMultiplier } from "@/lib/game/combat";
 import { resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
 
@@ -174,6 +174,32 @@ describe("contrato executável do combate Rework", () => {
       expect(first.statuses["orc-recusar-a-morte"].damageReductionPercent).toBe(25);
       expect(resolve(fighter("attacker"), first, attack).target.hp).toBe(0);
     }
+  });
+
+  it("passivas ofensivas escalam dano real sem alterar personagens sem a passiva", () => {
+    const target = fighter("target");
+    const damagedBarbarian = { ...fighter("barbarian"), hp: 400, passiveKeys: ["barbaro-0"] };
+    expect(reworkOutgoingDamageMultiplier(damagedBarbarian, target, "physical")).toBe(1.06);
+    expect(resolveBasicAttack(damagedBarbarian, target).event.amount).toBe(106);
+
+    const penalized = {
+      ...target,
+      statuses: { slow: { name: "Lentidão", duration: 1, stacks: 1, modifiers: {}, beneficial: false } },
+    };
+    const rogue = { ...fighter("rogue"), passiveKeys: ["ladino-0"] };
+    expect(resolveBasicAttack(rogue, penalized).event.amount).toBe(115);
+    expect(resolveBasicAttack(rogue, target).event.amount).toBe(100);
+
+    const wolf = { ...fighter("wolf"), hp: 249, passiveKeys: ["lobisomem-0"] };
+    expect(reworkOutgoingDamageMultiplier(wolf, target, "physical")).toBe(1.15);
+    expect(reworkOutgoingDamageMultiplier(wolf, target, "magic")).toBe(1);
+    const basicSkill = getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "barbaro")!)!;
+    expect(resolveJrpgSkill(wolf, target, basicSkill).event.amount).toBeGreaterThan(
+      resolveJrpgSkill(fighter("plain"), target, basicSkill).event.amount,
+    );
+    expect(resolveTacticalSkill(wolf, target, basicSkill).event.amount).toBeGreaterThan(
+      resolveTacticalSkill(fighter("plain"), target, basicSkill).event.amount,
+    );
   });
 
   it("prende o alvo com Raízes do Primeiro Bosque", () => {

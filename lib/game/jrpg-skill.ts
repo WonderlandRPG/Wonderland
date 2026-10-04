@@ -4,6 +4,7 @@ import {
   calculateDamage,
   calculateScaledPower,
   getEffectiveAttributes,
+  reworkOutgoingDamageMultiplier,
   isBeneficialStatusOperation,
   resolveSkill,
   type CombatAttributes,
@@ -54,7 +55,12 @@ function applySecondaryOperation(
 
   if (operation.operation === "DAMAGE") {
     const damageType = operation.damageType === "none" ? "physical" : operation.damageType;
-    const amount = calculateDamage(power, damageType, getEffectiveAttributes(receiver), rules);
+    const amount = calculateDamage(
+      power * reworkOutgoingDamageMultiplier(actor, receiver, damageType),
+      damageType,
+      getEffectiveAttributes(receiver),
+      rules,
+    );
     const damaged = applyDamage(receiver, amount);
     const dealt = receiver.hp + receiver.shield - (damaged.hp + damaged.shield);
     return {

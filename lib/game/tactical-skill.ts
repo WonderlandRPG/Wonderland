@@ -5,6 +5,7 @@ import {
   calculateScaledPower,
   defaultCombatRules,
   getEffectiveAttributes,
+  reworkOutgoingDamageMultiplier,
   isBeneficialStatusOperation,
   type CombatEvent,
   type CombatResolution,
@@ -198,7 +199,12 @@ export function resolveTacticalSkill(
 
     if (operation.operation === "DAMAGE") {
       const type = operation.damageType === "none" ? (skill.damageType === "none" ? "physical" : skill.damageType) : operation.damageType;
-      const amount = calculateDamage(rawPower, type, getEffectiveAttributes(receiver), rules);
+      const amount = calculateDamage(
+        rawPower * reworkOutgoingDamageMultiplier(nextActor, receiver, type),
+        type,
+        getEffectiveAttributes(receiver),
+        rules,
+      );
       const damaged = applyDamage(receiver, amount);
       const dealt = receiver.hp + receiver.shield - (damaged.hp + damaged.shield);
       hpDamageDealt += Math.max(0, receiver.hp - damaged.hp);

@@ -44,6 +44,7 @@ export interface CombatantState {
   name: string;
   passiveKeys?: string[];
   passiveFlags?: Record<string, boolean>;
+  passiveRoundHealing?: number;
   basicAttackDamageType?: "physical" | "magic";
   attributes: CombatAttributes;
   maxHp: number;
@@ -163,6 +164,7 @@ export function createCombatant(input: {
     name: input.name,
     passiveKeys: input.passiveKeys ?? [],
     passiveFlags: {},
+    passiveRoundHealing: 0,
     attributes: input.attributes,
     maxHp,
     hp: maxHp,
@@ -236,6 +238,29 @@ export function reworkOutgoingDamageMultiplier(
   return multiplier;
 }
 
+export function applyReworkLifesteal(
+  actor: CombatantState,
+  hpDamage: number,
+  type: DamageType,
+): CombatantState {
+  if (hpDamage <= 0 || actor.hp <= 0) return actor;
+  let heal = 0;
+  let vampireHealing = actor.passiveRoundHealing ?? 0;
+  if (actor.passiveKeys?.includes("vampiro-0")) {
+    const cap = Math.round(actor.maxHp * 0.08);
+    const available = Math.max(0, cap - vampireHealing);
+    const gained = Math.min(available, actor.maxHp - actor.hp, Math.round(hpDamage * 0.1));
+    heal += gained;
+    vampireHealing += gained;
+  }
+  if (actor.passiveKeys?.includes("lobisomem-0") && type === "physical" && actor.hp < actor.maxHp / 2) {
+    heal += Math.round(hpDamage * 0.1);
+  }
+  return heal
+    ? { ...actor, hp: Math.min(actor.maxHp, actor.hp + heal), passiveRoundHealing: vampireHealing }
+    : actor;
+}
+
 export function applyDamage(target: CombatantState, amount: number) {
   const guardKey = "defesa-total";
   if (amount > 0 && target.statuses[guardKey]) {
@@ -300,6 +325,7 @@ export function guardCombatant(combatant: CombatantState): CombatantState {
 export function tickCooldowns(combatant: CombatantState): CombatantState {
   return {
     ...combatant,
+    passiveRoundHealing: 0,
     cooldowns: Object.fromEntries(
       Object.entries(combatant.cooldowns).map(([key, value]) => [key, Math.max(0, value - 1)]),
     ),
@@ -360,8 +386,13 @@ export function resolveBasicAttack(
     damagedTarget,
     damageDealt,
   );
+  const actorAfterPassives = applyReworkLifesteal(
+    itemResolution.actor,
+    Math.max(0, target.hp - damagedTarget.hp),
+    damageType,
+  );
   return {
-    actor: itemResolution.actor,
+    actor: actorAfterPassives,
     target: itemResolution.target,
     event: {
       kind: "damage",
@@ -444,7 +475,7 @@ export function resolveSkill(
     const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
     const itemResolution = applyOffensiveItemEffects(paidActor, damagedTarget, damageDealt);
     return {
-      actor: itemResolution.actor,
+      actor: applyReworkLifesteal(itemResolution.actor, Math.max(0, target.hp - damagedTarget.hp), type),
       target: itemResolution.target,
       event: {
         kind: "damage",

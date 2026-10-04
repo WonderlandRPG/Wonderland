@@ -1,6 +1,7 @@
 import type { ClassSkill } from "@/lib/game/classes";
 import {
   applyDamage,
+  applyReworkLifesteal,
   calculateDamage,
   calculateScaledPower,
   getEffectiveAttributes,
@@ -64,7 +65,11 @@ function applySecondaryOperation(
     const damaged = applyDamage(receiver, amount);
     const dealt = receiver.hp + receiver.shield - (damaged.hp + damaged.shield);
     return {
-      ...replaceCombatant(actor, target, damaged),
+      ...replaceCombatant(
+        applyReworkLifesteal(actor, Math.max(0, receiver.hp - damaged.hp), damageType),
+        target,
+        damaged,
+      ),
       message: `${skill.name} causou mais ${dealt} de dano.`,
       amount: dealt,
       kind: "damage" as const,

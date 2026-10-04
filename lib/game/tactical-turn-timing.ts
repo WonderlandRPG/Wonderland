@@ -57,7 +57,7 @@ export function completeEnemyTacticalTurn(
 ): TacticalTurnTransition {
   const periodic = resolveTacticalPeriodicDamage(enemy);
   return {
-    player: tickTacticalCooldownValues(tickTacticalStatusGroup(player, true)),
+    player: { ...tickTacticalCooldownValues(tickTacticalStatusGroup(player, true)), passiveRoundHealing: 0 },
     enemy: tickTacticalCooldownValues(tickTacticalStatusGroup(periodic.combatant, false)),
     messages: periodic.messages,
   };

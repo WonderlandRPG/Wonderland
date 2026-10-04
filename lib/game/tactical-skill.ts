@@ -1,6 +1,7 @@
 import type { ClassSkill } from "@/lib/game/classes";
 import {
   applyDamage,
+  applyReworkLifesteal,
   calculateDamage,
   calculateScaledPower,
   defaultCombatRules,
@@ -214,7 +215,11 @@ export function resolveTacticalSkill(
 
       if (receiver.id !== nextActor.id) {
         const itemResolution = applyOffensiveItemEffects(nextActor, nextTarget, dealt);
-        nextActor = itemResolution.actor;
+        nextActor = applyReworkLifesteal(
+          itemResolution.actor,
+          Math.max(0, receiver.hp - damaged.hp),
+          type,
+        );
         nextTarget = itemResolution.target;
         if (itemResolution.messages.length) messages.push(...itemResolution.messages);
       }

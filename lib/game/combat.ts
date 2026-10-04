@@ -1,5 +1,6 @@
 import {
   applyDamage,
+  applyReworkLifesteal,
   calculateDamage,
   createCombatant as createCoreCombatant,
   defaultCombatRules,
@@ -87,7 +88,7 @@ export function resolveBasicAttack(
   const itemResolution = applyOffensiveItemEffects(actorAfterAttack, damagedTarget, damageDealt);
 
   return {
-    actor: itemResolution.actor,
+    actor: applyReworkLifesteal(itemResolution.actor, Math.max(0, target.hp - damagedTarget.hp), damageType),
     target: itemResolution.target,
     event: {
       kind: "damage",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyDamage, createCombatant, getEffectiveAttributes, resolveBasicAttack, reworkOutgoingDamageMultiplier } from "@/lib/game/combat";
+import { applyDamage, createCombatant, getEffectiveAttributes, resolveBasicAttack, reworkOutgoingDamageMultiplier, tickCooldowns } from "@/lib/game/combat";
 import { resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
 
@@ -200,6 +200,42 @@ describe("contrato executável do combate Rework", () => {
     expect(resolveTacticalSkill(wolf, target, basicSkill).event.amount).toBeGreaterThan(
       resolveTacticalSkill(fighter("plain"), target, basicSkill).event.amount,
     );
+  });
+
+  it("Sede Carmesim cura dano direto com limite por rodada e zera no turno seguinte", () => {
+    let actor: ReturnType<typeof fighter> = { ...fighter("vampire"), hp: 300, passiveKeys: ["vampiro-0"] };
+    let target = fighter("target");
+    for (let hit = 0; hit < 5; hit += 1) {
+      const result = resolveBasicAttack(actor, target);
+      actor = result.actor;
+      target = result.target;
+    }
+    expect(actor.hp).toBe(340);
+    expect(actor.passiveRoundHealing).toBe(40);
+    const nextRound = resolveBasicAttack(tickCooldowns(actor), fighter("new-target"));
+    expect(nextRound.actor.hp).toBe(350);
+    const shielded = resolveBasicAttack(
+      { ...fighter("shielded-vampire"), hp: 300, passiveKeys: ["vampiro-0"] },
+      { ...fighter("shielded-target"), shield: 200 },
+    );
+    expect(shielded.actor.hp).toBe(300);
+    const full = resolveBasicAttack(
+      { ...fighter("full-vampire"), passiveKeys: ["vampiro-0"] },
+      fighter("first-target"),
+    ).actor;
+    expect(full.passiveRoundHealing).toBe(0);
+    expect(resolveBasicAttack({ ...full, hp: 300 }, fighter("second-target")).actor.hp).toBe(310);
+  });
+
+  it("Fera Desperta cura apenas pelo dano físico quando abaixo de metade da vida", () => {
+    const wolf = { ...fighter("wolf"), hp: 200, passiveKeys: ["lobisomem-0"] };
+    const skill = getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "barbaro")!)!;
+    const versus = resolveJrpgSkill(wolf, fighter("enemy"), skill);
+    const tactical = resolveTacticalSkill(wolf, fighter("enemy"), skill);
+    expect(versus.actor.hp).toBeGreaterThan(wolf.hp);
+    expect(tactical.actor.hp).toBeGreaterThan(wolf.hp);
+    expect(versus.actor.hp - wolf.hp).toBe(Math.round((500 - versus.target.hp) * 0.1));
+    expect(tactical.actor.hp - wolf.hp).toBe(Math.round((500 - tactical.target.hp) * 0.1));
   });
 
   it("prende o alvo com Raízes do Primeiro Bosque", () => {

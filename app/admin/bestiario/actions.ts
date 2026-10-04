@@ -24,7 +24,6 @@ const schema = z.object({
   RES: z.coerce.number().int().min(0).max(9999),
   INI: z.coerce.number().int().min(0).max(9999),
   INT: z.coerce.number().int().min(0).max(9999),
-  ARC: z.coerce.number().int().min(0).max(9999),
   resistances: z.string().max(1000),
 });
 
@@ -173,13 +172,21 @@ export async function updateCreatureCombatProfileAdminAction(formData: FormData)
     RES: formData.get("RES"),
     INI: formData.get("INI"),
     INT: formData.get("INT"),
-    ARC: formData.get("ARC"),
     resistances: formData.get("resistances") ?? "",
   });
   if (!parsed.success) redirect("/admin/bestiario?status=erro");
 
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/bestiario?status=erro");
+  const { data: previous, error: readError } = await client
+    .from("v2_creatures")
+    .select("*")
+    .eq("id", parsed.data.id)
+    .single();
+  if (readError || !previous) redirect("/admin/bestiario?status=erro");
+  const oldProfile = z.object({
+    attributes: z.object({ ARC: z.number().finite().min(0) }),
+  }).safeParse((previous as typeof previous & { combat_profile?: unknown }).combat_profile);
 
   const skills = [1, 2, 3]
     .map((index) => parseSkill(formData, index, parsed.data.id))
@@ -194,7 +201,7 @@ export async function updateCreatureCombatProfileAdminAction(formData: FormData)
       RES: parsed.data.RES,
       INI: parsed.data.INI,
       INT: parsed.data.INT,
-      ARC: parsed.data.ARC,
+      ARC: oldProfile.success ? oldProfile.data.attributes.ARC : 0,
     },
     movement: parsed.data.movement,
     basicAttackRange: parsed.data.basicAttackRange,

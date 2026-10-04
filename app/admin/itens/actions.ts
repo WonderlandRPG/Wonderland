@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import { itemCatalogSlots, itemRarities } from "@/lib/game/equipment";
+import { attributesSchema } from "@/lib/game/schemas";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const slotSchema = z.enum(itemCatalogSlots);
@@ -24,7 +25,7 @@ const schema = z
     RES: z.coerce.number().int().min(0).max(999),
     INI: z.coerce.number().int().min(0).max(999),
     INT: z.coerce.number().int().min(0).max(999),
-    ARC: z.coerce.number().int().min(0).max(999),
+    HP: z.coerce.number().int().min(0).max(999),
     rarity: z.enum(itemRarities),
     effectKind: z.enum(["", "POISON", "BLEED", "LIFE_STEAL", "COOLDOWN_REDUCTION", "FREEZE"]),
     effectName: z.string().trim().max(100),
@@ -66,7 +67,7 @@ export async function updateItemAdminAction(formData: FormData) {
     RES: formData.get("RES"),
     INI: formData.get("INI"),
     INT: formData.get("INT"),
-    ARC: formData.get("ARC"),
+    HP: formData.get("HP"),
     rarity: formData.get("rarity"),
     effectKind: formData.get("effectKind") ?? "",
     effectName: formData.get("effectName") ?? "",
@@ -78,11 +79,20 @@ export async function updateItemAdminAction(formData: FormData) {
   if (!parsed.success) redirect("/admin/itens?status=erro");
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/itens?status=erro");
+  const { data: previous, error: readError } = await client
+    .from("v2_shop_items")
+    .select("attributes")
+    .eq("id", parsed.data.id)
+    .single();
+  if (readError || !previous) redirect("/admin/itens?status=erro");
+  const oldAttributes = attributesSchema.partial().safeParse(previous.attributes);
+  const legacyArc = oldAttributes.success ? oldAttributes.data.ARC : undefined;
   const attributes = Object.fromEntries(
-    (["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const)
+    (["FOR", "DEF", "RES", "INI", "INT", "HP"] as const)
       .filter((key) => parsed.data[key] > 0)
       .map((key) => [key, parsed.data[key]]),
   );
+  if (legacyArc !== undefined) attributes.ARC = legacyArc;
   const { error } = await client
     .from("v2_shop_items")
     .update({

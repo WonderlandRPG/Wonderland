@@ -1,4 +1,4 @@
-import { attributesSchema } from "@/lib/game/schemas";
+import { reworkAttributesSchema } from "@/lib/game/rework-attributes";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { saveTitleAdminAction } from "./actions";
@@ -21,7 +21,7 @@ type TitleFormData = {
   id: string;
   name: string;
   description: string;
-  attributes: Partial<Record<"FOR" | "DEF" | "RES" | "INI" | "INT" | "ARC", number>>;
+  attributes: Partial<Record<"FOR" | "DEF" | "RES" | "INI" | "INT" | "HP", number>>;
   rarity: TitleRarity;
   style: TitleStyle;
   effect?: ItemSpecialEffect;
@@ -63,7 +63,7 @@ export default async function AdminTitlesPage({
       </section>
       <section className="admin-editor-list">
         {(titles ?? []).map((title) => {
-          const parsed = attributesSchema.safeParse(title.attributes);
+          const parsed = reworkAttributesSchema.partial().safeParse(title.attributes);
           const style =
             title.title_style &&
             typeof title.title_style === "object" &&
@@ -165,7 +165,7 @@ function TitleForm({ title }: { title?: TitleFormData }) {
       </fieldset>
       <fieldset>
         <legend>Atributos</legend>
-        {(["FOR", "DEF", "RES", "INI", "INT"] as const).map((key) => (
+        {(["FOR", "DEF", "RES", "INI", "INT", "HP"] as const).map((key) => (
           <label key={key}>
             <span>{key}</span>
             <input

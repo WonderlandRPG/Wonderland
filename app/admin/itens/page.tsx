@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { attributesSchema } from "@/lib/game/schemas";
+import { reworkAttributesSchema } from "@/lib/game/rework-attributes";
 import {
   itemCatalogSlots,
   itemRarities,
@@ -67,7 +67,7 @@ export default async function AdminItemsPage({
       </form>
       <section className="admin-editor-list">
         {(data ?? []).map((item) => {
-          const parsed = attributesSchema.partial().safeParse(item.attributes);
+          const parsed = reworkAttributesSchema.partial().safeParse(item.attributes);
           const attributes = parsed.success ? parsed.data : {};
           const effect = parseItemSpecialEffects(item.special_effects)[0];
           return (
@@ -138,7 +138,7 @@ export default async function AdminItemsPage({
                 </label>
                 <fieldset>
                   <legend>Atributos</legend>
-                  {(["FOR", "DEF", "RES", "INI", "INT"] as const).map((attribute) => (
+                  {(["FOR", "DEF", "RES", "INI", "INT", "HP"] as const).map((attribute) => (
                     <label key={attribute}>
                       <span>{attribute}</span>
                       <input

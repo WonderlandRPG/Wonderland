@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdministrativeAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { attributesSchema } from "@/lib/game/schemas";
 import {
   titleAvailabilities,
   titleCategories,
@@ -32,7 +33,7 @@ const schema = z.object({
   RES: z.coerce.number().int().min(0).max(999),
   INI: z.coerce.number().int().min(0).max(999),
   INT: z.coerce.number().int().min(0).max(999),
-  ARC: z.coerce.number().int().min(0).max(999),
+  HP: z.coerce.number().int().min(0).max(999),
   effectKind: z.enum(["", "POISON", "BLEED", "LIFE_STEAL", "COOLDOWN_REDUCTION", "FREEZE"]),
   effectName: z.string().trim().max(100),
   effectDescription: z.string().trim().max(500),
@@ -56,9 +57,16 @@ export async function saveTitleAdminAction(formData: FormData) {
   const client = await createServerSupabaseClient();
   if (!client) redirect("/admin/titulos?status=erro");
   const data = parsed.data;
+  const previous = data.id
+    ? await client.from("v2_shop_items").select("attributes").eq("id", data.id).eq("slot", "title").single()
+    : null;
+  if (previous?.error) redirect("/admin/titulos?status=erro");
+  const oldAttributes = attributesSchema.partial().safeParse(previous?.data?.attributes);
   const attributes = Object.fromEntries(
-    (["FOR", "DEF", "RES", "INI", "INT", "ARC"] as const).map((key) => [key, data[key]]),
+    (["FOR", "DEF", "RES", "INI", "INT", "HP"] as const).map((key) => [key, data[key]]),
   );
+  if (oldAttributes.success && oldAttributes.data.ARC !== undefined)
+    attributes.ARC = oldAttributes.data.ARC;
   const specialEffects =
     data.effectKind && data.effectName
       ? [

@@ -7,7 +7,7 @@ export type EquippedTitleData = {
   rarity: string;
   titleStyle: Partial<TitleStyle> | null;
   description?: string | null;
-  attributes?: Partial<Record<"FOR" | "DEF" | "RES" | "INI" | "INT" | "ARC", number>>;
+  attributes?: Partial<Record<"FOR" | "DEF" | "RES" | "INI" | "INT" | "HP" | "ARC", number>>;
 };
 
 const rarityLabels: Record<string, string> = { common:"Comum",uncommon:"Incomum",rare:"Raro",epic:"Épico",legendary:"Lendário",mythic:"Mítico",awakened:"Desperto" };
@@ -16,7 +16,7 @@ const categoryLabels: Record<string, string> = { commemorative:"Comemorativo",ac
 export function EquippedTitle({ title }: { title: EquippedTitleData | null }) {
   if (!title) return null;
   const visual = parseTitleStyle(title.titleStyle ?? defaultTitleStyle);
-  const bonuses = Object.entries(title.attributes ?? {}).filter(([, value]) => Number(value) > 0);
+  const bonuses = Object.entries(title.attributes ?? {}).filter(([key, value]) => key !== "ARC" && Number(value) > 0);
   const tooltipId = `title-${title.name.normalize("NFD").replace(/[^a-zA-Z0-9]/g, "-")}`;
 
   return (

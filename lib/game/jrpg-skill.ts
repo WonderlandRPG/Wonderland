@@ -41,6 +41,7 @@ function applySecondaryOperation(
   skill: ClassSkill,
   operation: ClassSkill["operations"][number],
   rules: CombatRules,
+  damageDealt: number,
 ) {
   const actorAttributes = getEffectiveAttributes(actor);
   const power =
@@ -65,7 +66,9 @@ function applySecondaryOperation(
   }
 
   if (operation.operation === "HEAL") {
-    const amount = Math.max(1, Math.round(power || actorAttributes.ARC));
+    const amount = operation.healPercentOfDamage !== undefined
+      ? Math.round(damageDealt * operation.healPercentOfDamage / 100)
+      : Math.max(1, Math.round(power || actorAttributes.ARC));
     const healed = Math.min(amount, receiver.maxHp - receiver.hp);
     const next = { ...receiver, hp: receiver.hp + healed };
     return {
@@ -189,15 +192,18 @@ export function resolveJrpgSkill(
   let nextTarget = first.target;
   const messages = [first.event.message];
   let total = first.event.amount;
+  let hpDamageDealt = first.event.kind === "damage" ? Math.max(0, target.hp - first.target.hp) : 0;
   let kind: CombatEvent["kind"] = first.event.kind;
 
   for (const operation of skill.operations.slice(1)) {
     if (operation.chance < 100 && Math.random() * 100 >= operation.chance) continue;
-    const result = applySecondaryOperation(nextActor, nextTarget, skill, operation, rules);
+    const priorTargetHp = nextTarget.hp;
+    const result = applySecondaryOperation(nextActor, nextTarget, skill, operation, rules, hpDamageDealt);
     nextActor = result.actor;
     nextTarget = result.target;
     messages.push(result.message);
     total += result.amount;
+    if (result.kind === "damage") hpDamageDealt += Math.max(0, priorTargetHp - result.target.hp);
     if (result.kind === "damage" || result.kind === "heal" || result.kind === "shield")
       kind = result.kind;
   }

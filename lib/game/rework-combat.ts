@@ -78,6 +78,7 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
   const duration = Math.max(0, Math.round(firstNumber(source.combat.duration, 1)));
   const type = damageType(`${source.combat.damageType ?? ""} ${text}`);
   const damageReductionPercent = parseDamageReduction(source.description);
+  const lifeDrain = /cura\s+(\d+(?:[.,]\d+)?)%\s+do\s+dano\s+(?:efetivamente\s+)?causado/i.exec(source.description);
   const supportTarget = /\baliados?\b|efeito negativo do alvo|cura o alvo/i.test(source.description)
     ? ("ally" as const)
     : ("self" as const);
@@ -126,7 +127,11 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       distance: Math.max(1, Math.round(firstNumber(text, 1))),
     });
   if (/cura|recupera|restaura.*hp/i.test(text))
-    operations.push({ ...common, operation: "HEAL", target: supportTarget, damageType: "none", base: parseFixedPower(source.description) });
+    operations.push({
+      ...common, operation: "HEAL", target: supportTarget, damageType: "none",
+      base: parseFixedPower(source.description),
+      healPercentOfDamage: lifeDrain ? Number(lifeDrain[1].replace(",", ".")) : undefined,
+    });
   if (/remove\s+(?:um\s+)?(?:efeito|penalidade)|remove\s+controle/i.test(text))
     operations.push({
       ...common, operation: "REMOVE_STATUS", target: supportTarget, damageType: "none", status: "negative",

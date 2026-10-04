@@ -176,6 +176,7 @@ export function resolveTacticalSkill(
   const successfulOperationTypes = new Set<string>();
   const successfulOperationIndexes: number[] = [];
   let totalAmount = 0;
+  let hpDamageDealt = 0;
   let eventKind: CombatEvent["kind"] = "utility";
   let damageType: CombatEvent["damageType"];
 
@@ -200,6 +201,7 @@ export function resolveTacticalSkill(
       const amount = calculateDamage(rawPower, type, getEffectiveAttributes(receiver), rules);
       const damaged = applyDamage(receiver, amount);
       const dealt = receiver.hp + receiver.shield - (damaged.hp + damaged.shield);
+      hpDamageDealt += Math.max(0, receiver.hp - damaged.hp);
       const replaced = replaceReceiver(nextActor, nextTarget, damaged);
       nextActor = replaced.actor;
       nextTarget = replaced.target;
@@ -223,7 +225,9 @@ export function resolveTacticalSkill(
     }
 
     if (operation.operation === "HEAL") {
-      const amount = Math.max(1, Math.round(rawPower || actorAttributes.ARC));
+      const amount = operation.healPercentOfDamage !== undefined
+        ? Math.round(hpDamageDealt * operation.healPercentOfDamage / 100)
+        : Math.max(1, Math.round(rawPower || actorAttributes.ARC));
       const healed = Math.min(amount, receiver.maxHp - receiver.hp);
       const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, hp: receiver.hp + healed });
       nextActor = replaced.actor;

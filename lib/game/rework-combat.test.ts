@@ -133,6 +133,21 @@ describe("contrato executável do combate Rework", () => {
     expect(tactical.target.shield).toBe(0);
   });
 
+  it("cura Dreno Vital conforme HP efetivamente perdido pelo inimigo", () => {
+    const vampire = reworkRaces.find((entry) => entry.id === "vampiro")!;
+    const skill = getReworkRaceCombatSkills(vampire, 100).find((entry) => entry.name === "Dreno Vital")!;
+    const actor = { ...fighter("vampire"), hp: 300 };
+    const enemy = fighter("enemy");
+    const jrpg = resolveJrpgSkill(actor, enemy, skill);
+    const tactical = resolveTacticalSkill(actor, enemy, skill);
+    expect(jrpg.actor.hp - actor.hp).toBe(Math.round((enemy.hp - jrpg.target.hp) * 0.5));
+    expect(tactical.actor.hp - actor.hp).toBe(Math.round((enemy.hp - tactical.target.hp) * 0.5));
+
+    const protectedEnemy = { ...enemy, shield: 100 };
+    expect(resolveJrpgSkill(actor, protectedEnemy, skill).actor.hp).toBe(actor.hp);
+    expect(resolveTacticalSkill(actor, protectedEnemy, skill).actor.hp).toBe(actor.hp);
+  });
+
   it("prende o alvo com Raízes do Primeiro Bosque", () => {
     const elf = reworkRaces.find((entry) => entry.id === "elfo")!;
     const skill = getReworkRaceCombatSkills(elf, 100).find((entry) => entry.name === "Raízes do Primeiro Bosque")!;

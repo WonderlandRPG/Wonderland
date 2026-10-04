@@ -68,7 +68,7 @@ function applySecondaryOperation(
   if (operation.operation === "HEAL") {
     const amount = operation.healPercentOfDamage !== undefined
       ? Math.round(damageDealt * operation.healPercentOfDamage / 100)
-      : Math.max(1, Math.round(power || actorAttributes.ARC));
+      : Math.max(1, Math.round(power + receiver.maxHp * (operation.healPercentOfMaxHp ?? 0) / 100 || actorAttributes.ARC));
     const healed = Math.min(amount, receiver.maxHp - receiver.hp);
     const next = { ...receiver, hp: receiver.hp + healed };
     return {

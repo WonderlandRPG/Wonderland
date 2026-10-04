@@ -41,10 +41,10 @@ function parseArea(value = "") {
 function parseScaling(text: string) {
   const scaling: ClassSkill["scaling"] = [];
   for (const attribute of OFFICIAL_ATTRIBUTES) {
-    const direct = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n]{0,20}\\[?${attribute}\\]?`, "i").exec(
+    const direct = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,20}\\[?${attribute}\\]?`, "i").exec(
       text,
     );
-    const prose = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n]{0,25}(?:da|de)\\s+${attribute}`, "i").exec(
+    const prose = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,25}(?:da|de)\\s+${attribute}`, "i").exec(
       text,
     );
     const match = direct ?? prose;
@@ -79,6 +79,7 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
   const type = damageType(`${source.combat.damageType ?? ""} ${text}`);
   const damageReductionPercent = parseDamageReduction(source.description);
   const lifeDrain = /cura\s+(\d+(?:[.,]\d+)?)%\s+do\s+dano\s+(?:efetivamente\s+)?causado/i.exec(source.description);
+  const maxHpHeal = /(\d+(?:[.,]\d+)?)%\s+(?:do\s+)?HP\s+m[aá]ximo/i.exec(text);
   const supportTarget = /\baliados?\b|efeito negativo do alvo|cura o alvo/i.test(source.description)
     ? ("ally" as const)
     : ("self" as const);
@@ -131,6 +132,7 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       ...common, operation: "HEAL", target: supportTarget, damageType: "none",
       base: parseFixedPower(source.description),
       healPercentOfDamage: lifeDrain ? Number(lifeDrain[1].replace(",", ".")) : undefined,
+      healPercentOfMaxHp: maxHpHeal ? Number(maxHpHeal[1].replace(",", ".")) : undefined,
     });
   if (/remove\s+(?:um\s+)?(?:efeito|penalidade)|remove\s+controle/i.test(text))
     operations.push({

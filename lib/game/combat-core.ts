@@ -398,8 +398,9 @@ export function resolveSkill(
   }
 
   if (primaryOperation?.operation === "HEAL") {
-    const amount = rawPower || rounded(actor.maxHp * 0.08);
     const receiver = skill.target === "enemy" ? target : paidActor;
+    const amount = rawPower + rounded(receiver.maxHp * (primaryOperation.healPercentOfMaxHp ?? 0) / 100)
+      || rounded(actor.maxHp * 0.08);
     const healed = Math.min(amount, receiver.maxHp - receiver.hp);
     const next = { ...receiver, hp: receiver.hp + healed };
     return {

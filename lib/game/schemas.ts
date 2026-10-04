@@ -189,6 +189,7 @@ export const engineOperationSchema = z.object({
   distance: nonNegativeIntegerSchema.default(0),
   damageReductionPercent: z.number().finite().min(0).max(100).optional(),
   healPercentOfDamage: z.number().finite().min(0).max(100).optional(),
+  healPercentOfMaxHp: z.number().finite().min(0).max(100).optional(),
   modifiers: z
     .array(z.object({ attribute: z.enum(attributeKeys), value: finiteNumberSchema }))
     .default([]),

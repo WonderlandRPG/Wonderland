@@ -227,7 +227,7 @@ export function resolveTacticalSkill(
     if (operation.operation === "HEAL") {
       const amount = operation.healPercentOfDamage !== undefined
         ? Math.round(hpDamageDealt * operation.healPercentOfDamage / 100)
-        : Math.max(1, Math.round(rawPower || actorAttributes.ARC));
+        : Math.max(1, Math.round(rawPower + receiver.maxHp * (operation.healPercentOfMaxHp ?? 0) / 100 || actorAttributes.ARC));
       const healed = Math.min(amount, receiver.maxHp - receiver.hp);
       const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, hp: receiver.hp + healed });
       nextActor = replaced.actor;

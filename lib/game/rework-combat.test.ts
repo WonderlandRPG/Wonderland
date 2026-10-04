@@ -148,6 +148,15 @@ describe("contrato executável do combate Rework", () => {
     expect(resolveTacticalSkill(actor, protectedEnemy, skill).actor.hp).toBe(actor.hp);
   });
 
+  it("Meditação de Combate cura 20% do HP máximo mais 40% de FOR no PvE e PvP", () => {
+    const monk = reworkClasses.find((entry) => entry.id === "monge")!;
+    const skill = getReworkClassCombatSkills(monk, 100).find((entry) => entry.name === "Meditação de Combate")!;
+    const actor = { ...fighter("monk"), hp: 200 };
+    expect(skill.operations[0].healPercentOfMaxHp).toBe(20);
+    expect(resolveJrpgSkill(actor, fighter("enemy"), skill).actor.hp).toBe(340);
+    expect(resolveTacticalSkill(actor, fighter("enemy"), skill).actor.hp).toBe(340);
+  });
+
   it("prende o alvo com Raízes do Primeiro Bosque", () => {
     const elf = reworkRaces.find((entry) => entry.id === "elfo")!;
     const skill = getReworkRaceCombatSkills(elf, 100).find((entry) => entry.name === "Raízes do Primeiro Bosque")!;

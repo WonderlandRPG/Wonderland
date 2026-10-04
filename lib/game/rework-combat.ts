@@ -67,13 +67,18 @@ function parseDamageReduction(text: string) {
   return match ? Math.min(100, Number(match[1].replace(",", "."))) : 0;
 }
 
+function parseFixedPower(text: string) {
+  const match = text.match(/(?:cura|recupera|restaura|barreira|escudo)[^.!?]{0,80}?(\d+)\s*\+\s*\d+(?:[.,]\d+)?%/i);
+  return match ? Number(match[1]) : 0;
+}
+
 function makeOperation(source: ReworkSource): ClassSkill["operations"] {
   const text = `${source.name} ${source.description} ${source.combat.power ?? ""} ${source.combat.adjustment ?? ""}`;
   const scaling = parseScaling(text);
   const duration = Math.max(0, Math.round(firstNumber(source.combat.duration, 1)));
   const type = damageType(`${source.combat.damageType ?? ""} ${text}`);
   const damageReductionPercent = parseDamageReduction(source.description);
-  const supportTarget = /\baliado\b|efeito negativo do alvo|cura o alvo/i.test(source.description)
+  const supportTarget = /\baliados?\b|efeito negativo do alvo|cura o alvo/i.test(source.description)
     ? ("ally" as const)
     : ("self" as const);
   const target = /cura|recuper|restaura|escudo|barreira|redu[cç][aã]o de dano|si mesmo/i.test(text)
@@ -121,13 +126,13 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       distance: Math.max(1, Math.round(firstNumber(text, 1))),
     });
   if (/cura|recupera|restaura.*hp/i.test(text))
-    operations.push({ ...common, operation: "HEAL", target: supportTarget, damageType: "none" });
+    operations.push({ ...common, operation: "HEAL", target: supportTarget, damageType: "none", base: parseFixedPower(source.description) });
   if (/remove\s+(?:um\s+)?(?:efeito|penalidade)|remove\s+controle/i.test(text))
     operations.push({
       ...common, operation: "REMOVE_STATUS", target: supportTarget, damageType: "none", status: "negative",
     });
   if (/escudo|barreira/i.test(text))
-    operations.push({ ...common, operation: "SHIELD", target: "self", damageType: "none" });
+    operations.push({ ...common, operation: "SHIELD", target: supportTarget, damageType: "none", base: parseFixedPower(source.description) });
   if (/paralis|atordoa|stun/i.test(text))
     operations.push({
       ...common,

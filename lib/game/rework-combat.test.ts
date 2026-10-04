@@ -113,8 +113,24 @@ describe("contrato executável do combate Rework", () => {
       statuses: { poison: { name: "Veneno", duration: 2, stacks: 1, modifiers: {}, beneficial: false } },
     };
     const result = resolveJrpgSkill(fighter("fairy"), ally, skill);
-    expect(result.target.hp).toBeGreaterThan(ally.hp);
+    expect(result.target.hp - ally.hp).toBe(65);
     expect(result.target.statuses.poison).toBeUndefined();
+    const tactical = resolveTacticalSkill({ ...fighter("fairy"), hp: 300, statuses: ally.statuses }, fighter("enemy"), skill);
+    expect(tactical.actor.hp).toBe(365);
+    expect(tactical.actor.statuses.poison).toBeUndefined();
+    expect(tactical.target.hp).toBe(tactical.target.maxHp);
+  });
+
+  it("concede Escudo da Fé ao aliado em vez do próprio Paladino", () => {
+    const paladin = reworkClasses.find((entry) => entry.id === "paladino")!;
+    const skill = getReworkClassCombatSkills(paladin, 100).find((entry) => entry.name === "Escudo da Fé")!;
+    expect(skill.target).toBe("ally");
+    const result = resolveJrpgSkill(fighter("paladin"), fighter("ally"), skill);
+    expect(result.actor.shield).toBe(0);
+    expect(result.target.shield).toBeGreaterThan(0);
+    const tactical = resolveTacticalSkill(fighter("paladin"), fighter("ally"), skill);
+    expect(tactical.actor.shield).toBeGreaterThan(0);
+    expect(tactical.target.shield).toBe(0);
   });
 
   it("prende o alvo com Raízes do Primeiro Bosque", () => {

@@ -44,6 +44,7 @@ export interface CombatantState {
   name: string;
   passiveKeys?: string[];
   passiveFlags?: Record<string, boolean>;
+  passiveMarkedTargetId?: string;
   passiveRoundHealing?: number;
   basicAttackDamageType?: "physical" | "magic";
   attributes: CombatAttributes;
@@ -224,6 +225,7 @@ export function reworkOutgoingDamageMultiplier(
   actor: CombatantState,
   target: CombatantState,
   type: DamageType,
+  context: { movedBeforeAction?: boolean } = {},
 ) {
   const passiveKeys = actor.passiveKeys ?? [];
   let multiplier = 1;
@@ -240,7 +242,41 @@ export function reworkOutgoingDamageMultiplier(
   if (passiveKeys.includes("lobisomem-0") && type === "physical" && actor.hp < actor.maxHp / 2) {
     multiplier *= 1.15;
   }
+  if (passiveKeys.includes("arqueiro-0") && type === "physical" && !context.movedBeforeAction) {
+    multiplier *= 1.15;
+  }
+  if (passiveKeys.includes("leonis-0") && actor.passiveMarkedTargetId === target.id) {
+    multiplier *= 1.1;
+  }
   return multiplier;
+}
+
+export function reworkMovementAllowance(
+  actor: CombatantState,
+  enemyId: string,
+  baseMovement: number,
+) {
+  return (
+    baseMovement +
+    (actor.passiveKeys?.includes("leonis-0") && actor.passiveMarkedTargetId === enemyId ? 1 : 0)
+  );
+}
+
+export function reworkDefenderAttributes(
+  actor: CombatantState,
+  target: CombatantState,
+  type: DamageType,
+  attributes: CombatAttributes,
+): CombatAttributes {
+  if (
+    actor.id === target.id ||
+    !actor.passiveKeys?.includes("elfo-0") ||
+    actor.passiveFlags?.[`elfo-first-hit:${target.id}`] ||
+    type === "true"
+  )
+    return attributes;
+  const key = type === "physical" ? "DEF" : "RES";
+  return { ...attributes, [key]: Math.max(0, attributes[key] * 0.85) };
 }
 
 export function applyReworkLifesteal(
@@ -249,19 +285,39 @@ export function applyReworkLifesteal(
   type: DamageType,
   defeatedTarget?: { before: CombatantState; after: CombatantState },
 ): CombatantState {
+  const withMarkedPrey =
+    defeatedTarget &&
+    actor.id !== defeatedTarget.before.id &&
+    defeatedTarget.before.hp > defeatedTarget.after.hp &&
+    actor.passiveKeys?.includes("leonis-0") &&
+    !actor.passiveMarkedTargetId
+      ? { ...actor, passiveMarkedTargetId: defeatedTarget.before.id }
+      : actor;
+  const withFirstHit =
+    defeatedTarget &&
+    withMarkedPrey.id !== defeatedTarget.before.id &&
+    withMarkedPrey.passiveKeys?.includes("elfo-0")
+      ? {
+          ...withMarkedPrey,
+          passiveFlags: {
+            ...withMarkedPrey.passiveFlags,
+            [`elfo-first-hit:${defeatedTarget.before.id}`]: true,
+          },
+        }
+      : withMarkedPrey;
   const withHarvest =
     defeatedTarget &&
     defeatedTarget.before.hp > 0 &&
     defeatedTarget.after.hp <= 0 &&
-    actor.passiveKeys?.includes("necromante-0")
+    withFirstHit.passiveKeys?.includes("necromante-0")
       ? {
-          ...actor,
+          ...withFirstHit,
           cooldowns: {
-            ...actor.cooldowns,
-            "necromante-2": Math.max(0, (actor.cooldowns["necromante-2"] ?? 0) - 1),
+            ...withFirstHit.cooldowns,
+            "necromante-2": Math.max(0, (withFirstHit.cooldowns["necromante-2"] ?? 0) - 1),
           },
         }
-      : actor;
+      : withFirstHit;
   if (hpDamage <= 0 || withHarvest.hp <= 0) return withHarvest;
   let heal = 0;
   let vampireHealing = withHarvest.passiveRoundHealing ?? 0;
@@ -292,8 +348,12 @@ export function applyReworkLifesteal(
     : withHarvest;
 }
 
-export function applyDamage(target: CombatantState, amount: number) {
-  const guardKey = "defesa-total";
+export function applyDamage(
+  target: CombatantState,
+  amount: number,
+  context: { areaAttack?: boolean } = {},
+) {
+  const guardKey = target.statuses["kitsune-ilusao"] ? "kitsune-ilusao" : "defesa-total";
   if (amount > 0 && target.statuses[guardKey]) {
     const statuses = { ...target.statuses };
     delete statuses[guardKey];
@@ -311,9 +371,10 @@ export function applyDamage(target: CombatantState, amount: number) {
     target.passiveKeys?.includes("draconato-0") &&
     !target.passiveFlags?.draconatoFirstHitTaken;
   const passiveReduction = draconatoFirstHit ? 15 : 0;
+  const fairyReduction = context.areaAttack && target.passiveKeys?.includes("fada-0") ? 0.8 : 1;
   const reducedAmount = Math.max(
     0,
-    Math.round(amount * (1 - reduction / 100) * (1 - passiveReduction / 100)),
+    Math.round(amount * (1 - reduction / 100) * (1 - passiveReduction / 100) * fairyReduction),
   );
   const absorbed = Math.min(target.shield, reducedAmount);
   const hpDamage = Math.max(0, reducedAmount - absorbed);
@@ -418,7 +479,7 @@ export function resolveBasicAttack(
   const amount = calculateDamage(
     raw * reworkOutgoingDamageMultiplier(actor, target, damageType),
     damageType,
-    targetAttributes,
+    reworkDefenderAttributes(actor, target, damageType, targetAttributes),
     rules,
   );
   const damagedTarget = applyDamage(target, amount);
@@ -521,10 +582,10 @@ export function resolveSkill(
     const amount = calculateDamage(
       rawPower * reworkOutgoingDamageMultiplier(actor, target, type),
       type,
-      getEffectiveAttributes(target),
+      reworkDefenderAttributes(actor, target, type, getEffectiveAttributes(target)),
       rules,
     );
-    const damagedTarget = applyDamage(target, amount);
+    const damagedTarget = applyDamage(target, amount, { areaAttack: skill.area > 0 });
     const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
     const itemResolution = applyOffensiveItemEffects(paidActor, damagedTarget, damageDealt);
     return {
@@ -579,9 +640,12 @@ export function resolveSkill(
 
   if (primaryOperation?.operation === "REMOVE_STATUS") {
     const receiver = primaryOperation.target === "enemy" ? target : paidActor;
-    const removableKey = primaryOperation.status
-      ? primaryOperation.status
-      : Object.entries(receiver.statuses).find(([, active]) => !active.beneficial)?.[0];
+    const removableKey =
+      primaryOperation.status === "positive"
+        ? Object.entries(receiver.statuses).find(([, active]) => active.beneficial)?.[0]
+        : primaryOperation.status && primaryOperation.status !== "negative"
+          ? primaryOperation.status
+          : Object.entries(receiver.statuses).find(([, active]) => !active.beneficial)?.[0];
     if (!removableKey) {
       return {
         actor: paidActor,

@@ -5,6 +5,7 @@ import {
   calculateDamage,
   calculateScaledPower,
   getEffectiveAttributes,
+  reworkDefenderAttributes,
   reworkOutgoingDamageMultiplier,
   isBeneficialStatusOperation,
   resolveSkill,
@@ -59,10 +60,10 @@ function applySecondaryOperation(
     const amount = calculateDamage(
       power * reworkOutgoingDamageMultiplier(actor, receiver, damageType),
       damageType,
-      getEffectiveAttributes(receiver),
+      reworkDefenderAttributes(actor, receiver, damageType, getEffectiveAttributes(receiver)),
       rules,
     );
-    const damaged = applyDamage(receiver, amount);
+    const damaged = applyDamage(receiver, amount, { areaAttack: skill.area > 0 });
     const dealt = receiver.hp + receiver.shield - (damaged.hp + damaged.shield);
     return {
       ...replaceCombatant(
@@ -114,9 +115,11 @@ function applySecondaryOperation(
   if (operation.operation === "REMOVE_STATUS") {
     const statuses = { ...receiver.statuses };
     const key =
-      operation.status && operation.status !== "negative"
-        ? operation.status
-        : Object.entries(statuses).find(([, value]) => !value.beneficial)?.[0];
+      operation.status === "positive"
+        ? Object.entries(statuses).find(([, value]) => value.beneficial)?.[0]
+        : operation.status && operation.status !== "negative"
+          ? operation.status
+          : Object.entries(statuses).find(([, value]) => !value.beneficial)?.[0];
     if (key) delete statuses[key];
     const next = { ...receiver, statuses };
     return {

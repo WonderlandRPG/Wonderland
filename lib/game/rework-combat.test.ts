@@ -5,6 +5,7 @@ import {
   getEffectiveAttributes,
   resolveBasicAttack,
   reworkOutgoingDamageMultiplier,
+  reworkMovementAllowance,
   tickCooldowns,
 } from "@/lib/game/combat";
 import { resolveJrpgSkill } from "@/lib/game/jrpg-skill";
@@ -253,6 +254,115 @@ describe("contrato executável do combate Rework", () => {
       expect(result.actor.cooldowns["necromante-2"]).toBe(2);
       const noHarvest = resolve(necromancer, fighter("healthy"), attack);
       expect(noHarvest.actor.cooldowns["necromante-2"]).toBe(3);
+    }
+  });
+
+  it("Olho do Caçador aumenta o disparo apenas antes de se mover", () => {
+    const archer = { ...fighter("archer"), passiveKeys: ["arqueiro-0"] };
+    const target = fighter("target");
+    expect(resolveBasicAttack(archer, target).event.amount).toBe(115);
+    expect(
+      resolveBasicAttack(archer, target, undefined, { movedBeforeAction: true }).event.amount,
+    ).toBe(100);
+    const shot = getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "arqueiro")!)!;
+    const stationary = resolveTacticalSkill(archer, target, shot);
+    const moving = resolveTacticalSkill(archer, target, shot, undefined, {
+      movedBeforeAction: true,
+    });
+    expect(stationary.event.amount).toBeGreaterThan(moving.event.amount);
+  });
+
+  it("Sentidos Milenares ignora 15% da defesa somente no primeiro ataque a cada inimigo", () => {
+    const elf = { ...fighter("elf"), passiveKeys: ["elfo-0"] };
+    const armored = {
+      ...fighter("armored"),
+      attributes: { ...fighter("armored").attributes, DEF: 100 },
+    };
+    const first = resolveBasicAttack(elf, armored);
+    expect(first.event.amount).toBe(54);
+    expect(first.actor.passiveFlags?.["elfo-first-hit:armored"]).toBe(true);
+    expect(resolveBasicAttack(first.actor, armored).event.amount).toBe(50);
+    expect(resolveBasicAttack(first.actor, { ...armored, id: "other" }).event.amount).toBe(54);
+    const shot = getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "arqueiro")!)!;
+    const tactical = resolveTacticalSkill(elf, armored, shot);
+    expect(tactical.actor.passiveFlags?.["elfo-first-hit:armored"]).toBe(true);
+    expect(resolveTacticalSkill(tactical.actor, armored, shot).event.amount).toBeLessThan(
+      tactical.event.amount,
+    );
+  });
+
+  it("Corpo Feérico reduz dano de habilidades em área sem reduzir ataques individuais", () => {
+    const fairy = { ...fighter("fairy"), passiveKeys: ["fada-0"] };
+    const single = applyDamage(fairy, 100);
+    const area = applyDamage(fairy, 100, { areaAttack: true });
+    expect(single.hp).toBe(400);
+    expect(area.hp).toBe(420);
+    const attack = getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "arqueiro")!)!;
+    const areaAttack = { ...attack, area: 1 };
+    expect(resolveTacticalSkill(fighter("enemy"), fairy, areaAttack).target.hp).toBeGreaterThan(
+      resolveTacticalSkill(fighter("enemy"), fairy, attack).target.hp,
+    );
+  });
+
+  it("Instinto do Alfa fixa o primeiro alvo danificado e aumenta dano e movimento contra ele", () => {
+    const lion = { ...fighter("lion"), passiveKeys: ["leonis-0"] };
+    const prey = fighter("prey");
+    for (const resolve of [
+      (a: ReturnType<typeof fighter>, b: ReturnType<typeof fighter>) => resolveBasicAttack(a, b),
+      (a: ReturnType<typeof fighter>, b: ReturnType<typeof fighter>) =>
+        resolveTacticalSkill(
+          a,
+          b,
+          getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "barbaro")!)!,
+        ),
+    ]) {
+      const first = resolve(lion, prey);
+      expect(first.actor.passiveMarkedTargetId).toBe("prey");
+      expect(reworkMovementAllowance(first.actor, "prey", 4)).toBe(5);
+      expect(reworkMovementAllowance(first.actor, "other", 4)).toBe(4);
+      const second = resolve(first.actor, prey);
+      expect(second.event.amount).toBeGreaterThan(first.event.amount);
+      expect(resolve(first.actor, fighter("other")).event.amount).toBe(first.event.amount);
+    }
+  });
+
+  it("Reflexo Enganador anula o próximo ataque e consome a ilusão", () => {
+    const kitsune = reworkRaces.find((entry) => entry.id === "kitsune")!;
+    const illusion = getReworkRaceCombatSkills(kitsune, 100).find(
+      (skill) => skill.key === "kitsune-2",
+    )!;
+    for (const resolve of [resolveJrpgSkill, resolveTacticalSkill]) {
+      const cast = resolve(fighter("kitsune"), fighter("enemy"), illusion);
+      expect(cast.actor.statuses["kitsune-ilusao"]).toBeDefined();
+      const blocked = resolveBasicAttack(fighter("enemy"), cast.actor);
+      expect(blocked.target.hp).toBe(cast.actor.hp);
+      expect(blocked.target.statuses["kitsune-ilusao"]).toBeUndefined();
+      expect(resolveBasicAttack(fighter("enemy"), blocked.target).target.hp).toBeLessThan(
+        cast.actor.hp,
+      );
+    }
+  });
+
+  it("Mãos Ligeiras remove um benefício real do alvo", () => {
+    const rogue = reworkClasses.find((entry) => entry.id === "ladino")!;
+    const dispel = getReworkClassCombatSkills(rogue, 100).find(
+      (skill) => skill.key === "ladino-3",
+    )!;
+    const buffed = {
+      ...fighter("enemy"),
+      statuses: {
+        protection: {
+          name: "Proteção",
+          duration: 2,
+          stacks: 1,
+          modifiers: { DEF: 20 },
+          beneficial: true,
+        },
+      },
+    };
+    for (const resolve of [resolveJrpgSkill, resolveTacticalSkill]) {
+      const result = resolve(fighter("rogue"), buffed, dispel);
+      expect(result.target.statuses.protection).toBeUndefined();
     }
   });
 

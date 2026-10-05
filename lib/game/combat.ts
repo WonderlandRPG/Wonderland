@@ -5,6 +5,7 @@ import {
   createCombatant as createCoreCombatant,
   defaultCombatRules,
   getEffectiveAttributes,
+  reworkDefenderAttributes,
   reworkOutgoingDamageMultiplier,
   type CombatantState,
   type CombatResolution,
@@ -36,6 +37,7 @@ export function resolveBasicAttack(
   actor: CombatantState,
   target: CombatantState,
   rules: CombatRules = defaultCombatRules,
+  context: { movedBeforeAction?: boolean } = {},
 ): CombatResolution {
   if (actor.hp <= 0) {
     return {
@@ -68,9 +70,9 @@ export function resolveBasicAttack(
   const offensiveAttribute = damageType === "magic" ? actorAttributes.INT : actorAttributes.FOR;
   const raw = offensiveAttribute * rules.basicAttackMultiplier;
   const amount = calculateDamage(
-    raw * reworkOutgoingDamageMultiplier(actor, target, damageType),
+    raw * reworkOutgoingDamageMultiplier(actor, target, damageType, context),
     damageType,
-    targetAttributes,
+    reworkDefenderAttributes(actor, target, damageType, targetAttributes),
     rules,
   );
   const damagedTarget = applyDamage(target, amount);

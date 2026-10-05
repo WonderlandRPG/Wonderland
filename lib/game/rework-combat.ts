@@ -32,7 +32,8 @@ function parseRange(value = "") {
 
 function parseArea(value = "") {
   const square = value.match(/(\d+)\s*[x×]\s*(\d+)/i);
-  if (square) return Math.max(0, Math.ceil((Math.max(Number(square[1]), Number(square[2])) - 1) / 2));
+  if (square)
+    return Math.max(0, Math.ceil((Math.max(Number(square[1]), Number(square[2])) - 1) / 2));
   if (/cone|linha|cruz|adjacente|[aá]rea/i.test(value)) return 1;
   if (/raio/i.test(value)) return Math.max(1, Math.round(firstNumber(value, 1)));
   return 0;
@@ -41,12 +42,14 @@ function parseArea(value = "") {
 function parseScaling(text: string) {
   const scaling: ClassSkill["scaling"] = [];
   for (const attribute of OFFICIAL_ATTRIBUTES) {
-    const direct = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,20}\\[?${attribute}\\]?(?!\\p{L})`, "iu").exec(
-      text,
-    );
-    const prose = new RegExp(`(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,25}(?:da|de)\\s+${attribute}(?!\\p{L})`, "iu").exec(
-      text,
-    );
+    const direct = new RegExp(
+      `(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,20}\\[?${attribute}\\]?(?!\\p{L})`,
+      "iu",
+    ).exec(text);
+    const prose = new RegExp(
+      `(\\d+(?:[.,]\\d+)?)%[^\\n%]{0,25}(?:da|de)\\s+${attribute}(?!\\p{L})`,
+      "iu",
+    ).exec(text);
     const match = direct ?? prose;
     if (match) scaling.push({ attribute, multiplier: Number(match[1].replace(",", ".")) / 100 });
   }
@@ -62,13 +65,17 @@ function damageType(value = ""): ClassSkill["damageType"] {
 }
 
 function parseDamageReduction(text: string) {
-  const match = text.match(/(?:reduz\s+em\s+|receb[ae]\s+)(\d+(?:[.,]\d+)?)%\s+(?:menos\s+)?(?:de\s+)?(?:redu[cç][aã]o\s+de\s+)?(?:o\s+)?dano/i)
-    ?? text.match(/(\d+(?:[.,]\d+)?)%\s+de\s+redu[cç][aã]o\s+de\s+dano/i);
+  const match =
+    text.match(
+      /(?:reduz\s+em\s+|receb[ae]\s+)(\d+(?:[.,]\d+)?)%\s+(?:menos\s+)?(?:de\s+)?(?:redu[cç][aã]o\s+de\s+)?(?:o\s+)?dano/i,
+    ) ?? text.match(/(\d+(?:[.,]\d+)?)%\s+de\s+redu[cç][aã]o\s+de\s+dano/i);
   return match ? Math.min(100, Number(match[1].replace(",", "."))) : 0;
 }
 
 function parseFixedPower(text: string) {
-  const match = text.match(/(?:cura|recupera|restaura|barreira|escudo)[^.!?]{0,80}?(\d+)\s*\+\s*\d+(?:[.,]\d+)?%/i);
+  const match = text.match(
+    /(?:cura|recupera|restaura|barreira|escudo)[^.!?]{0,80}?(\d+)\s*\+\s*\d+(?:[.,]\d+)?%/i,
+  );
   return match ? Number(match[1]) : 0;
 }
 
@@ -76,10 +83,17 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
   const text = `${source.name} ${source.description} ${source.combat.power ?? ""} ${source.combat.adjustment ?? ""}`;
   const scaling = parseScaling(text);
   const describedDuration = /\bpor\s+(\d+)\s+turnos?/i.exec(source.description);
-  const duration = Math.max(0, Math.round(firstNumber(source.combat.duration, describedDuration ? Number(describedDuration[1]) : 1)));
+  const duration = Math.max(
+    0,
+    Math.round(
+      firstNumber(source.combat.duration, describedDuration ? Number(describedDuration[1]) : 1),
+    ),
+  );
   const type = damageType(`${source.combat.damageType ?? ""} ${text}`);
   const damageReductionPercent = parseDamageReduction(source.description);
-  const lifeDrain = /cura\s+(\d+(?:[.,]\d+)?)%\s+do\s+dano\s+(?:efetivamente\s+)?causado/i.exec(source.description);
+  const lifeDrain = /cura\s+(\d+(?:[.,]\d+)?)%\s+do\s+dano\s+(?:efetivamente\s+)?causado/i.exec(
+    source.description,
+  );
   const maxHpHeal = /(\d+(?:[.,]\d+)?)%\s+(?:do\s+)?HP\s+m[aá]ximo/i.exec(text);
   const supportTarget = /\baliados?\b|efeito negativo do alvo|cura o alvo/i.test(source.description)
     ? ("ally" as const)
@@ -130,17 +144,51 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
     });
   if (/cura|recupera|restaura.*hp/i.test(text))
     operations.push({
-      ...common, operation: "HEAL", target: supportTarget, damageType: "none",
+      ...common,
+      operation: "HEAL",
+      target: supportTarget,
+      damageType: "none",
       base: parseFixedPower(source.description),
       healPercentOfDamage: lifeDrain ? Number(lifeDrain[1].replace(",", ".")) : undefined,
       healPercentOfMaxHp: maxHpHeal ? Number(maxHpHeal[1].replace(",", ".")) : undefined,
     });
   if (/remove\s+(?:um\s+)?(?:efeito|penalidade)|remove\s+controle/i.test(text))
     operations.push({
-      ...common, operation: "REMOVE_STATUS", target: supportTarget, damageType: "none", status: "negative",
+      ...common,
+      operation: "REMOVE_STATUS",
+      target: supportTarget,
+      damageType: "none",
+      status: "negative",
     });
+  if (source.id === "ladino-3") {
+    operations.push({
+      ...common,
+      operation: "REMOVE_STATUS",
+      target: "enemy",
+      damageType: "none",
+      status: "positive",
+    });
+  }
+  if (source.id === "kitsune-2") {
+    operations.push({
+      ...common,
+      operation: "BUFF",
+      target: "self",
+      damageType: "none",
+      status: "kitsune-ilusao",
+      duration: 2,
+      scaling: [],
+      damageReductionPercent: 100,
+    });
+  }
   if (/escudo|barreira/i.test(text))
-    operations.push({ ...common, operation: "SHIELD", target: supportTarget, damageType: "none", base: parseFixedPower(source.description) });
+    operations.push({
+      ...common,
+      operation: "SHIELD",
+      target: supportTarget,
+      damageType: "none",
+      base: parseFixedPower(source.description),
+    });
   if (/paralis|atordoa|stun/i.test(text))
     operations.push({
       ...common,
@@ -175,7 +223,11 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
     });
   if (/enra[ií]za|imobiliza|root|\bprend[ea]\b|prendem\s+inimigos/i.test(text))
     operations.push({
-      ...common, operation: "ROOT", target: "enemy", damageType: "none", duration: Math.max(1, duration),
+      ...common,
+      operation: "ROOT",
+      target: "enemy",
+      damageType: "none",
+      duration: Math.max(1, duration),
     });
   if (damageReductionPercent > 0) {
     operations.push({
@@ -189,7 +241,9 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       damageReductionPercent,
     });
   }
-  const resistanceBonus = /recebendo\s+(\d+(?:[.,]\d+)?)%\s+de\s+resist[eê]ncia/i.exec(source.description);
+  const resistanceBonus = /recebendo\s+(\d+(?:[.,]\d+)?)%\s+de\s+resist[eê]ncia/i.exec(
+    source.description,
+  );
   if (resistanceBonus) {
     operations.push({
       ...common,
@@ -199,11 +253,15 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       status: `${source.id}-resistencia`,
       scaling: [],
       duration: Math.max(1, duration),
-      modifiers: [{ attribute: "RES", value: Number(resistanceBonus[1].replace(",", ".")), percent: true }],
+      modifiers: [
+        { attribute: "RES", value: Number(resistanceBonus[1].replace(",", ".")), percent: true },
+      ],
     });
   }
   if (
-    !/ganh[ae]\s+\d+%\s+de\s+dano|reduz\s+em\s+\d+%\s+o\s+dano\s+recebido/i.test(source.description) &&
+    !/ganh[ae]\s+\d+%\s+de\s+dano|reduz\s+em\s+\d+%\s+o\s+dano\s+recebido/i.test(
+      source.description,
+    ) &&
     (/dano|golpe|ataca|atinge|explode|dispara|expele|impacto|corta|perfura/i.test(text) ||
       type !== "none")
   ) {
@@ -260,9 +318,9 @@ function toSkill(
         ? "enemy"
         : operations.some((entry) => entry.target === "ally")
           ? "ally"
-      : operations.every((entry) => entry.target === "self")
-        ? "self"
-        : "enemy",
+          : operations.every((entry) => entry.target === "self")
+            ? "self"
+            : "enemy",
     resource: "none",
     resourceKey,
     cost: 0,

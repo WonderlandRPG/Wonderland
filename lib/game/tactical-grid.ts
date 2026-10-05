@@ -29,11 +29,13 @@ export function getTacticalDistance(a: TacticalPosition, b: TacticalPosition) {
 export function getReachableTacticalCells({
   start,
   blocked,
+  passThrough = new Set<string>(),
   movement,
   grid,
 }: {
   start: TacticalPosition;
   blocked: ReadonlySet<string>;
+  passThrough?: ReadonlySet<string>;
   movement: number;
   grid: TacticalGridSize;
 }) {
@@ -49,13 +51,14 @@ export function getReachableTacticalCells({
 
     for (const next of getOrthogonalNeighbors(current, grid)) {
       const nextKey = tacticalPositionKey(next);
-      if (blocked.has(nextKey) || distance.has(nextKey)) continue;
+      if ((blocked.has(nextKey) && !passThrough.has(nextKey)) || distance.has(nextKey)) continue;
       distance.set(nextKey, currentDistance + 1);
       queue.push(next);
     }
   }
 
   distance.delete(tacticalPositionKey(start));
+  for (const key of passThrough) distance.delete(key);
   return distance;
 }
 

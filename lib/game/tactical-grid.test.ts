@@ -29,6 +29,19 @@ describe("tactical grid", () => {
     expect(reachable.get("0,4")).toBe(4);
   });
 
+  it("permite à Fada atravessar uma unidade sem terminar na célula ocupada", () => {
+    const reachable = getReachableTacticalCells({
+      start: { x: 0, y: 0 },
+      blocked: new Set(["1,0", "0,1"]),
+      passThrough: new Set(["1,0"]),
+      movement: 2,
+      grid,
+    });
+    expect(reachable.has("1,0")).toBe(false);
+    expect(reachable.get("2,0")).toBe(2);
+    expect(reachable.has("0,1")).toBe(false);
+  });
+
   it("stores the real movement cost for each reachable cell", () => {
     const reachable = getReachableTacticalCells({
       start: { x: 2, y: 2 },

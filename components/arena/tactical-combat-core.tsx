@@ -10,6 +10,7 @@ import { CombatFeedbackLayer } from "@/components/arena/combat-feedback-layer";
 import { CombatResultModal } from "@/components/arena/combat-result-modal";
 import {
   createCombatant,
+  reworkMovementAllowance,
   resolveBasicAttack,
   type CombatAttributes,
   type CombatantState,
@@ -450,10 +451,13 @@ export function TacticalCombatCore({
       getReachableTacticalCells({
         start: playerPosition,
         blocked: new Set([...obstacles, tacticalPositionKey(enemyPosition)]),
+        passThrough: playerState?.passiveKeys?.includes("fada-0")
+          ? new Set([tacticalPositionKey(enemyPosition)])
+          : undefined,
         movement,
         grid,
       }),
-    [playerPosition, enemyPosition, movement, obstacles, grid],
+    [playerPosition, enemyPosition, movement, obstacles, grid, playerState?.passiveKeys],
   );
   const areaCells = useMemo(
     () =>
@@ -565,23 +569,24 @@ export function TacticalCombatCore({
     setAreaCenter(null);
   }
 
-  function resetTurnActions() {
-    setMovement(PLAYER_MOVE);
+  function resetTurnActions(nextPlayer: CombatantState = player) {
+    setMovement(reworkMovementAllowance(nextPlayer, enemy.id, PLAYER_MOVE));
     setActionUsage(resetTacticalActionUsage());
     clearAction();
   }
 
   function resetBoard(nextCharacter = character, nextCreature = creature) {
+    const freshPlayer = makePlayer(nextCharacter);
     settledOutcome.current = null;
     setSettlement(null);
     setSettlementFailed(false);
     setPlayerPosition(tacticalMap.playerStart);
     setEnemyPosition(tacticalMap.enemyStart);
-    setPlayerState(makePlayer(nextCharacter));
+    setPlayerState(freshPlayer);
     setEnemyState(makeCreature(nextCreature));
     setClassTracker(initialTacticalClassResourceTracker);
     setPathTracker(initialTacticalPathTracker);
-    resetTurnActions();
+    resetTurnActions(freshPlayer);
     setRound(1);
     setLog([
       `Mapa reiniciado: ${tacticalMap.name}.`,
@@ -684,6 +689,7 @@ export function TacticalCombatCore({
     const result = resolveTacticalSkill(player, enemy, tacticalSkill, undefined, {
       distance: targetDistance,
       firstSuccessfulActionThisRound: firstAction,
+      movedBeforeAction: pathTracker.movedThisTurn,
     });
     if (result.event.kind === "error") return setMessage(result.event.message);
 
@@ -760,6 +766,9 @@ export function TacticalCombatCore({
       },
     });
 
+    if (!player.passiveMarkedTargetId && pathResult.actor.passiveMarkedTargetId === enemy.id) {
+      setMovement((current) => current + 1);
+    }
     setPlayerState(pathResult.actor);
     setClassTracker(classGeneration.tracker);
     setPathTracker(pathResult.tracker);
@@ -835,7 +844,9 @@ export function TacticalCombatCore({
       }
 
       const beforeEnemy = enemy;
-      const result = resolveBasicAttack(player, enemy);
+      const result = resolveBasicAttack(player, enemy, undefined, {
+        movedBeforeAction: pathTracker.movedThisTurn,
+      });
       if (result.event.kind === "error") return setMessage(result.event.message);
       const resistanceResult = applyCreatureBasicAttackResistance({
         before: enemy,
@@ -901,6 +912,9 @@ export function TacticalCombatCore({
         : "";
       const doctrineText = pathResult.messages.length ? ` ${pathResult.messages.join(" ")}` : "";
       const text = `${result.event.message}${resistanceText}${reactions.messages.length ? ` ${reactions.messages.join(" ")}` : ""}${classGeneration.message ? ` ${classGeneration.message}` : ""}${doctrineText}`;
+      if (!player.passiveMarkedTargetId && pathResult.actor.passiveMarkedTargetId === enemy.id) {
+        setMovement((current) => current + 1);
+      }
       setPlayerState(pathResult.actor);
       setClassTracker(classGeneration.tracker);
       setPathTracker(pathResult.tracker);
@@ -1263,7 +1277,7 @@ export function TacticalCombatCore({
 
     notes.forEach(addLog);
     if (startsNextRound) {
-      resetTurnActions();
+      resetTurnActions(nextPlayer);
       setRound((value) => value + 1);
       setMessage(`${notes.join(" ")} Seu turno.`);
     } else {

@@ -6,6 +6,7 @@ import {
   calculateScaledPower,
   defaultCombatRules,
   getEffectiveAttributes,
+  reworkDefenderAttributes,
   reworkOutgoingDamageMultiplier,
   isBeneficialStatusOperation,
   type CombatEvent,
@@ -19,6 +20,7 @@ import { applyTacticalRacialReaction } from "@/lib/game/tactical-race-reactions"
 export type TacticalSkillContext = {
   distance?: number;
   firstSuccessfulActionThisRound?: boolean;
+  movedBeforeAction?: boolean;
 };
 
 export type TacticalSkillResolution = CombatResolution & {
@@ -206,12 +208,12 @@ export function resolveTacticalSkill(
             : skill.damageType
           : operation.damageType;
       const amount = calculateDamage(
-        rawPower * reworkOutgoingDamageMultiplier(nextActor, receiver, type),
+        rawPower * reworkOutgoingDamageMultiplier(nextActor, receiver, type, context),
         type,
-        getEffectiveAttributes(receiver),
+        reworkDefenderAttributes(nextActor, receiver, type, getEffectiveAttributes(receiver)),
         rules,
       );
-      const damaged = applyDamage(receiver, amount);
+      const damaged = applyDamage(receiver, amount, { areaAttack: skill.area > 0 });
       const dealt = receiver.hp + receiver.shield - (damaged.hp + damaged.shield);
       hpDamageDealt += Math.max(0, receiver.hp - damaged.hp);
       const replaced = replaceReceiver(nextActor, nextTarget, damaged);
@@ -290,9 +292,11 @@ export function resolveTacticalSkill(
     if (operation.operation === "REMOVE_STATUS") {
       const statuses = { ...receiver.statuses };
       const removableKey =
-        operation.status && operation.status !== "negative"
-          ? operation.status
-          : Object.entries(statuses).find(([, value]) => !value.beneficial)?.[0];
+        operation.status === "positive"
+          ? Object.entries(statuses).find(([, value]) => value.beneficial)?.[0]
+          : operation.status && operation.status !== "negative"
+            ? operation.status
+            : Object.entries(statuses).find(([, value]) => !value.beneficial)?.[0];
       if (removableKey) delete statuses[removableKey];
       const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, statuses });
       nextActor = replaced.actor;

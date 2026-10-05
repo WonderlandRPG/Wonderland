@@ -33,11 +33,7 @@ function operationReceiver(
   return targetKind === "self" || targetKind === "source" || targetKind === "ally" ? actor : target;
 }
 
-function replaceReceiver(
-  actor: CombatantState,
-  target: CombatantState,
-  receiver: CombatantState,
-) {
+function replaceReceiver(actor: CombatantState, target: CombatantState, receiver: CombatantState) {
   return receiver.id === actor.id ? { actor: receiver, target } : { actor, target: receiver };
 }
 
@@ -111,7 +107,11 @@ function validateAndPay(
   skill: ClassSkill,
 ): TacticalSkillResolution | { actor: CombatantState; target: CombatantState } {
   if (isDefeated(actor)) {
-    return errorResolution(actor, target, `${actor.name} está derrotado e não pode usar ${skill.name}.`);
+    return errorResolution(
+      actor,
+      target,
+      `${actor.name} está derrotado e não pode usar ${skill.name}.`,
+    );
   }
   if (isDefeated(target) && hasOpponentOperation(skill)) {
     return errorResolution(actor, target, `${target.name} já está derrotado.`);
@@ -199,7 +199,12 @@ export function resolveTacticalSkill(
     const rawPower = operation.base + calculateScaledPower(actorAttributes, scaling);
 
     if (operation.operation === "DAMAGE") {
-      const type = operation.damageType === "none" ? (skill.damageType === "none" ? "physical" : skill.damageType) : operation.damageType;
+      const type =
+        operation.damageType === "none"
+          ? skill.damageType === "none"
+            ? "physical"
+            : skill.damageType
+          : operation.damageType;
       const amount = calculateDamage(
         rawPower * reworkOutgoingDamageMultiplier(nextActor, receiver, type),
         type,
@@ -219,12 +224,15 @@ export function resolveTacticalSkill(
           itemResolution.actor,
           Math.max(0, receiver.hp - damaged.hp),
           type,
+          { before: receiver, after: damaged },
         );
         nextTarget = itemResolution.target;
         if (itemResolution.messages.length) messages.push(...itemResolution.messages);
       }
 
-      messages.push(`${skill.name} causou ${dealt} de dano ${type === "magic" ? "mágico" : type === "true" ? "verdadeiro" : "físico"} em ${receiver.name}.`);
+      messages.push(
+        `${skill.name} causou ${dealt} de dano ${type === "magic" ? "mágico" : type === "true" ? "verdadeiro" : "físico"} em ${receiver.name}.`,
+      );
       totalAmount += dealt;
       eventKind = "damage";
       damageType = type;
@@ -236,11 +244,21 @@ export function resolveTacticalSkill(
     }
 
     if (operation.operation === "HEAL") {
-      const amount = operation.healPercentOfDamage !== undefined
-        ? Math.round(hpDamageDealt * operation.healPercentOfDamage / 100)
-        : Math.max(1, Math.round(rawPower + receiver.maxHp * (operation.healPercentOfMaxHp ?? 0) / 100 || actorAttributes.ARC));
+      const amount =
+        operation.healPercentOfDamage !== undefined
+          ? Math.round((hpDamageDealt * operation.healPercentOfDamage) / 100)
+          : Math.max(
+              1,
+              Math.round(
+                rawPower + (receiver.maxHp * (operation.healPercentOfMaxHp ?? 0)) / 100 ||
+                  actorAttributes.ARC,
+              ),
+            );
       const healed = Math.min(amount, receiver.maxHp - receiver.hp);
-      const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, hp: receiver.hp + healed });
+      const replaced = replaceReceiver(nextActor, nextTarget, {
+        ...receiver,
+        hp: receiver.hp + healed,
+      });
       nextActor = replaced.actor;
       nextTarget = replaced.target;
       messages.push(`${skill.name} recuperou ${healed} de HP de ${receiver.name}.`);
@@ -255,7 +273,10 @@ export function resolveTacticalSkill(
 
     if (operation.operation === "SHIELD") {
       const amount = Math.max(1, Math.round(rawPower || actorAttributes.ARC));
-      const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, shield: receiver.shield + amount });
+      const replaced = replaceReceiver(nextActor, nextTarget, {
+        ...receiver,
+        shield: receiver.shield + amount,
+      });
       nextActor = replaced.actor;
       nextTarget = replaced.target;
       messages.push(`${skill.name} concedeu ${amount} de escudo a ${receiver.name}.`);
@@ -276,7 +297,11 @@ export function resolveTacticalSkill(
       const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, statuses });
       nextActor = replaced.actor;
       nextTarget = replaced.target;
-      messages.push(removableKey ? `${skill.name} removeu um efeito negativo de ${receiver.name}.` : `${skill.name} não encontrou efeito negativo para remover.`);
+      messages.push(
+        removableKey
+          ? `${skill.name} removeu um efeito negativo de ${receiver.name}.`
+          : `${skill.name} não encontrou efeito negativo para remover.`,
+      );
       if (removableKey) {
         successfulOperationTypes.add("REMOVE_STATUS");
         successfulOperationIndexes.push(operationIndex);
@@ -291,16 +316,24 @@ export function resolveTacticalSkill(
       const changed = race
         ? {
             ...receiver,
-            raceResource: Math.max(0, Math.min(receiver.maxRaceResource, receiver.raceResource + sign * amount)),
+            raceResource: Math.max(
+              0,
+              Math.min(receiver.maxRaceResource, receiver.raceResource + sign * amount),
+            ),
           }
         : {
             ...receiver,
-            classResource: Math.max(0, Math.min(receiver.maxClassResource, receiver.classResource + sign * amount)),
+            classResource: Math.max(
+              0,
+              Math.min(receiver.maxClassResource, receiver.classResource + sign * amount),
+            ),
           };
       const replaced = replaceReceiver(nextActor, nextTarget, changed);
       nextActor = replaced.actor;
       nextTarget = replaced.target;
-      messages.push(`${skill.name} ${sign > 0 ? "gerou" : "consumiu"} ${amount} de ${race ? receiver.raceResourceName : receiver.classResourceName}.`);
+      messages.push(
+        `${skill.name} ${sign > 0 ? "gerou" : "consumiu"} ${amount} de ${race ? receiver.raceResourceName : receiver.classResourceName}.`,
+      );
       if (amount > 0) {
         successfulOperationTypes.add(operation.operation);
         successfulOperationIndexes.push(operationIndex);
@@ -320,7 +353,9 @@ export function resolveTacticalSkill(
       operation.modifiers.length === 0 &&
       !operation.damageReductionPercent
     ) {
-      messages.push(`${skill.name}: ${operation.operation} não possui modificadores mecânicos cadastrados.`);
+      messages.push(
+        `${skill.name}: ${operation.operation} não possui modificadores mecânicos cadastrados.`,
+      );
       continue;
     }
 
@@ -332,7 +367,7 @@ export function resolveTacticalSkill(
       operation.modifiers.map((modifier) => [
         modifier.attribute,
         modifier.percent
-          ? Math.round(actorAttributes[modifier.attribute] * modifier.value / 100)
+          ? Math.round((actorAttributes[modifier.attribute] * modifier.value) / 100)
           : modifier.value,
       ]),
     );
@@ -348,7 +383,10 @@ export function resolveTacticalSkill(
         forcedTargetId: operation.operation === "TAUNT" ? nextActor.id : undefined,
       },
     };
-    const replaced = replaceReceiver(nextActor, nextTarget, { ...receiver, statuses: nextStatuses });
+    const replaced = replaceReceiver(nextActor, nextTarget, {
+      ...receiver,
+      statuses: nextStatuses,
+    });
     nextActor = replaced.actor;
     nextTarget = replaced.target;
     successfulOperationTypes.add(operation.operation);
@@ -366,34 +404,31 @@ export function resolveTacticalSkill(
   );
   const reactionSkill: ClassSkill = {
     ...skill,
-    operations: skill.operations.filter((operation) => successfulOperationTypes.has(operation.operation)),
+    operations: skill.operations.filter((operation) =>
+      successfulOperationTypes.has(operation.operation),
+    ),
   };
 
-  const actorReaction = applyTacticalRacialReaction(
-    nextActor,
-    nextActor.raceResourceName,
-    {
-      dealtDamage: damageToTarget,
-      damageType,
-      distance: context.distance,
-      targetHpBefore: target.hp,
-      targetMaxHp: target.maxHp,
-      skill: reactionSkill,
-      firstSuccessfulActionThisRound: context.firstSuccessfulActionThisRound,
-    },
-  );
+  const actorReaction = applyTacticalRacialReaction(nextActor, nextActor.raceResourceName, {
+    dealtDamage: damageToTarget,
+    damageType,
+    distance: context.distance,
+    targetHpBefore: target.hp,
+    targetMaxHp: target.maxHp,
+    skill: reactionSkill,
+    firstSuccessfulActionThisRound: context.firstSuccessfulActionThisRound,
+  });
   nextActor = actorReaction.combatant;
   if (actorReaction.message) messages.push(actorReaction.message);
 
-  const targetReaction = applyTacticalRacialReaction(
-    nextTarget,
-    nextTarget.raceResourceName,
-    { tookDamage: damageToTarget },
-  );
+  const targetReaction = applyTacticalRacialReaction(nextTarget, nextTarget.raceResourceName, {
+    tookDamage: damageToTarget,
+  });
   nextTarget = targetReaction.combatant;
   if (targetReaction.message) messages.push(`${nextTarget.name}: ${targetReaction.message}`);
 
-  if (!messages.length) messages.push(`${skill.name} foi usada, mas nenhuma operação produziu efeito.`);
+  if (!messages.length)
+    messages.push(`${skill.name} foi usada, mas nenhuma operação produziu efeito.`);
 
   return {
     actor: nextActor,

@@ -170,7 +170,9 @@ export function createCombatant(input: {
     hp: maxHp,
     maxMana: usesMana ? stats.maxMana : 0,
     mana: usesMana ? stats.maxMana : 0,
-    shield: 0,
+    shield: (input.passiveKeys ?? []).includes("aengel-0")
+      ? Math.round(100 + input.attributes.INT * 0.4)
+      : 0,
     cooldowns: {},
     classResourceName: input.classResource?.name ?? "Recurso",
     classResource: Math.min(
@@ -229,7 +231,10 @@ export function reworkOutgoingDamageMultiplier(
     const lostTens = Math.floor(((actor.maxHp - actor.hp) * 10) / actor.maxHp + 1e-9);
     multiplier *= 1 + Math.min(0.15, Math.max(0, lostTens) * 0.03);
   }
-  if (passiveKeys.includes("ladino-0") && Object.values(target.statuses).some((status) => !status.beneficial)) {
+  if (
+    passiveKeys.includes("ladino-0") &&
+    Object.values(target.statuses).some((status) => !status.beneficial)
+  ) {
     multiplier *= 1.15;
   }
   if (passiveKeys.includes("lobisomem-0") && type === "physical" && actor.hp < actor.maxHp / 2) {
@@ -242,23 +247,49 @@ export function applyReworkLifesteal(
   actor: CombatantState,
   hpDamage: number,
   type: DamageType,
+  defeatedTarget?: { before: CombatantState; after: CombatantState },
 ): CombatantState {
-  if (hpDamage <= 0 || actor.hp <= 0) return actor;
+  const withHarvest =
+    defeatedTarget &&
+    defeatedTarget.before.hp > 0 &&
+    defeatedTarget.after.hp <= 0 &&
+    actor.passiveKeys?.includes("necromante-0")
+      ? {
+          ...actor,
+          cooldowns: {
+            ...actor.cooldowns,
+            "necromante-2": Math.max(0, (actor.cooldowns["necromante-2"] ?? 0) - 1),
+          },
+        }
+      : actor;
+  if (hpDamage <= 0 || withHarvest.hp <= 0) return withHarvest;
   let heal = 0;
-  let vampireHealing = actor.passiveRoundHealing ?? 0;
-  if (actor.passiveKeys?.includes("vampiro-0")) {
-    const cap = Math.round(actor.maxHp * 0.08);
+  let vampireHealing = withHarvest.passiveRoundHealing ?? 0;
+  if (withHarvest.passiveKeys?.includes("vampiro-0")) {
+    const cap = Math.round(withHarvest.maxHp * 0.08);
     const available = Math.max(0, cap - vampireHealing);
-    const gained = Math.min(available, actor.maxHp - actor.hp, Math.round(hpDamage * 0.1));
+    const gained = Math.min(
+      available,
+      withHarvest.maxHp - withHarvest.hp,
+      Math.round(hpDamage * 0.1),
+    );
     heal += gained;
     vampireHealing += gained;
   }
-  if (actor.passiveKeys?.includes("lobisomem-0") && type === "physical" && actor.hp < actor.maxHp / 2) {
+  if (
+    withHarvest.passiveKeys?.includes("lobisomem-0") &&
+    type === "physical" &&
+    withHarvest.hp < withHarvest.maxHp / 2
+  ) {
     heal += Math.round(hpDamage * 0.1);
   }
   return heal
-    ? { ...actor, hp: Math.min(actor.maxHp, actor.hp + heal), passiveRoundHealing: vampireHealing }
-    : actor;
+    ? {
+        ...withHarvest,
+        hp: Math.min(withHarvest.maxHp, withHarvest.hp + heal),
+        passiveRoundHealing: vampireHealing,
+      }
+    : withHarvest;
 }
 
 export function applyDamage(target: CombatantState, amount: number) {
@@ -270,21 +301,38 @@ export function applyDamage(target: CombatantState, amount: number) {
   }
   const reduction = Math.min(
     100,
-    Math.max(0, ...Object.values(target.statuses).map((status) => status.damageReductionPercent ?? 0)),
+    Math.max(
+      0,
+      ...Object.values(target.statuses).map((status) => status.damageReductionPercent ?? 0),
+    ),
   );
-  const reducedAmount = Math.max(0, Math.round(amount * (1 - reduction / 100)));
+  const draconatoFirstHit =
+    amount > 0 &&
+    target.passiveKeys?.includes("draconato-0") &&
+    !target.passiveFlags?.draconatoFirstHitTaken;
+  const passiveReduction = draconatoFirstHit ? 15 : 0;
+  const reducedAmount = Math.max(
+    0,
+    Math.round(amount * (1 - reduction / 100) * (1 - passiveReduction / 100)),
+  );
   const absorbed = Math.min(target.shield, reducedAmount);
   const hpDamage = Math.max(0, reducedAmount - absorbed);
   if (
     target.passiveKeys?.includes("orc-0") &&
     !target.passiveFlags?.orcDeathSaved &&
-    target.hp > 0 && hpDamage >= target.hp
+    target.hp > 0 &&
+    hpDamage >= target.hp
   ) {
     return {
       ...target,
       shield: target.shield - absorbed,
       hp: 1,
-      passiveFlags: { ...target.passiveFlags, orcDeathSaved: true },
+      passiveFlags: {
+        ...target.passiveFlags,
+        orcDeathSaved: true,
+        draconatoFirstHitTaken:
+          draconatoFirstHit || target.passiveFlags?.draconatoFirstHitTaken || false,
+      },
       statuses: {
         ...target.statuses,
         "orc-recusar-a-morte": {
@@ -300,6 +348,9 @@ export function applyDamage(target: CombatantState, amount: number) {
   }
   return {
     ...target,
+    passiveFlags: draconatoFirstHit
+      ? { ...target.passiveFlags, draconatoFirstHitTaken: true }
+      : target.passiveFlags,
     shield: target.shield - absorbed,
     hp: Math.max(0, target.hp - hpDamage),
   };
@@ -326,6 +377,7 @@ export function tickCooldowns(combatant: CombatantState): CombatantState {
   return {
     ...combatant,
     passiveRoundHealing: 0,
+    passiveFlags: { ...combatant.passiveFlags, draconatoFirstHitTaken: false },
     cooldowns: Object.fromEntries(
       Object.entries(combatant.cooldowns).map(([key, value]) => [key, Math.max(0, value - 1)]),
     ),
@@ -390,6 +442,7 @@ export function resolveBasicAttack(
     itemResolution.actor,
     Math.max(0, target.hp - damagedTarget.hp),
     damageType,
+    { before: target, after: damagedTarget },
   );
   return {
     actor: actorAfterPassives,
@@ -475,7 +528,12 @@ export function resolveSkill(
     const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
     const itemResolution = applyOffensiveItemEffects(paidActor, damagedTarget, damageDealt);
     return {
-      actor: applyReworkLifesteal(itemResolution.actor, Math.max(0, target.hp - damagedTarget.hp), type),
+      actor: applyReworkLifesteal(
+        itemResolution.actor,
+        Math.max(0, target.hp - damagedTarget.hp),
+        type,
+        { before: target, after: damagedTarget },
+      ),
       target: itemResolution.target,
       event: {
         kind: "damage",
@@ -488,8 +546,9 @@ export function resolveSkill(
 
   if (primaryOperation?.operation === "HEAL") {
     const receiver = skill.target === "enemy" ? target : paidActor;
-    const amount = rawPower + rounded(receiver.maxHp * (primaryOperation.healPercentOfMaxHp ?? 0) / 100)
-      || rounded(actor.maxHp * 0.08);
+    const amount =
+      rawPower + rounded((receiver.maxHp * (primaryOperation.healPercentOfMaxHp ?? 0)) / 100) ||
+      rounded(actor.maxHp * 0.08);
     const healed = Math.min(amount, receiver.maxHp - receiver.hp);
     const next = { ...receiver, hp: receiver.hp + healed };
     return {
@@ -554,7 +613,7 @@ export function resolveSkill(
     (primaryOperation?.modifiers ?? []).map((modifier) => [
       modifier.attribute,
       modifier.percent
-        ? Math.round(actorAttributes[modifier.attribute] * modifier.value / 100)
+        ? Math.round((actorAttributes[modifier.attribute] * modifier.value) / 100)
         : modifier.value,
     ]),
   ) as Partial<CombatAttributes>;

@@ -66,7 +66,10 @@ function applySecondaryOperation(
     const dealt = receiver.hp + receiver.shield - (damaged.hp + damaged.shield);
     return {
       ...replaceCombatant(
-        applyReworkLifesteal(actor, Math.max(0, receiver.hp - damaged.hp), damageType),
+        applyReworkLifesteal(actor, Math.max(0, receiver.hp - damaged.hp), damageType, {
+          before: receiver,
+          after: damaged,
+        }),
         target,
         damaged,
       ),
@@ -77,9 +80,16 @@ function applySecondaryOperation(
   }
 
   if (operation.operation === "HEAL") {
-    const amount = operation.healPercentOfDamage !== undefined
-      ? Math.round(damageDealt * operation.healPercentOfDamage / 100)
-      : Math.max(1, Math.round(power + receiver.maxHp * (operation.healPercentOfMaxHp ?? 0) / 100 || actorAttributes.ARC));
+    const amount =
+      operation.healPercentOfDamage !== undefined
+        ? Math.round((damageDealt * operation.healPercentOfDamage) / 100)
+        : Math.max(
+            1,
+            Math.round(
+              power + (receiver.maxHp * (operation.healPercentOfMaxHp ?? 0)) / 100 ||
+                actorAttributes.ARC,
+            ),
+          );
     const healed = Math.min(amount, receiver.maxHp - receiver.hp);
     const next = { ...receiver, hp: receiver.hp + healed };
     return {
@@ -150,7 +160,7 @@ function applySecondaryOperation(
     operation.modifiers.map((modifier) => [
       modifier.attribute,
       modifier.percent
-        ? Math.round(actorAttributes[modifier.attribute] * modifier.value / 100)
+        ? Math.round((actorAttributes[modifier.attribute] * modifier.value) / 100)
         : modifier.value,
     ]),
   ) as Partial<CombatAttributes>;
@@ -214,7 +224,14 @@ export function resolveJrpgSkill(
   for (const operation of skill.operations.slice(1)) {
     if (operation.chance < 100 && Math.random() * 100 >= operation.chance) continue;
     const priorTargetHp = nextTarget.hp;
-    const result = applySecondaryOperation(nextActor, nextTarget, skill, operation, rules, hpDamageDealt);
+    const result = applySecondaryOperation(
+      nextActor,
+      nextTarget,
+      skill,
+      operation,
+      rules,
+      hpDamageDealt,
+    );
     nextActor = result.actor;
     nextTarget = result.target;
     messages.push(result.message);

@@ -63,7 +63,8 @@ export function resolveBasicAttack(
   const actorAttributes = getEffectiveAttributes(actor);
   const targetAttributes = getEffectiveAttributes(target);
   const affinity = (actor as CombatantWithAffinity).basicAttackDamageType;
-  const damageType: DamageType = affinity ?? (actorAttributes.INT > actorAttributes.FOR ? "magic" : "physical");
+  const damageType: DamageType =
+    affinity ?? (actorAttributes.INT > actorAttributes.FOR ? "magic" : "physical");
   const offensiveAttribute = damageType === "magic" ? actorAttributes.INT : actorAttributes.FOR;
   const raw = offensiveAttribute * rules.basicAttackMultiplier;
   const amount = calculateDamage(
@@ -88,7 +89,12 @@ export function resolveBasicAttack(
   const itemResolution = applyOffensiveItemEffects(actorAfterAttack, damagedTarget, damageDealt);
 
   return {
-    actor: applyReworkLifesteal(itemResolution.actor, Math.max(0, target.hp - damagedTarget.hp), damageType),
+    actor: applyReworkLifesteal(
+      itemResolution.actor,
+      Math.max(0, target.hp - damagedTarget.hp),
+      damageType,
+      { before: target, after: damagedTarget },
+    ),
     target: itemResolution.target,
     event: {
       kind: "damage",

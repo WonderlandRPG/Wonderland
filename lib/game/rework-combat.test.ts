@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { applyDamage, createCombatant, getEffectiveAttributes, resolveBasicAttack, reworkOutgoingDamageMultiplier, tickCooldowns } from "@/lib/game/combat";
+import {
+  applyDamage,
+  createCombatant,
+  getEffectiveAttributes,
+  resolveBasicAttack,
+  reworkOutgoingDamageMultiplier,
+  tickCooldowns,
+} from "@/lib/game/combat";
 import { resolveJrpgSkill } from "@/lib/game/jrpg-skill";
 import { resolveTacticalSkill } from "@/lib/game/tactical-skill";
 
@@ -12,10 +19,15 @@ import {
 } from "@/lib/game/rework-combat";
 
 describe("contrato executável do combate Rework", () => {
-  const fighter = (id: string) => createCombatant({
-    id, name: id, baseHp: 500, baseMana: 0, usesMana: false,
-    attributes: { FOR: 100, INT: 100, DEF: 0, RES: 0, INI: 10, ARC: 100 },
-  });
+  const fighter = (id: string) =>
+    createCombatant({
+      id,
+      name: id,
+      baseHp: 500,
+      baseMana: 0,
+      usesMana: false,
+      attributes: { FOR: 100, INT: 100, DEF: 0, RES: 0, INI: 10, ARC: 100 },
+    });
   it("converte todas as habilidades ativas de classe em operações táticas", () => {
     for (const entry of reworkClasses) {
       const skills = getReworkClassCombatSkills(entry, 100);
@@ -54,16 +66,18 @@ describe("contrato executável do combate Rework", () => {
   it("não envia habilidades ativas sem regra executável para o PvE tático", () => {
     const skills = [
       ...reworkClasses.flatMap((entry) => getReworkClassCombatSkills(entry, 100)),
-      ...reworkClasses.flatMap((entry) => entry.paths.flatMap((path) =>
-        getReworkClassCombatSkills(entry, 100, path.id),
-      )),
+      ...reworkClasses.flatMap((entry) =>
+        entry.paths.flatMap((path) => getReworkClassCombatSkills(entry, 100, path.id)),
+      ),
       ...reworkRaces.flatMap((entry) => getReworkRaceCombatSkills(entry, 100)),
     ];
     for (const skill of skills) {
       const actor = { ...fighter("actor"), hp: 300 };
       const target = { ...fighter("target"), hp: 400 };
       const result = resolveTacticalSkill(actor, target, skill);
-      expect(result.event.kind, `${skill.key}: ${skill.name} — ${result.event.message}`).not.toBe("error");
+      expect(result.event.kind, `${skill.key}: ${skill.name} — ${result.event.message}`).not.toBe(
+        "error",
+      );
     }
   });
 
@@ -77,7 +91,8 @@ describe("contrato executável do combate Rework", () => {
       const operations = new Set(skill.operations.map((operation) => operation.operation));
       if (/\bempurra\b/.test(description)) expect(operations.has("PUSH"), skill.name).toBe(true);
       if (/teleport/.test(description)) expect(operations.has("TELEPORT"), skill.name).toBe(true);
-      if (/enra[ií]za|imobiliza|\bprende\b/.test(description)) expect(operations.has("ROOT"), skill.name).toBe(true);
+      if (/enra[ií]za|imobiliza|\bprende\b/.test(description))
+        expect(operations.has("ROOT"), skill.name).toBe(true);
       if (/silencia|impede o uso da pr[oó]xima habilidade/.test(description))
         expect(operations.has("SILENCE"), skill.name).toBe(true);
       if (/remove (?:um )?(?:efeito|penalidade)/.test(description))
@@ -90,14 +105,20 @@ describe("contrato executável do combate Rework", () => {
     expect(getReworkSkillTargetReach({ range: 0, area: 1 })).toBe(1);
     expect(getReworkSkillTargetReach({ range: 5, area: 2 })).toBe(5);
     const tiefling = reworkRaces.find((entry) => entry.id === "tiefling")!;
-    const profanedGround = getReworkRaceCombatSkills(tiefling, 100).find((entry) => entry.name === "Chão Profanado")!;
+    const profanedGround = getReworkRaceCombatSkills(tiefling, 100).find(
+      (entry) => entry.name === "Chão Profanado",
+    )!;
     expect(profanedGround.area).toBe(1);
   });
 
   it("aplica redução real de dano no PvE tático e no PvP", () => {
     const barbarian = reworkClasses.find((entry) => entry.id === "barbaro")!;
-    const skill = getReworkClassCombatSkills(barbarian, 100).find((entry) => entry.name === "Pele de Guerra")!;
-    expect(skill.operations.some((operation) => operation.damageReductionPercent === 25)).toBe(true);
+    const skill = getReworkClassCombatSkills(barbarian, 100).find(
+      (entry) => entry.name === "Pele de Guerra",
+    )!;
+    expect(skill.operations.some((operation) => operation.damageReductionPercent === 25)).toBe(
+      true,
+    );
     const tactical = resolveTacticalSkill(fighter("pve"), fighter("enemy"), skill);
     const versus = resolveJrpgSkill(fighter("pvp"), fighter("enemy"), skill);
     expect(tactical.actor.hp - applyDamage(tactical.actor, 100).hp).toBe(75);
@@ -106,16 +127,25 @@ describe("contrato executável do combate Rework", () => {
 
   it("remove penalidade e cura o aliado com Pó Restaurador", () => {
     const fairy = reworkRaces.find((entry) => entry.id === "fada")!;
-    const skill = getReworkRaceCombatSkills(fairy, 100).find((entry) => entry.name === "Pó Restaurador")!;
+    const skill = getReworkRaceCombatSkills(fairy, 100).find(
+      (entry) => entry.name === "Pó Restaurador",
+    )!;
     expect(skill.target).toBe("ally");
     const ally = {
-      ...fighter("ally"), hp: 300,
-      statuses: { poison: { name: "Veneno", duration: 2, stacks: 1, modifiers: {}, beneficial: false } },
+      ...fighter("ally"),
+      hp: 300,
+      statuses: {
+        poison: { name: "Veneno", duration: 2, stacks: 1, modifiers: {}, beneficial: false },
+      },
     };
     const result = resolveJrpgSkill(fighter("fairy"), ally, skill);
     expect(result.target.hp - ally.hp).toBe(65);
     expect(result.target.statuses.poison).toBeUndefined();
-    const tactical = resolveTacticalSkill({ ...fighter("fairy"), hp: 300, statuses: ally.statuses }, fighter("enemy"), skill);
+    const tactical = resolveTacticalSkill(
+      { ...fighter("fairy"), hp: 300, statuses: ally.statuses },
+      fighter("enemy"),
+      skill,
+    );
     expect(tactical.actor.hp).toBe(365);
     expect(tactical.actor.statuses.poison).toBeUndefined();
     expect(tactical.target.hp).toBe(tactical.target.maxHp);
@@ -123,7 +153,9 @@ describe("contrato executável do combate Rework", () => {
 
   it("concede Escudo da Fé ao aliado em vez do próprio Paladino", () => {
     const paladin = reworkClasses.find((entry) => entry.id === "paladino")!;
-    const skill = getReworkClassCombatSkills(paladin, 100).find((entry) => entry.name === "Escudo da Fé")!;
+    const skill = getReworkClassCombatSkills(paladin, 100).find(
+      (entry) => entry.name === "Escudo da Fé",
+    )!;
     expect(skill.target).toBe("ally");
     const result = resolveJrpgSkill(fighter("paladin"), fighter("ally"), skill);
     expect(result.actor.shield).toBe(0);
@@ -135,7 +167,9 @@ describe("contrato executável do combate Rework", () => {
 
   it("cura Dreno Vital conforme HP efetivamente perdido pelo inimigo", () => {
     const vampire = reworkRaces.find((entry) => entry.id === "vampiro")!;
-    const skill = getReworkRaceCombatSkills(vampire, 100).find((entry) => entry.name === "Dreno Vital")!;
+    const skill = getReworkRaceCombatSkills(vampire, 100).find(
+      (entry) => entry.name === "Dreno Vital",
+    )!;
     const actor = { ...fighter("vampire"), hp: 300 };
     const enemy = fighter("enemy");
     const jrpg = resolveJrpgSkill(actor, enemy, skill);
@@ -150,8 +184,14 @@ describe("contrato executável do combate Rework", () => {
 
   it("Meditação de Combate cura 20% do HP máximo mais 40% de FOR no PvE e PvP", () => {
     const monk = reworkClasses.find((entry) => entry.id === "monge")!;
-    const skill = getReworkClassCombatSkills(monk, 100).find((entry) => entry.name === "Meditação de Combate")!;
-    const actor = { ...fighter("monk"), hp: 200, attributes: { ...fighter("monk").attributes, RES: 100 } };
+    const skill = getReworkClassCombatSkills(monk, 100).find(
+      (entry) => entry.name === "Meditação de Combate",
+    )!;
+    const actor = {
+      ...fighter("monk"),
+      hp: 200,
+      attributes: { ...fighter("monk").attributes, RES: 100 },
+    };
     expect(skill.operations[0].healPercentOfMaxHp).toBe(20);
     const versus = resolveJrpgSkill(actor, fighter("enemy"), skill).actor;
     const tactical = resolveTacticalSkill(actor, fighter("enemy"), skill).actor;
@@ -176,6 +216,46 @@ describe("contrato executável do combate Rework", () => {
     }
   });
 
+  it("Luz Celestial concede a barreira inicial do Aengel sem gastar uma ação", () => {
+    const angel = createCombatant({
+      id: "angel",
+      name: "angel",
+      baseHp: 500,
+      baseMana: 0,
+      usesMana: false,
+      attributes: { FOR: 100, INT: 150, DEF: 0, RES: 0, INI: 10, ARC: 0 },
+      passiveKeys: ["aengel-0"],
+    });
+    expect(angel.shield).toBe(160);
+    expect(fighter("without-angel-passive").shield).toBe(0);
+  });
+
+  it("Escamas Ancestrais reduz somente o primeiro golpe recebido por rodada", () => {
+    const dragon = { ...fighter("dragon"), passiveKeys: ["draconato-0"] };
+    const first = applyDamage(dragon, 100);
+    expect(first.hp).toBe(415);
+    expect(first.passiveFlags?.draconatoFirstHitTaken).toBe(true);
+    expect(applyDamage(first, 100).hp).toBe(315);
+    expect(applyDamage(tickCooldowns(first), 100).hp).toBe(330);
+  });
+
+  it("Colheita de Almas reduz a recarga de Erguer Servo quando o alvo é derrotado", () => {
+    const necromancer = {
+      ...fighter("necromancer"),
+      passiveKeys: ["necromante-0"],
+      cooldowns: { "necromante-2": 3 },
+    };
+    const victim = { ...fighter("victim"), hp: 50 };
+    const attack = getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "necromante")!)!;
+    for (const resolve of [resolveJrpgSkill, resolveTacticalSkill]) {
+      const result = resolve(necromancer, victim, attack);
+      expect(result.target.hp).toBe(0);
+      expect(result.actor.cooldowns["necromante-2"]).toBe(2);
+      const noHarvest = resolve(necromancer, fighter("healthy"), attack);
+      expect(noHarvest.actor.cooldowns["necromante-2"]).toBe(3);
+    }
+  });
+
   it("passivas ofensivas escalam dano real sem alterar personagens sem a passiva", () => {
     const target = fighter("target");
     const damagedBarbarian = { ...fighter("barbarian"), hp: 400, passiveKeys: ["barbaro-0"] };
@@ -184,7 +264,9 @@ describe("contrato executável do combate Rework", () => {
 
     const penalized = {
       ...target,
-      statuses: { slow: { name: "Lentidão", duration: 1, stacks: 1, modifiers: {}, beneficial: false } },
+      statuses: {
+        slow: { name: "Lentidão", duration: 1, stacks: 1, modifiers: {}, beneficial: false },
+      },
     };
     const rogue = { ...fighter("rogue"), passiveKeys: ["ladino-0"] };
     expect(resolveBasicAttack(rogue, penalized).event.amount).toBe(115);
@@ -193,7 +275,9 @@ describe("contrato executável do combate Rework", () => {
     const wolf = { ...fighter("wolf"), hp: 249, passiveKeys: ["lobisomem-0"] };
     expect(reworkOutgoingDamageMultiplier(wolf, target, "physical")).toBe(1.15);
     expect(reworkOutgoingDamageMultiplier(wolf, target, "magic")).toBe(1);
-    const basicSkill = getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "barbaro")!)!;
+    const basicSkill = getReworkBasicAttack(
+      reworkClasses.find((entry) => entry.id === "barbaro")!,
+    )!;
     expect(resolveJrpgSkill(wolf, target, basicSkill).event.amount).toBeGreaterThan(
       resolveJrpgSkill(fighter("plain"), target, basicSkill).event.amount,
     );
@@ -203,7 +287,11 @@ describe("contrato executável do combate Rework", () => {
   });
 
   it("Sede Carmesim cura dano direto com limite por rodada e zera no turno seguinte", () => {
-    let actor: ReturnType<typeof fighter> = { ...fighter("vampire"), hp: 300, passiveKeys: ["vampiro-0"] };
+    let actor: ReturnType<typeof fighter> = {
+      ...fighter("vampire"),
+      hp: 300,
+      passiveKeys: ["vampiro-0"],
+    };
     let target = fighter("target");
     for (let hit = 0; hit < 5; hit += 1) {
       const result = resolveBasicAttack(actor, target);
@@ -240,9 +328,13 @@ describe("contrato executável do combate Rework", () => {
 
   it("prende o alvo com Raízes do Primeiro Bosque", () => {
     const elf = reworkRaces.find((entry) => entry.id === "elfo")!;
-    const skill = getReworkRaceCombatSkills(elf, 100).find((entry) => entry.name === "Raízes do Primeiro Bosque")!;
+    const skill = getReworkRaceCombatSkills(elf, 100).find(
+      (entry) => entry.name === "Raízes do Primeiro Bosque",
+    )!;
     expect(skill.operations.some((operation) => operation.operation === "ROOT")).toBe(true);
     const result = resolveTacticalSkill(fighter("elf"), fighter("target"), skill);
-    expect(Object.values(result.target.statuses).some((status) => /ra[ií]z/i.test(status.name))).toBe(true);
+    expect(
+      Object.values(result.target.statuses).some((status) => /ra[ií]z/i.test(status.name)),
+    ).toBe(true);
   });
 });

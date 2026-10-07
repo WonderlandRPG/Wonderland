@@ -54,7 +54,12 @@ const legacyCosmetics = [
     tag: "Comemorativo • Exclusivo",
     description:
       "Uma moldura cerimonial em ouro antigo e esmalte esmeralda, criada para reconhecer quem esteve presente na inauguração de Wonderland.",
-    highlights: ["Legado da inauguração", "Retrato preservado", "Ouro e esmeralda", "Distribuição por participação"],
+    highlights: [
+      "Legado da inauguração",
+      "Retrato preservado",
+      "Ouro e esmeralda",
+      "Distribuição por participação",
+    ],
     preview: "border",
     key: "moldura-fundadores-2026",
     collection: "Inauguração 2026",
@@ -66,10 +71,15 @@ const legacyCosmetics = [
     tag: "Lendário • Animado",
     description:
       "Duas cortinas espectrais rasgadas respiram nas laterais do retrato, como se o personagem estivesse atravessando o véu entre os mundos. Luz fria, brasas discretas e névoa baixa criam profundidade sem cobrir o rosto.",
-    highlights: ["Véus laterais rasgados", "Retrato preservado", "Luz espectral", "Névoa e brasas discretas"],
+    highlights: [
+      "Véus laterais rasgados",
+      "Retrato preservado",
+      "Luz espectral",
+      "Névoa e brasas discretas",
+    ],
     preview: "card",
     key: "noite-veu-partido",
-    collection: "Halloween 2026",
+    collection: "Noites Apavorantes — Halloween 2026",
     availability: "Lançamento futuro",
   },
   {
@@ -78,10 +88,15 @@ const legacyCosmetics = [
     tag: "Mítico • Animado",
     description:
       "Cinco pequenos espíritos, com rostos, corpos e caudas reconhecíveis, formam uma procissão dentro do retrato. Eles percorrem um circuito lento e coordenado sem escapar das bordas nem cobrir permanentemente o personagem.",
-    highlights: ["5 fantasmas reconhecíveis", "Procissão interna", "Movimento coordenado", "Sem efeitos recortados"],
+    highlights: [
+      "5 fantasmas reconhecíveis",
+      "Procissão interna",
+      "Movimento coordenado",
+      "Sem efeitos recortados",
+    ],
     preview: "aura",
     key: "cortejo-fogos-fatuos",
-    collection: "Halloween 2026",
+    collection: "Noites Apavorantes — Halloween 2026",
     availability: "Lançamento futuro",
   },
   {
@@ -90,10 +105,15 @@ const legacyCosmetics = [
     tag: "Mítico • Borda",
     description:
       "Uma moldura régia de madeira carbonizada e ferro antigo, coroada pelo elmo quebrado do Rei Oco. Abóboras ritualísticas, lanternas espectrais e filigranas em ouro envelhecido cercam o retrato sem esconder sua arte.",
-    highlights: ["Coroa oca central", "Abóboras ritualísticas", "Chamas espectrais", "PNG transparente em alta definição"],
+    highlights: [
+      "Coroa oca central",
+      "Abóboras ritualísticas",
+      "Chamas espectrais",
+      "PNG transparente em alta definição",
+    ],
     preview: "border",
     key: "trono-rei-oco",
-    collection: "Halloween 2026",
+    collection: "Noites Apavorantes — Halloween 2026",
     availability: "Lançamento futuro",
   },
 ] as const;
@@ -186,13 +206,25 @@ export function ShopCatalog({
     setOrder("featured");
     setPage(1);
   };
-  const storefrontCosmetics = cosmetics.filter((item) => item.active).map((item) => ({
-    type: item.slot === "border" ? "Borda" : item.slot === "aura" ? "Aura animada" : "Card animado",
-    name: item.name, tag: item.rarity, description: item.description,
-    highlights: ["Aplicado sem alterar o retrato", "Disponível após confirmação externa"],
-    preview: item.slot, key: item.key, collection: item.collectionName,
-    availability: item.priceCents == null ? "Concessão especial" : new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(item.priceCents / 100),
-  }));
+  const storefrontCosmetics = cosmetics
+    .filter((item) => item.active)
+    .map((item) => ({
+      type:
+        item.slot === "border" ? "Borda" : item.slot === "aura" ? "Aura animada" : "Card animado",
+      name: item.name,
+      tag: item.rarity,
+      description: item.description,
+      highlights: ["Aplicado sem alterar o retrato", "Disponível após confirmação externa"],
+      preview: item.slot,
+      key: item.key,
+      collection: item.collectionName,
+      availability:
+        item.priceCents == null
+          ? "Concessão especial"
+          : new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+              item.priceCents / 100,
+            ),
+    }));
   void legacyCosmetics;
 
   return (
@@ -240,64 +272,87 @@ export function ShopCatalog({
               <strong>{storefrontCosmetics.length} peças disponíveis</strong>
             </div>
             <nav aria-label="Categorias de cosméticos">
-              {[["all", "Todos"], ["border", "Bordas"], ["aura", "Auras"], ["card", "Cards"]].map(([key, label]) => (
-                <button className={cosmeticFilter === key ? "is-active" : ""} key={key} onClick={() => setCosmeticFilter(key)} type="button">{label}</button>
+              {[
+                ["all", "Todos"],
+                ["border", "Bordas"],
+                ["aura", "Auras"],
+                ["card", "Cards"],
+              ].map(([key, label]) => (
+                <button
+                  className={cosmeticFilter === key ? "is-active" : ""}
+                  key={key}
+                  onClick={() => setCosmeticFilter(key)}
+                  type="button"
+                >
+                  {label}
+                </button>
               ))}
             </nav>
             <span className="cosmetics-storebar__lock">◆ Vitrine pública</span>
           </div>
 
           <div className="cosmetics-grid">
-            {storefrontCosmetics.filter((cosmetic) => cosmeticFilter === "all" || cosmetic.preview === cosmeticFilter).map((cosmetic, index) => (
-              <article className="cosmetic-card" data-preview={cosmetic.preview} key={cosmetic.name}>
-                <div className="cosmetic-card__visual">
-                  <span className="cosmetic-card__number">0{index + 1}</span>
-                  {previewCharacter ? (
-                    <div className={`cosmetic-character-demo is-${cosmetic.preview}`}>
-                      <CharacterPortraitCard
-                        imageUrl={previewCharacter.imageUrl}
-                        level={previewCharacter.level}
-                        name={previewCharacter.name}
-                        rank={previewCharacter.rank}
-                        title={null}
-                        variant="standard"
-                        cosmetics={{
-                          card: cosmetic.preview === "card" ? cosmetic.key : null,
-                          aura: cosmetic.preview === "aura" ? cosmetic.key : null,
-                          border: cosmetic.preview === "border" ? cosmetic.key : null,
-                        }}
-                      />
+            {storefrontCosmetics
+              .filter((cosmetic) => cosmeticFilter === "all" || cosmetic.preview === cosmeticFilter)
+              .map((cosmetic, index) => (
+                <article
+                  className="cosmetic-card"
+                  data-preview={cosmetic.preview}
+                  key={cosmetic.name}
+                >
+                  <div className="cosmetic-card__visual">
+                    <span className="cosmetic-card__number">0{index + 1}</span>
+                    {previewCharacter ? (
+                      <div className={`cosmetic-character-demo is-${cosmetic.preview}`}>
+                        <CharacterPortraitCard
+                          imageUrl={previewCharacter.imageUrl}
+                          level={previewCharacter.level}
+                          name={previewCharacter.name}
+                          rank={previewCharacter.rank}
+                          title={null}
+                          variant="standard"
+                          cosmetics={{
+                            card: cosmetic.preview === "card" ? cosmetic.key : null,
+                            aura: cosmetic.preview === "aura" ? cosmetic.key : null,
+                            border: cosmetic.preview === "border" ? cosmetic.key : null,
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <span className="cosmetic-preview-placeholder">Sem personagem</span>
+                    )}
+                    <span className="cosmetic-card__preview-label">Prévia no seu aventureiro</span>
+                  </div>
+                  <div className="cosmetic-card__content">
+                    <header className="cosmetic-card__heading">
+                      <div>
+                        <small>{cosmetic.type}</small>
+                        <h3>{cosmetic.name}</h3>
+                      </div>
+                      <b>{cosmetic.tag}</b>
+                    </header>
+                    <div className="cosmetic-card__body">
+                      <div className="cosmetic-card__collection">
+                        <span>{cosmetic.collection}</span>
+                        <b>{cosmetic.availability}</b>
+                      </div>
+                      <p>{cosmetic.description}</p>
+                      <ul>
+                        {cosmetic.highlights.map((highlight) => (
+                          <li key={highlight}>✦ {highlight}</li>
+                        ))}
+                      </ul>
                     </div>
-                  ) : <span className="cosmetic-preview-placeholder">Sem personagem</span>}
-                  <span className="cosmetic-card__preview-label">Prévia no seu aventureiro</span>
-                </div>
-                <div className="cosmetic-card__content">
-                <header className="cosmetic-card__heading">
-                  <div>
-                    <small>{cosmetic.type}</small>
-                    <h3>{cosmetic.name}</h3>
+                    <footer className="cosmetic-card__footer">
+                      <div>
+                        <span>Parte da coleção</span>
+                        <strong>Noites Apavorantes — Halloween 2026</strong>
+                      </div>
+                      <span className="cosmetic-equip">Solicitar à equipe</span>
+                    </footer>
                   </div>
-                  <b>{cosmetic.tag}</b>
-                </header>
-                <div className="cosmetic-card__body">
-                  <div className="cosmetic-card__collection"><span>{cosmetic.collection}</span><b>{cosmetic.availability}</b></div>
-                  <p>{cosmetic.description}</p>
-                  <ul>
-                    {cosmetic.highlights.map((highlight) => (
-                      <li key={highlight}>✦ {highlight}</li>
-                    ))}
-                  </ul>
-                </div>
-                <footer className="cosmetic-card__footer">
-                  <div>
-                    <span>Parte da coleção</span>
-                    <strong>Véspera do Rei Oco</strong>
-                  </div>
-                  <span className="cosmetic-equip">Solicitar à equipe</span>
-                </footer>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
           </div>
 
           <aside className="cosmetics-bundle">
@@ -305,259 +360,287 @@ export function ShopCatalog({
               <small>COMO ADQUIRIR</small>
               <h3>Escolha aqui; finalize diretamente com a equipe</h3>
               <p>
-                O site não processa pagamentos. Depois da confirmação externa, o cosmético será colocado no inventário do personagem e poderá ser ativado na ficha.
+                O site não processa pagamentos. Depois da confirmação externa, o cosmético será
+                colocado no inventário do personagem e poderá ser ativado na ficha.
               </p>
             </div>
             <strong>Sem checkout no site</strong>
           </aside>
         </section>
       ) : (
-      <>
-      <section className="shop-controls" aria-label="Filtros da loja">
-        <nav>
-          {rarityTabs.map(([key, label]) => (
-            <button
-              className={rarity === key ? "is-active" : ""}
-              data-rarity={key || undefined}
-              key={key || "all"}
-              onClick={() => {
-                setRarity(key);
-                setPage(1);
-              }}
-              type="button"
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
-        <div>
-          <label className="shop-controls__search">
-            <span>⌕</span>
-            <input
-              aria-label="Pesquisar item"
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-                setPage(1);
-              }}
-              placeholder="Pesquisar por nome ou descrição"
-            />
-          </label>
-          <label>
-            <span>Classe</span>
-            <select
-              value={recommendedClass}
-              onChange={(event) => {
-                setRecommendedClass(event.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">Todas</option>
-              {recommendedClasses.map((className) => (
-                <option key={className} value={className}>
-                  {className}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Espaço</span>
-            <select
-              value={slot}
-              onChange={(event) => {
-                setSlot(event.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="">Todos</option>
-              {slots.map(([key, label]) => (
-                <option key={key} value={key}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            <span>Organizar</span>
-            <select
-              value={order}
-              onChange={(event) => {
-                setOrder(event.target.value);
-                setPage(1);
-              }}
-            >
-              <option value="featured">Destaques</option>
-              <option value="price-asc">Menor preço</option>
-              <option value="price-desc">Maior preço</option>
-              <option value="name">Nome A–Z</option>
-            </select>
-          </label>
-          {search || rarity || slot || recommendedClass || order !== "featured" ? (
-            <button className="shop-controls__clear" onClick={clear} type="button">
-              Limpar
-            </button>
-          ) : null}
-        </div>
-      </section>
-      <section className="shop-intelligence" aria-label="Resumo do mercado">
-        <div><small>Resultados</small><strong>{filtered.length}</strong><span>itens encontrados</span></div>
-        <div><small>Ao seu alcance</small><strong>{affordableCount}</strong><span>cabem na carteira</span></div>
-        <div><small>Com recomendação</small><strong>{buildMatches}</strong><span>possuem indicação de classe</span></div>
-        <div data-negative={remainingGold < 0 ? "true" : undefined}><small>Saldo após carrinho</small><strong>{remainingGold.toLocaleString("pt-BR")}</strong><span>WG projetado</span></div>
-      </section>
-      <div className="shop-browser">
-        <section>
-          <header className="shop-browser__result">
-            <strong>{filtered.length} equipamentos</strong>
-            <span>Exibindo {visible.length} · página {currentPage} de {pageCount}</span>
-          </header>
-          {visible.length ? (
-            <div className="classic-item-grid">
-              {visible.map((item) => (
-                <article
-                  className={`classic-item-card ${item.effects.length ? "has-effect" : ""}`}
-                  data-rarity={item.rarity}
-                  key={item.id}
+        <>
+          <section className="shop-controls" aria-label="Filtros da loja">
+            <nav>
+              {rarityTabs.map(([key, label]) => (
+                <button
+                  className={rarity === key ? "is-active" : ""}
+                  data-rarity={key || undefined}
+                  key={key || "all"}
+                  onClick={() => {
+                    setRarity(key);
+                    setPage(1);
+                  }}
+                  type="button"
                 >
-                  <div className="classic-item-card__select">
-                    <div className="classic-item-card__art">
-                      {item.imageUrl ? (
-                        <span
-                          className="is-image"
-                          style={{ backgroundImage: `url(${item.imageUrl})` }}
-                        />
-                      ) : (
-                        <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
-                      )}
-                      <small>{item.twoHanded ? "Duas mãos" : item.slotLabel}</small>
-                    </div>
-                    <div className="classic-item-card__body">
-                      <span>{item.rarityLabel}</span>
-                      <h2>{item.name}</h2>
-                      {item.buildName ? (
-                        <small className="classic-item-card__build">Build: {item.buildName}</small>
-                      ) : null}
-                      <div className="classic-item-card__stats">
-                        {Object.entries(item.attributes)
-                          .slice(0, 3)
-                          .map(([key, value]) => (
-                            <b key={key}>
-                              {key} <i>+{value}</i>
-                            </b>
-                          ))}
-                      </div>
-                      <p className="classic-item-card__classes">
-                        Poder {item.power > 0 ? `+${item.power}` : item.power} · troca {item.powerDelta >= 0 ? "+" : ""}{item.powerDelta} · total projetado {item.projectedPowerTotal.toLocaleString("pt-BR")}
-                      </p>
-                      {item.recommendedClasses.length ? (
-                        <p className="classic-item-card__classes">
-                          Ideal para: {item.recommendedClasses.join(", ")}
-                        </p>
-                      ) : null}
-                      {item.effects.slice(0, 2).map((effect) => (
-                        <article className="classic-item-card__effect" key={effect.key}>
-                          <b>✦ {effect.name}</b>
-                          <p>{effect.description}</p>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-                  <footer>
-                    <strong>
-                      {item.price.toLocaleString("pt-BR")} <small>WG</small>
-                    </strong>
-                    <form action={buyItem}>
-                      <input name="itemId" type="hidden" value={item.id} />
-                      <ShopBuyButton disabled={gold < item.price} itemName={item.name} compact />
-                    </form>
-                    <small>{gold >= item.price ? "Disponível" : "Saldo insuficiente"}</small>
-                    <button
-                      className="shop-add-cart"
-                      onClick={() => addToCart(item.id)}
-                      type="button"
-                    >
-                      + Carrinho
-                    </button>
-                  </footer>
-                </article>
+                  {label}
+                </button>
               ))}
-            </div>
-          ) : (
-            <div className="market-empty">
-              <ItemGlyph slot="necklace" />
-              <h2>Nenhum equipamento encontrado</h2>
-              <p>Limpe ou altere os filtros para consultar o restante do arsenal.</p>
-              <button className="button button--dark" onClick={clear} type="button">
-                Limpar filtros
-              </button>
-            </div>
-          )}
-          {pageCount > 1 ? (
-            <nav className="shop-client-pagination" aria-label="Páginas da loja">
-              <button
-                disabled={currentPage === 1}
-                onClick={() => setPage((value) => Math.max(1, value - 1))}
-                type="button"
-              >
-                ← Anterior
-              </button>
-              <span>
-                Página {currentPage} de {pageCount}
-              </span>
-              <button
-                disabled={currentPage === pageCount}
-                onClick={() => setPage((value) => Math.min(pageCount, value + 1))}
-                type="button"
-              >
-                Próxima →
-              </button>
             </nav>
-          ) : null}
-        </section>
-        <aside className="shop-cart shop-cart--sidebar">
-          <header>
             <div>
-              <span className="eyebrow">Seu carrinho</span>
-              <h2>{cart.length} item(ns)</h2>
+              <label className="shop-controls__search">
+                <span>⌕</span>
+                <input
+                  aria-label="Pesquisar item"
+                  value={search}
+                  onChange={(event) => {
+                    setSearch(event.target.value);
+                    setPage(1);
+                  }}
+                  placeholder="Pesquisar por nome ou descrição"
+                />
+              </label>
+              <label>
+                <span>Classe</span>
+                <select
+                  value={recommendedClass}
+                  onChange={(event) => {
+                    setRecommendedClass(event.target.value);
+                    setPage(1);
+                  }}
+                >
+                  <option value="">Todas</option>
+                  {recommendedClasses.map((className) => (
+                    <option key={className} value={className}>
+                      {className}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Espaço</span>
+                <select
+                  value={slot}
+                  onChange={(event) => {
+                    setSlot(event.target.value);
+                    setPage(1);
+                  }}
+                >
+                  <option value="">Todos</option>
+                  {slots.map(([key, label]) => (
+                    <option key={key} value={key}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Organizar</span>
+                <select
+                  value={order}
+                  onChange={(event) => {
+                    setOrder(event.target.value);
+                    setPage(1);
+                  }}
+                >
+                  <option value="featured">Destaques</option>
+                  <option value="price-asc">Menor preço</option>
+                  <option value="price-desc">Maior preço</option>
+                  <option value="name">Nome A–Z</option>
+                </select>
+              </label>
+              {search || rarity || slot || recommendedClass || order !== "featured" ? (
+                <button className="shop-controls__clear" onClick={clear} type="button">
+                  Limpar
+                </button>
+              ) : null}
             </div>
-            <strong>{cartTotal.toLocaleString("pt-BR")} WG</strong>
-          </header>
-          <small className="shop-cart__balance">
-            Saldo disponível: {gold.toLocaleString("pt-BR")} WG
-          </small>
-          {cartItems.length ? (
-            <>
-              <div>
-                {cartItems.map((item, index) => (
+          </section>
+          <section className="shop-intelligence" aria-label="Resumo do mercado">
+            <div>
+              <small>Resultados</small>
+              <strong>{filtered.length}</strong>
+              <span>itens encontrados</span>
+            </div>
+            <div>
+              <small>Ao seu alcance</small>
+              <strong>{affordableCount}</strong>
+              <span>cabem na carteira</span>
+            </div>
+            <div>
+              <small>Com recomendação</small>
+              <strong>{buildMatches}</strong>
+              <span>possuem indicação de classe</span>
+            </div>
+            <div data-negative={remainingGold < 0 ? "true" : undefined}>
+              <small>Saldo após carrinho</small>
+              <strong>{remainingGold.toLocaleString("pt-BR")}</strong>
+              <span>WG projetado</span>
+            </div>
+          </section>
+          <div className="shop-browser">
+            <section>
+              <header className="shop-browser__result">
+                <strong>{filtered.length} equipamentos</strong>
+                <span>
+                  Exibindo {visible.length} · página {currentPage} de {pageCount}
+                </span>
+              </header>
+              {visible.length ? (
+                <div className="classic-item-grid">
+                  {visible.map((item) => (
+                    <article
+                      className={`classic-item-card ${item.effects.length ? "has-effect" : ""}`}
+                      data-rarity={item.rarity}
+                      key={item.id}
+                    >
+                      <div className="classic-item-card__select">
+                        <div className="classic-item-card__art">
+                          {item.imageUrl ? (
+                            <span
+                              className="is-image"
+                              style={{ backgroundImage: `url(${item.imageUrl})` }}
+                            />
+                          ) : (
+                            <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
+                          )}
+                          <small>{item.twoHanded ? "Duas mãos" : item.slotLabel}</small>
+                        </div>
+                        <div className="classic-item-card__body">
+                          <span>{item.rarityLabel}</span>
+                          <h2>{item.name}</h2>
+                          {item.buildName ? (
+                            <small className="classic-item-card__build">
+                              Build: {item.buildName}
+                            </small>
+                          ) : null}
+                          <div className="classic-item-card__stats">
+                            {Object.entries(item.attributes)
+                              .slice(0, 3)
+                              .map(([key, value]) => (
+                                <b key={key}>
+                                  {key} <i>+{value}</i>
+                                </b>
+                              ))}
+                          </div>
+                          <p className="classic-item-card__classes">
+                            Poder {item.power > 0 ? `+${item.power}` : item.power} · troca{" "}
+                            {item.powerDelta >= 0 ? "+" : ""}
+                            {item.powerDelta} · total projetado{" "}
+                            {item.projectedPowerTotal.toLocaleString("pt-BR")}
+                          </p>
+                          {item.recommendedClasses.length ? (
+                            <p className="classic-item-card__classes">
+                              Ideal para: {item.recommendedClasses.join(", ")}
+                            </p>
+                          ) : null}
+                          {item.effects.slice(0, 2).map((effect) => (
+                            <article className="classic-item-card__effect" key={effect.key}>
+                              <b>✦ {effect.name}</b>
+                              <p>{effect.description}</p>
+                            </article>
+                          ))}
+                        </div>
+                      </div>
+                      <footer>
+                        <strong>
+                          {item.price.toLocaleString("pt-BR")} <small>WG</small>
+                        </strong>
+                        <form action={buyItem}>
+                          <input name="itemId" type="hidden" value={item.id} />
+                          <ShopBuyButton
+                            disabled={gold < item.price}
+                            itemName={item.name}
+                            compact
+                          />
+                        </form>
+                        <small>{gold >= item.price ? "Disponível" : "Saldo insuficiente"}</small>
+                        <button
+                          className="shop-add-cart"
+                          onClick={() => addToCart(item.id)}
+                          type="button"
+                        >
+                          + Carrinho
+                        </button>
+                      </footer>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="market-empty">
+                  <ItemGlyph slot="necklace" />
+                  <h2>Nenhum equipamento encontrado</h2>
+                  <p>Limpe ou altere os filtros para consultar o restante do arsenal.</p>
+                  <button className="button button--dark" onClick={clear} type="button">
+                    Limpar filtros
+                  </button>
+                </div>
+              )}
+              {pageCount > 1 ? (
+                <nav className="shop-client-pagination" aria-label="Páginas da loja">
                   <button
-                    key={`${item.id}-${index}`}
-                    onClick={() => removeFromCart(index)}
+                    disabled={currentPage === 1}
+                    onClick={() => setPage((value) => Math.max(1, value - 1))}
                     type="button"
                   >
-                    <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
-                    <span>
-                      {item.name}
-                      <small>{item.price.toLocaleString("pt-BR")} WG</small>
-                    </span>
-                    <b>×</b>
+                    ← Anterior
                   </button>
-                ))}
-              </div>
-              <form action={buyCart}>
-                {cart.map((id, index) => (
-                  <input name="itemId" type="hidden" value={id} key={`${id}-input-${index}`} />
-                ))}
-                <button className="button button--primary" disabled={cartTotal > gold}>
-                  Comprar tudo · {cartTotal.toLocaleString("pt-BR")} WG
-                </button>
-              </form>
-            </>
-          ) : (
-            <p>Seu carrinho está vazio. Adicione itens para finalizar tudo de uma vez.</p>
-          )}
-        </aside>
-      </div>
-      </>
+                  <span>
+                    Página {currentPage} de {pageCount}
+                  </span>
+                  <button
+                    disabled={currentPage === pageCount}
+                    onClick={() => setPage((value) => Math.min(pageCount, value + 1))}
+                    type="button"
+                  >
+                    Próxima →
+                  </button>
+                </nav>
+              ) : null}
+            </section>
+            <aside className="shop-cart shop-cart--sidebar">
+              <header>
+                <div>
+                  <span className="eyebrow">Seu carrinho</span>
+                  <h2>{cart.length} item(ns)</h2>
+                </div>
+                <strong>{cartTotal.toLocaleString("pt-BR")} WG</strong>
+              </header>
+              <small className="shop-cart__balance">
+                Saldo disponível: {gold.toLocaleString("pt-BR")} WG
+              </small>
+              {cartItems.length ? (
+                <>
+                  <div>
+                    {cartItems.map((item, index) => (
+                      <button
+                        key={`${item.id}-${index}`}
+                        onClick={() => removeFromCart(index)}
+                        type="button"
+                      >
+                        <ItemArtwork name={item.name} rarity={item.rarity} slot={item.slot} />
+                        <span>
+                          {item.name}
+                          <small>{item.price.toLocaleString("pt-BR")} WG</small>
+                        </span>
+                        <b>×</b>
+                      </button>
+                    ))}
+                  </div>
+                  <form action={buyCart}>
+                    {cart.map((id, index) => (
+                      <input name="itemId" type="hidden" value={id} key={`${id}-input-${index}`} />
+                    ))}
+                    <button className="button button--primary" disabled={cartTotal > gold}>
+                      Comprar tudo · {cartTotal.toLocaleString("pt-BR")} WG
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <p>Seu carrinho está vazio. Adicione itens para finalizar tudo de uma vez.</p>
+              )}
+            </aside>
+          </div>
+        </>
       )}
     </>
   );

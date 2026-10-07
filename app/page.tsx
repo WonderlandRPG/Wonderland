@@ -13,11 +13,11 @@ export default async function Home() {
   const halloweenActive = isHalloweenSeasonActive();
   const portal = halloweenActive
     ? {
-        seasonLabel: "Evento de Halloween · 7 a 31 de outubro",
+        seasonLabel: "Noites Apavorantes — Halloween 2026 · 7 a 31 de outubro",
         firstLine: "A noite caiu sobre",
         secondLine: "Wonderland.",
-        lead: "Lanternas se apagam, a névoa avança e antigas criaturas despertam entre os reinos. Prepare seu aventureiro: a Véspera do Rei Oco começou.",
-        asideTitle: "A Véspera do Rei Oco",
+        lead: "Lanternas se apagam, a névoa avança e antigas criaturas despertam entre os reinos. Prepare seu aventureiro: Noites Apavorantes começou.",
+        asideTitle: "Noites Apavorantes — Halloween 2026",
         asideText:
           "Durante outubro, presságios sombrios tomarão o mundo. Explore, fortaleça sua build e aguarde os próximos capítulos do evento.",
       }

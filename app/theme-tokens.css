@@ -68,7 +68,7 @@
   --wl-blood-gold: #e1b06d;
   --wl-blood-fog: color-mix(in srgb, var(--wl-blood-text) 10%, transparent);
 
-  /* Halloween 2026 — Véspera do Rei Oco. */
+  /* Noites Apavorantes — Halloween 2026. */
   --wl-halloween-ember: #e8732b;
   --wl-halloween-ember-bright: #ffad55;
   --wl-halloween-spectral: #38d9cc;

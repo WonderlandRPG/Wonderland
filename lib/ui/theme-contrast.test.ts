@@ -51,6 +51,9 @@ const contrastPairs = [
   ["wl-success-text", "wl-success-bg"],
   ["wl-warning-text", "wl-warning-bg"],
   ["wl-danger-text", "wl-danger-bg"],
+  ["wl-parchment-text", "wl-parchment-bg"],
+  ["wl-parchment-text-muted", "wl-parchment-bg"],
+  ["wl-parchment-accent", "wl-parchment-bg"],
 ] as const;
 
 /*

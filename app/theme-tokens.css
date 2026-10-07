@@ -18,6 +18,12 @@
   --wl-text-inverse: #fff0c8;
   --wl-text-inverse-muted: #dfd0ab;
 
+  /* Tinta estável para pergaminhos legados que mantêm fundo claro em qualquer tema. */
+  --wl-parchment-text: #291f18;
+  --wl-parchment-text-muted: #63503d;
+  --wl-parchment-accent: #765018;
+  --wl-parchment-bg: #fff3d2;
+
   /* Marca e ações */
   --wl-accent: #173f30;
   --wl-accent-hover: #2e684e;

@@ -923,6 +923,7 @@ export interface Database {
           defense_stars: number;
           army_stars: number;
           market_stars: number;
+          arsenal: number;
           penalty_until: string | null;
           reward_penalty_percent: number;
           shop_markup_percent: number;
@@ -935,6 +936,7 @@ export interface Database {
           defense_stars?: number;
           army_stars?: number;
           market_stars?: number;
+          arsenal?: number;
           penalty_until?: string | null;
           reward_penalty_percent?: number;
           shop_markup_percent?: number;
@@ -1095,6 +1097,7 @@ export interface Database {
       };
       v2_buy_shop_item: { Args: { p_item_id: string }; Returns: undefined };
       v2_buy_shop_cart: { Args: { p_item_ids: string[] }; Returns: Json };
+      v2_get_shop_multiplier: { Args: Record<PropertyKey, never>; Returns: number };
       v2_set_inventory_location: {
         Args: { p_inventory_id: string; p_location: "bag" | "storage" };
         Returns: Database["public"]["Tables"]["v2_character_inventory"]["Row"];

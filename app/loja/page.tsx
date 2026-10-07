@@ -8,12 +8,18 @@ import { PlayerNav } from "@/components/player-nav";
 import { ShopCatalog, type ShopCatalogItem } from "@/components/shop/shop-catalog";
 import { requireActiveCharacter } from "@/lib/content/active-character";
 import { requireCharacterSheet } from "@/lib/content/characters";
-import { compatibleEquipSlots, equippedItemCopies, itemSlotLabel, occupiedEquipmentSlots } from "@/lib/game/equipment";
+import {
+  compatibleEquipSlots,
+  equippedItemCopies,
+  itemSlotLabel,
+  occupiedEquipmentSlots,
+} from "@/lib/game/equipment";
 import { itemPower, itemPowerDelta, normalizeItemAttributes } from "@/lib/game/item-attributes";
 import { parseItemSpecialEffects } from "@/lib/game/item-effects";
 import { getShopItems } from "@/lib/game/player-portal";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getVisibleCosmetics } from "@/lib/content/cosmetics";
+import { calculateKingdomShopMultiplier } from "@/lib/game/shop-pricing";
 
 const rarityLabels: Record<string, string> = {
   common: "Comum",
@@ -38,11 +44,11 @@ export default async function ShopPage({
   ]);
   const cosmetics = await getVisibleCosmetics(characterId);
   const client = await createServerSupabaseClient();
-  const [{ data: kingdomState }, { data: transactionRows }] = client
+  const [{ data: kingdomState }, { data: transactionRows }, multiplierResult] = client
     ? await Promise.all([
         client
           .from("v2_kingdom_states")
-          .select("market_stars,penalty_until,shop_markup_percent")
+          .select("market_stars,arsenal,penalty_until,shop_markup_percent")
           .eq("kingdom", character.kingdom)
           .maybeSingle(),
         client
@@ -51,28 +57,43 @@ export default async function ShopPage({
           .eq("character_id", character.id)
           .order("created_at", { ascending: false })
           .limit(12),
+        client.rpc("v2_get_shop_multiplier"),
       ])
-    : [{ data: null }, { data: [] }];
-  const penaltyActive = Boolean(
-    kingdomState?.penalty_until && new Date(kingdomState.penalty_until) > new Date(),
-  );
+    : [{ data: null }, { data: [] }, { data: null, error: null }];
+  const authoritativeMultiplier = Number(multiplierResult.data);
   const shopMultiplier =
-    1 -
-    (kingdomState?.market_stars ?? 0) * 0.03 +
-    (penaltyActive ? (kingdomState?.shop_markup_percent ?? 0) * 0.01 : 0);
+    Number.isFinite(authoritativeMultiplier) && authoritativeMultiplier > 0
+      ? authoritativeMultiplier
+      : calculateKingdomShopMultiplier(kingdomState);
   const items: ShopCatalogItem[] = rows.map((item) => {
     const attributes = normalizeItemAttributes(item.attributes);
     const compatibleSlots = compatibleEquipSlots(item.slot, item.two_handed);
-    const equippedCandidates = item.two_handed && compatibleSlots.includes("main_weapon")
-      ? [...new Map(character.inventory
-          .filter((owned) => occupiedEquipmentSlots(owned).some((slot) => slot === "main_weapon" || slot === "off_weapon"))
-          .map((owned) => [owned.id, owned])).values()]
-      : character.inventory
-          .filter((owned) => occupiedEquipmentSlots(owned).some((slot) => compatibleSlots.some((compatible) => compatible === slot)))
-          .sort((left, right) => itemPower(left.attributes) - itemPower(right.attributes))
-          .slice(0, 1);
+    const equippedCandidates =
+      item.two_handed && compatibleSlots.includes("main_weapon")
+        ? [
+            ...new Map(
+              character.inventory
+                .filter((owned) =>
+                  occupiedEquipmentSlots(owned).some(
+                    (slot) => slot === "main_weapon" || slot === "off_weapon",
+                  ),
+                )
+                .map((owned) => [owned.id, owned]),
+            ).values(),
+          ]
+        : character.inventory
+            .filter((owned) =>
+              occupiedEquipmentSlots(owned).some((slot) =>
+                compatibleSlots.some((compatible) => compatible === slot),
+              ),
+            )
+            .sort((left, right) => itemPower(left.attributes) - itemPower(right.attributes))
+            .slice(0, 1);
     const equippedAttributeSets = equippedCandidates.flatMap((owned) =>
-      Array.from({ length: item.two_handed ? equippedItemCopies(owned) : 1 }, () => owned.attributes),
+      Array.from(
+        { length: item.two_handed ? equippedItemCopies(owned) : 1 },
+        () => owned.attributes,
+      ),
     );
     const powerDelta = itemPowerDelta(attributes, equippedAttributeSets);
     return {
@@ -105,18 +126,22 @@ export default async function ShopPage({
             <span className="eyebrow">Mercado dos cinco reinos · {character.name}</span>
             <h1>Mercado do Aventureiro</h1>
             <p>
-              Encontre melhorias para a sua build, compare atributos e compre sem perder de vista
-              o seu orçamento.
+              Encontre melhorias para a sua build, compare atributos e compre sem perder de vista o
+              seu orçamento.
             </p>
             <nav className="market-hero__actions">
-              <Link href={`/personagens/${character.id}?tab=equipamentos`}>Ver equipamentos atuais</Link>
+              <Link href={`/personagens/${character.id}?tab=equipamentos`}>
+                Ver equipamentos atuais
+              </Link>
               <Link href="/missoes">Ganhar mais WG</Link>
             </nav>
           </div>
           <aside>
             <small>Poder de compra</small>
             <strong>{character.gold.toLocaleString("pt-BR")} WG</strong>
-            <span>Nível {character.level} · Rank {character.adventure_rank}</span>
+            <span>
+              Nível {character.level} · Rank {character.adventure_rank}
+            </span>
             <span>{items.length} opções no catálogo</span>
           </aside>
         </header>
@@ -151,7 +176,7 @@ export default async function ShopPage({
               <strong>
                 {shopMultiplier < 1
                   ? `Mercado Próspero: ${Math.round((1 - shopMultiplier) * 100)}% de desconto`
-                  : `Consequência de guerra: ${Math.round((shopMultiplier - 1) * 100)}% de aumento`}
+                  : `Pressão econômica do reino: ${Math.round((shopMultiplier - 1) * 100)}% de aumento`}
               </strong>
               <small>
                 O preço exibido já é o valor final exclusivo para os moradores deste reino.
@@ -174,7 +199,10 @@ export default async function ShopPage({
         />
         <section className="shop-history" aria-labelledby="shop-history-title">
           <header>
-            <div><span className="eyebrow">Registro financeiro</span><h2 id="shop-history-title">Compras e vendas recentes</h2></div>
+            <div>
+              <span className="eyebrow">Registro financeiro</span>
+              <h2 id="shop-history-title">Compras e vendas recentes</h2>
+            </div>
             <small>Os valores e o saldo final ficam registrados automaticamente.</small>
           </header>
           {transactionRows?.length ? (
@@ -182,14 +210,28 @@ export default async function ShopPage({
               {transactionRows.map((transaction) => (
                 <article key={transaction.id}>
                   <span>{transaction.transaction_type === "purchase" ? "Compra" : "Venda"}</span>
-                  <strong>{transaction.item_name}{transaction.quantity > 1 ? ` ×${transaction.quantity}` : ""}</strong>
-                  <small>{new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(transaction.created_at))}</small>
-                  <b>{transaction.transaction_type === "purchase" ? "−" : "+"}{transaction.total.toLocaleString("pt-BR")} WG</b>
+                  <strong>
+                    {transaction.item_name}
+                    {transaction.quantity > 1 ? ` ×${transaction.quantity}` : ""}
+                  </strong>
+                  <small>
+                    {new Intl.DateTimeFormat("pt-BR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                      timeZone: "America/Sao_Paulo",
+                    }).format(new Date(transaction.created_at))}
+                  </small>
+                  <b>
+                    {transaction.transaction_type === "purchase" ? "−" : "+"}
+                    {transaction.total.toLocaleString("pt-BR")} WG
+                  </b>
                   <em>Saldo: {transaction.balance_after.toLocaleString("pt-BR")} WG</em>
                 </article>
               ))}
             </div>
-          ) : <p>Nenhuma compra ou venda registrada para este personagem.</p>}
+          ) : (
+            <p>Nenhuma compra ou venda registrada para este personagem.</p>
+          )}
         </section>
       </div>
     </main>

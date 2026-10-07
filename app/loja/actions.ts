@@ -3,12 +3,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireActiveCharacter } from "@/lib/content/active-character";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAuthenticatedServerSupabaseClient } from "@/lib/supabase/server";
 export async function buyItem(formData: FormData) {
   const { characterId } = await requireActiveCharacter("/loja");
   const id = z.uuid().safeParse(formData.get("itemId"));
   if (!id.success) redirect("/loja?compra=erro");
-  const client = await createServerSupabaseClient();
+  const client = await createAuthenticatedServerSupabaseClient();
   if (!client) redirect("/loja?compra=erro");
   const { error } = await client.rpc("v2_buy_shop_item", { p_item_id: id.data });
   if (error) {
@@ -27,7 +27,7 @@ export async function buyCart(formData: FormData) {
   const { characterId } = await requireActiveCharacter("/loja");
   const ids = z.array(z.uuid()).min(1).max(50).safeParse(formData.getAll("itemId"));
   if (!ids.success) redirect("/loja?compra=erro");
-  const client = await createServerSupabaseClient();
+  const client = await createAuthenticatedServerSupabaseClient();
   if (!client) redirect("/loja?compra=erro");
   const { error } = await client.rpc("v2_buy_shop_cart", { p_item_ids: ids.data });
   if (error) {

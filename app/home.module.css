@@ -157,7 +157,7 @@
       var(--wl-surface-dark-strong),
       color-mix(in srgb, var(--wl-surface-dark) 82%, transparent)
     ),
-    url("/images/hero-background.png") center/cover;
+    url("/images/noites-apavorantes-2026-hero.png") center/cover;
 }
 .hero[data-seasonal="halloween"]::before {
   content: "";

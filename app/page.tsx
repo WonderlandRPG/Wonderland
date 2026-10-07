@@ -4,26 +4,45 @@ import styles from "./home.module.css";
 import { PlayerNav } from "@/components/player-nav";
 import { getCurrentAccount } from "@/lib/auth/account";
 import { getPortalHeadline } from "@/lib/content/portal-settings";
+import { isHalloweenSeasonActive } from "@/lib/events/halloween-season";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const [account, headline] = await Promise.all([getCurrentAccount(), getPortalHeadline()]);
+  const halloweenActive = isHalloweenSeasonActive();
+  const portal = halloweenActive
+    ? {
+        seasonLabel: "Evento de Halloween · 7 a 31 de outubro",
+        firstLine: "A noite caiu sobre",
+        secondLine: "Wonderland.",
+        lead: "Lanternas se apagam, a névoa avança e antigas criaturas despertam entre os reinos. Prepare seu aventureiro: a Véspera do Rei Oco começou.",
+        asideTitle: "A Véspera do Rei Oco",
+        asideText:
+          "Durante outubro, presságios sombrios tomarão o mundo. Explore, fortaleça sua build e aguarde os próximos capítulos do evento.",
+      }
+    : {
+        seasonLabel: headline.seasonLabel,
+        firstLine: headline.firstLine,
+        secondLine: headline.secondLine,
+        lead: "Entre por florestas antigas, reinos em guerra, ruínas esquecidas e cidades erguidas sobre lendas. Em Wonderland, seu personagem não observa a história: ele deixa marcas nela.",
+        asideTitle: "Um mundo vivo",
+        asideText:
+          "Escolha um povo, uma vocação e um reino. Depois, deixe que suas escolhas façam o restante.",
+      };
 
   return (
     <main className={styles.page}>
       <PlayerNav />
 
-      <section className={styles.hero}>
+      <section className={styles.hero} data-seasonal={halloweenActive ? "halloween" : undefined}>
         <div className={styles.copy}>
-          <span className={styles.eyebrow}>{headline.seasonLabel}</span>
+          <span className={styles.eyebrow}>{portal.seasonLabel}</span>
           <h1>
-            {headline.firstLine}
-            <em>{headline.secondLine}</em>
+            {portal.firstLine}
+            <em>{portal.secondLine}</em>
           </h1>
-          <p className={styles.lead}>
-            Entre por florestas antigas, reinos em guerra, ruínas esquecidas e cidades erguidas sobre lendas. Em Wonderland, seu personagem não observa a história: ele deixa marcas nela.
-          </p>
+          <p className={styles.lead}>{portal.lead}</p>
           <div className={styles.actions}>
             <Link href={account ? "/personagens" : "/cadastro"}>
               {account ? "Continuar minha jornada" : "Criar meu aventureiro"}
@@ -32,11 +51,11 @@ export default async function Home() {
           </div>
         </div>
 
-        <aside className={styles.aside} aria-label="Boas-vindas a Wonderland">
+        <aside className={styles.aside} aria-label={portal.asideTitle}>
           <div className={styles.tale}>
-            <b>✦</b>
-            <strong>Um mundo vivo</strong>
-            <p>Escolha um povo, uma vocação e um reino. Depois, deixe que suas escolhas façam o restante.</p>
+            <b>{halloweenActive ? "☾" : "✦"}</b>
+            <strong>{portal.asideTitle}</strong>
+            <p>{portal.asideText}</p>
           </div>
         </aside>
       </section>

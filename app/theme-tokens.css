@@ -48,8 +48,12 @@
   --wl-page-overlay-start: rgba(239, 230, 202, 0.76);
   --wl-page-overlay-end: rgba(198, 204, 184, 0.88);
   --wl-atmosphere-start: rgba(7, 18, 13, 0.42);
-  --wl-atmosphere-end: rgba(15, 30, 23, 0.70);
+  --wl-atmosphere-end: rgba(15, 30, 23, 0.7);
   --wl-atmosphere-glow: rgba(220, 188, 113, 0.16);
+  --wl-site-bg: #c9c8b5;
+  --wl-site-glow: rgba(255, 244, 205, 0.5);
+  --wl-site-wash: rgba(245, 235, 200, 0.16);
+  --wl-site-tint: rgba(49, 95, 71, 0.08);
 
   /* Paleta rubra legada usada por páginas narrativas e itens existentes. */
   --wl-blood: #b52d3d;

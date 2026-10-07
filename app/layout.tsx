@@ -3,6 +3,7 @@ import { AudioProvider } from "@/components/audio/audio-provider";
 import { getCurrentAccount } from "@/lib/auth/account";
 import { PlayerPresence } from "@/components/player-presence";
 import { SeptemberYellowRibbon } from "@/components/awareness/september-yellow-ribbon";
+import { isHalloweenSeasonActive } from "@/lib/events/halloween-season";
 
 /*
  * Sistema visual do Wonderland:
@@ -12,6 +13,7 @@ import { SeptemberYellowRibbon } from "@/components/awareness/september-yellow-r
  * CSS Modules continuam isolados em seus próprios componentes.
  */
 import "./theme-tokens.css";
+import "./themes/halloween.css";
 import "./visual-contract.css";
 import "./wonderland-base.css";
 import "./wonderland-repair.css";
@@ -39,9 +41,10 @@ export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const account = await getCurrentAccount();
+  const halloweenActive = isHalloweenSeasonActive();
 
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" data-wl-theme={halloweenActive ? "halloween" : undefined}>
       <body>
         {account ? <PlayerPresence /> : null}
         <AudioProvider>

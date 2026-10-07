@@ -46,6 +46,8 @@ export interface CombatantState {
   passiveFlags?: Record<string, boolean>;
   passiveMarkedTargetId?: string;
   passiveRoundHealing?: number;
+  passiveActionHistory?: string[];
+  passiveCurrentPowerMultiplier?: number;
   basicAttackDamageType?: "physical" | "magic";
   attributes: CombatAttributes;
   maxHp: number;
@@ -229,6 +231,7 @@ export function reworkOutgoingDamageMultiplier(
 ) {
   const passiveKeys = actor.passiveKeys ?? [];
   let multiplier = 1;
+  multiplier *= actor.passiveCurrentPowerMultiplier ?? 1;
   if (passiveKeys.includes("barbaro-0") && actor.maxHp > 0) {
     const lostTens = Math.floor(((actor.maxHp - actor.hp) * 10) / actor.maxHp + 1e-9);
     multiplier *= 1 + Math.min(0.15, Math.max(0, lostTens) * 0.03);
@@ -248,7 +251,57 @@ export function reworkOutgoingDamageMultiplier(
   if (passiveKeys.includes("leonis-0") && actor.passiveMarkedTargetId === target.id) {
     multiplier *= 1.1;
   }
+  if (actor.statuses["bomba-de-fumaca"]) multiplier *= 0.75;
   return multiplier;
+}
+
+export function prepareReworkAction(
+  actor: CombatantState,
+  actionKey: string,
+  actionKind: "basic" | "skill",
+): CombatantState {
+  const keys = actor.passiveKeys ?? [];
+  const previous = actor.passiveActionHistory ?? [];
+  let history = previous;
+  let power = 1;
+  let flags = actor.passiveFlags ?? {};
+
+  if (keys.includes("guerreiro-0")) {
+    const lastKind = previous.at(-1);
+    if (lastKind && lastKind !== actionKind) power *= 1.12;
+    history = [actionKind];
+  }
+
+  if (keys.includes("bardo-0") || keys.includes("ninja-0")) {
+    const sequence = previous.includes(actionKey)
+      ? [actionKey]
+      : [...previous, actionKey].slice(-3);
+    if (sequence.length === 3) {
+      power *= keys.includes("bardo-0") ? 1.2 : 1.3;
+      history = [];
+    } else history = sequence;
+  }
+
+  if (keys.includes("alquimista-0") && actionKind === "skill") {
+    if (flags.alchemistPowerReady) {
+      power *= 1.15;
+      flags = { ...flags, alchemistPowerReady: false };
+    }
+    const formulas = previous.includes(actionKey)
+      ? [actionKey]
+      : [...previous, actionKey].slice(-3);
+    if (formulas.length === 3) {
+      flags = { ...flags, alchemistPowerReady: true };
+      history = [];
+    } else history = formulas;
+  }
+
+  return {
+    ...actor,
+    passiveActionHistory: history,
+    passiveCurrentPowerMultiplier: power,
+    passiveFlags: flags,
+  };
 }
 
 export function reworkMovementAllowance(
@@ -258,7 +311,8 @@ export function reworkMovementAllowance(
 ) {
   return (
     baseMovement +
-    (actor.passiveKeys?.includes("leonis-0") && actor.passiveMarkedTargetId === enemyId ? 1 : 0)
+    (actor.passiveKeys?.includes("leonis-0") && actor.passiveMarkedTargetId === enemyId ? 1 : 0) +
+    (actor.statuses["forma-bestial"] ? 1 : 0)
   );
 }
 
@@ -471,29 +525,30 @@ export function resolveBasicAttack(
   target: CombatantState,
   rules: CombatRules = defaultCombatRules,
 ): CombatResolution {
-  const actorAttributes = getEffectiveAttributes(actor);
+  const actingActor = prepareReworkAction(actor, "basic", "basic");
+  const actorAttributes = getEffectiveAttributes(actingActor);
   const targetAttributes = getEffectiveAttributes(target);
   const isMagical = actorAttributes.INT > actorAttributes.FOR;
   const damageType: DamageType = isMagical ? "magic" : "physical";
   const raw = (isMagical ? actorAttributes.INT : actorAttributes.FOR) * rules.basicAttackMultiplier;
   const amount = calculateDamage(
-    raw * reworkOutgoingDamageMultiplier(actor, target, damageType),
+    raw * reworkOutgoingDamageMultiplier(actingActor, target, damageType),
     damageType,
-    reworkDefenderAttributes(actor, target, damageType, targetAttributes),
+    reworkDefenderAttributes(actingActor, target, damageType, targetAttributes),
     rules,
   );
   const damagedTarget = applyDamage(target, amount);
   const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
   const itemResolution = applyOffensiveItemEffects(
     {
-      ...actor,
+      ...actingActor,
       classResource: Math.min(
-        actor.maxClassResource,
-        actor.classResource + actor.resourceGainOnBasicAttack,
+        actingActor.maxClassResource,
+        actingActor.classResource + actingActor.resourceGainOnBasicAttack,
       ),
       raceResource: Math.min(
-        actor.maxRaceResource,
-        actor.raceResource + actor.raceResourceGainOnBasicAttack,
+        actingActor.maxRaceResource,
+        actingActor.raceResource + actingActor.raceResourceGainOnBasicAttack,
       ),
     },
     damagedTarget,
@@ -551,20 +606,25 @@ export function resolveSkill(
     );
   }
 
+  const preparedActor = prepareReworkAction(
+    actor,
+    skill.key,
+    /-1$/.test(skill.key) ? "basic" : "skill",
+  );
   const paidActor: CombatantState = {
-    ...actor,
-    mana: skill.resource === "mana" ? actor.mana - skill.cost : actor.mana,
-    hp: skill.resource === "life" ? actor.hp - skill.cost : actor.hp,
+    ...preparedActor,
+    mana: skill.resource === "mana" ? preparedActor.mana - skill.cost : preparedActor.mana,
+    hp: skill.resource === "life" ? preparedActor.hp - skill.cost : preparedActor.hp,
     classResource:
       skill.resource === "special" && !usesRaceResource
-        ? actor.classResource - skill.cost
-        : actor.classResource,
+        ? preparedActor.classResource - skill.cost
+        : preparedActor.classResource,
     raceResource:
       skill.resource === "special" && usesRaceResource
-        ? actor.raceResource - skill.cost
-        : actor.raceResource,
+        ? preparedActor.raceResource - skill.cost
+        : preparedActor.raceResource,
     cooldowns: {
-      ...actor.cooldowns,
+      ...preparedActor.cooldowns,
       [skill.key]: Math.max(0, skill.cooldown - getItemCooldownReduction(actor.itemEffects)),
     },
   };
@@ -572,7 +632,7 @@ export function resolveSkill(
   const operationScaling = primaryOperation?.scaling.length
     ? primaryOperation.scaling
     : skill.scaling;
-  const actorAttributes = getEffectiveAttributes(actor);
+  const actorAttributes = getEffectiveAttributes(preparedActor);
   const rawPower =
     (primaryOperation?.base ?? 0) + calculateScaledPower(actorAttributes, operationScaling);
 
@@ -580,9 +640,9 @@ export function resolveSkill(
     const type: DamageType =
       primaryOperation.damageType === "none" ? "physical" : primaryOperation.damageType;
     const amount = calculateDamage(
-      rawPower * reworkOutgoingDamageMultiplier(actor, target, type),
+      rawPower * reworkOutgoingDamageMultiplier(preparedActor, target, type),
       type,
-      reworkDefenderAttributes(actor, target, type, getEffectiveAttributes(target)),
+      reworkDefenderAttributes(preparedActor, target, type, getEffectiveAttributes(target)),
       rules,
     );
     const damagedTarget = applyDamage(target, amount, { areaAttack: skill.area > 0 });

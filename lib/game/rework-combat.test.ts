@@ -366,6 +366,93 @@ describe("contrato executável do combate Rework", () => {
     }
   });
 
+  it("não deixa habilidades do Rework caírem no bônus genérico", () => {
+    const all = [
+      ...reworkClasses.flatMap((entry) => getReworkClassCombatSkills(entry, 100)),
+      ...reworkRaces.flatMap((entry) => getReworkRaceCombatSkills(entry, 100)),
+    ];
+    expect(
+      all
+        .filter((skill) =>
+          skill.operations.some(
+            (operation) =>
+              operation.status === skill.key &&
+              operation.modifiers.some((modifier) => Math.abs(modifier.value) === 15),
+          ),
+        )
+        .map((skill) => skill.key),
+    ).toEqual([]);
+  });
+
+  it("executa Muralha, Fortaleza, Forma Bestial e Bomba de Fumaça com regras próprias", () => {
+    const knight = reworkClasses.find((entry) => entry.id === "cavaleiro")!;
+    const druid = reworkClasses.find((entry) => entry.id === "druida")!;
+    const rogue = reworkClasses.find((entry) => entry.id === "ladino")!;
+    const wall = getReworkClassCombatSkills(knight, 100).find(
+      (skill) => skill.key === "cavaleiro-3",
+    )!;
+    const fortress = getReworkClassCombatSkills(knight, 100).find(
+      (skill) => skill.key === "cavaleiro-5",
+    )!;
+    const beast = getReworkClassCombatSkills(druid, 100).find((skill) => skill.key === "druida-3")!;
+    const smoke = getReworkClassCombatSkills(rogue, 100).find((skill) => skill.key === "ladino-2")!;
+    for (const resolve of [resolveJrpgSkill, resolveTacticalSkill]) {
+      expect(
+        resolve(fighter("knight"), fighter("enemy"), wall).target.statuses["muralha-de-aco"],
+      ).toBeDefined();
+      const fortified = resolve(fighter("knight"), fighter("enemy"), fortress).actor;
+      expect(fortified.statuses["fortaleza-viva"].damageReductionPercent).toBe(30);
+      expect(fortified.statuses["fortaleza-viva-imovel"]).toBeDefined();
+      const transformed = resolve(fighter("druid"), fighter("enemy"), beast).actor;
+      expect(getEffectiveAttributes(transformed).FOR).toBe(120);
+      expect(reworkMovementAllowance(transformed, "enemy", 4)).toBe(5);
+      const smoked = resolve(fighter("rogue"), fighter("enemy"), smoke).target;
+      expect(smoked.statuses["bomba-de-fumaca"]).toBeDefined();
+      expect(resolveBasicAttack(smoked, fighter("rogue")).event.amount).toBe(75);
+    }
+  });
+
+  it("executa as passivas de sequência de Bardo, Ninja, Guerreiro e Alquimista", () => {
+    const base = getReworkBasicAttack(reworkClasses.find((entry) => entry.id === "guerreiro")!)!;
+    const action = (key: string) => ({ ...base, key, cooldown: 0 });
+    for (const [passive, expectedThird] of [
+      ["bardo-0", 120],
+      ["ninja-0", 130],
+    ] as const) {
+      let actor: ReturnType<typeof fighter> = { ...fighter(passive), passiveKeys: [passive] };
+      let result = resolveTacticalSkill(actor, fighter("one"), action("action-a"));
+      actor = result.actor;
+      result = resolveTacticalSkill(actor, fighter("two"), action("action-b"));
+      actor = result.actor;
+      result = resolveTacticalSkill(actor, fighter("three"), action("action-c"));
+      expect(result.event.amount).toBe(expectedThird);
+    }
+
+    const warrior = { ...fighter("warrior"), passiveKeys: ["guerreiro-0"] };
+    const basic = resolveBasicAttack(warrior, fighter("basic-target"));
+    const alternated = resolveTacticalSkill(
+      basic.actor,
+      fighter("skill-target"),
+      action("skill-a"),
+    );
+    expect(alternated.event.amount).toBe(112);
+
+    let alchemist: ReturnType<typeof fighter> = {
+      ...fighter("alchemist"),
+      passiveKeys: ["alquimista-0"],
+    };
+    for (const key of ["formula-a", "formula-b", "formula-c"]) {
+      alchemist = resolveTacticalSkill(alchemist, fighter(key), action(key)).actor;
+    }
+    const empowered = resolveTacticalSkill(
+      alchemist,
+      fighter("formula-target"),
+      action("formula-d"),
+    );
+    expect(empowered.event.amount).toBe(115);
+    expect(empowered.actor.passiveFlags?.alchemistPowerReady).toBe(false);
+  });
+
   it("passivas ofensivas escalam dano real sem alterar personagens sem a passiva", () => {
     const target = fighter("target");
     const damagedBarbarian = { ...fighter("barbarian"), hp: 400, passiveKeys: ["barbaro-0"] };

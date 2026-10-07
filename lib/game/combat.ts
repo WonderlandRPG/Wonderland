@@ -5,6 +5,7 @@ import {
   createCombatant as createCoreCombatant,
   defaultCombatRules,
   getEffectiveAttributes,
+  prepareReworkAction,
   reworkDefenderAttributes,
   reworkOutgoingDamageMultiplier,
   type CombatantState,
@@ -62,30 +63,31 @@ export function resolveBasicAttack(
     };
   }
 
-  const actorAttributes = getEffectiveAttributes(actor);
+  const actingActor = prepareReworkAction(actor, "basic", "basic");
+  const actorAttributes = getEffectiveAttributes(actingActor);
   const targetAttributes = getEffectiveAttributes(target);
-  const affinity = (actor as CombatantWithAffinity).basicAttackDamageType;
+  const affinity = (actingActor as CombatantWithAffinity).basicAttackDamageType;
   const damageType: DamageType =
     affinity ?? (actorAttributes.INT > actorAttributes.FOR ? "magic" : "physical");
   const offensiveAttribute = damageType === "magic" ? actorAttributes.INT : actorAttributes.FOR;
   const raw = offensiveAttribute * rules.basicAttackMultiplier;
   const amount = calculateDamage(
-    raw * reworkOutgoingDamageMultiplier(actor, target, damageType, context),
+    raw * reworkOutgoingDamageMultiplier(actingActor, target, damageType, context),
     damageType,
-    reworkDefenderAttributes(actor, target, damageType, targetAttributes),
+    reworkDefenderAttributes(actingActor, target, damageType, targetAttributes),
     rules,
   );
   const damagedTarget = applyDamage(target, amount);
   const damageDealt = target.hp + target.shield - (damagedTarget.hp + damagedTarget.shield);
   const actorAfterAttack = {
-    ...actor,
+    ...actingActor,
     classResource: Math.min(
-      actor.maxClassResource,
-      actor.classResource + actor.resourceGainOnBasicAttack,
+      actingActor.maxClassResource,
+      actingActor.classResource + actingActor.resourceGainOnBasicAttack,
     ),
     raceResource: Math.min(
-      actor.maxRaceResource,
-      actor.raceResource + actor.raceResourceGainOnBasicAttack,
+      actingActor.maxRaceResource,
+      actingActor.raceResource + actingActor.raceResourceGainOnBasicAttack,
     ),
   };
   const itemResolution = applyOffensiveItemEffects(actorAfterAttack, damagedTarget, damageDealt);

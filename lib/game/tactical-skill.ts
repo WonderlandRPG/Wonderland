@@ -6,6 +6,7 @@ import {
   calculateScaledPower,
   defaultCombatRules,
   getEffectiveAttributes,
+  prepareReworkAction,
   reworkDefenderAttributes,
   reworkOutgoingDamageMultiplier,
   isBeneficialStatusOperation,
@@ -142,22 +143,30 @@ function validateAndPay(
     return errorResolution(actor, target, `${resourceName} insuficiente para usar ${skill.name}.`);
   }
 
+  const preparedActor = prepareReworkAction(
+    actor,
+    skill.key,
+    /-1$/.test(skill.key) ? "basic" : "skill",
+  );
   return {
     actor: {
-      ...actor,
-      mana: skill.resource === "mana" ? actor.mana - skill.cost : actor.mana,
-      hp: skill.resource === "life" ? actor.hp - skill.cost : actor.hp,
+      ...preparedActor,
+      mana: skill.resource === "mana" ? preparedActor.mana - skill.cost : preparedActor.mana,
+      hp: skill.resource === "life" ? preparedActor.hp - skill.cost : preparedActor.hp,
       classResource:
         skill.resource === "special" && !usesRaceResource
-          ? actor.classResource - skill.cost
-          : actor.classResource,
+          ? preparedActor.classResource - skill.cost
+          : preparedActor.classResource,
       raceResource:
         skill.resource === "special" && usesRaceResource
-          ? actor.raceResource - skill.cost
-          : actor.raceResource,
+          ? preparedActor.raceResource - skill.cost
+          : preparedActor.raceResource,
       cooldowns: {
-        ...actor.cooldowns,
-        [skill.key]: Math.max(0, skill.cooldown - getItemCooldownReduction(actor.itemEffects)),
+        ...preparedActor.cooldowns,
+        [skill.key]: Math.max(
+          0,
+          skill.cooldown - getItemCooldownReduction(preparedActor.itemEffects),
+        ),
       },
     },
     target,

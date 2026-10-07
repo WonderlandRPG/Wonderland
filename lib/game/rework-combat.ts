@@ -181,6 +181,67 @@ function makeOperation(source: ReworkSource): ClassSkill["operations"] {
       damageReductionPercent: 100,
     });
   }
+  if (source.id === "cavaleiro-3") {
+    operations.push({
+      ...common,
+      operation: "ROOT",
+      target: "enemy",
+      damageType: "none",
+      status: "muralha-de-aco",
+      duration: Math.max(2, duration),
+      scaling: [],
+    });
+  }
+  if (source.id === "cavaleiro-5") {
+    operations.push(
+      {
+        ...common,
+        operation: "BUFF",
+        target: "self",
+        damageType: "none",
+        status: "fortaleza-viva",
+        duration: Math.max(3, duration),
+        scaling: [],
+        damageReductionPercent: 30,
+      },
+      {
+        ...common,
+        operation: "ROOT",
+        target: "self",
+        damageType: "none",
+        status: "fortaleza-viva-imovel",
+        duration: Math.max(3, duration),
+        scaling: [],
+      },
+    );
+  }
+  if (source.id === "druida-3") {
+    operations.push({
+      ...common,
+      operation: "BUFF",
+      target: "self",
+      damageType: "none",
+      status: "forma-bestial",
+      duration: Math.max(3, duration),
+      scaling: [],
+      modifiers: [
+        { attribute: "FOR", value: 20, percent: true },
+        { attribute: "INI", value: 20, percent: true },
+      ],
+    });
+  }
+  if (source.id === "ladino-2") {
+    operations.push({
+      ...common,
+      operation: "DEBUFF",
+      target: "enemy",
+      damageType: "none",
+      status: "bomba-de-fumaca",
+      duration: Math.max(2, duration),
+      scaling: [],
+      modifiers: [{ attribute: "INI", value: -20, percent: true }],
+    });
+  }
   if (/escudo|barreira/i.test(text))
     operations.push({
       ...common,

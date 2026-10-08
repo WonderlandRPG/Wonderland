@@ -16,6 +16,10 @@ describe("preparativos de Noites Apavorantes", () => {
         expect(mission.description.length).toBeGreaterThanOrEqual(10);
         expect(mission.description.length).toBeLessThanOrEqual(1200);
         expect(mission.objective.length).toBeLessThanOrEqual(300);
+        expect(mission.description).toContain("Contexto:");
+        expect(mission.description).toContain("Complicação:");
+        expect(mission.description).toContain("Encerramento:");
+        expect(mission.objective).toMatch(/^Na cena,/);
       }
     }
   });

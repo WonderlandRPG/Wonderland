@@ -15,11 +15,6 @@
   font-size: 0.875rem;
   font-weight: 700;
 }
-.caption small {
-  color: var(--wl-text-inverse-muted);
-  font-size: inherit;
-  font-weight: 400;
-}
 .caption strong {
   color: var(--wl-text-inverse);
   font-variant-numeric: tabular-nums;
@@ -37,11 +32,6 @@
   border-radius: inherit;
   background: var(--wl-accent);
   transition: width 0.4s ease;
-}
-@media (max-width: 520px) {
-  .caption small {
-    display: block;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .fill {

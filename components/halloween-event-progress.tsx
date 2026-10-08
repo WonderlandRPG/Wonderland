@@ -28,9 +28,7 @@ export function HalloweenEventProgress({
   return (
     <section className={styles.progress} aria-label="Progresso do evento de Halloween">
       <div className={styles.caption}>
-        <span>
-          Noites Apavorantes <small>· 100% em 30/10</small>
-        </span>
+        <span>Noites Apavorantes</span>
         <strong>{progress.percent}%</strong>
       </div>
       <div
@@ -40,7 +38,7 @@ export function HalloweenEventProgress({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={progress.percent}
-        aria-valuetext={`${progress.percent}% · 100% em 30 de outubro`}
+        aria-valuetext={`${progress.percent}%`}
       >
         <span className={styles.fill} style={{ width: `${progress.percent}%` }} />
       </div>

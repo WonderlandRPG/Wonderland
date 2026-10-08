@@ -1,6 +1,23 @@
 import type { MissionBoard } from "@/lib/game/missions";
 import { acceptMissionAction } from "./actions";
 
+export function FestivalSceneBriefing({ description }: { description: string }) {
+  return (
+    <div>
+      {description.split("\n\n").map((section) => {
+        const separator = section.indexOf(": ");
+        return separator > 0 ? (
+          <p key={section}>
+            <strong>{section.slice(0, separator)}:</strong> {section.slice(separator + 2)}
+          </p>
+        ) : (
+          <p key={section}>{section}</p>
+        );
+      })}
+    </div>
+  );
+}
+
 export function festivalDateLabel(value: string) {
   return new Date(`${value}T12:00:00-03:00`).toLocaleDateString("pt-BR", {
     timeZone: "America/Sao_Paulo",
@@ -42,6 +59,16 @@ export function FestivalBoard({ board }: { board: MissionBoard }) {
         vez por jogador. A recompensa é o dobro do XP de uma missão do seu rank atual, além de Doces
         Apavorantes.
       </p>
+      <div className="festival-board__rules">
+        <strong>Como escrever sua cena</strong>
+        <p>
+          Narre a chegada do seu personagem, suas ações e reações à complicação e o desfecho da
+          ajuda. Você escolhe a estratégia, respeitando as capacidades do personagem e o reino. As
+          quantidades orientam o pedido; a missão é realizada por texto, com desenvolvimento da
+          cena. Não é necessário explicar a origem dos sinais misteriosos.
+        </p>
+        <p>Apresente sua cena à Guilda para avaliação e conclusão da missão.</p>
+      </div>
       {finished ? (
         <p data-wl-status="success">
           Você concluiu todos os preparativos. Agora é esperar pela celebração.
@@ -56,9 +83,9 @@ export function FestivalBoard({ board }: { board: MissionBoard }) {
         <article className="festival-board__mission" data-wl-component="card">
           <span className="eyebrow">Missão de {festivalDateLabel(mission.eventDay)}</span>
           <h3>{mission.name}</h3>
-          <p>{mission.description}</p>
+          <FestivalSceneBriefing description={mission.description} />
           <div className="festival-board__objective">
-            <strong>O que precisa ser feito</strong>
+            <strong>Objetivo da cena</strong>
             <p>{mission.objective}</p>
           </div>
           <div className="festival-board__reward">

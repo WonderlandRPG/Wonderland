@@ -8,7 +8,7 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { kingdomMissionNames, parseMissionBoard } from "@/lib/game/missions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { acceptMissionAction } from "./actions";
-import { FestivalBoard, festivalDateLabel } from "./festival-board";
+import { FestivalBoard, FestivalSceneBriefing, festivalDateLabel } from "./festival-board";
 
 export const metadata = { title: "Mural de Missões" };
 export const dynamic = "force-dynamic";
@@ -129,11 +129,19 @@ export default async function MissionBoardPage({
               <summary>Ler a missão por inteiro</summary>
               <div>
                 <h3>Relato completo</h3>
-                <p>
-                  <RealmLocationText
-                    text={activeMissionDetails?.description ?? board.activeAssignment.description}
+                {board.activeAssignment.eventDay ? (
+                  <FestivalSceneBriefing
+                    description={
+                      activeMissionDetails?.description ?? board.activeAssignment.description
+                    }
                   />
-                </p>
+                ) : (
+                  <p>
+                    <RealmLocationText
+                      text={activeMissionDetails?.description ?? board.activeAssignment.description}
+                    />
+                  </p>
+                )}
                 <h3>Objetivo</h3>
                 <p>
                   <RealmLocationText text={board.activeAssignment.objective} />

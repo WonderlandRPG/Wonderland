@@ -79,12 +79,12 @@
 .card[data-card-cosmetic='vigilia-do-cemiterio'] .cardArtwork{display:block;inset:0;width:100%;height:100%;object-fit:fill}
 .card[data-card-cosmetic='vigilia-do-cemiterio'] .image{filter:saturate(.86) contrast(1.04) brightness(.88)}
 .card[data-border-cosmetic='moldura-colheita-noturna']{overflow:visible}
-.card[data-border-cosmetic='moldura-colheita-noturna'] .cosmeticBorderFx{inset:-8%;z-index:60;opacity:1;visibility:visible;filter:drop-shadow(0 8px 13px color-mix(in srgb,var(--wl-ink) 58%,transparent))}
+.card[data-border-cosmetic='moldura-colheita-noturna'] .cosmeticBorderFx{inset:0;z-index:60;opacity:1;visibility:visible;filter:drop-shadow(0 5px 9px color-mix(in srgb,var(--wl-ink) 48%,transparent))}
 .card[data-border-cosmetic='moldura-colheita-noturna'] .borderArtwork{display:block!important;object-fit:fill!important}
 .card[data-border-cosmetic='moldura-colheita-noturna'] .topMeta,.card[data-border-cosmetic='moldura-colheita-noturna'] .titleMeta{z-index:70}
 .card[data-aura-cosmetic='voo-da-bruxa']{overflow:visible}
 .card[data-aura-cosmetic='voo-da-bruxa'] .cosmeticAuraFx{inset:0;z-index:13;opacity:1;overflow:hidden;border-radius:inherit}
-.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{display:block;inset:0;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--wl-accent) 46%,transparent));animation:witchFlight 6s ease-in-out infinite alternate}
+.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{display:block;top:32%;left:0;width:72%;height:auto;object-fit:contain;filter:drop-shadow(0 0 8px color-mix(in srgb,var(--wl-accent) 46%,transparent));animation:witchFlight 7s linear infinite}
 @keyframes graveyardBreath{50%{transform:scale(1.012);filter:brightness(1.08)}}
-@keyframes witchFlight{0%{transform:translateX(-4%) translateY(5%) scale(.9);opacity:.9}50%{transform:translateX(4%) translateY(-4%) scale(.94);opacity:1}100%{transform:translateX(-2%) translateY(3%) scale(.9);opacity:.92}}
-@media(prefers-reduced-motion:reduce){.card[data-card-cosmetic='vigilia-do-cemiterio'] .cardArtwork,.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{animation:none}.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{transform:translateX(4%) scale(.76);opacity:.88}}
+@keyframes witchFlight{0%{transform:translateX(145%) translateY(10%) scale(.76);opacity:0}8%{opacity:.96}48%{transform:translateX(34%) translateY(-12%) scale(.82);opacity:1}92%{opacity:.96}100%{transform:translateX(-110%) translateY(8%) scale(.76);opacity:0}}
+@media(prefers-reduced-motion:reduce){.card[data-card-cosmetic='vigilia-do-cemiterio'] .cardArtwork,.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{animation:none}.card[data-aura-cosmetic='voo-da-bruxa'] .witchArtwork{transform:translateX(20%) scale(.78);opacity:.9}}

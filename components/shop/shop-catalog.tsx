@@ -214,7 +214,10 @@ export function ShopCatalog({
       name: item.name,
       tag: item.rarity,
       description: item.description,
-      highlights: ["Aplicado sem alterar o retrato", "Disponível após confirmação externa"],
+      highlights: [
+        "Identidade visual de Noites Apavorantes",
+        "Aplicado sem alterar o retrato",
+      ],
       preview: item.slot,
       key: item.key,
       collection: item.collectionName,
@@ -253,10 +256,10 @@ export function ShopCatalog({
           <header className="cosmetics-collection-hero">
             <div>
               <span>ATELIÊ DE WONDERLAND • CATÁLOGO OFICIAL</span>
-              <h2>Relíquias que contam a sua história</h2>
+              <h2>Relíquias das Noites Apavorantes</h2>
               <p>
-                Molduras, auras e cards criados para transformar cada retrato em uma peça única.
-                Explore as coleções, teste no personagem e prepare a futura vitrine do RPG.
+                A coleção oficial de Halloween 2026 transforma cada retrato com carvão, brasa,
+                fogo espectral e ouro envelhecido sem esconder seu aventureiro.
               </p>
             </div>
             <aside>

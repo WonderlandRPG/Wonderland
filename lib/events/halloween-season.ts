@@ -17,3 +17,12 @@ export function isHalloweenSeasonActive(date = new Date()) {
   const dateKey = saoPauloDateKey(date);
   return dateKey >= HALLOWEEN_START_DATE && dateKey <= HALLOWEEN_END_DATE;
 }
+
+export function getHalloweenEventProgress(date = new Date()) {
+  const dateKey = saoPauloDateKey(date);
+  const day = dateKey % 100;
+  // Each preparation day counts once: October 8 is day 1 of 23, October 30 is day 23.
+  const percent =
+    dateKey < 20261008 ? 0 : dateKey >= 20261030 ? 100 : Math.round(((day - 7) / 23) * 100);
+  return { percent, active: dateKey >= 20261008 && dateKey <= HALLOWEEN_END_DATE };
+}

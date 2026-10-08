@@ -6,6 +6,8 @@ import { getCurrentAccount, isAdministrativeRole } from "@/lib/auth/account";
 import { getActiveCharacterNavigation } from "@/lib/content/active-character";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { UpdateNotification } from "@/components/updates/update-notification";
+import { HalloweenEventProgress } from "@/components/halloween-event-progress";
+import { getHalloweenEventProgress } from "@/lib/events/halloween-season";
 import styles from "./player-nav.module.css";
 
 export async function PlayerNav() {
@@ -35,7 +37,10 @@ export async function PlayerNav() {
   const hasUnreadUpdate = Boolean(latestUpdate && !updateReceipt?.read_at);
   const hasUnseenUpdate = Boolean(latestUpdate && !updateReceipt?.seen_at);
   const { count: unreadNotifications } = client
-    ? await client.from("v2_notifications").select("id", { count: "exact", head: true }).is("read_at", null)
+    ? await client
+        .from("v2_notifications")
+        .select("id", { count: "exact", head: true })
+        .is("read_at", null)
     : { count: 0 };
 
   return (
@@ -76,6 +81,7 @@ export async function PlayerNav() {
           </Link>
         )}
       </div>
+      <HalloweenEventProgress initialProgress={getHalloweenEventProgress()} />
       {hasUnseenUpdate && latestUpdate ? <UpdateNotification update={latestUpdate} /> : null}
     </header>
   );

@@ -1,11 +1,12 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
+import { cache } from "react";
 
 import { requireCurrentAccount } from "@/lib/auth/account";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export async function getActiveCharacterId(userId: string) {
+export const getActiveCharacterId = cache(async function getActiveCharacterId(userId: string) {
   const client = await createServerSupabaseClient();
   if (!client) return null;
   const { data } = await client
@@ -14,9 +15,11 @@ export async function getActiveCharacterId(userId: string) {
     .eq("user_id", userId)
     .maybeSingle();
   return data?.character_id ?? null;
-}
+});
 
-export async function getActiveCharacterNavigation(userId: string) {
+export const getActiveCharacterNavigation = cache(async function getActiveCharacterNavigation(
+  userId: string,
+) {
   const client = await createServerSupabaseClient();
   if (!client) return null;
   const { data: active } = await client
@@ -32,9 +35,9 @@ export async function getActiveCharacterNavigation(userId: string) {
     .eq("user_id", userId)
     .maybeSingle();
   return data ?? null;
-}
+});
 
-export async function getActiveCharacterRank(userId: string) {
+export const getActiveCharacterRank = cache(async function getActiveCharacterRank(userId: string) {
   const client = await createServerSupabaseClient();
   if (!client) return null;
 
@@ -54,7 +57,7 @@ export async function getActiveCharacterRank(userId: string) {
     .maybeSingle();
 
   return character?.adventure_rank ?? null;
-}
+});
 
 export async function requireActiveCharacter(returnTo = "/perfil") {
   const account = await requireCurrentAccount(returnTo);

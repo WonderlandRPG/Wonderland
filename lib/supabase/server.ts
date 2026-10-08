@@ -3,11 +3,12 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 import { getSupabasePublicEnv } from "@/lib/config/env";
 import type { Database } from "@/lib/db/types";
 
-export async function createServerSupabaseClient() {
+export const createServerSupabaseClient = cache(async function createServerSupabaseClient() {
   const { url, anonKey } = getSupabasePublicEnv();
 
   if (!url || !anonKey) {
@@ -33,7 +34,7 @@ export async function createServerSupabaseClient() {
       },
     },
   });
-}
+});
 
 /**
  * Cliente para mutações sensíveis executadas por Server Actions.

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AudioProvider } from "@/components/audio/audio-provider";
 import { getCurrentAccount } from "@/lib/auth/account";
 import { PlayerPresence } from "@/components/player-presence";
@@ -39,14 +40,15 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const account = await getCurrentAccount();
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const halloweenActive = isHalloweenSeasonActive();
 
   return (
     <html lang="pt-BR" data-wl-theme={halloweenActive ? "halloween" : undefined}>
       <body>
-        {account ? <PlayerPresence /> : null}
+        <Suspense fallback={null}>
+          <AuthenticatedPresence />
+        </Suspense>
         <AudioProvider>
           {children}
           <SeptemberYellowRibbon />
@@ -54,4 +56,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       </body>
     </html>
   );
+}
+
+async function AuthenticatedPresence() {
+  const account = await getCurrentAccount();
+  return account ? <PlayerPresence /> : null;
 }

@@ -12,11 +12,12 @@ import styles from "./player-nav.module.css";
 
 export async function PlayerNav() {
   const account = await getCurrentAccount();
-  const activeCharacter = account ? await getActiveCharacterNavigation(account.id) : null;
-  const activeCharacterId = activeCharacter?.id ?? null;
   const client = account ? await createServerSupabaseClient() : null;
-  const { data: latestUpdate } = client
-    ? await client
+  const activeCharacterPromise = account
+    ? getActiveCharacterNavigation(account.id)
+    : Promise.resolve(null);
+  const latestUpdatePromise = client
+    ? client
         .from("v2_updates")
         .select("id, version, title")
         .eq("active", true)
@@ -24,7 +25,16 @@ export async function PlayerNav() {
         .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle()
-    : { data: null };
+    : Promise.resolve({ data: null });
+  const unreadNotificationsPromise = client
+    ? client
+        .from("v2_notifications")
+        .select("id", { count: "exact", head: true })
+        .is("read_at", null)
+    : Promise.resolve({ count: 0 });
+  const [activeCharacter, { data: latestUpdate }, { count: unreadNotifications }] =
+    await Promise.all([activeCharacterPromise, latestUpdatePromise, unreadNotificationsPromise]);
+  const activeCharacterId = activeCharacter?.id ?? null;
   const { data: updateReceipt } =
     client && latestUpdate
       ? await client
@@ -36,13 +46,6 @@ export async function PlayerNav() {
       : { data: null };
   const hasUnreadUpdate = Boolean(latestUpdate && !updateReceipt?.read_at);
   const hasUnseenUpdate = Boolean(latestUpdate && !updateReceipt?.seen_at);
-  const { count: unreadNotifications } = client
-    ? await client
-        .from("v2_notifications")
-        .select("id", { count: "exact", head: true })
-        .is("read_at", null)
-    : { count: 0 };
-
   return (
     <header
       className={`player-nav ${styles.header}`}

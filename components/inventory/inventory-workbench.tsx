@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   equipItemAction,
@@ -17,6 +17,7 @@ import type { CosmeticCatalogItem } from "@/lib/content/cosmetics";
 import { itemPower, itemPowerDelta } from "@/lib/game/item-attributes";
 import { equippedItemCopies } from "@/lib/game/equipment";
 import type { ReworkAttributes } from "@/lib/game/rework-attributes";
+import { PendingSubmitButton } from "@/components/forms/pending-submit-button";
 
 type InventoryItem = {
   id: string;
@@ -68,6 +69,7 @@ export function InventoryWorkbench({
     "all" | "bag" | "storage" | "equipped" | "rewards" | "cosmetics"
   >("all");
   const [search, setSearch] = useState("");
+  const deferredSearch = useDeferredValue(search);
   const [slotFilter, setSlotFilter] = useState("");
   const [selectedId, setSelectedId] = useState(items[0]?.id ?? "");
   const [activeSlotKey, setActiveSlotKey] = useState<string | null>(null);
@@ -111,12 +113,12 @@ export function InventoryWorkbench({
           (!slotFilter ||
             item.compatibleSlots.includes(slotFilter) ||
             item.equippedSlot === slotFilter) &&
-          (!search ||
+          (!deferredSearch ||
             `${item.name} ${item.description}`
               .toLocaleLowerCase("pt-BR")
-              .includes(search.toLocaleLowerCase("pt-BR"))),
+              .includes(deferredSearch.toLocaleLowerCase("pt-BR"))),
       ),
-    [items, search, slotFilter, view],
+    [deferredSearch, items, slotFilter, view],
   );
   const occupied = slots.filter((slot) => slot.itemId).length;
   const equippedTitle = items.find((item) => item.equippedSlot === "title") ?? null;
@@ -383,11 +385,12 @@ export function InventoryWorkbench({
                         <form action={equipOwnedCosmeticAction.bind(null, character.id)}>
                           <input name="slot" type="hidden" value={cosmetic.slot} />
                           <input name="key" type="hidden" value={active ? "" : cosmetic.key} />
-                          <button
+                          <PendingSubmitButton
                             className={`button ${active ? "button--dark" : "button--primary"}`}
+                            pendingLabel={active ? "Removendo…" : "Ativando…"}
                           >
                             {active ? "✓ Ativo · remover" : "Ativar cosmético"}
-                          </button>
+                          </PendingSubmitButton>
                         </form>
                       </article>
                     );
@@ -545,7 +548,12 @@ export function InventoryWorkbench({
                   {selected.equippedSlot ? (
                     <form action={unequipItemAction.bind(null, character.id)}>
                       <input name="inventoryId" type="hidden" value={selected.id} />
-                      <button className="button button--dark">Desequipar</button>
+                      <PendingSubmitButton
+                        className="button button--dark"
+                        pendingLabel="Desequipando…"
+                      >
+                        Desequipar
+                      </PendingSubmitButton>
                     </form>
                   ) : selected.location === "bag" ? (
                     <form action={equipItemAction.bind(null, character.id)}>
@@ -560,28 +568,46 @@ export function InventoryWorkbench({
                           ))}
                         </select>
                       </label>
-                      <button className="button button--primary">Equipar item</button>
+                      <PendingSubmitButton
+                        className="button button--primary"
+                        pendingLabel="Equipando…"
+                      >
+                        Equipar item
+                      </PendingSubmitButton>
                     </form>
                   ) : (
                     <form action={setInventoryLocationAction.bind(null, character.id)}>
                       <input name="inventoryId" type="hidden" value={selected.id} />
                       <input name="location" type="hidden" value="bag" />
-                      <button className="button button--primary">Mover para mochila</button>
+                      <PendingSubmitButton
+                        className="button button--primary"
+                        pendingLabel="Movendo…"
+                      >
+                        Mover para mochila
+                      </PendingSubmitButton>
                     </form>
                   )}
                   {!selected.equippedSlot && selected.location === "bag" ? (
                     <form action={setInventoryLocationAction.bind(null, character.id)}>
                       <input name="inventoryId" type="hidden" value={selected.id} />
                       <input name="location" type="hidden" value="storage" />
-                      <button className="button button--dark">Armazenar</button>
+                      <PendingSubmitButton
+                        className="button button--dark"
+                        pendingLabel="Armazenando…"
+                      >
+                        Armazenar
+                      </PendingSubmitButton>
                     </form>
                   ) : null}
                   {!selected.equippedSlot && selected.slot !== "title" && selected.price > 0 ? (
                     <form action={sellInventoryItemAction.bind(null, character.id)}>
                       <input name="inventoryId" type="hidden" value={selected.id} />
-                      <button className="button button--danger">
+                      <PendingSubmitButton
+                        className="button button--danger"
+                        pendingLabel="Vendendo…"
+                      >
                         Vender por {Math.floor(selected.price / 3).toLocaleString("pt-BR")} WG
-                      </button>
+                      </PendingSubmitButton>
                     </form>
                   ) : null}
                 </footer>
@@ -699,7 +725,12 @@ export function InventoryWorkbench({
                                 <form action={unequipItemAction.bind(null, character.id)}>
                                   <input name="inventoryId" type="hidden" value={item.id} />
                                   <input name="slot" type="hidden" value={activeSlot.key} />
-                                  <button className="button button--dark">Desequipar</button>
+                                  <PendingSubmitButton
+                                    className="button button--dark"
+                                    pendingLabel="Desequipando…"
+                                  >
+                                    Desequipar
+                                  </PendingSubmitButton>
                                 </form>
                               </>
                             ) : (
@@ -713,13 +744,16 @@ export function InventoryWorkbench({
                                       : `Em ${item.equippedSlots.map((key) => slots.find((slot) => slot.key === key)?.label).join(" e ")}`}
                                   </small>
                                 ) : null}
-                                <button className="button button--primary">
+                                <PendingSubmitButton
+                                  className="button button--primary"
+                                  pendingLabel="Equipando…"
+                                >
                                   {availableCopies > 0
                                     ? "Equipar outra cópia"
                                     : equippedElsewhere
                                       ? "Mover para cá"
                                       : "Equipar"}
-                                </button>
+                                </PendingSubmitButton>
                               </form>
                             )}
                           </div>

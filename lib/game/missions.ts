@@ -64,6 +64,28 @@ export type MissionAssignment = {
   objective: string;
   acceptedAt: string;
   isRankTrial: boolean;
+  eventDay: string | null;
+  rewardXp: number;
+  rewardCandies: number;
+};
+export type FestivalMission = {
+  id: string;
+  name: string;
+  description: string;
+  objective: string;
+  eventDay: string;
+  rewardXp: number;
+  rewardCandies: number;
+};
+export type FestivalProgress = {
+  completedCount: number;
+  totalMissions: number;
+  releasedCount: number;
+  candyBalance: number;
+  nextReleaseDate: string | null;
+  endsOn: string;
+  isActive: boolean;
+  mission: FestivalMission | null;
 };
 export type MissionBoard = {
   character: {
@@ -80,6 +102,7 @@ export type MissionBoard = {
   requiredForTrial: number | null;
   lockedUntil: string | null;
   canManage: boolean;
+  festival: FestivalProgress | null;
 };
 
 const record = (value: unknown): Record<string, unknown> =>
@@ -129,6 +152,8 @@ export function parseMissionBoard(value: Json | null): MissionBoard | null {
         .filter((mission) => mission.id)
     : [];
   const rawAssignment = record(root.activeAssignment);
+  const festival = record(root.festival);
+  const festivalMission = record(festival.mission);
   return {
     character: {
       id: text(character.id),
@@ -150,12 +175,38 @@ export function parseMissionBoard(value: Json | null): MissionBoard | null {
           objective: text(rawAssignment.objective),
           acceptedAt: text(rawAssignment.acceptedAt),
           isRankTrial: Boolean(rawAssignment.isRankTrial),
+          eventDay: text(rawAssignment.eventDay) || null,
+          rewardXp: number(rawAssignment.rewardXp),
+          rewardCandies: number(rawAssignment.rewardCandies),
         }
       : null,
     completedForRank: number(root.completedForRank),
     requiredForTrial: root.requiredForTrial === null ? null : number(root.requiredForTrial),
     lockedUntil: null,
     canManage: Boolean(root.canManage),
+    festival:
+      number(festival.totalMissions) > 0
+        ? {
+            completedCount: number(festival.completedCount),
+            totalMissions: number(festival.totalMissions),
+            releasedCount: number(festival.releasedCount),
+            candyBalance: number(festival.candyBalance),
+            nextReleaseDate: text(festival.nextReleaseDate) || null,
+            endsOn: text(festival.endsOn),
+            isActive: Boolean(festival.isActive),
+            mission: text(festivalMission.id)
+              ? {
+                  id: text(festivalMission.id),
+                  name: text(festivalMission.name),
+                  description: text(festivalMission.description),
+                  objective: text(festivalMission.objective),
+                  eventDay: text(festivalMission.eventDay),
+                  rewardXp: number(festivalMission.rewardXp),
+                  rewardCandies: number(festivalMission.rewardCandies),
+                }
+              : null,
+          }
+        : null,
   };
 }
 
@@ -173,6 +224,8 @@ export type ManagedMission = {
   rewardXp: number;
   rewardGold: number;
   isRankTrial: boolean;
+  eventDay: string | null;
+  rewardCandies: number;
 };
 export function parseManagedMissions(value: Json | null): ManagedMission[] {
   return Array.isArray(value)
@@ -193,6 +246,8 @@ export function parseManagedMissions(value: Json | null): ManagedMission[] {
             rewardXp: number(row.rewardXp),
             rewardGold: number(row.rewardGold),
             isRankTrial: Boolean(row.isRankTrial),
+            eventDay: text(row.eventDay) || null,
+            rewardCandies: number(row.rewardCandies),
           };
         })
         .filter((row) => row.assignmentId)

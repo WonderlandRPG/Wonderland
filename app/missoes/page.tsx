@@ -8,6 +8,7 @@ import { requireActiveCharacter } from "@/lib/content/active-character";
 import { kingdomMissionNames, parseMissionBoard } from "@/lib/game/missions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { acceptMissionAction } from "./actions";
+import { FestivalBoard, festivalDateLabel } from "./festival-board";
 
 export const metadata = { title: "Mural de Missões" };
 export const dynamic = "force-dynamic";
@@ -107,12 +108,17 @@ export default async function MissionBoardPage({
             </Link>
           ) : null}
         </section>
+        <FestivalBoard board={board} />
         {board.activeAssignment ? (
           <section
             className={`mission-active-contract ${board.activeAssignment.isRankTrial ? "is-trial" : ""}`}
           >
             <span className="mission-paper-pin" />
-            <small>CONTRATO ASSINADO · EM ANDAMENTO</small>
+            <small>
+              {board.activeAssignment.eventDay
+                ? `NOITES APAVORANTES · MISSÃO DE ${festivalDateLabel(board.activeAssignment.eventDay)} · EM ANDAMENTO`
+                : "CONTRATO ASSINADO · EM ANDAMENTO"}
+            </small>
             <h2>
               <RealmLocationText text={board.activeAssignment.name} variant="title" />
             </h2>
@@ -134,6 +140,12 @@ export default async function MissionBoardPage({
                 </p>
               </div>
             </details>
+            {board.activeAssignment.eventDay ? (
+              <p>
+                Recompensa: {board.activeAssignment.rewardXp.toLocaleString("pt-BR")} XP (dobro do
+                XP do rank atual) + {board.activeAssignment.rewardCandies} Doces Apavorantes.
+              </p>
+            ) : null}
             <div className="mission-resolution-wait" data-wl-status="warning">
               <strong>Aguardando conclusão</strong>
               <p>

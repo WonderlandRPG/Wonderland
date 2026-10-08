@@ -738,6 +738,9 @@ export interface Database {
           promotion_rank: string | null;
           active: boolean;
           available_after: string | null;
+          event_key: string | null;
+          event_day: string | null;
+          reward_candies: number;
           created_by: string | null;
           created_at: string;
           updated_at: string;
@@ -757,6 +760,9 @@ export interface Database {
           promotion_rank?: string | null;
           active?: boolean;
           available_after?: string | null;
+          event_key?: string | null;
+          event_day?: string | null;
+          reward_candies?: number;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -885,6 +891,9 @@ export interface Database {
           retry_after: string | null;
           reward_xp: number;
           reward_gold: number;
+          event_key: string | null;
+          event_day: string | null;
+          reward_candies: number;
           scene_stage: string;
           scene_summary: string | null;
           scene_started_at: string | null;
@@ -902,6 +911,9 @@ export interface Database {
           retry_after?: string | null;
           reward_xp?: number;
           reward_gold?: number;
+          event_key?: string | null;
+          event_day?: string | null;
+          reward_candies?: number;
           scene_stage?: string;
           scene_summary?: string | null;
           scene_started_at?: string | null;

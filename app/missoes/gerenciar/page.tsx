@@ -4,6 +4,7 @@ import { requireMissionManager } from "@/lib/auth/account";
 import { kingdomMissionNames, parseManagedMissions } from "@/lib/game/missions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { cancelMissionAction, resolveMissionAction } from "./actions";
+import { festivalDateLabel } from "../festival-board";
 
 export const metadata = { title: "Gerenciar missões" };
 export const dynamic = "force-dynamic";
@@ -68,7 +69,9 @@ export default async function MissionManagementPage({
               <div>
                 <strong>{item.missionName}</strong>
                 <small>
-                  Missão {item.missionRank}
+                  {item.eventDay
+                    ? `Festival · ${festivalDateLabel(item.eventDay)} · Rank ${item.missionRank}`
+                    : `Missão ${item.missionRank}`}
                   {item.isRankTrial ? " · Prova de ascensão" : ""}
                 </small>
                 <details className="mission-manager-briefing">
@@ -83,7 +86,11 @@ export default async function MissionManagementPage({
               </div>
               <div>
                 <b>{item.rewardXp.toLocaleString("pt-BR")} XP</b>
-                <small>{item.rewardGold.toLocaleString("pt-BR")} WG</small>
+                <small>
+                  {item.eventDay
+                    ? `${item.rewardCandies} Doces Apavorantes`
+                    : `${item.rewardGold.toLocaleString("pt-BR")} WG`}
+                </small>
               </div>
               <div className="mission-manager-actions">
                 <form action={resolveMissionAction}>

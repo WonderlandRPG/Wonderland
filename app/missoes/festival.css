@@ -1,0 +1,75 @@
+.festival-board {
+  margin-top: 1.25rem;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border: 1px solid var(--wl-border);
+  border-radius: 1rem;
+  color: var(--wl-text);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.festival-board__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.festival-board h2,
+.festival-board h3 {
+  margin: 0.25rem 0 0.5rem;
+  color: var(--wl-text);
+}
+.festival-board h2 {
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+}
+.festival-board h3 {
+  font-size: 1.4rem;
+}
+.festival-board p {
+  margin: 0.5rem 0;
+}
+.festival-board .eyebrow {
+  color: var(--wl-accent);
+  font-size: 0.875rem;
+}
+.festival-board__totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin: 0;
+}
+.festival-board__totals dt {
+  color: var(--wl-text-muted);
+  font-size: 0.875rem;
+}
+.festival-board__totals dd {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+.festival-board .festival-board__rules {
+  margin: 1rem 0;
+  color: var(--wl-text-muted);
+}
+.festival-board__mission {
+  margin-top: 1rem;
+  padding: 1.25rem;
+}
+.festival-board__objective {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--wl-accent);
+}
+.festival-board__reward {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 1rem 0;
+}
+.festival-board__reward strong {
+  color: var(--wl-accent);
+}
+.festival-board button {
+  max-width: 100%;
+  white-space: normal;
+}
